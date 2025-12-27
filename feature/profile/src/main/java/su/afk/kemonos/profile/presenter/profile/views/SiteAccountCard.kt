@@ -10,6 +10,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import su.afk.kemonos.common.util.toUiDateTime
 import su.afk.kemonos.profile.R
 import su.afk.kemonos.profile.api.model.Login
 
@@ -39,22 +40,15 @@ internal fun SiteAccountCard(
                 fontWeight = FontWeight.Medium
             )
 
+            /** Залогинен */
             if (isLoggedIn && login != null) {
-                /** Состояние: пользователь залогинен */
                 Text(
                     text = stringResource(
-                        R.string.profile_account_logged_in_as,
-                        login.username
+                        R.string.profile_account_logged_in_summary,
+                        login.username,
+                        login.createdAt.toUiDateTime()
                     ),
                     style = MaterialTheme.typography.bodyMedium
-                )
-
-                Text(
-                    text = stringResource(
-                        R.string.profile_account_joined_role,
-                        login.createdAt,
-                    ),
-                    style = MaterialTheme.typography.bodySmall
                 )
 
                 OutlinedButton(
@@ -63,7 +57,6 @@ internal fun SiteAccountCard(
                 ) {
                     Text(text = stringResource(R.string.profile_logout_button))
                 }
-
             } else {
                 /** Состояние: не залогинен */
                 Text(

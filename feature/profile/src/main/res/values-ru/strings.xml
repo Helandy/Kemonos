@@ -67,8 +67,7 @@
     <string name="profile_kemono_account_title">Аккаунт Kemono</string>
     <string name="profile_coomer_account_title">Аккаунт Coomer</string>
 
-    <string name="profile_account_logged_in_as">Вы вошли как %1$s</string>
-    <string name="profile_account_joined_role">С %1$s</string>
+    <string name="profile_account_logged_in_summary">Вы вошли как %1$s • Присоединился: %2$s</string>
     <string name="profile_logout_button">Выйти</string>
 
 </resources>

@@ -13,6 +13,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import su.afk.kemonos.common.presenter.baseScreen.BaseScreen
@@ -31,7 +32,7 @@ internal fun ProfileScreen(
     val uriHandler = LocalUriHandler.current
 
     BaseScreen(
-        isScroll = false, // <-- важно
+        isScroll = false,
         isLoading = state.isLoading,
         contentModifier = Modifier.padding(horizontal = 8.dp),
     ) {
@@ -51,6 +52,8 @@ internal fun ProfileScreen(
                 Text(
                     text = stringResource(R.string.profile_title),
                     style = MaterialTheme.typography.headlineSmall,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.fillMaxWidth(),
                     fontWeight = FontWeight.SemiBold
                 )
 
@@ -71,7 +74,7 @@ internal fun ProfileScreen(
                         )
                     }
 
-                    HorizontalDivider(modifier = Modifier.padding(16.dp))
+                    HorizontalDivider(modifier = Modifier.padding(8.dp))
 
                     SiteAccountCard(
                         title = stringResource(R.string.profile_kemono_account_title),
@@ -89,14 +92,14 @@ internal fun ProfileScreen(
                         )
                     }
                 }
-            }
 
-            BottomLinksBlock(
-                kemonoUrl = state.kemonoUrl,
-                coomerUrl = state.coomerUrl,
-                appVersion = state.appVersion,
-                onGitHubClick = { uriHandler.openUri("https://github.com/Helandy/Kemonos") }
-            )
+                BottomLinksBlock(
+                    kemonoUrl = state.kemonoUrl,
+                    coomerUrl = state.coomerUrl,
+                    appVersion = state.appVersion,
+                    onGitHubClick = { uriHandler.openUri("https://github.com/Helandy/Kemonos") }
+                )
+            }
         }
     }
 }

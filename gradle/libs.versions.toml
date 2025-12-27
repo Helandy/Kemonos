@@ -4,7 +4,7 @@ minSdk = "29"
 jvmVersion = "21"
 
 appVersionName = "1.1"
-appVersionCode = "9"
+appVersionCode = "10"
 
 accompanistSystemuicontroller = "0.36.0"
 accompanistZoomable = "0.33.2-alpha"
