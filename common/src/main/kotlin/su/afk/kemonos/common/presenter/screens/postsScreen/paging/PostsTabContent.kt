@@ -1,0 +1,46 @@
+package su.afk.kemonos.common.presenter.screens.postsScreen.paging
+
+import androidx.compose.runtime.Composable
+import androidx.paging.LoadState
+import androidx.paging.compose.LazyPagingItems
+import su.afk.kemonos.common.error.view.DefaultErrorContent
+import su.afk.kemonos.common.presenter.baseScreen.DefaultEmptyContent
+import su.afk.kemonos.common.presenter.baseScreen.DefaultLoadingContent
+import su.afk.kemonos.common.presenter.screens.postsScreen.PostsSource
+import su.afk.kemonos.common.presenter.screens.postsScreen.ProfilePostsGrid
+import su.afk.kemonos.domain.domain.models.ErrorItem
+import su.afk.kemonos.domain.domain.models.PostDomain
+import su.afk.kemonos.domain.domain.models.Tag
+
+@Composable
+fun PostsTabContent(
+    posts: LazyPagingItems<PostDomain>,
+    currentTag: Tag?,
+    onPostClick: (PostDomain) -> Unit,
+    onRetry: () -> Unit,
+    showFavCount: Boolean = false,
+    parseError: (Throwable) -> ErrorItem,
+) {
+    when (val refreshState = posts.loadState.refresh) {
+        is LoadState.Loading -> DefaultLoadingContent()
+
+        is LoadState.Error -> {
+            DefaultErrorContent(
+                errorItem = parseError(refreshState.error),
+                onRetry = onRetry
+            )
+        }
+
+        is LoadState.NotLoading -> {
+            if (posts.itemCount == 0 && currentTag == null) {
+                DefaultEmptyContent()
+            } else {
+                ProfilePostsGrid(
+                    source = PostsSource.Paging(posts),
+                    postClick = onPostClick,
+                    showFavCount = showFavCount
+                )
+            }
+        }
+    }
+}

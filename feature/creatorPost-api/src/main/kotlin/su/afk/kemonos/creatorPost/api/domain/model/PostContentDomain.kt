@@ -1,0 +1,15 @@
+package su.afk.kemonos.creatorPost.api.domain.model
+
+import kotlinx.serialization.Serializable
+import su.afk.kemonos.domain.domain.models.AttachmentDomain
+import su.afk.kemonos.domain.domain.models.PostDomain
+import su.afk.kemonos.domain.domain.models.PreviewDomain
+import su.afk.kemonos.domain.domain.models.VideoDomain
+
+@Serializable
+data class PostContentDomain(
+    val post: PostDomain,
+    val videos: List<VideoDomain> = emptyList(),
+    val attachments: List<AttachmentDomain> = emptyList(),
+    val previews: List<PreviewDomain> = emptyList()
+)

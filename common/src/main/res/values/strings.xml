@@ -1,0 +1,159 @@
+<resources>
+    <string name="app_name">Kemonos</string>
+    <string name="main_screen_search">Search by name</string>
+    <string name="main_screen_search_label">Search</string>
+    <string name="main_screen_search_empty">Nothing found</string>
+    <string name="video_screen_screen_rotation">Rotate screen</string>
+    <string name="info">Info</string>
+    <string name="attachments_count">📎 %1$d attach.</string>
+    <string name="tags">Tags:</string>
+    <string name="empty_screen">No data</string>
+    <string name="attachment_section">📎 Attachments</string>
+    <string name="comments_section">💬 Comments</string>
+    <string name="video_section">🎬 Video</string>
+    <string name="video_file">🎬 Video</string>
+    <string name="audio_file">🎵 Audio</string>
+    <string name="video_loading_section">Loading preview…</string>
+    <string name="loading">Loading…</string>
+    <string name="sort_popularity">Popularity</string>
+    <string name="sort_index">Index</string>
+    <string name="sort_update">Update</string>
+    <string name="sort_name">A-Z</string>
+
+    <string name="fancard_empty">No fan cards</string>
+    <string name="fancard_price">Price: %1$s</string>
+    <string name="fancard_size">Size: %1$s KB</string>
+    <string name="fancard_added">Added: %1$s</string>
+    <string name="fancard_open">Open</string>
+
+    <string name="dm_empty">No messages</string>
+    <string name="announcements_empty">No announcements</string>
+    <string name="dm_added">Added: %1$s</string>
+    <string name="dm_published">Published: %1$s</string>
+
+    <string name="profile_tab_posts">Posts</string>
+    <string name="profile_tab_announcements">Announcements</string>
+    <string name="profile_tab_fancard">Fancard</string>
+    <string name="profile_tab_tags">Tags</string>
+    <string name="profile_tab_dms">DM</string>
+    <string name="profile_tab_links">Links</string>
+
+    <string name="open_with">Open via…</string>
+    <string name="vlc_not_installed">VLC is not installed. Opening it through another application…</string>
+
+    <string name="search">Search…</string>
+    <string name="close">Close…</string>
+
+    <string name="next">Next</string>
+    <string name="back">Back</string>
+    <string name="page_current">Page: %1$s</string>
+
+    <!-- Экран ошибок -->
+    <string name="error_default">
+        Something went wrong, please try again or use a VPN.
+    </string>
+    <string name="common_retry">Retry</string>
+    <string name="common_error_loading">Error loading</string>
+
+    <!-- App update   -->
+    <string name="update_banner_title">New version %1$s is available</string>
+    <string name="update_banner_subtitle">Tap to open the release page</string>
+    <string name="update_btn_update">Update</string>
+    <string name="update_btn_later">Later</string>
+
+    <!-- Errors   -->
+    <string name="err_title_generic">Error</string>
+    <string name="err_msg_generic">Something went wrong. Please try again.</string>
+
+    <string name="err_title_no_connection">No connection</string>
+    <string name="err_msg_no_connection">Check your internet connection and try again.</string>
+
+    <string name="err_title_timeout">Request timed out</string>
+    <string name="err_msg_timeout">The server is taking too long to respond. Please try again.</string>
+
+    <string name="err_title_unauthorized">Unauthorized</string>
+    <string name="err_msg_unauthorized">Please sign in again.</string>
+
+    <string name="err_title_forbidden">Forbidden</string>
+    <string name="err_msg_forbidden">You don’t have permission to perform this action.</string>
+
+    <string name="err_title_not_found">Not found</string>
+    <string name="err_msg_not_found">The requested resource was not found.</string>
+
+    <string name="err_title_too_many_requests">Too many requests</string>
+    <string name="err_msg_too_many_requests">You are being rate-limited. Please wait and try again.</string>
+
+    <string name="err_title_server_error">Server error</string>
+    <string name="err_msg_server_error">The server encountered an error. Please try again later.</string>
+
+    <string name="err_title_bad_gateway_502">Bad gateway (502)</string>
+    <string name="err_msg_bad_gateway_502">The server returned 502. Please try again later.</string>
+
+    <string name="err_title_service_unavailable_503">Service unavailable (503)</string>
+    <string name="err_msg_service_unavailable_503">The service is temporarily unavailable. Please try again later.
+    </string>
+
+    <string name="err_title_gateway_timeout_504">Gateway timeout (504)</string>
+    <string name="err_msg_gateway_timeout_504">The server didn’t respond in time. Please try again later.</string>
+
+    <string name="err_title_http_generic">HTTP error (%1$d)</string>
+    <string name="err_msg_http_generic">Request failed. Please try again.</string>
+
+    <string name="error_screen">Error</string>
+    <string name="retry">Retry</string>
+    <string name="copy">Copy</string>
+    <string name="copied">Copied</string>
+    <string name="details">Details</string>
+    <string name="hide_details">Hide details</string>
+
+    <string name="error_http_code">HTTP: %1$s</string>
+    <string name="error_method">Method: %1$s</string>
+    <string name="error_url">URL: %1$s</string>
+    <string name="error_request_id">Request ID: %1$s</string>
+    <string name="error_text">Message: %1$s</string>
+    <string name="error_body">Body:\n%1$s</string>
+
+    <string name="show_details">Show details</string>
+
+
+    <!-- Main screen / API check -->
+    <string name="main_checking_api">Checking API availability…</string>
+    <string name="main_checking_api_success">Success! Navigating…</string>
+
+    <string name="main_api_unavailable_title">API is unavailable</string>
+    <string name="main_api_error_code">Code: %1$d</string>
+    <string name="main_api_error_message">Message: %1$s</string>
+
+    <string name="main_api_current_urls_title">Current URLs in settings:</string>
+    <string name="main_api_current_urls_value">Kemono: %1$s\nCoomer: %2$s</string>
+
+    <string name="main_api_kemono_url_label">Kemono API URL</string>
+    <string name="main_api_coomer_url_label">Coomer API URL</string>
+
+    <string name="main_api_check_button">Check</string>
+
+    <string name="previews_title">Previews (%1$d)</string>
+
+    <string name="expand">Expand</string>
+    <string name="collapse">Collapse</string>
+    <string name="download">Download</string>
+
+    <string name="discord_profile_not_supported_title">
+        Discord profiles are not supported yet
+    </string>
+
+    <string name="discord_profile_not_supported_message">
+        You will be redirected to the website
+    </string>
+
+    <string name="discord_profile_go_back">
+        Go back
+    </string>
+
+    <string name="download_started">Download started</string>
+    <string name="download_started_named">Download started: %1$s</string>
+
+    <string name="profile_app_version">GitHub Version: %1$s</string>
+
+    <string name="main_api_skip_check_button">Skip check</string>
+</resources>

@@ -1,0 +1,72 @@
+package su.afk.kemonos.posts.presenter.pagePopularPosts
+
+import androidx.compose.foundation.layout.*
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.paging.LoadState
+import androidx.paging.compose.collectAsLazyPagingItems
+import su.afk.kemonos.common.presenter.baseScreen.BaseScreen
+import su.afk.kemonos.common.presenter.baseScreen.StandardTopBar
+import su.afk.kemonos.common.presenter.baseScreen.TopBarScroll
+import su.afk.kemonos.common.presenter.changeSite.SiteToggleFab
+import su.afk.kemonos.common.presenter.screens.postsScreen.paging.PostsTabContent
+import su.afk.kemonos.posts.presenter.pagePopularPosts.views.PopularPeriodsPanel
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+internal fun PopularPostsScreen(
+    viewModel: PopularPostsViewModel
+) {
+    val state by viewModel.state.collectAsStateWithLifecycle()
+    val site by viewModel.site.collectAsStateWithLifecycle()
+    val siteSwitching by viewModel.siteSwitching.collectAsStateWithLifecycle()
+
+    val posts = state.posts.collectAsLazyPagingItems()
+    TopAppBarDefaults.enterAlwaysScrollBehavior()
+
+    val isPageLoading = posts.loadState.refresh is LoadState.Loading
+    val isBusy = isPageLoading || siteSwitching
+
+    BaseScreen(
+        contentPadding = PaddingValues(horizontal = 8.dp),
+        applyScaffoldPadding = false,
+        isScroll = false,
+        topBarScroll = TopBarScroll.EnterAlways,
+        topBar = { scrollBehavior ->
+            StandardTopBar(
+                scrollBehavior = scrollBehavior,
+                windowInsets = WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal),
+            ) {
+                PopularPeriodsPanel(
+                    state = state,
+                    onSlotClick = { period, slot ->
+                        viewModel.onPeriodSlotClick(period, slot)
+                    }
+                )
+            }
+        },
+        floatingActionButtonStart = {
+            SiteToggleFab(
+                enable = !isBusy,
+                selectedSite = site,
+                onToggleSite = viewModel::switchSite,
+            )
+        },
+        fabApplyScaffoldPadding = false,
+        floatingActionButtonBottomPadding = 12.dp,
+        isLoading = isPageLoading,
+    ) {
+        PostsTabContent(
+            posts = posts,
+            currentTag = null,
+            onPostClick = viewModel::navigateToPost,
+            onRetry = { posts.retry() },
+            parseError = viewModel::parseError,
+            showFavCount = true
+        )
+    }
+}

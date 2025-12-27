@@ -1,0 +1,42 @@
+package su.afk.kemonos.posts.domain.pagingSearch
+
+import androidx.paging.Pager
+import androidx.paging.PagingConfig
+import androidx.paging.PagingData
+import kotlinx.coroutines.flow.Flow
+import su.afk.kemonos.domain.SelectedSite
+import su.afk.kemonos.domain.domain.models.PostDomain
+import su.afk.kemonos.posts.data.PostsRepository
+import javax.inject.Inject
+
+internal class GetSearchPostsPagingUseCase @Inject constructor(
+    private val repository: PostsRepository,
+) {
+    operator fun invoke(
+        tag: String?,
+        search: String?,
+        site: SelectedSite,
+    ): Flow<PagingData<PostDomain>> {
+        return Pager(
+            config = PagingConfig(
+                pageSize = PAGE_SIZE,
+                initialLoadSize = PAGE_SIZE,
+                prefetchDistance = PAGE_SIZE / 2,
+                enablePlaceholders = false
+            ),
+            pagingSourceFactory = {
+                SearchPostsPagingSource(
+                    repository = repository,
+                    site = site,
+                    tag = tag,
+                    search = search,
+                    pageSize = PAGE_SIZE,
+                )
+            }
+        ).flow
+    }
+
+    companion object {
+        const val PAGE_SIZE = 50
+    }
+}

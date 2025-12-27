@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Kemonos</string>
+    <string name="main_screen_search">Поиск по имени</string>
+    <string name="main_screen_search_label">Поиск</string>
+    <string name="main_screen_search_empty">Ничего не найдено</string>
+    <string name="video_screen_screen_rotation">Повернуть экран</string>
+    <string name="info">Инфо</string>
+    <string name="attachments_count">📎 %1$d влож.</string>
+    <string name="tags">Tags:</string>
+    <string name="empty_screen">Нет данных</string>
+    <string name="attachment_section">📎 Вложения</string>
+    <string name="comments_section">💬 Комментарии</string>
+    <string name="video_section">🎬 Видео</string>
+    <string name="video_file">🎬 Видео</string>
+    <string name="audio_file">🎵 Аудио</string>
+    <string name="video_loading_section">Загрузка превью…</string>
+    <string name="loading">Загрузка…</string>
+    <string name="sort_popularity">Популярность</string>
+    <string name="sort_index">Индекс</string>
+    <string name="sort_update">Обновление</string>
+    <string name="sort_name">A-Z</string>
+    <string name="fancard_empty">Нет фан-карт</string>
+    <string name="fancard_price">Цена: %1$s</string>
+    <string name="fancard_size">Размер: %1$s КБ</string>
+    <string name="fancard_added">Добавлено: %1$s</string>
+    <string name="fancard_open">Открыть</string>
+
+    <string name="dm_empty">Нет сообщений</string>
+    <string name="announcements_empty">Нет объявлений</string>
+    <string name="dm_added">Добавлено: %1$s</string>
+    <string name="dm_published">Опубликовано: %1$s</string>
+
+    <string name="profile_tab_posts">Посты</string>
+    <string name="profile_tab_announcements">Анонсы</string>
+    <string name="profile_tab_fancard">Фанкард</string>
+    <string name="profile_tab_tags">Тэги</string>
+    <string name="profile_tab_dms">ЛС</string>
+    <string name="profile_tab_links">Ссылки</string>
+
+    <string name="open_with">Открыть через…</string>
+    <string name="vlc_not_installed">VLC не установлен. Открываю через другое приложение…</string>
+
+    <string name="search">Поиск…</string>
+    <string name="close">Закрыть…</string>
+
+    <string name="next">Вперед</string>
+    <string name="back">Назад</string>
+    <string name="page_current">Страница: %1$s</string>
+
+    <!-- Экран ошибок -->
+    <string name="error_default">
+        Что-то пошло не так, попробуйте ещё раз или используйте VPN.
+    </string>
+    <string name="common_retry">Повторить</string>
+    <string name="common_error_loading">Не удалось загрузить</string>
+
+    <!-- App update   -->
+    <string name="update_banner_title">Доступна новая версия %1$s</string>
+    <string name="update_banner_subtitle">Нажмите, чтобы открыть страницу релиза</string>
+    <string name="update_btn_update">Обновиться</string>
+    <string name="update_btn_later">В следующий раз</string>
+
+    <!--  Errors   -->
+    <string name="err_title_generic">Ошибка</string>
+    <string name="err_msg_generic">Что-то пошло не так. Попробуй ещё раз.</string>
+
+    <string name="err_title_no_connection">Нет соединения</string>
+    <string name="err_msg_no_connection">Проверь интернет и попробуй снова.</string>
+
+    <string name="err_title_timeout">Слишком долго отвечает</string>
+    <string name="err_msg_timeout">Похоже, сервер тормозит. Попробуй ещё раз.</string>
+
+    <string name="err_title_unauthorized">Не авторизован</string>
+    <string name="err_msg_unauthorized">Нужно войти заново.</string>
+
+    <string name="err_title_forbidden">Доступ запрещён</string>
+    <string name="err_msg_forbidden">У тебя нет прав на это действие.</string>
+
+    <string name="err_title_not_found">Не найдено</string>
+    <string name="err_msg_not_found">Ресурс не найден.</string>
+
+    <string name="err_title_too_many_requests">Слишком много запросов</string>
+    <string name="err_msg_too_many_requests">Сервис ограничил частоту запросов. Подожди немного и повтори.</string>
+
+    <string name="err_title_server_error">Ошибка сервера</string>
+    <string name="err_msg_server_error">На сервере произошла ошибка. Попробуй позже.</string>
+
+    <string name="err_title_bad_gateway_502">Плохой шлюз (502)</string>
+    <string name="err_msg_bad_gateway_502">Сервер сейчас отдаёт 502. Попробуй позже.</string>
+
+    <string name="err_title_service_unavailable_503">Сервис недоступен (503)</string>
+    <string name="err_msg_service_unavailable_503">Сервис временно недоступен. Попробуй позже.</string>
+
+    <string name="err_title_gateway_timeout_504">Шлюз не ответил (504)</string>
+    <string name="err_msg_gateway_timeout_504">Сервер не ответил вовремя. Попробуй позже.</string>
+
+    <string name="err_title_http_generic">HTTP ошибка (%1$d)</string>
+    <string name="err_msg_http_generic">Ошибка запроса. Попробуй ещё раз.</string>
+
+    <string name="error_screen">Ошибка</string>
+    <string name="retry">Повторить</string>
+    <string name="copy">Скопировать</string>
+    <string name="copied">Скопировано</string>
+    <string name="details">Детали</string>
+    <string name="hide_details">Скрыть детали</string>
+
+    <string name="error_http_code">HTTP: %1$s</string>
+    <string name="error_method">Метод: %1$s</string>
+    <string name="error_url">URL: %1$s</string>
+    <string name="error_request_id">Request ID: %1$s</string>
+    <string name="error_text">Сообщение: %1$s</string>
+    <string name="error_body">Тело:\n%1$s</string>
+
+    <string name="show_details">Показать детали</string>
+
+    <!-- Главный экран / проверка API -->
+    <string name="main_checking_api">Проверяем доступность API…</string>
+    <string name="main_checking_api_success">Успешно! Переходим…</string>
+
+    <string name="main_api_unavailable_title">API недоступно</string>
+    <string name="main_api_error_code">Код: %1$d</string>
+    <string name="main_api_error_message">Сообщение: %1$s</string>
+
+    <string name="main_api_current_urls_title">Текущие адреса в настройках:</string>
+    <string name="main_api_current_urls_value">Kemono: %1$s\nCoomer: %2$s</string>
+
+    <string name="main_api_kemono_url_label">Адрес API Kemono</string>
+    <string name="main_api_coomer_url_label">Адрес API Coomer</string>
+
+    <string name="main_api_check_button">Проверить</string>
+
+    <string name="previews_title">Превью (%1$d)</string>
+
+    <string name="expand">Развернуть</string>
+    <string name="collapse">Свернуть</string>
+    <string name="download">Скачать</string>
+
+    <string name="discord_profile_not_supported_title">
+        Профили Discord сейчас не поддерживаются
+    </string>
+
+    <string name="discord_profile_not_supported_message">
+        Вы будете перенаправлены на сайт
+    </string>
+
+    <string name="discord_profile_go_back">
+        Вернуться назад
+    </string>
+
+    <string name="download_started">Загрузка началась</string>
+    <string name="download_started_named">Загрузка началась: %1$s</string>
+
+    <string name="profile_app_version">GitHub Версия: %1$s</string>
+
+    <string name="main_api_skip_check_button">Пропустить проверку</string>
+</resources>

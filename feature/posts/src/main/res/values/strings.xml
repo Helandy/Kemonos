@@ -1,0 +1,13 @@
+<resources>
+    <string name="posts_tab_search">Search</string>
+    <string name="posts_tab_popular">Popular</string>
+    <string name="posts_tab_tags">Tags</string>
+
+    <string name="popular_period_day">Day</string>
+    <string name="popular_period_week">Week</string>
+    <string name="popular_period_month">Month</string>
+
+    <!-- Popular posts date range -->
+    <string name="popular_range_single">Popular posts for %1$s</string>
+    <string name="popular_range_range">Popular posts from %1$s to %2$s</string>
+</resources>

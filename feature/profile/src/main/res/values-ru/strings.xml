@@ -1,0 +1,74 @@
+<resources>
+
+    <!-- Заголовки и поля -->
+    <string name="register_title">Регистрация</string>
+    <string name="register_username_label">Имя пользователя</string>
+    <string name="register_password_label">Пароль</string>
+    <string name="register_confirm_label">Подтверждение пароля</string>
+    <string name="register_button_create">Создать аккаунт</string>
+    <string name="register_button_back">Назад</string>
+
+    <!-- Ошибки валидации -->
+    <string name="register_username_empty">Введите имя пользователя</string>
+    <string name="register_password_too_short">Минимальная длина пароля — 6 символов</string>
+    <string name="register_confirm_not_equal">Пароли не совпадают</string>
+
+    <!-- Общие ошибки -->
+    <string name="register_error_network">Проблемы с интернетом. Попробуйте позже.</string>
+    <string name="register_error_server">Ошибка сервера. Попробуйте позже.</string>
+    <string name="register_error_unknown">Что-то пошло не так. Повторите попытку.</string>
+
+    <!-- Login -->
+    <string name="login_title">Вход</string>
+    <string name="login_username_label">Имя пользователя</string>
+    <string name="login_password_label">Пароль</string>
+    <string name="login_button_sign_in">Войти</string>
+    <string name="login_button_register">Регистрация</string>
+
+    <string name="login_username_empty">Введите имя пользователя</string>
+    <string name="login_password_empty">Введите пароль</string>
+
+    <string name="login_error_network">Проблемы с интернетом. Попробуйте позже.</string>
+    <string name="login_error_server">Ошибка сервера. Попробуйте позже.</string>
+    <string name="login_error_unknown">Произошла неизвестная ошибка.</string>
+
+    <string name="register_button_login">Уже есть аккаунт? Войти</string>
+
+    <string name="profile_title">Ваш аккаунт</string>
+    <string name="profile_hello">Привет, %1$s</string>
+    <string name="profile_joined_role">Зарегистрирован %1$s</string>
+    <string name="profile_notifications">Уведомления: %1$d</string>
+
+    <string name="profile_favorites_title_coomer">Избранное Coomer</string>
+    <string name="profile_favorites_title_kemono">Избранное Kemono</string>
+    <string name="profile_favorites_profiles">Профили</string>
+    <string name="profile_favorites_posts">Посты</string>
+
+    <string name="profile_menu_keys">Ключи</string>
+    <string name="profile_menu_review_dms">Проверить личные сообщения</string>
+    <string name="profile_menu_export_favorites">Экспорт избранного</string>
+    <string name="profile_menu_change_username">Сменить имя пользователя</string>
+    <string name="profile_menu_change_password">Сменить пароль</string>
+
+    <string name="profile_error_not_authorized">Вы не авторизованы</string>
+
+    <string name="profile_not_logged_in_message">
+        Вы не авторизованы. Войдите, чтобы видеть подробности профиля и избранное.
+    </string>
+    <string name="profile_login_button">Войти</string>
+
+
+    <!-- favoriteProfiles   -->
+    <string name="sort_new_posts_date">Дата новой публикации</string>
+    <string name="sort_faved_date">Дата добавления</string>
+    <string name="sort_reimport_date">Дата реимпорта</string>
+
+    <!--  ProfileScreen  -->
+    <string name="profile_kemono_account_title">Аккаунт Kemono</string>
+    <string name="profile_coomer_account_title">Аккаунт Coomer</string>
+
+    <string name="profile_account_logged_in_as">Вы вошли как %1$s</string>
+    <string name="profile_account_joined_role">С %1$s</string>
+    <string name="profile_logout_button">Выйти</string>
+
+</resources>

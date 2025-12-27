@@ -1,0 +1,13 @@
+<resources>
+    <string name="posts_tab_search">Поиск</string>
+    <string name="posts_tab_popular">Популярное</string>
+    <string name="posts_tab_tags">Теги</string>
+
+    <string name="popular_period_day">День</string>
+    <string name="popular_period_week">Неделя</string>
+    <string name="popular_period_month">Месяц</string>
+
+    <!-- Описание диапазона популярных постов -->
+    <string name="popular_range_single">Популярные посты за %1$s</string>
+    <string name="popular_range_range">Популярные посты с %1$s по %2$s</string>
+</resources>
