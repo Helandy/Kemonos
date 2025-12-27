@@ -9,7 +9,10 @@ import java.time.format.DateTimeFormatter
  * */
 private val inputFormats = listOf(
     "yyyy-MM-dd'T'HH:mm:ss.SSSSSS",
-    "yyyy-MM-dd'T'HH:mm:ss"
+    "yyyy-MM-dd'T'HH:mm:ss.SSS",
+    "yyyy-MM-dd'T'HH:mm:ss",
+    "yyyy-MM-dd HH:mm:ss.SSS",
+    "yyyy-MM-dd HH:mm:ss"
 )
 
 private val outputFormatter = DateTimeFormatter.ofPattern("dd.MM.yyyy")
