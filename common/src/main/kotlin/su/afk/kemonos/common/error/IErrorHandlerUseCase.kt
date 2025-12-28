@@ -17,6 +17,7 @@ interface IErrorHandlerUseCase {
 
 class ErrorHandlerUseCaseImpl @Inject constructor(
     private val strings: StringProvider,
+    private val backendMessageParser: BackendMessageParser,
     private val errorNavigator: IErrorNavigator,
     private val navigationManager: NavigationManager,
 ) : IErrorHandlerUseCase {
@@ -26,6 +27,7 @@ class ErrorHandlerUseCaseImpl @Inject constructor(
 
         val base = when (t) {
             is HttpException -> parseHttp(t)
+
             is SocketTimeoutException -> ErrorItem(
                 title = strings.get(R.string.err_title_timeout),
                 message = strings.get(R.string.err_msg_timeout),
@@ -63,7 +65,8 @@ class ErrorHandlerUseCaseImpl @Inject constructor(
                 ?: resp?.headers()?.get("cf-ray")
 
         val body = resp?.errorBody()?.safeString()
-        val backendMessage = body?.extractBackendMessage()?.takeIf { it.isNotBlank() }
+
+        val backendMessage = backendMessageParser.extract(body)
 
         val title = httpTitle(code)
         val fallback = httpMessage(code)
@@ -116,7 +119,6 @@ private fun ResponseBody.safeString(maxChars: Int = 20_000): String? =
  * Достаём сообщение из тела:
  * - JSON поля: message/error/detail/description/title
  * - если не JSON — вернём plain text (trimmed)
- * - можно отфильтровать HTML, чтобы не пугать пользователя
  */
 fun String.extractBackendMessage(): String? {
     val trimmed = trim()

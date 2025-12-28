@@ -26,10 +26,12 @@ import coil3.gif.GifDecoder
 import coil3.request.CachePolicy
 import coil3.request.ImageRequest
 import coil3.request.crossfade
+import coil3.size.Precision
 import su.afk.kemonos.common.R
 import su.afk.kemonos.common.error.view.DefaultErrorContent
 import su.afk.kemonos.domain.domain.models.ErrorItem
 import kotlin.math.abs
+import kotlin.math.roundToInt
 
 @Composable
 fun ImagePreviewScreen(
@@ -100,10 +102,19 @@ fun ImagePreviewScreen(
 
 
     /** пересоздаём запрос при retryKey++ */
-    val request = remember(imageUrl, retryKey) {
+    val request = remember(imageUrl, retryKey, container) {
+        val w = (container.width * maxScale).roundToInt().coerceAtLeast(1)
+        val h = (container.height * maxScale).roundToInt().coerceAtLeast(1)
+
+        val maxSide = 4096
+        val scaleDown = maxOf(w.toFloat() / maxSide, h.toFloat() / maxSide, 1f)
+        val rw = (w / scaleDown).roundToInt()
+        val rh = (h / scaleDown).roundToInt()
+
         ImageRequest.Builder(context)
             .data(imageUrl)
-            .memoryCachePolicy(CachePolicy.DISABLED)
+            .size(rw, rh)
+            .precision(Precision.EXACT)
             .diskCachePolicy(CachePolicy.ENABLED)
             .build()
     }

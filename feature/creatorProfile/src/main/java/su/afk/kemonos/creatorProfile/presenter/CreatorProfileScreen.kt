@@ -2,10 +2,12 @@ package su.afk.kemonos.creatorProfile.presenter
 
 import android.content.Intent
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.grid.LazyGridState
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
@@ -35,6 +37,9 @@ internal fun CreatorScreen(
     val posts = state.profilePosts.collectAsLazyPagingItems()
 
     val postsRefreshing = posts.loadState.refresh is LoadState.Loading
+    val gridState = rememberSaveable(saver = LazyGridState.Saver) {
+        LazyGridState()
+    }
 
     LaunchedEffect(viewModel) {
         viewModel.effect.collect { effect ->
@@ -85,6 +90,7 @@ internal fun CreatorScreen(
             creatorName = profile.name,
             updated = profile.updated,
             showSearchButton = true,
+            showInfoButton = true,
             onSearchClick = { viewModel.toggleSearch() },
             onClickHeader = null
         )
@@ -109,7 +115,8 @@ internal fun CreatorScreen(
         SelectedTab(
             state = state,
             viewModel = viewModel,
-            posts = posts
+            posts = posts,
+            gridState = gridState
         )
     }
 }
@@ -119,11 +126,13 @@ internal fun CreatorScreen(
 private fun SelectedTab(
     state: CreatorProfileState,
     viewModel: CreatorProfileViewModel,
-    posts: LazyPagingItems<PostDomain>
+    posts: LazyPagingItems<PostDomain>,
+    gridState: LazyGridState,
 ) {
     when (state.selectedTab) {
         ProfileTab.POSTS -> PostsTabContent(
             posts = posts,
+            gridState = gridState,
             currentTag = state.currentTag,
             onPostClick = viewModel::navigateToPost,
             onRetry = { posts.retry() },

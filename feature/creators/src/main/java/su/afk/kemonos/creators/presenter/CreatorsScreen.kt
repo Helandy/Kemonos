@@ -17,8 +17,8 @@ import su.afk.kemonos.common.presenter.baseScreen.BaseScreen
 import su.afk.kemonos.common.presenter.baseScreen.StandardTopBar
 import su.afk.kemonos.common.presenter.baseScreen.TopBarScroll
 import su.afk.kemonos.common.presenter.changeSite.SiteToggleFab
+import su.afk.kemonos.common.presenter.views.creator.CreatorItem
 import su.afk.kemonos.common.presenter.views.searchBar.SearchBarNew
-import su.afk.kemonos.creators.presenter.views.CreatorItem
 import su.afk.kemonos.creators.presenter.views.creatorsSortOptions
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -62,6 +62,8 @@ internal fun CreatorsScreen(viewModel: CreatorsViewModel) {
                     onSortMethodSelect = viewModel::setSortType,
                     isAscending = state.sortAscending,
                     onToggleAscending = viewModel::toggleSortOrder,
+                    showRandom = true,
+                    onRandomClick = viewModel::randomCreator,
                 )
             }
         },
@@ -72,7 +74,7 @@ internal fun CreatorsScreen(viewModel: CreatorsViewModel) {
                 onToggleSite = viewModel::switchSite,
             )
         },
-        isLoading = isBusy || isFirstPageLoading,
+        isLoading = isBusy || isFirstPageLoading || state.loading,
         isEmpty = showEmpty
     ) {
         LazyColumn {
@@ -89,7 +91,13 @@ internal fun CreatorsScreen(viewModel: CreatorsViewModel) {
                 key = pagingItems.itemKey { "${it.service}:${it.id}:${it.indexed}" }
             ) { index ->
                 val creator = pagingItems[index] ?: return@items
-                CreatorItem(creator) { viewModel.onCreatorClick(creator) }
+                CreatorItem(
+                    service = creator.service,
+                    id = creator.id,
+                    name = creator.name,
+                    favorited = creator.favorited,
+                    onClick = { viewModel.onCreatorClick(creator) }
+                )
                 HorizontalDivider()
             }
         }

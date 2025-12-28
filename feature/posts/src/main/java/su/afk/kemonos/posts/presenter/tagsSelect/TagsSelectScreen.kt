@@ -1,8 +1,10 @@
 package su.afk.kemonos.posts.presenter.tagsSelect
 
+import androidx.compose.foundation.lazy.grid.LazyGridState
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.paging.compose.collectAsLazyPagingItems
@@ -16,6 +18,9 @@ internal fun TagsPostsScreen(
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     val posts = state.posts.collectAsLazyPagingItems()
+    val gridState = rememberSaveable(saver = LazyGridState.Saver) {
+        LazyGridState()
+    }
 
     BaseScreen(
         isScroll = false,
@@ -23,6 +28,7 @@ internal fun TagsPostsScreen(
         /** Контент */
         PostsTabContent(
             posts = posts,
+            gridState = gridState,
             currentTag = null,
             onPostClick = viewModel::navigateToPost,
             onRetry = { posts.retry() },

@@ -84,10 +84,9 @@ internal class CreatorPostsCacheRepository @Inject constructor(
     }
 
     private companion object {
-        private const val TTL_SEARCH_TAG = 1L * 60 * 60 * 1000
-
         /** 1 час */
-        private const val TTL_DEFAULT = 3L * 24 * 60 * 60 * 1000
+        private const val TTL_SEARCH_TAG = 1L * 60 * 60 * 1000
         /** 3 дня */
+        private const val TTL_DEFAULT = 3L * 24 * 60 * 60 * 1000
     }
 }

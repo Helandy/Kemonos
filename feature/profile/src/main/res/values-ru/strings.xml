@@ -59,9 +59,9 @@
 
 
     <!-- favoriteProfiles   -->
-    <string name="sort_new_posts_date">Дата новой публикации</string>
-    <string name="sort_faved_date">Дата добавления</string>
-    <string name="sort_reimport_date">Дата реимпорта</string>
+    <string name="sort_new_posts_date">Дата поста</string>
+    <string name="sort_faved_date">В избранное</string>
+    <string name="sort_reimport_date">Реимпорт</string>
 
     <!--  ProfileScreen  -->
     <string name="profile_kemono_account_title">Аккаунт Kemono</string>
@@ -70,4 +70,11 @@
     <string name="profile_account_logged_in_summary">Вы вошли как %1$s • Присоединился: %2$s</string>
     <string name="profile_logout_button">Выйти</string>
 
+    <!--  LogoutDialog  -->
+    <string name="logout_title">Выйти из аккаунта %1$s?</string>
+    <string name="logout_message">Вы уверены, что хотите выйти из %1$s?</string>
+    <string name="logout_confirm">Выйти</string>
+    <string name="cancel">Отмена</string>
+    <string name="kemono">Kemono</string>
+    <string name="coomer">Coomer</string>
 </resources>

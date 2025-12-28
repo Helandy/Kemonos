@@ -13,8 +13,8 @@ data class MainState(
     val kemonoUrl: String = "",
     val coomerUrl: String = "",
 
-    val inputKemono: String = "",
-    val inputCoomer: String = "",
+    val inputKemonoDomain: String = "",
+    val inputCoomerDomain: String = "",
 
     val updateInfo: AppUpdateInfo? = null,
 )

@@ -6,6 +6,7 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDownward
 import androidx.compose.material.icons.filled.ArrowUpward
+import androidx.compose.material.icons.filled.Casino
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -38,6 +39,9 @@ fun <T> SearchBarNew(
 
     isAscending: Boolean,
     onToggleAscending: () -> Unit,
+
+    showRandom: Boolean = false,
+    onRandomClick: (() -> Unit)? = null,
 ) {
     val density = LocalDensity.current
 
@@ -55,10 +59,20 @@ fun <T> SearchBarNew(
                 label = { Text(stringResource(R.string.main_screen_search)) },
                 singleLine = true,
                 trailingIcon = {
-                    IconButton(onClick = {
-                        onQueryChange(query)
-                    }) {
-                        Icon(Icons.Default.Search, contentDescription = "Search")
+                    Row {
+                        if (showRandom && onRandomClick != null) {
+                            IconButton(onClick = onRandomClick) {
+                                Icon(
+                                    imageVector = Icons.Filled.Casino,
+                                    contentDescription = stringResource(R.string.random),
+                                    tint = MaterialTheme.colorScheme.primary
+                                )
+                            }
+                        }
+
+                        IconButton(onClick = { onQueryChange(query) }) {
+                            Icon(Icons.Default.Search, contentDescription = "Search")
+                        }
                     }
                 },
                 keyboardOptions = KeyboardOptions(

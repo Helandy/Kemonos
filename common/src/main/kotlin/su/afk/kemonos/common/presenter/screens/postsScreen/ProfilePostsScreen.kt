@@ -2,12 +2,16 @@ package su.afk.kemonos.common.presenter.screens.postsScreen
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.GridItemSpan
+import androidx.compose.foundation.lazy.grid.LazyGridState
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.unit.dp
+import androidx.paging.LoadState
 import androidx.paging.compose.LazyPagingItems
+import su.afk.kemonos.common.presenter.screens.postsScreen.paging.PagingAppendStateItem
 import su.afk.kemonos.common.presenter.screens.postsScreen.postCard.PostCard
+import su.afk.kemonos.domain.domain.models.ErrorItem
 import su.afk.kemonos.domain.domain.models.PostDomain
 
 sealed interface PostsSource<T : Any> {
@@ -20,9 +24,11 @@ fun ProfilePostsGrid(
     source: PostsSource<PostDomain>,
     postClick: (PostDomain) -> Unit,
     showFavCount: Boolean = false,
+    gridState: LazyGridState,
+    appendLoadState: LoadState? = null,
+    onRetryAppend: (() -> Unit)? = null,
+    parseError: ((Throwable) -> ErrorItem)? = null,
 ) {
-    val gridState = rememberLazyGridState()
-
     LazyVerticalGrid(
         columns = GridCells.Adaptive(minSize = 150.dp),
         state = gridState,
@@ -42,6 +48,17 @@ fun ProfilePostsGrid(
                         onClick = { postClick(post) },
                         showFavCount = showFavCount,
                     )
+                }
+
+                /** Loading + error retry buuton */
+                if (appendLoadState != null && onRetryAppend != null && parseError != null) {
+                    item(span = { GridItemSpan(maxLineSpan) }) {
+                        PagingAppendStateItem(
+                            loadState = appendLoadState,
+                            onRetry = onRetryAppend,
+                            parseError = parseError
+                        )
+                    }
                 }
             }
 

@@ -15,6 +15,9 @@ android {
         sourceCompatibility = JavaVersion.VERSION_21
         targetCompatibility = JavaVersion.VERSION_21
     }
+    kotlinOptions {
+        freeCompilerArgs = listOf("-XXLanguage:+PropertyParamAnnotationDefaultTargetMode")
+    }
 }
 
 dependencies {
@@ -27,6 +30,7 @@ dependencies {
     implementation(libs.bundles.coroutines)
     implementation(libs.bundles.retrofit)
     implementation(libs.bundles.paging)
+    implementation(libs.bundles.coil)
 
     implementation(project(":common"))
     implementation(project(":navigation"))

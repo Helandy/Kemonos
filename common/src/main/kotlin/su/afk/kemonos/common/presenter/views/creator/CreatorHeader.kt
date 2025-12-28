@@ -30,6 +30,7 @@ fun CreatorHeader(
     creatorName: String,
     updated: String?,
     showSearchButton: Boolean,
+    showInfoButton: Boolean,
     onSearchClick: () -> Unit,
     onClickHeader: (() -> Unit?)?
 ) {
@@ -106,55 +107,58 @@ fun CreatorHeader(
                 }
             }
         }
+
         /** Правая часть: иконки */
-        Row(
-            modifier = Modifier.wrapContentSize(),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            if (showSearchButton) {
-                IconButton(onClick = onSearchClick) {
-                    Icon(
-                        imageVector = Icons.Default.Search,
-                        contentDescription = stringResource(R.string.search),
-                        tint = MaterialTheme.colorScheme.primary
-                    )
-                }
-            }
-            Box {
-                IconButton(onClick = { expanded = true }) {
-                    Icon(
-                        imageVector = Icons.Default.Info,
-                        contentDescription = stringResource(R.string.info),
-                        tint = MaterialTheme.colorScheme.primary
-                    )
-                }
-                DropdownMenu(
-                    expanded = expanded,
-                    onDismissRequest = { expanded = false }
-                ) {
-                    // todo сделать строительство ссылок на платформу юзера
-//                    displayData?.let {
-//                        DropdownMenuItem(
-//                            text = {
-//                                Text(
-//                                    text = "🔗 ${it.service}",
-//                                    color = MaterialTheme.colorScheme.primary
-//                                )
-//                            },
-//                            onClick = {
-//                                val intent = Intent(Intent.ACTION_VIEW, it.href.toUri())
-//                                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-//                                context.startActivity(intent)
-//                            }
-//                        )
-//                    }
-                    updated?.let {
-                        DropdownMenuItem(
-                            text = {
-                                Text("📅 ${updated?.toUiDateTime()}")
-                            },
-                            onClick = {}
+        if (showInfoButton) {
+            Row(
+                modifier = Modifier.wrapContentSize(),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                if (showSearchButton) {
+                    IconButton(onClick = onSearchClick) {
+                        Icon(
+                            imageVector = Icons.Default.Search,
+                            contentDescription = stringResource(R.string.search),
+                            tint = MaterialTheme.colorScheme.primary
                         )
+                    }
+                }
+                Box {
+                    IconButton(onClick = { expanded = true }) {
+                        Icon(
+                            imageVector = Icons.Default.Info,
+                            contentDescription = stringResource(R.string.info),
+                            tint = MaterialTheme.colorScheme.primary
+                        )
+                    }
+                    DropdownMenu(
+                        expanded = expanded,
+                        onDismissRequest = { expanded = false }
+                    ) {
+                        // todo сделать строительство ссылок на платформу юзера
+                        //                    displayData?.let {
+                        //                        DropdownMenuItem(
+                        //                            text = {
+                        //                                Text(
+                        //                                    text = "🔗 ${it.service}",
+                        //                                    color = MaterialTheme.colorScheme.primary
+                        //                                )
+                        //                            },
+                        //                            onClick = {
+                        //                                val intent = Intent(Intent.ACTION_VIEW, it.href.toUri())
+                        //                                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                        //                                context.startActivity(intent)
+                        //                            }
+                        //                        )
+                        //                    }
+                        updated?.let {
+                            DropdownMenuItem(
+                                text = {
+                                    Text("📅 ${updated?.toUiDateTime()}")
+                                },
+                                onClick = {}
+                            )
+                        }
                     }
                 }
             }

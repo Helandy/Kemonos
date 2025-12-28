@@ -1,10 +1,12 @@
 package su.afk.kemonos.posts.presenter.pagePopularPosts
 
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.grid.LazyGridState
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.paging.LoadState
@@ -30,6 +32,10 @@ internal fun PopularPostsScreen(
 
     val isPageLoading = posts.loadState.refresh is LoadState.Loading
     val isBusy = isPageLoading || siteSwitching
+
+    val gridState = rememberSaveable(saver = LazyGridState.Saver) {
+        LazyGridState()
+    }
 
     BaseScreen(
         contentPadding = PaddingValues(horizontal = 8.dp),
@@ -62,6 +68,7 @@ internal fun PopularPostsScreen(
     ) {
         PostsTabContent(
             posts = posts,
+            gridState = gridState,
             currentTag = null,
             onPostClick = viewModel::navigateToPost,
             onRetry = { posts.retry() },

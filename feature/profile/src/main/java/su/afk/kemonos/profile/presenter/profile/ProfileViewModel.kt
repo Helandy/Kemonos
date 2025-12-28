@@ -15,6 +15,7 @@ import su.afk.kemonos.domain.SelectedSite
 import su.afk.kemonos.navigation.NavigationManager
 import su.afk.kemonos.profile.BuildConfig
 import su.afk.kemonos.profile.navigation.AuthDest
+import su.afk.kemonos.profile.presenter.profile.delegate.LogoutDelegate
 import su.afk.kemonos.profile.utils.Const.KEY_SELECT_SITE
 import javax.inject.Inject
 
@@ -26,6 +27,7 @@ internal class ProfileViewModel @Inject constructor(
     private val getCoomerRootUrlUseCase: GetCoomerRootUrlUseCase,
     private val getKemonoRootUrlUseCase: GetKemonoRootUrlUseCase,
     private val clearAuthUseCase: ClearAuthUseCase,
+    private val logoutDelegate: LogoutDelegate,
     override val errorHandler: IErrorHandlerUseCase,
     override val retryStorage: RetryStorage,
 ) : BaseViewModel<ProfileState>(ProfileState()) {
@@ -69,9 +71,21 @@ internal class ProfileViewModel @Inject constructor(
     }
 
     /** Выйти */
-    fun onLogoutClick(site: SelectedSite) = viewModelScope.launch {
-        clearAuthUseCase(site)
-    }
+    fun onLogoutClick(site: SelectedSite) = logoutDelegate.onLogoutClick(
+        site = site,
+        updateState = { reducer -> setState(reducer) }
+    )
+
+    fun onLogoutConfirm() = logoutDelegate.onLogoutConfirm(
+        scope = viewModelScope,
+        getState = { state.value },
+        updateState = { reducer -> setState(reducer) }
+    )
+
+    fun onLogoutDismiss() = logoutDelegate.onLogoutDismiss(
+        updateState = { reducer -> setState(reducer) }
+    )
+
 
     /** Актуальные урлы на сайт */
     private fun observeUrls() {

@@ -1,32 +1,32 @@
 package su.afk.kemonos.common.data.profile
 
-import kotlinx.serialization.SerialName
+import com.google.gson.annotations.SerializedName
 import su.afk.kemonos.domain.domain.models.Profile
 
 data class ProfileDto(
-    @SerialName("has_chats")
+    @SerializedName("has_chats")
     val has_chats: Boolean?,
-    @SerialName("id")
+    @SerializedName("id")
     val id: String,
-    @SerialName("indexed")
+    @SerializedName("indexed")
     val indexed: String?,
-    @SerialName("name")
+    @SerializedName("name")
     val name: String,
-    @SerialName("public_id")
+    @SerializedName("public_id")
     val public_id: String?,
-    @SerialName("relation_id")
+    @SerializedName("relation_id")
     val relation_id: Int?,
-    @SerialName("service")
+    @SerializedName("service")
     val service: String,
-    @SerialName("updated")
+    @SerializedName("updated")
     val updated: String?,
-    @SerialName("post_count")
+    @SerializedName("post_count")
     val post_count: Int?,
-    @SerialName("dm_count")
+    @SerializedName("dm_count")
     val dm_count: Int?,
-    @SerialName("share_count")
+    @SerializedName("share_count")
     val share_count: Int?,
-    @SerialName("chat_count")
+    @SerializedName("chat_count")
     val chat_count: Int?,
 ) {
     companion object {

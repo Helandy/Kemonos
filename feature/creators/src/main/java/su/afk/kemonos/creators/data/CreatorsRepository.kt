@@ -3,6 +3,8 @@ package su.afk.kemonos.creators.data
 import su.afk.kemonos.common.data.creators.CreatorsDto.Companion.toDomain
 import su.afk.kemonos.core.api.domain.net.helpers.call
 import su.afk.kemonos.creators.data.api.CreatorsApi
+import su.afk.kemonos.creators.data.data.RandomCreatorDto.Companion.toDomain
+import su.afk.kemonos.creators.domain.model.RandomCreator
 import su.afk.kemonos.domain.domain.models.Creators
 import su.afk.kemonos.domain.domain.models.CreatorsSort
 import su.afk.kemonos.storage.api.StoreCreatorsUseCase
@@ -10,6 +12,8 @@ import javax.inject.Inject
 
 interface ICreatorsRepository {
     suspend fun getCreators(): List<Creators>
+    suspend fun refreshCreatorsIfNeeded(): Boolean
+    suspend fun randomCreator(): RandomCreator
 }
 
 internal class CreatorsRepository @Inject constructor(
@@ -43,5 +47,19 @@ internal class CreatorsRepository @Inject constructor(
         }
 
         return cached
+    }
+
+    override suspend fun refreshCreatorsIfNeeded(): Boolean {
+        if (storeCreatorsUseCase.isCreatorsCacheFresh()) return false
+
+        val fromNet = api.getCreators().call { list -> list.map { it.toDomain() } }
+        if (fromNet.isEmpty()) return false
+
+        storeCreatorsUseCase.updateCreators(fromNet)
+        return true
+    }
+
+    override suspend fun randomCreator(): RandomCreator = api.randomCreator().call {
+        it.toDomain()
     }
 }

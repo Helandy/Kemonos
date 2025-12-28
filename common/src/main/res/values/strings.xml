@@ -37,6 +37,7 @@
     <string name="profile_tab_tags">Tags</string>
     <string name="profile_tab_dms">DM</string>
     <string name="profile_tab_links">Links</string>
+    <string name="random">Random</string>
 
     <string name="open_with">Open via…</string>
     <string name="vlc_not_installed">VLC is not installed. Opening it through another application…</string>

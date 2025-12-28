@@ -37,6 +37,7 @@
     <string name="profile_tab_tags">Тэги</string>
     <string name="profile_tab_dms">ЛС</string>
     <string name="profile_tab_links">Ссылки</string>
+    <string name="random">Случайный</string>
 
     <string name="open_with">Открыть через…</string>
     <string name="vlc_not_installed">VLC не установлен. Открываю через другое приложение…</string>

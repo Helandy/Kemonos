@@ -28,6 +28,7 @@ dependencies {
     implementation(libs.material3)
 
     implementation(libs.bundles.retrofit)
+    implementation(libs.bundles.serialization.json)
 
     implementation(libs.androidx.core.ktx)
 
