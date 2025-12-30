@@ -1,4 +1,4 @@
-package su.afk.kemonos.creators.presenter.views
+package su.afk.kemonos.common.presenter.views.creator
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -18,30 +18,37 @@ import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import su.afk.kemonos.common.presenter.views.imageLoader.AsyncImageWithStatus
+import su.afk.kemonos.common.presenter.views.utilUI.formatNumberWithSpaces
 import su.afk.kemonos.common.util.getColorForFavorites
 import su.afk.kemonos.common.util.selectDomain.getImageBaseUrlByService
-import su.afk.kemonos.core.utils.formatNumberWithSpaces
-import su.afk.kemonos.domain.domain.models.Creators
+import su.afk.kemonos.common.util.toUiDateTime
 
 @Composable
-internal fun CreatorItem(creator: Creators, onClick: () -> Unit) {
-    val avatarSize = LocalWindowInfo.current.containerSize.width * 0.15f
+fun CreatorItem(
+    service: String,
+    id: String,
+    name: String,
+    favorited: Int? = null,
+    updated: String? = null,
+    onClick: () -> Unit
+) {
+    val avatarSize = LocalWindowInfo.current.containerSize.width * 0.145f
 
-    val imgBaseUrl = remember(creator.service) {
-        getImageBaseUrlByService(creator.service)
+    val imgBaseUrl = remember(service) {
+        getImageBaseUrlByService(service)
     }
 
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .height(150.dp)
             .padding(vertical = 6.dp)
+            .height(150.dp)
             .clickable { onClick() }
     ) {
         /** Фоновое изображение (баннер) */
         AsyncImageWithStatus(
-            model = "$imgBaseUrl/banners/${creator.service}/${creator.id}",
-            contentDescription = "Banner for ${creator.name}",
+            model = "$imgBaseUrl/banners/${service}/${id}",
+            contentDescription = "Banner for ${name}",
             contentScale = ContentScale.Crop,
             modifier = Modifier
                 .matchParentSize()
@@ -64,8 +71,8 @@ internal fun CreatorItem(creator: Creators, onClick: () -> Unit) {
         ) {
             /** Иконка (аватар) */
             AsyncImageWithStatus(
-                model = "$imgBaseUrl/icons/${creator.service}/${creator.id}",
-                contentDescription = creator.name,
+                model = "$imgBaseUrl/icons/${service}/${id}",
+                contentDescription = name,
                 modifier = Modifier
                     .size(avatarSize.dp)
                     .clip(RoundedCornerShape(12.dp)),
@@ -80,8 +87,8 @@ internal fun CreatorItem(creator: Creators, onClick: () -> Unit) {
             ) {
                 /** Имя креатора */
                 Text(
-                    text = creator.name,
-                    maxLines = 1,
+                    text = name,
+                    maxLines = 2,
                     style = MaterialTheme.typography.titleLarge,
                     fontWeight = FontWeight.Bold,
                     color = Color.White
@@ -97,25 +104,36 @@ internal fun CreatorItem(creator: Creators, onClick: () -> Unit) {
                         )
                         .border(
                             2.dp,
-                            getColorForFavorites(creator.service),
+                            getColorForFavorites(service),
                             RoundedCornerShape(6.dp)
                         )
                         .padding(horizontal = 8.dp, vertical = 4.dp)
                 ) {
                     Column {
                         Text(
-                            text = creator.service,
+                            text = service,
                             style = MaterialTheme.typography.bodyMedium,
                             fontWeight = FontWeight.Bold,
-                            color = getColorForFavorites(creator.service)
+                            color = getColorForFavorites(service)
                         )
 
-                        Text(
-                            text = formatNumberWithSpaces(creator.favorited),
-                            style = MaterialTheme.typography.bodySmall,
-                            fontWeight = FontWeight.Bold,
-                            color = getColorForFavorites(creator.service)
-                        )
+                        favorited?.let {
+                            Text(
+                                text = formatNumberWithSpaces(favorited),
+                                style = MaterialTheme.typography.bodySmall,
+                                fontWeight = FontWeight.Bold,
+                                color = getColorForFavorites(service)
+                            )
+                        }
+
+                        updated?.let {
+                            Text(
+                                text = updated.toUiDateTime(),
+                                style = MaterialTheme.typography.bodySmall,
+                                fontWeight = FontWeight.Bold,
+                                color = getColorForFavorites(service)
+                            )
+                        }
                     }
                 }
             }

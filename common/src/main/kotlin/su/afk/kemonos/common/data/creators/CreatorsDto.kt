@@ -1,25 +1,25 @@
 package su.afk.kemonos.common.data.creators
 
-import kotlinx.serialization.SerialName
+import com.google.gson.annotations.SerializedName
 import su.afk.kemonos.domain.domain.models.Creators
 
 data class CreatorsDto(
-    @SerialName("favorited")
+    @SerializedName("favorited")
     val favorited: Int,
 
-    @SerialName("id")
+    @SerializedName("id")
     val id: String,
 
-    @SerialName("indexed")
+    @SerializedName("indexed")
     val indexed: Int,
 
-    @SerialName("name")
+    @SerializedName("name")
     val name: String,
 
-    @SerialName("service")
+    @SerializedName("service")
     val service: String,
 
-    @SerialName("updated")
+    @SerializedName("updated")
     val updated: Int,
 ) {
     companion object {

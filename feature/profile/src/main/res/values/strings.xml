@@ -60,8 +60,8 @@
 
     <!-- favoriteProfiles   -->
     <string name="sort_new_posts_date">Post date</string>
-    <string name="sort_faved_date">Favorite added date</string>
-    <string name="sort_reimport_date">Reimport date</string>
+    <string name="sort_faved_date">Favorited</string>
+    <string name="sort_reimport_date">Reimport</string>
 
     <!--  ProfileScreen  -->
     <string name="profile_kemono_account_title">Kemono account</string>
@@ -69,4 +69,12 @@
 
     <string name="profile_account_logged_in_summary">Logged in as %1$s • Joined: %2$s</string>
     <string name="profile_logout_button">Logout</string>
+
+    <!-- LogoutDialog -->
+    <string name="logout_title">Log out of %1$s?</string>
+    <string name="logout_message">Are you sure you want to log out of %1$s?</string>
+    <string name="logout_confirm">Log out</string>
+    <string name="cancel">Cancel</string>
+    <string name="kemono">Kemono</string>
+    <string name="coomer">Coomer</string>
 </resources>

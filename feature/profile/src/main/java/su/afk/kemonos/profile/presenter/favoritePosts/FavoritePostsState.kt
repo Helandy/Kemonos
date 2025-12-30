@@ -10,4 +10,7 @@ internal data class FavoritePostsState(
 
     /** Все избранные посты */
     val allFavoritePosts: List<PostDomain> = emptyList(),
+    val favoritePosts: List<PostDomain> = emptyList(),
+
+    val searchQuery: String = "",
 )

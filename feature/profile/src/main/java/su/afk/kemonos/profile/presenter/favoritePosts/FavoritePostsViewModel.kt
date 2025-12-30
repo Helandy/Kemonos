@@ -60,6 +60,7 @@ internal class FavoritePostsViewModel @Inject constructor(
             copy(
                 loading = false,
                 allFavoritePosts = posts,
+                favoritePosts = posts,
             )
         }
     }
@@ -76,8 +77,21 @@ internal class FavoritePostsViewModel @Inject constructor(
         )
     }
 
-    /** Вернуться на главную */
-    fun onHomeClick() {
-        navManager.popToRoot()
+    fun onSearchQueryChanged(query: String) {
+        setState { copy(searchQuery = query) }
+
+        val filtered = filterPosts(all = state.value.allFavoritePosts, query = query)
+        setState { copy(favoritePosts = filtered) }
+    }
+
+    private fun filterPosts(all: List<PostDomain>, query: String): List<PostDomain> {
+        val q = query.trim()
+        if (q.isEmpty()) return all
+        if (q.length < 2) return all
+
+        return all.filter { post ->
+            val title = post.title.orEmpty()
+            title.contains(q, ignoreCase = true)
+        }
     }
 }

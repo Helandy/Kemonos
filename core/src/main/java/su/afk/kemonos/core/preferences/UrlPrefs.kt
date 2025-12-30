@@ -9,6 +9,7 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
+import su.afk.kemonos.core.utils.normalizeBaseUrl
 import su.afk.kemonos.domain.SelectedSite
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -45,13 +46,5 @@ class UrlPrefs @Inject constructor(
         private val KEY_SELECTED = stringPreferencesKey("selected_site")
         private const val DEFAULT_K = "https://kemono.cr/api/"
         private const val DEFAULT_C = "https://coomer.st/api/"
-    }
-}
-
-private fun String.normalizeBaseUrl(): String {
-    /** Делаем валидный baseUrl для Retrofit (оканчивается на '/') */
-    return buildString {
-        append(this@normalizeBaseUrl.trim())
-        if (!endsWith("/")) append("/")
     }
 }

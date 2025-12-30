@@ -18,6 +18,7 @@ import su.afk.kemonos.navigation.NavigationManager
 import su.afk.kemonos.storage.api.clear.IClearCacheStorageUseCase
 import javax.inject.Inject
 
+/** перекинуть в отдельную фичу */
 @HiltViewModel
 internal class MainViewModel @Inject constructor(
     private val navManager: NavigationManager,
@@ -71,8 +72,8 @@ internal class MainViewModel @Inject constructor(
                     copy(
                         kemonoUrl = kemono,
                         coomerUrl = coomer,
-                        inputKemono = state.value.inputKemono.ifEmpty { kemono },
-                        inputCoomer = state.value.inputCoomer.ifEmpty { coomer },
+                        inputKemonoDomain = state.value.inputKemonoDomain.ifEmpty { extractDomain(kemono) },
+                        inputCoomerDomain = state.value.inputCoomerDomain.ifEmpty { extractDomain(coomer) },
                     )
                 }
             }
@@ -96,11 +97,14 @@ internal class MainViewModel @Inject constructor(
     /** Кнопка Проверить -> сохраняем URLs и проверяем */
     fun onSaveAndCheck() = viewModelScope.launch {
         setBaseUrlsUseCase(
-            kemonoUrl = state.value.inputKemono,
-            coomerUrl = state.value.inputCoomer,
+            kemonoUrl = buildBaseUrl(state.value.inputKemonoDomain),
+            coomerUrl = buildBaseUrl(state.value.inputCoomerDomain),
         )
         runApiCheck()
     }
+
+    private fun buildBaseUrl(domain: String): String =
+        "https://${domain.trim().trim('/')}/api/"
 
     /** Проверка api */
     private fun runApiCheck() = viewModelScope.launch {
@@ -136,11 +140,19 @@ internal class MainViewModel @Inject constructor(
         navManager.enterTabs()
     }
 
-    fun onInputKemonoChanged(value: String) {
-        setState { copy(inputKemono = value) }
+    private fun extractDomain(baseUrl: String): String =
+        baseUrl
+            .removePrefix("https://")
+            .removePrefix("http://")
+            .removeSuffix("/api/")
+            .removeSuffix("/api")
+            .trim('/')
+
+    fun onInputKemonoDomainChanged(value: String) {
+        setState { copy(inputKemonoDomain = value) }
     }
 
-    fun onInputCoomerChanged(value: String) {
-        setState { copy(inputCoomer = value) }
+    fun onInputCoomerDomainChanged(value: String) {
+        setState { copy(inputCoomerDomain = value) }
     }
 }

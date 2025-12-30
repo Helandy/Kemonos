@@ -43,10 +43,9 @@ internal class TagsPageViewModel @Inject constructor(
     }
 
     fun onSearchQueryChanged(newQuery: String) {
-        val q = newQuery
-        setState { copy(searchQuery = q) }
+        setState { copy(searchQuery = newQuery) }
 
-        val filtered = filterTags(all = state.value.allTags, query = q)
+        val filtered = filterTags(all = state.value.allTags, query = newQuery)
         setState { copy(tags = filtered) }
     }
 

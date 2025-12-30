@@ -5,6 +5,7 @@ import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveableStateHolder
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -50,6 +51,7 @@ internal fun PostsScreen(
                 viewModel.onPageChanged(page)
             }
     }
+    val saveableStateHolder = rememberSaveableStateHolder()
 
     BaseScreen(
         isScroll = false,
@@ -65,10 +67,20 @@ internal fun PostsScreen(
             state = pagerState,
             modifier = Modifier.fillMaxSize(),
         ) { pageIndex ->
-            when (pages.getOrNull(pageIndex) ?: PostsPage.Search) {
-                PostsPage.Search -> SearchPostsNavigation()
-                PostsPage.Popular -> PopularPostsNavigation()
-                PostsPage.Tags -> TagsPageNavigation()
+            val page = pages.getOrNull(pageIndex) ?: PostsPage.Search
+
+            val key = when (page) {
+                PostsPage.Search -> "posts_page_search"
+                PostsPage.Popular -> "posts_page_popular"
+                PostsPage.Tags -> "posts_page_tags"
+            }
+
+            saveableStateHolder.SaveableStateProvider(key) {
+                when (page) {
+                    PostsPage.Search -> SearchPostsNavigation()
+                    PostsPage.Popular -> PopularPostsNavigation()
+                    PostsPage.Tags -> TagsPageNavigation()
+                }
             }
         }
     }

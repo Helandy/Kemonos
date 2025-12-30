@@ -1,4 +1,4 @@
-package su.afk.kemonos.core.utils
+package su.afk.kemonos.common.presenter.views.utilUI
 
 import java.text.DecimalFormat
 import java.text.DecimalFormatSymbols

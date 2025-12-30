@@ -8,6 +8,7 @@ import su.afk.kemonos.domain.domain.models.Creators
 import su.afk.kemonos.domain.domain.models.CreatorsSort
 
 data class CreatorsState(
+    val loading: Boolean = false,
     /** Сетевое обновление кэша (ensureFresh). */
     val refreshing: Boolean = false,
 

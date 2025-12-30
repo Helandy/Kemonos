@@ -2,7 +2,7 @@ package su.afk.kemonos.common.presenter.views.block
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Info
+import androidx.compose.material.icons.filled.Schedule
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -48,7 +48,7 @@ fun PostTitleBlock(
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
                 IconButton(onClick = { expanded = true }) {
                     Icon(
-                        imageVector = Icons.Default.Info,
+                        imageVector = Icons.Default.Schedule,
                         contentDescription = stringResource(R.string.info),
                         tint = MaterialTheme.colorScheme.primary
                     )

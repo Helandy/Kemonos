@@ -5,20 +5,25 @@ import android.widget.TextView
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.text.HtmlCompat
+import coil3.ImageLoader
 import su.afk.kemonos.common.R
+import su.afk.kemonos.common.presenter.views.announcemnt.CoilImageGetter
 import su.afk.kemonos.common.util.toUiDateTime
 import su.afk.kemonos.creatorProfile.api.domain.models.profileAnnouncements.ProfileAnnouncement
 import java.time.LocalDateTime
@@ -28,15 +33,18 @@ fun AnnouncementsScreen(
     announcements: List<ProfileAnnouncement>,
     modifier: Modifier = Modifier
 ) {
+    val context = LocalContext.current
+    val imageLoader = remember { ImageLoader.Builder(context).build() }
+
+    val listState = rememberLazyListState()
+    val isScrolling = remember { derivedStateOf { listState.isScrollInProgress } }
+
     val sortedAnnouncements = announcements.sortedByDescending { ann ->
         runCatching { LocalDateTime.parse(ann.added) }.getOrNull() ?: LocalDateTime.MIN
     }
 
     if (sortedAnnouncements.isEmpty()) {
-        Box(
-            modifier = modifier.fillMaxSize(),
-            contentAlignment = Alignment.Center
-        ) {
+        Box(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
             Text(
                 stringResource(R.string.announcements_empty),
                 style = MaterialTheme.typography.bodyMedium,
@@ -45,20 +53,32 @@ fun AnnouncementsScreen(
         }
     } else {
         LazyColumn(
-            modifier = modifier
-                .fillMaxSize(),
+            state = listState,
+            modifier = modifier.fillMaxSize(),
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-            items(sortedAnnouncements) { announcement ->
-                AnnouncementCard(announcement)
+            items(
+                items = sortedAnnouncements,
+                key = { it.hash }
+            ) { announcement ->
+                AnnouncementCard(
+                    announcement = announcement,
+                    imageLoader = imageLoader,
+                    isScrolling = { isScrolling.value }
+                )
             }
         }
     }
 }
 
 @Composable
-fun AnnouncementCard(announcement: ProfileAnnouncement) {
+fun AnnouncementCard(
+    announcement: ProfileAnnouncement,
+    imageLoader: ImageLoader,
+    isScrolling: () -> Boolean,
+) {
     val textColor = MaterialTheme.colorScheme.onBackground.toArgb()
+    val scope = rememberCoroutineScope()
 
     Surface(
         shape = MaterialTheme.shapes.medium,
@@ -67,27 +87,42 @@ fun AnnouncementCard(announcement: ProfileAnnouncement) {
         color = MaterialTheme.colorScheme.surface
     ) {
         Column(modifier = Modifier.padding(14.dp)) {
-            LocalContext.current
-            LocalDensity.current
 
             AndroidView(
                 factory = { ctx ->
                     TextView(ctx).apply {
-                        text = HtmlCompat.fromHtml(
-                            announcement.content,
-                            HtmlCompat.FROM_HTML_MODE_COMPACT
-                        )
-                        /** Поддержка кликабельных ссылок */
-                        movementMethod = LinkMovementMethod.getInstance()
                         setTextColor(textColor)
-                        /** Размер шрифта и стили */
                         textSize = 16f
+                        movementMethod = LinkMovementMethod.getInstance()
                     }
                 },
-                modifier = Modifier.fillMaxWidth()
+                update = { tv ->
+                    tv.setTextColor(textColor)
+
+                    val last = tv.getTag(R.id.tag_html) as? String
+                    if (last != announcement.content) {
+                        tv.setTag(R.id.tag_html, announcement.content)
+
+                        val getter = CoilImageGetter(
+                            textView = tv,
+                            imageLoader = imageLoader,
+                            scope = scope,
+                            isScrolling = isScrolling,
+                        )
+
+                        tv.text = HtmlCompat.fromHtml(
+                            announcement.content,
+                            HtmlCompat.FROM_HTML_MODE_COMPACT,
+                            getter,
+                            null
+                        )
+                    }
+                },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .heightIn(min = 1.dp)
             )
 
-            /** Остальной контент */
             Text(
                 text = stringResource(R.string.dm_added, announcement.added.toUiDateTime()),
                 style = MaterialTheme.typography.bodySmall,

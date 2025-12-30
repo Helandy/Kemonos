@@ -1,11 +1,13 @@
 package su.afk.kemonos.posts.presenter.pageSearchPosts
 
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.grid.LazyGridState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Casino
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -33,6 +35,10 @@ internal fun SearchPostsScreen(
     val isPageLoading = posts.loadState.refresh is LoadState.Loading
     val isBusy = isPageLoading || siteSwitching
 
+    val gridState = rememberSaveable(saver = LazyGridState.Saver) {
+        LazyGridState()
+    }
+
     BaseScreen(
         contentPadding = PaddingValues(horizontal = 8.dp),
         isScroll = false,
@@ -55,7 +61,7 @@ internal fun SearchPostsScreen(
                         ) {
                             Icon(
                                 imageVector = Icons.Filled.Casino,
-                                contentDescription = "Random post",
+                                contentDescription = stringResource(R.string.random),
                                 tint = MaterialTheme.colorScheme.primary
                             )
                         }
@@ -72,7 +78,6 @@ internal fun SearchPostsScreen(
         },
         fabApplyScaffoldPadding = false,
         floatingActionButtonBottomPadding = 12.dp,
-        isLoading = isPageLoading,
     ) {
         /** Контент */
         PostsTabContent(
@@ -81,6 +86,7 @@ internal fun SearchPostsScreen(
             onPostClick = viewModel::navigateToPost,
             onRetry = { posts.retry() },
             parseError = viewModel::parseError,
+            gridState = gridState
         )
     }
 }

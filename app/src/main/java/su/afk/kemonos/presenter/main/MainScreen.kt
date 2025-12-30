@@ -14,6 +14,7 @@ import androidx.core.net.toUri
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import su.afk.kemonos.common.R
 import su.afk.kemonos.common.presenter.updateBanner.UpdateBanner
+import su.afk.kemonos.presenter.main.view.BaseUrlDomainField
 
 @Composable
 internal fun MainScreen(viewModel: MainViewModel) {
@@ -72,6 +73,13 @@ internal fun MainScreen(viewModel: MainViewModel) {
                         Text(
                             text = stringResource(R.string.main_api_unavailable_title),
                             style = MaterialTheme.typography.titleMedium,
+                            color = MaterialTheme.colorScheme.error,
+                            textAlign = TextAlign.Center
+                        )
+
+                        Text(
+                            text = stringResource(R.string.error_default),
+                            style = MaterialTheme.typography.titleSmall,
                             color = MaterialTheme.colorScheme.error,
                             textAlign = TextAlign.Center
                         )
@@ -187,22 +195,18 @@ internal fun MainScreen(viewModel: MainViewModel) {
 
                         Spacer(Modifier.height(20.dp))
 
-                        OutlinedTextField(
-                            modifier = Modifier.fillMaxWidth(),
-                            value = state.inputKemono,
-                            onValueChange = viewModel::onInputKemonoChanged,
+                        BaseUrlDomainField(
+                            value = state.inputKemonoDomain,
+                            onValueChange = viewModel::onInputKemonoDomainChanged,
                             label = { Text(stringResource(R.string.main_api_kemono_url_label)) },
-                            singleLine = true
                         )
 
                         Spacer(Modifier.height(8.dp))
 
-                        OutlinedTextField(
-                            modifier = Modifier.fillMaxWidth(),
-                            value = state.inputCoomer,
-                            onValueChange = viewModel::onInputCoomerChanged,
+                        BaseUrlDomainField(
+                            value = state.inputCoomerDomain,
+                            onValueChange = viewModel::onInputCoomerDomainChanged,
                             label = { Text(stringResource(R.string.main_api_coomer_url_label)) },
-                            singleLine = true
                         )
 
                         Spacer(Modifier.height(20.dp))

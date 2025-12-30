@@ -11,6 +11,7 @@ import su.afk.kemonos.common.presenter.changeSite.SiteAwareBaseViewModel
 import su.afk.kemonos.core.api.domain.useCase.ISelectedSiteUseCase
 import su.afk.kemonos.creatorProfile.api.ICreatorProfileNavigator
 import su.afk.kemonos.creators.domain.GetCreatorsPagedUseCase
+import su.afk.kemonos.creators.domain.RandomCreatorUseCase
 import su.afk.kemonos.domain.SelectedSite
 import su.afk.kemonos.domain.domain.models.Creators
 import su.afk.kemonos.domain.domain.models.CreatorsSort
@@ -22,6 +23,7 @@ internal class CreatorsViewModel @Inject constructor(
     private val getCreatorsPagedUseCase: GetCreatorsPagedUseCase,
     private val navManager: NavigationManager,
     private val creatorProfileNavigator: ICreatorProfileNavigator,
+    private val randomCreatorUseCase: RandomCreatorUseCase,
     override val selectedSiteUseCase: ISelectedSiteUseCase,
     override val errorHandler: IErrorHandlerUseCase,
     override val retryStorage: RetryStorage,
@@ -132,6 +134,20 @@ internal class CreatorsViewModel @Inject constructor(
             if (latest != trimmed) return@launch
             rebuildPaging()
         }
+    }
+
+    /** Открыть случайного автора */
+    fun randomCreator() = viewModelScope.launch {
+        setState { copy(loading = true) }
+        val creator = randomCreatorUseCase()
+
+        navManager.navigate(
+            creatorProfileNavigator.getCreatorProfileDest(
+                service = creator.service,
+                id = creator.artistId,
+            )
+        )
+        setState { copy(loading = false) }
     }
 
     private var searchDebounceJob: Job? = null
