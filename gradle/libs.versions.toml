@@ -224,8 +224,8 @@ retrofit = [
     "converter-gson",
     "okhttp",
     "logging-interceptor",
-    "gson",
     "urlconnection",
+    "gson",
 ]
 
 serialization-json = [

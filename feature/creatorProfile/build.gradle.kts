@@ -8,7 +8,7 @@ plugins {
 }
 
 android {
-    namespace = "su.afk.kemonos.feature.creatorProfile"
+    namespace = "su.afk.kemonos.creatorProfile"
     compileSdk = libs.versions.compileSdk.get().toInt()
     buildFeatures { compose = true }
     compileOptions {
@@ -21,12 +21,16 @@ android {
 }
 
 dependencies {
-    implementation(libs.bundles.hilt)
     ksp(libs.dagger.hilt.compiler)
+    implementation(libs.bundles.hilt)
 
     implementation(libs.bundles.serialization.json)
+
+    implementation(platform(libs.androidx.compose.bom))
     implementation(libs.bundles.compose.core)
+
     implementation(libs.bundles.navigation3)
+
     implementation(libs.bundles.coroutines)
     implementation(libs.bundles.retrofit)
     implementation(libs.bundles.paging)

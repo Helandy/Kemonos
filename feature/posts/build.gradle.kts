@@ -16,17 +16,15 @@ android {
     }
 }
 dependencies {
-    implementation(libs.bundles.hilt)
     ksp(libs.dagger.hilt.compiler)
+    implementation(libs.bundles.hilt)
 
+    implementation(platform(libs.androidx.compose.bom))
     implementation(libs.bundles.compose.core)
 
     implementation(libs.bundles.navigation3)
 
     implementation(libs.bundles.retrofit)
-
-    implementation(libs.bundles.room)
-    ksp(libs.androidx.room.compiler)
 
     implementation(libs.bundles.paging)
 

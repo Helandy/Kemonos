@@ -1,4 +1,4 @@
-package su.afk.kemonos.presenter.main
+package su.afk.kemonos.main.presenter
 
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -13,12 +13,11 @@ import su.afk.kemonos.common.presenter.baseViewModel.BaseViewModel
 import su.afk.kemonos.common.repository.checkApi.ICheckApiRepository
 import su.afk.kemonos.core.api.domain.useCase.IGetBaseUrlsUseCase
 import su.afk.kemonos.core.api.domain.useCase.ISetBaseUrlsUseCase
-import su.afk.kemonos.domain.CheckAuthForAllSitesUseCase
+import su.afk.kemonos.main.domain.CheckAuthForAllSitesUseCase
 import su.afk.kemonos.navigation.NavigationManager
 import su.afk.kemonos.storage.api.clear.IClearCacheStorageUseCase
 import javax.inject.Inject
 
-/** перекинуть в отдельную фичу */
 @HiltViewModel
 internal class MainViewModel @Inject constructor(
     private val navManager: NavigationManager,

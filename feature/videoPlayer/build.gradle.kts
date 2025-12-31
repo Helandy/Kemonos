@@ -8,7 +8,7 @@ plugins {
 }
 
 android {
-    namespace = "su.afk.kemonos.feature.videoPlayer"
+    namespace = "su.afk.kemonos.videoPlayer"
     compileSdk = libs.versions.compileSdk.get().toInt()
     buildFeatures { compose = true }
     compileOptions {
@@ -17,18 +17,18 @@ android {
     }
 }
 dependencies {
-    implementation(libs.bundles.hilt)
     ksp(libs.dagger.hilt.compiler)
-
-    implementation(libs.bundles.compose.core)
-
-    implementation(libs.bundles.media3)
-    implementation(libs.bundles.accompanist)
-
-    implementation(libs.bundles.coil)
+    implementation(libs.bundles.hilt)
 
     implementation(libs.bundles.serialization.json)
+
+    implementation(platform(libs.androidx.compose.bom))
+    implementation(libs.bundles.compose.core)
+
     implementation(libs.bundles.navigation3)
+
+    implementation(libs.bundles.media3)
+    implementation(libs.bundles.coil)
 
     implementation(project(":navigation"))
     implementation(project(":common"))

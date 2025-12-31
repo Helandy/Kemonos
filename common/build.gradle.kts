@@ -21,16 +21,13 @@ android {
 }
 
 dependencies {
-    implementation(libs.bundles.hilt)
     ksp(libs.dagger.hilt.compiler)
+    implementation(libs.bundles.hilt)
 
     implementation(libs.bundles.lifecycle)
-    implementation(libs.material3)
 
     implementation(libs.bundles.retrofit)
     implementation(libs.bundles.serialization.json)
-
-    implementation(libs.androidx.core.ktx)
 
     implementation(libs.bundles.navigation3)
 
@@ -38,7 +35,9 @@ dependencies {
 
     implementation(libs.multiplatform.markdown.renderer.m3)
 
+    implementation(platform(libs.androidx.compose.bom))
     implementation(libs.bundles.compose.core)
+
     implementation(libs.bundles.androidx.base)
     implementation(libs.bundles.coil)
     implementation(libs.bundles.accompanist)

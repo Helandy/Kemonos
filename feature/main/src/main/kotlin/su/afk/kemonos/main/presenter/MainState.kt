@@ -1,4 +1,4 @@
-package su.afk.kemonos.presenter.main
+package su.afk.kemonos.main.presenter
 
 import su.afk.kemonos.app.update.api.model.AppUpdateInfo
 import su.afk.kemonos.domain.domain.models.ErrorItem

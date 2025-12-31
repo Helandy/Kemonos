@@ -16,28 +16,23 @@ android {
     }
 }
 dependencies {
-    implementation(libs.bundles.hilt)
     ksp(libs.dagger.hilt.compiler)
+    implementation(libs.bundles.hilt)
 
+    implementation(platform(libs.androidx.compose.bom))
     implementation(libs.bundles.compose.core)
 
     implementation(libs.bundles.navigation3)
 
-    implementation(libs.bundles.retrofit)
-
-    implementation(libs.bundles.room)
-    ksp(libs.androidx.room.compiler)
-
-    implementation(libs.bundles.paging)
 
     implementation(project(":common"))
     implementation(project(":navigation"))
     implementation(project(":core-domain"))
     implementation(project(":core"))
     implementation(project(":core-api"))
-    implementation(project(":feature:posts-api"))
 
-    implementation(project(":feature:creatorPost-api"))
+    implementation(project(":feature:appUpdate-api"))
+    implementation(project(":feature:profile-api"))
 
     implementation(project(":storage-api"))
 }

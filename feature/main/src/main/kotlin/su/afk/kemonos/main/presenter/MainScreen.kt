@@ -1,4 +1,4 @@
-package su.afk.kemonos.presenter.main
+package su.afk.kemonos.main.presenter
 
 import android.content.Intent
 import androidx.compose.foundation.layout.*
@@ -14,7 +14,7 @@ import androidx.core.net.toUri
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import su.afk.kemonos.common.R
 import su.afk.kemonos.common.presenter.updateBanner.UpdateBanner
-import su.afk.kemonos.presenter.main.view.BaseUrlDomainField
+import su.afk.kemonos.main.presenter.view.BaseUrlDomainField
 
 @Composable
 internal fun MainScreen(viewModel: MainViewModel) {

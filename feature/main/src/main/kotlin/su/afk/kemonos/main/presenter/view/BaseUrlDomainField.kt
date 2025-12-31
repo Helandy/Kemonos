@@ -1,4 +1,4 @@
-package su.afk.kemonos.presenter.main.view
+package su.afk.kemonos.main.presenter.view
 
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material3.OutlinedTextField

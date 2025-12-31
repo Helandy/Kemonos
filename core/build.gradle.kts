@@ -17,10 +17,10 @@ android {
 }
 
 dependencies {
-    implementation(libs.bundles.hilt)
     ksp(libs.dagger.hilt.compiler)
+    implementation(libs.bundles.hilt)
 
-    implementation(libs.kotlinx.serialization.json)
+    implementation(libs.bundles.serialization.json)
     implementation(libs.androidx.security.crypto)
 
     implementation(libs.bundles.lifecycle)
@@ -30,10 +30,7 @@ dependencies {
 
     implementation(libs.bundles.retrofit)
 
-    implementation(libs.bundles.room)
-    ksp(libs.androidx.room.compiler)
-
-    implementation(libs.androidx.core.ktx)
+    implementation(libs.bundles.androidx.base)
 
     implementation(libs.bundles.navigation3)
 
@@ -41,7 +38,6 @@ dependencies {
 
     implementation(libs.bundles.androidx.base)
     implementation(libs.bundles.coil)
-    implementation(libs.bundles.accompanist)
     implementation(libs.bundles.media3)
     implementation(libs.bundles.datastore)
 
