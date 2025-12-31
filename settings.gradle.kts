@@ -22,35 +22,41 @@ dependencyResolutionManagement {
 rootProject.name = "Kemonos"
 include(":app")
 
-include(":navigation")
 include(":common")
+include(":navigation")
 include(":core-domain")
 
-include(":core")
+include(":feature:common:commonScreen-api")
+include(":feature:common:commonScreen")
+
 include(":core-api")
+include(":core")
 
-include(":storage")
 include(":storage-api")
+include(":storage")
 
-include(":feature:creators")
 include(":feature:creators-api")
+include(":feature:creators")
 
-include(":feature:creatorProfile")
 include(":feature:creatorProfile-api")
+include(":feature:creatorProfile")
 
-include(":feature:creatorPost")
 include(":feature:creatorPost-api")
+include(":feature:creatorPost")
 
-include(":feature:posts")
 include(":feature:posts-api")
+include(":feature:posts")
 
-include(":feature:profile")
 include(":feature:profile-api")
+include(":feature:profile")
+
+include(":feature:appUpdate-api")
+include(":feature:appUpdate")
+
+include(":feature:download-api")
+include(":feature:download")
+
+include(":feature:main-api")
+include(":feature:main")
 
 include(":feature:videoPlayer")
-
-include(":feature:appUpdate")
-include(":feature:appUpdate-api")
-
-include(":feature:common:commonScreen")
-include(":feature:common:commonScreen-api")

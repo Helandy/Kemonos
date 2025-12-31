@@ -1,134 +1,170 @@
 [versions]
+# --- Android / Kotlin toolchain
 compileSdk = "36"
 minSdk = "29"
 jvmVersion = "21"
 
+agp = "8.12.3"
+kotlin = "2.2.21"
+ksp = "2.2.20-2.0.4"
+
+# --- App versioning
 appVersionName = "1.2"
 appVersionCode = "11"
 
-accompanistSystemuicontroller = "0.36.0"
-accompanistZoomable = "0.33.2-alpha"
-agp = "8.12.3"
-coilCompose = "3.3.0"
-coilGif = "3.3.0"
-converterGson = "3.0.0"
-datastorePreferencesCore = "1.2.0"
-foundation = "1.10.0"
-gson = "2.13.2"
-kotlin = "2.2.21"
-coreKtx = "1.17.0"
-junit = "4.13.2"
-junitVersion = "1.3.0"
-espressoCore = "3.7.0"
-kotlinxSerializationJson = "1.9.0"
-lifecycleRuntimeKtx = "2.10.0"
+# --- AndroidX
+androidxCore = "1.17.0"
+appcompat = "1.7.1"
 activityCompose = "1.12.2"
+lifecycle = "2.10.0"
+datastore = "1.2.0"
+paging = "3.3.6"
+room = "2.8.4"
+securityCrypto = "1.1.0"
+
+# --- Compose
+# Для BOM не задавать вручную версии для compose libs
+# foundation/material3/icons/etс должно подтягиваться BOM
 composeBom = "2025.12.01"
-loggingInterceptor = "5.3.2"
-materialIconsExtended = "1.7.8"
-media3Exoplayer = "1.9.0"
-multiplatformMarkdownRendererM3 = "0.39.0"
-navigationCompose = "2.9.0"
-okhttp = "5.3.2"
-pagingRuntimeKtx = "3.3.6"
-retrofit = "3.0.0"
+material = "1.13.0"
+
+# --- DI
 hilt = "2.57.2"
 androidxHilt = "1.3.0"
-ksp = "2.2.20-2.0.4"
-roomRuntime = "2.8.4"
-navigation3 = "1.0.0"
-lifecycleViewmodelNav3 = "2.10.0"
-jetbrainsKotlinJvm = "2.2.21"
-appcompat = "1.7.1"
-material = "1.13.0"
-material3 = "1.4.0"
+
+# --- Networking
+retrofit = "3.0.0"
+okhttp = "5.3.2"
+gson = "2.13.2"
+
+# --- Serialization / Coroutines
 coroutines = "1.10.2"
+kotlinxSerializationJson = "1.9.0"
+
+# --- Media / Images / UI helpers
+coil3 = "3.3.0"
+media3 = "1.9.0"
+accompanistSystemUiController = "0.36.0"
+multiplatformMarkdownRendererM3 = "0.39.0"
+
+# --- Navigation3
+navigation3 = "1.0.0"
 material3AdaptiveNav3 = "1.0.0-alpha03"
+
+# --- Play Services
 playServicesCast = "22.2.0"
-securityCrypto = "1.1.0"
-lifecycleViewmodelKtx = "2.10.0"
+
+# --- Tests
+junit4 = "4.13.2"
+androidxJunit = "1.3.0"
+espresso = "3.7.0"
+
 
 [libraries]
-accompanist-systemuicontroller = { module = "com.google.accompanist:accompanist-systemuicontroller", version.ref = "accompanistSystemuicontroller" }
-androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
-androidx-foundation = { module = "androidx.compose.foundation:foundation", version.ref = "foundation" }
-androidx-material-icons-extended = { module = "androidx.compose.material:material-icons-extended", version.ref = "materialIconsExtended" }
-androidx-media3-exoplayer = { module = "androidx.media3:media3-exoplayer", version.ref = "media3Exoplayer" }
-androidx-media3-ui = { module = "androidx.media3:media3-ui", version.ref = "media3Exoplayer" }
-#androidx-navigation-compose = { module = "androidx.navigation:navigation-compose", version.ref = "navigationCompose" }
+# --- Base AndroidX
+androidx-core-ktx = { module = "androidx.core:core-ktx", version.ref = "androidxCore" }
+androidx-appcompat = { module = "androidx.appcompat:appcompat", version.ref = "appcompat" }
+material = { module = "com.google.android.material:material", version.ref = "material" }
 
-androidx-paging-compose = { module = "androidx.paging:paging-compose", version.ref = "pagingRuntimeKtx" }
-androidx-paging-runtime-ktx = { module = "androidx.paging:paging-runtime-ktx", version.ref = "pagingRuntimeKtx" }
+# --- Lifecycle
+androidx-lifecycle-runtime-ktx = { module = "androidx.lifecycle:lifecycle-runtime-ktx", version.ref = "lifecycle" }
+androidx-lifecycle-runtime-compose = { module = "androidx.lifecycle:lifecycle-runtime-compose", version.ref = "lifecycle" }
+androidx-lifecycle-viewmodel-ktx = { module = "androidx.lifecycle:lifecycle-viewmodel-ktx", version.ref = "lifecycle" }
+androidx-lifecycle-viewmodel-savedstate = { module = "androidx.lifecycle:lifecycle-viewmodel-savedstate", version.ref = "lifecycle" }
 
-androidx-room-compiler = { module = "androidx.room:room-compiler", version.ref = "roomRuntime" }
-androidx-room-ktx = { module = "androidx.room:room-ktx", version.ref = "roomRuntime" }
-androidx-room-paging = { module = "androidx.room:room-paging", version.ref = "roomRuntime" }
-androidx-room-runtime = { module = "androidx.room:room-runtime", version.ref = "roomRuntime" }
+# --- Compose (BOM)
+androidx-compose-bom = { module = "androidx.compose:compose-bom", version.ref = "composeBom" }
 
-androidx-security-crypto = { module = "androidx.security:security-crypto", version.ref = "securityCrypto" }
-coil-compose = { module = "io.coil-kt.coil3:coil-compose", version.ref = "coilCompose" }
-coil-gif = { module = "io.coil-kt.coil3:coil-gif", version.ref = "coilGif" }
-coil-network-okhttp = { module = "io.coil-kt.coil3:coil-network-okhttp", version.ref = "coilCompose" }
-coil-video = { module = "io.coil-kt.coil3:coil-video", version.ref = "coilCompose" }
+androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "activityCompose" }
 
-converter-gson = { module = "com.squareup.retrofit2:converter-gson", version.ref = "converterGson" }
-gson = { module = "com.google.code.gson:gson", version.ref = "gson" }
-junit = { group = "junit", name = "junit", version.ref = "junit" }
-androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
-androidx-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCore" }
-androidx-lifecycle-runtime-ktx = { group = "androidx.lifecycle", name = "lifecycle-runtime-ktx", version.ref = "lifecycleRuntimeKtx" }
-androidx-lifecycle-runtime-compose = { module = "androidx.lifecycle:lifecycle-runtime-compose", version.ref = "lifecycleRuntimeKtx" }
-androidx-activity-compose = { group = "androidx.activity", name = "activity-compose", version.ref = "activityCompose" }
-androidx-compose-bom = { group = "androidx.compose", name = "compose-bom", version.ref = "composeBom" }
-androidx-ui = { group = "androidx.compose.ui", name = "ui" }
-androidx-ui-graphics = { group = "androidx.compose.ui", name = "ui-graphics" }
-androidx-ui-tooling = { group = "androidx.compose.ui", name = "ui-tooling" }
-androidx-ui-tooling-preview = { group = "androidx.compose.ui", name = "ui-tooling-preview" }
-androidx-ui-test-manifest = { group = "androidx.compose.ui", name = "ui-test-manifest" }
-androidx-ui-test-junit4 = { group = "androidx.compose.ui", name = "ui-test-junit4" }
+androidx-foundation = { module = "androidx.compose.foundation:foundation" }
+material3 = { module = "androidx.compose.material3:material3" }
+androidx-material-icons-extended = { module = "androidx.compose.material:material-icons-extended" }
 
-kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinxSerializationJson" }
+androidx-ui = { module = "androidx.compose.ui:ui" }
+androidx-ui-graphics = { module = "androidx.compose.ui:ui-graphics" }
+androidx-ui-tooling = { module = "androidx.compose.ui:ui-tooling" }
+androidx-ui-tooling-preview = { module = "androidx.compose.ui:ui-tooling-preview" }
+androidx-ui-test-manifest = { module = "androidx.compose.ui:ui-test-manifest" }
+androidx-ui-test-junit4 = { module = "androidx.compose.ui:ui-test-junit4" }
 
-logging-interceptor = { module = "com.squareup.okhttp3:logging-interceptor", version.ref = "loggingInterceptor" }
-multiplatform-markdown-renderer-m3 = { module = "com.mikepenz:multiplatform-markdown-renderer-m3", version.ref = "multiplatformMarkdownRendererM3" }
-okhttp = { module = "com.squareup.okhttp3:okhttp", version.ref = "okhttp" }
-retrofit = { module = "com.squareup.retrofit2:retrofit", version.ref = "retrofit" }
-urlconnection = { module = "com.squareup.okhttp3:okhttp-urlconnection", version.ref = "okhttp" }
-
-dagger-hilt-android = { module = "com.google.dagger:hilt-android", version.ref = "hilt" }
-dagger-hilt-compiler = { module = "com.google.dagger:hilt-compiler", version.ref = "hilt" }
-
-androidx-hilt-navigation-compose = { module = "androidx.hilt:hilt-navigation-compose", version.ref = "androidxHilt" }
-
+# --- Navigation3
 androidx-navigation3-runtime = { module = "androidx.navigation3:navigation3-runtime", version.ref = "navigation3" }
 androidx-navigation3-ui = { module = "androidx.navigation3:navigation3-ui", version.ref = "navigation3" }
-androidx-navigation3-viewmodel = { module = "androidx.lifecycle:lifecycle-viewmodel-navigation3", version.ref = "lifecycleViewmodelNav3" }
-androidx-navigation3-adaptive = { group = "androidx.compose.material3.adaptive", name = "adaptive-navigation3", version.ref = "material3AdaptiveNav3" }
+androidx-navigation3-viewmodel = { module = "androidx.lifecycle:lifecycle-viewmodel-navigation3", version.ref = "lifecycle" }
+androidx-navigation3-adaptive = { module = "androidx.compose.material3.adaptive:adaptive-navigation3", version.ref = "material3AdaptiveNav3" }
 
+# --- Paging
+androidx-paging-runtime-ktx = { module = "androidx.paging:paging-runtime-ktx", version.ref = "paging" }
+androidx-paging-compose = { module = "androidx.paging:paging-compose", version.ref = "paging" }
 
-androidx-lifecycle-viewmodel-savedstate = { module = "androidx.lifecycle:lifecycle-viewmodel-savedstate", version.ref = "lifecycleRuntimeKtx" }
-androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }
+# --- Room
+androidx-room-runtime = { module = "androidx.room:room-runtime", version.ref = "room" }
+androidx-room-ktx = { module = "androidx.room:room-ktx", version.ref = "room" }
+androidx-room-paging = { module = "androidx.room:room-paging", version.ref = "room" }
+androidx-room-compiler = { module = "androidx.room:room-compiler", version.ref = "room" }
+
+# --- DataStore
+androidx-datastore-preferences = { module = "androidx.datastore:datastore-preferences", version.ref = "datastore" }
+androidx-datastore-preferences-core = { module = "androidx.datastore:datastore-preferences-core", version.ref = "datastore" }
+
+# --- Security
+androidx-security-crypto = { module = "androidx.security:security-crypto", version.ref = "securityCrypto" }
+
+# --- Coroutines / Serialization
 kotlinx-coroutines-android = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-android", version.ref = "coroutines" }
-material = { group = "com.google.android.material", name = "material", version.ref = "material" }
+kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinxSerializationJson" }
 
-androidx-datastore-preferences = { module = "androidx.datastore:datastore-preferences", version.ref = "datastorePreferencesCore" }
-androidx-datastore-preferences-core = { module = "androidx.datastore:datastore-preferences-core", version.ref = "datastorePreferencesCore" }
-material3 = { group = "androidx.compose.material3", name = "material3", version.ref = "material3" }
-play-services-cast = { group = "com.google.android.gms", name = "play-services-cast", version.ref = "playServicesCast" }
-androidx-lifecycle-viewmodel-ktx = { group = "androidx.lifecycle", name = "lifecycle-viewmodel-ktx", version.ref = "lifecycleViewmodelKtx" }
+# --- Network (Retrofit + OkHttp + Gson)
+retrofit = { module = "com.squareup.retrofit2:retrofit", version.ref = "retrofit" }
+converter-gson = { module = "com.squareup.retrofit2:converter-gson", version.ref = "retrofit" }
+okhttp = { module = "com.squareup.okhttp3:okhttp", version.ref = "okhttp" }
+logging-interceptor = { module = "com.squareup.okhttp3:logging-interceptor", version.ref = "okhttp" }
+urlconnection = { module = "com.squareup.okhttp3:okhttp-urlconnection", version.ref = "okhttp" }
+gson = { module = "com.google.code.gson:gson", version.ref = "gson" }
+
+# --- DI (Hilt)
+dagger-hilt-android = { module = "com.google.dagger:hilt-android", version.ref = "hilt" }
+dagger-hilt-compiler = { module = "com.google.dagger:hilt-compiler", version.ref = "hilt" }
+androidx-hilt-navigation-compose = { module = "androidx.hilt:hilt-navigation-compose", version.ref = "androidxHilt" }
+
+# --- Images / Media
+coil-compose = { module = "io.coil-kt.coil3:coil-compose", version.ref = "coil3" }
+coil-gif = { module = "io.coil-kt.coil3:coil-gif", version.ref = "coil3" }
+coil-network-okhttp = { module = "io.coil-kt.coil3:coil-network-okhttp", version.ref = "coil3" }
+coil-video = { module = "io.coil-kt.coil3:coil-video", version.ref = "coil3" }
+
+androidx-media3-exoplayer = { module = "androidx.media3:media3-exoplayer", version.ref = "media3" }
+androidx-media3-ui = { module = "androidx.media3:media3-ui", version.ref = "media3" }
+
+# --- UI helpers
+accompanist-systemuicontroller = { module = "com.google.accompanist:accompanist-systemuicontroller", version.ref = "accompanistSystemUiController" }
+multiplatform-markdown-renderer-m3 = { module = "com.mikepenz:multiplatform-markdown-renderer-m3", version.ref = "multiplatformMarkdownRendererM3" }
+
+# --- Play services
+play-services-cast = { module = "com.google.android.gms:play-services-cast", version.ref = "playServicesCast" }
+
+# --- Tests
+junit = { module = "junit:junit", version.ref = "junit4" }
+androidx-junit = { module = "androidx.test.ext:junit", version.ref = "androidxJunit" }
+androidx-espresso-core = { module = "androidx.test.espresso:espresso-core", version.ref = "espresso" }
+
+
 [plugins]
+kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
+
 android-application = { id = "com.android.application", version.ref = "agp" }
+android-library = { id = "com.android.library", version.ref = "agp" }
+
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
+
 hilt = { id = "com.google.dagger.hilt.android", version.ref = "hilt" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
-jetbrains-kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "jetbrainsKotlinJvm" }
-android-library = { id = "com.android.library", version.ref = "agp" }
 
 
 [bundles]
-# Базовые AndroidX + Material
 androidx-base = [
     "androidx-core-ktx",
     "androidx-appcompat",
@@ -136,17 +172,16 @@ androidx-base = [
 ]
 
 coroutines = [
-    "kotlinx-coroutines-android"
+    "kotlinx-coroutines-android",
 ]
 
-# Жизненный цикл / ViewModel (+ nav3 интеграция)
 lifecycle = [
     "androidx-lifecycle-runtime-ktx",
-    "androidx-lifecycle-viewmodel-savedstate",
     "androidx-lifecycle-runtime-compose",
+    "androidx-lifecycle-viewmodel-ktx",
+    "androidx-lifecycle-viewmodel-savedstate",
 ]
 
-# Compose ядро (без BOM)
 compose-core = [
     "androidx-activity-compose",
     "androidx-foundation",
@@ -154,21 +189,18 @@ compose-core = [
     "androidx-ui",
     "androidx-ui-graphics",
     "androidx-ui-tooling-preview",
-    "androidx-material-icons-extended"
+    "androidx-material-icons-extended",
 ]
 
-# Compose debug-инструменты
 compose-debug = [
     "androidx-ui-tooling",
-    "androidx-ui-test-manifest"
+    "androidx-ui-test-manifest",
 ]
 
-# Compose тесты
 compose-test = [
-    "androidx-ui-test-junit4"
+    "androidx-ui-test-junit4",
 ]
 
-# Навигация Navigation3
 navigation3 = [
     "androidx-navigation3-runtime",
     "androidx-navigation3-ui",
@@ -176,67 +208,58 @@ navigation3 = [
     "androidx-navigation3-adaptive",
 ]
 
-# Hilt (компилятор через ksp отдельно)
 hilt = [
     "dagger-hilt-android",
-    "androidx-hilt-navigation-compose"
+    "androidx-hilt-navigation-compose",
 ]
 
-# Room (компилятор через ksp отдельно)
 room = [
     "androidx-room-runtime",
     "androidx-room-ktx",
     "androidx-room-paging",
 ]
 
-# Сеть: Retrofit + OkHttp + Gson
 retrofit = [
     "retrofit",
     "converter-gson",
     "okhttp",
     "logging-interceptor",
     "gson",
-    "urlconnection"
+    "urlconnection",
 ]
 
-# Сериализация Kotlin (отдельно от Retrofit)
 serialization-json = [
-    "kotlinx-serialization-json"
+    "kotlinx-serialization-json",
 ]
 
-# Coil 3
 coil = [
     "coil-compose",
     "coil-gif",
     "coil-video",
-    "coil-network-okhttp"
+    "coil-network-okhttp",
 ]
 
-# Paging
 paging = [
+    "androidx-paging-runtime-ktx",
     "androidx-paging-compose",
-    "androidx-paging-runtime-ktx"
 ]
 
-# Media3 плеер
 media3 = [
     "androidx-media3-exoplayer",
-    "androidx-media3-ui"
+    "androidx-media3-ui",
 ]
 
-# Accompanist
 accompanist = [
-    "accompanist-systemuicontroller"
+    "accompanist-systemuicontroller",
 ]
 
 datastore = [
     "androidx-datastore-preferences",
-    "androidx-datastore-preferences-core"
+    "androidx-datastore-preferences-core",
 ]
 
-# Юнит/инструментальные тесты (JVM + Android)
 test-core = [
     "junit",
     "androidx-junit",
-    "androidx-espresso-core"
+    "androidx-espresso-core",
 ]

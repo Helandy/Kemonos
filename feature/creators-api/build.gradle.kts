@@ -1,6 +1,5 @@
 plugins {
-    alias(libs.plugins.jetbrains.kotlin.jvm)
-    `java-library`
+    alias(libs.plugins.kotlin.jvm)
 }
 
 java {
@@ -10,6 +9,7 @@ java {
 }
 
 dependencies {
-    implementation(libs.bundles.navigation3)
     implementation(project(":core-domain"))
+
+    implementation(libs.bundles.navigation3)
 }
