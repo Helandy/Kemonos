@@ -188,6 +188,7 @@ compose-core = [
     "material3",
     "androidx-ui",
     "androidx-ui-graphics",
+    "androidx-ui-tooling",
     "androidx-ui-tooling-preview",
     "androidx-material-icons-extended",
 ]

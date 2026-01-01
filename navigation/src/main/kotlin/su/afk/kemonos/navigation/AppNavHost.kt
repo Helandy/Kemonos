@@ -57,7 +57,7 @@ fun AppNavHost(
 
     val appEntries = key("app") {
         rememberDecoratedNavEntries(
-            backStack = navManager.appBackStack,
+            backStack = navManager.startAppBackStack,
             entryDecorators = listOf(
                 rememberSaveableStateHolderNavEntryDecorator(),
                 rememberViewModelStoreNavEntryDecorator(),
@@ -67,7 +67,7 @@ fun AppNavHost(
     }
 
     val entriesToShow: List<NavEntry<NavKey>> =
-        if (navManager.appBackStack.isNotEmpty()) {
+        if (navManager.startAppBackStack.isNotEmpty()) {
             appEntries
         } else {
             when (navManager.currentTab) {

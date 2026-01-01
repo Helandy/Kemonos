@@ -1,37 +1,68 @@
 package su.afk.kemonos.main.presenter
 
 import android.content.Intent
-import androidx.compose.foundation.layout.*
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.core.net.toUri
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import su.afk.kemonos.common.R
-import su.afk.kemonos.common.presenter.updateBanner.UpdateBanner
-import su.afk.kemonos.main.presenter.view.BaseUrlDomainField
+import su.afk.kemonos.app.update.api.model.AppUpdateInfo
+import su.afk.kemonos.domain.domain.models.ErrorItem
+import su.afk.kemonos.main.presenter.view.MainApiUnavailableCard
+import su.afk.kemonos.main.presenter.view.MainLoading
+import su.afk.kemonos.main.presenter.view.MainSuccess
+import su.afk.kemonos.main.presenter.view.MainUpdateBanner
 
 @Composable
 internal fun MainScreen(viewModel: MainViewModel) {
     val state by viewModel.state.collectAsStateWithLifecycle()
-    val updateInfo = state.updateInfo
-
+    state.updateInfo
     val context = LocalContext.current
+
     LaunchedEffect(Unit) {
         viewModel.effect.collect { effect ->
             when (effect) {
-                is MainEffect.OpenUrl -> {
+                is MainState.MainEffect.OpenUrl -> {
                     val intent = Intent(Intent.ACTION_VIEW, effect.url.toUri())
                     context.startActivity(intent)
                 }
             }
         }
     }
+
+    MainScreenContent(
+        state = state,
+        onUpdateClick = viewModel::onUpdateClick,
+        onLaterClick = viewModel::onUpdateLaterClick,
+        onSkipCheck = viewModel::onSkipCheck,
+        onSaveAndCheck = viewModel::onSaveAndCheck,
+        onInputKemonoChanged = viewModel::onInputKemonoDomainChanged,
+        onInputCoomerChanged = viewModel::onInputCoomerDomainChanged,
+    )
+}
+
+@Composable
+internal fun MainScreenContent(
+    state: MainState.State,
+    onUpdateClick: (AppUpdateInfo) -> Unit,
+    onLaterClick: () -> Unit,
+    onSkipCheck: () -> Unit,
+    onSaveAndCheck: () -> Unit,
+    onInputKemonoChanged: (String) -> Unit,
+    onInputCoomerChanged: (String) -> Unit,
+) {
+    val updateInfo = state.updateInfo
 
     Column(
         modifier = Modifier
@@ -41,196 +72,133 @@ internal fun MainScreen(viewModel: MainViewModel) {
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         when {
-            updateInfo != null -> {
-                UpdateBanner(
-                    info = updateInfo,
-                    onUpdateClick = { viewModel.onUpdateClick(updateInfo) },
-                    onLaterClick = { viewModel.onUpdateLaterClick() }
-                )
-            }
+            updateInfo != null -> MainUpdateBanner(
+                info = updateInfo,
+                onUpdateClick = { onUpdateClick(updateInfo) },
+                onLaterClick = onLaterClick
+            )
 
-            state.isLoading -> {
-                CircularProgressIndicator()
-                Spacer(Modifier.height(16.dp))
-                Text(stringResource(R.string.main_checking_api))
-            }
+            state.isLoading -> MainLoading()
 
-            state.apiSuccess == true -> {
-                Text(stringResource(R.string.main_checking_api_success))
-            }
+            state.apiSuccess == true -> MainSuccess()
 
-            else -> {
-                ElevatedCard(
-                    modifier = Modifier.padding(0.dp)
-                ) {
-                    Column(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(16.dp),
-                        horizontalAlignment = Alignment.CenterHorizontally
-                    ) {
-
-                        Text(
-                            text = stringResource(R.string.main_api_unavailable_title),
-                            style = MaterialTheme.typography.titleMedium,
-                            color = MaterialTheme.colorScheme.error,
-                            textAlign = TextAlign.Center
-                        )
-
-                        Text(
-                            text = stringResource(R.string.error_default),
-                            style = MaterialTheme.typography.titleSmall,
-                            color = MaterialTheme.colorScheme.error,
-                            textAlign = TextAlign.Center
-                        )
-
-                        val error = state.error
-                        if (error != null) {
-                            Spacer(Modifier.height(12.dp))
-
-                            Text(
-                                text = error.title,
-                                style = MaterialTheme.typography.titleSmall,
-                                color = MaterialTheme.colorScheme.onSurface,
-                                textAlign = TextAlign.Center
-                            )
-
-                            Spacer(Modifier.height(6.dp))
-
-                            Text(
-                                text = error.message,
-                                style = MaterialTheme.typography.bodyMedium,
-                                color = MaterialTheme.colorScheme.onSurface,
-                                textAlign = TextAlign.Center
-                            )
-
-                            val code = error.code
-                            val method = error.method
-                            val url = error.url
-                            val requestId = error.requestId
-
-                            if (code != null || !method.isNullOrBlank() || !url.isNullOrBlank() || !requestId.isNullOrBlank()) {
-                                Spacer(Modifier.height(10.dp))
-
-                                Text(
-                                    text = buildString {
-                                        if (code != null) append("HTTP $code")
-                                        if (!method.isNullOrBlank()) {
-                                            if (isNotEmpty()) append(" • ")
-                                            append(method)
-                                        }
-                                    },
-                                    style = MaterialTheme.typography.labelMedium,
-                                    textAlign = TextAlign.Center
-                                )
-
-                                if (!url.isNullOrBlank()) {
-                                    Text(
-                                        text = url,
-                                        style = MaterialTheme.typography.bodySmall,
-                                        textAlign = TextAlign.Center
-                                    )
-                                }
-
-                                if (!requestId.isNullOrBlank()) {
-                                    Text(
-                                        text = "requestId: $requestId",
-                                        style = MaterialTheme.typography.bodySmall,
-                                        textAlign = TextAlign.Center
-                                    )
-                                }
-                            }
-
-                            val hasDebug = !error.body.isNullOrBlank() || !error.cause.isNullOrBlank()
-                            if (hasDebug) {
-                                Spacer(Modifier.height(12.dp))
-                                var expanded by remember { mutableStateOf(false) }
-
-                                TextButton(onClick = { expanded = !expanded }) {
-                                    Text(
-                                        if (expanded)
-                                            stringResource(R.string.hide_details)
-                                        else
-                                            stringResource(R.string.show_details)
-                                    )
-                                }
-
-                                if (expanded) {
-                                    if (!error.cause.isNullOrBlank()) {
-                                        Text(
-                                            text = "cause: ${error.cause}",
-                                            style = MaterialTheme.typography.bodySmall,
-                                            textAlign = TextAlign.Center
-                                        )
-                                        Spacer(Modifier.height(6.dp))
-                                    }
-                                    if (!error.body.isNullOrBlank()) {
-                                        Text(
-                                            text = error.body ?: "",
-                                            style = MaterialTheme.typography.bodySmall,
-                                            textAlign = TextAlign.Center
-                                        )
-                                    }
-                                }
-                            }
-                        }
-
-                        Spacer(Modifier.height(20.dp))
-
-                        Text(
-                            stringResource(R.string.main_api_current_urls_title),
-                            style = MaterialTheme.typography.labelLarge,
-                            textAlign = TextAlign.Center
-                        )
-
-                        Text(
-                            text = stringResource(
-                                R.string.main_api_current_urls_value,
-                                state.kemonoUrl,
-                                state.coomerUrl
-                            ),
-                            style = MaterialTheme.typography.bodySmall,
-                            textAlign = TextAlign.Center
-                        )
-
-                        Spacer(Modifier.height(20.dp))
-
-                        BaseUrlDomainField(
-                            value = state.inputKemonoDomain,
-                            onValueChange = viewModel::onInputKemonoDomainChanged,
-                            label = { Text(stringResource(R.string.main_api_kemono_url_label)) },
-                        )
-
-                        Spacer(Modifier.height(8.dp))
-
-                        BaseUrlDomainField(
-                            value = state.inputCoomerDomain,
-                            onValueChange = viewModel::onInputCoomerDomainChanged,
-                            label = { Text(stringResource(R.string.main_api_coomer_url_label)) },
-                        )
-
-                        Spacer(Modifier.height(20.dp))
-
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.spacedBy(12.dp)
-                        ) {
-                            OutlinedButton(
-                                onClick = viewModel::onSkipCheck,
-                                modifier = Modifier.weight(1f)
-                            ) {
-                                Text(stringResource(R.string.main_api_skip_check_button))
-                            }
-                            Button(
-                                onClick = viewModel::onSaveAndCheck,
-                                modifier = Modifier.weight(1f)
-                            ) {
-                                Text(stringResource(R.string.main_api_check_button))
-                            }
-                        }
-                    }
-                }
-            }
+            else -> MainApiUnavailableCard(
+                state = state,
+                onSkipCheck = onSkipCheck,
+                onSaveAndCheck = onSaveAndCheck,
+                onInputKemonoChanged = onInputKemonoChanged,
+                onInputCoomerChanged = onInputCoomerChanged,
+            )
         }
     }
+}
+
+
+@Composable
+private fun PreviewHost(content: @Composable () -> Unit) {
+    MaterialTheme {
+        Surface { content() }
+    }
+}
+
+@Preview(name = "Main • Update banner", showBackground = true)
+@Composable
+private fun MainScreenPreview_Update() = PreviewHost {
+    MainScreenContent(
+        state = MainState.State(
+            isLoading = false,
+            apiSuccess = null,
+            kemonoUrl = "https://kemono.cr",
+            coomerUrl = "https://coomer.st",
+            inputKemonoDomain = "kemono.cr",
+            inputCoomerDomain = "coomer.st",
+            updateInfo = AppUpdateInfo(
+                latestVersionName = "1.0.0",
+                releaseUrl = "url",
+                changelog = "changelog",
+            )
+        ),
+        onUpdateClick = {},
+        onLaterClick = {},
+        onSkipCheck = {},
+        onSaveAndCheck = {},
+        onInputKemonoChanged = {},
+        onInputCoomerChanged = {},
+    )
+}
+
+@Preview(name = "Main • Loading", showBackground = true)
+@Composable
+private fun MainScreenPreview_Loading() = PreviewHost {
+    MainScreenContent(
+        state = MainState.State(
+            isLoading = true,
+            apiSuccess = null,
+            kemonoUrl = "https://kemono.cr",
+            coomerUrl = "https://coomer.st",
+            inputKemonoDomain = "kemono.cr",
+            inputCoomerDomain = "coomer.st",
+            updateInfo = null
+        ),
+        onUpdateClick = {},
+        onLaterClick = {},
+        onSkipCheck = {},
+        onSaveAndCheck = {},
+        onInputKemonoChanged = {},
+        onInputCoomerChanged = {},
+    )
+}
+
+@Preview(name = "Main • Success", showBackground = true)
+@Composable
+private fun MainScreenPreview_Success() = PreviewHost {
+    MainScreenContent(
+        state = MainState.State(
+            isLoading = false,
+            apiSuccess = true,
+            kemonoUrl = "https://kemono.cr",
+            coomerUrl = "https://coomer.st",
+            inputKemonoDomain = "kemono.cr",
+            inputCoomerDomain = "coomer.st",
+            updateInfo = null
+        ),
+        onUpdateClick = {},
+        onLaterClick = {},
+        onSkipCheck = {},
+        onSaveAndCheck = {},
+        onInputKemonoChanged = {},
+        onInputCoomerChanged = {},
+    )
+}
+
+@Preview(name = "Main • API unavailable", showBackground = true)
+@Composable
+private fun MainScreenPreview_Error() = PreviewHost {
+    MainScreenContent(
+        state = MainState.State(
+            isLoading = false,
+            apiSuccess = false,
+            kemonoUrl = "https://kemono.cr",
+            coomerUrl = "https://coomer.st",
+            inputKemonoDomain = "kemono.cr",
+            inputCoomerDomain = "coomer.st",
+            updateInfo = null,
+            error = ErrorItem(
+                title = "API недоступно",
+                message = "Не удалось выполнить запрос. Проверь домен или попробуй позже.",
+                code = 503,
+                method = "GET",
+                url = "https://kemono.cr/api/v1/ping",
+                requestId = "req_01HXYZ...",
+                body = """{"error":"Service Unavailable"}""",
+                cause = "Timeout"
+            )
+        ),
+        onUpdateClick = {},
+        onLaterClick = {},
+        onSkipCheck = {},
+        onSaveAndCheck = {},
+        onInputKemonoChanged = {},
+        onInputCoomerChanged = {},
+    )
 }

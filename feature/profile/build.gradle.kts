@@ -9,18 +9,20 @@ plugins {
 android {
     namespace = "su.afk.kemonos.profile"
     compileSdk = libs.versions.compileSdk.get().toInt()
-    compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_21
-        targetCompatibility = JavaVersion.VERSION_21
+
+    defaultConfig {
+        minSdk = libs.versions.minSdk.get().toInt()
+
+        val vName = libs.versions.appVersionName.get()
+        buildConfigField("String", "VERSION_NAME", "\"$vName\"")
     }
     buildFeatures {
         compose = true
         buildConfig = true
     }
-    defaultConfig {
-        val vName = libs.versions.appVersionName.get()
-
-        buildConfigField("String", "VERSION_NAME", "\"$vName\"")
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_21
+        targetCompatibility = JavaVersion.VERSION_21
     }
 }
 dependencies {

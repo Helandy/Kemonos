@@ -9,6 +9,10 @@ plugins {
 android {
     namespace = "su.afk.kemonos.download"
     compileSdk = libs.versions.compileSdk.get().toInt()
+
+    defaultConfig {
+        minSdk = libs.versions.minSdk.get().toInt()
+    }
     buildFeatures { compose = true }
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_21

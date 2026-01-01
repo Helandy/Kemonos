@@ -3,23 +3,25 @@ package su.afk.kemonos.main.presenter
 import su.afk.kemonos.app.update.api.model.AppUpdateInfo
 import su.afk.kemonos.domain.domain.models.ErrorItem
 
-data class MainState(
-    val isLoading: Boolean = true,
-    val error: ErrorItem? = null,
+internal class MainState {
 
-    val apiSuccess: Boolean? = null,
+    data class State(
+        val isLoading: Boolean = true,
+        val error: ErrorItem? = null,
 
-    /** Значения из Prefs (текущие, «истинные») */
-    val kemonoUrl: String = "",
-    val coomerUrl: String = "",
+        val apiSuccess: Boolean? = null,
 
-    val inputKemonoDomain: String = "",
-    val inputCoomerDomain: String = "",
+        /** Значения из Prefs (текущие, «истинные») */
+        val kemonoUrl: String = "",
+        val coomerUrl: String = "",
 
-    val updateInfo: AppUpdateInfo? = null,
-)
+        val inputKemonoDomain: String = "",
+        val inputCoomerDomain: String = "",
 
+        val updateInfo: AppUpdateInfo? = null,
+    )
 
-sealed interface MainEffect {
-    data class OpenUrl(val url: String) : MainEffect
+    sealed interface MainEffect {
+        data class OpenUrl(val url: String) : MainEffect
+    }
 }
