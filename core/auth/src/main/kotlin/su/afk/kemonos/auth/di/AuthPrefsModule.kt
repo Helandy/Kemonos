@@ -1,4 +1,4 @@
-package su.afk.kemonos.core.di
+package su.afk.kemonos.auth.di
 
 import android.content.Context
 import androidx.datastore.core.DataStore

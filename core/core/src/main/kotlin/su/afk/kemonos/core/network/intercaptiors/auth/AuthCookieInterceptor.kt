@@ -5,9 +5,9 @@ import kotlinx.coroutines.runBlocking
 import okhttp3.Interceptor
 import okhttp3.Response
 import retrofit2.Invocation
+import su.afk.kemonos.auth.IAuthLocalDataSource
 import su.afk.kemonos.core.api.domain.net.intercaptiors.auth.AuthCookie
 import su.afk.kemonos.core.api.domain.useCase.ISelectedSiteUseCase
-import su.afk.kemonos.core.auth.IAuthLocalDataSource
 import su.afk.kemonos.domain.SelectedSite
 import javax.inject.Inject
 

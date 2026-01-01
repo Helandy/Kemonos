@@ -3,11 +3,11 @@ package su.afk.kemonos.profile.presenter.profile
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
+import su.afk.kemonos.auth.ClearAuthUseCase
+import su.afk.kemonos.auth.ObserveAuthStateUseCase
 import su.afk.kemonos.common.error.IErrorHandlerUseCase
 import su.afk.kemonos.common.error.storage.RetryStorage
 import su.afk.kemonos.common.presenter.baseViewModel.BaseViewModel
-import su.afk.kemonos.core.auth.ClearAuthUseCase
-import su.afk.kemonos.core.auth.ObserveAuthStateUseCase
 import su.afk.kemonos.core.preferences.GetCoomerRootUrlUseCase
 import su.afk.kemonos.core.preferences.GetKemonoRootUrlUseCase
 import su.afk.kemonos.core.storage.NavigationStorage

@@ -1,10 +1,10 @@
 package su.afk.kemonos.profile.data
 
 import retrofit2.HttpException
+import su.afk.kemonos.auth.ClearAuthUseCase
+import su.afk.kemonos.auth.SaveAuthSiteUseCase
 import su.afk.kemonos.common.error.extractBackendMessage
 import su.afk.kemonos.core.api.domain.useCase.ISelectedSiteUseCase
-import su.afk.kemonos.core.auth.ClearAuthUseCase
-import su.afk.kemonos.core.auth.SaveAuthSiteUseCase
 import su.afk.kemonos.core.network.util.safeString
 import su.afk.kemonos.domain.SelectedSite
 import su.afk.kemonos.domain.domain.models.ErrorItem

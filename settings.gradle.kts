@@ -30,7 +30,13 @@ include(":feature:common:commonScreen-api")
 include(":feature:common:commonScreen")
 
 include(":core-api")
-include(":core")
+// todo убрать когда разберу модуль
+include(":core:core")
+include(":core:auth")
+include(":core:network")
+include(":core:preferences")
+// todo сомнительно так называть модуль
+include(":core:storage")
 
 include(":storage-api")
 include(":storage")

@@ -1,4 +1,4 @@
-package su.afk.kemonos.core.auth
+package su.afk.kemonos.auth
 
 import android.content.SharedPreferences
 import androidx.core.content.edit
@@ -10,8 +10,8 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.serialization.json.Json
-import su.afk.kemonos.core.di.AuthDataStore
-import su.afk.kemonos.core.di.AuthEncryptedPrefs
+import su.afk.kemonos.auth.di.AuthDataStore
+import su.afk.kemonos.auth.di.AuthEncryptedPrefs
 import su.afk.kemonos.domain.SelectedSite
 import su.afk.kemonos.profile.api.model.Login
 import javax.inject.Inject

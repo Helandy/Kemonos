@@ -1,4 +1,4 @@
-package su.afk.kemonos.core.auth
+package su.afk.kemonos.auth
 
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map

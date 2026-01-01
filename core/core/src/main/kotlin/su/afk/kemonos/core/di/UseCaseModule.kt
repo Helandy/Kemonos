@@ -8,8 +8,6 @@ import su.afk.kemonos.core.api.domain.useCase.CacheTimestampUseCase
 import su.afk.kemonos.core.api.domain.useCase.IGetBaseUrlsUseCase
 import su.afk.kemonos.core.api.domain.useCase.ISelectedSiteUseCase
 import su.afk.kemonos.core.api.domain.useCase.ISetBaseUrlsUseCase
-import su.afk.kemonos.core.auth.AuthLocalDataSource
-import su.afk.kemonos.core.auth.IAuthLocalDataSource
 import su.afk.kemonos.core.domain.useCase.CacheTimestampUseCaseImpl
 import su.afk.kemonos.core.preferences.GetCurrentSiteRootUrlUseCase
 import su.afk.kemonos.core.preferences.IGetCurrentSiteRootUrlUseCase
@@ -35,10 +33,6 @@ internal interface UseCaseModule {
 
     @Binds
     fun bindGetBaseUrlsUseCase(impl: GetFlowBaseUrlPrefsUseCase): IGetBaseUrlsUseCase
-
-    @Binds
-    @Singleton
-    fun provideAuthLocalDataSource(impl: AuthLocalDataSource): IAuthLocalDataSource
 
     @Binds
     fun bindGetCurrentSiteRootUrlUseCase(impl: GetCurrentSiteRootUrlUseCase): IGetCurrentSiteRootUrlUseCase

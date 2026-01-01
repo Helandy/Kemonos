@@ -1,4 +1,4 @@
-package su.afk.kemonos.core.auth
+package su.afk.kemonos.auth
 
 import su.afk.kemonos.profile.api.model.Login
 

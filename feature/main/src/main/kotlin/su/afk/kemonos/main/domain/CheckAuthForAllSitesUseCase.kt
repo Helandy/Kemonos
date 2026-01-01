@@ -3,10 +3,10 @@ package su.afk.kemonos.main.domain
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.first
+import su.afk.kemonos.auth.ClearAuthUseCase
+import su.afk.kemonos.auth.IsAuthCoomerUseCase
+import su.afk.kemonos.auth.IsAuthKemonoUseCase
 import su.afk.kemonos.core.api.domain.useCase.ISelectedSiteUseCase
-import su.afk.kemonos.core.auth.ClearAuthUseCase
-import su.afk.kemonos.core.auth.IsAuthCoomerUseCase
-import su.afk.kemonos.core.auth.IsAuthKemonoUseCase
 import su.afk.kemonos.core.network.util.isClientError4xx
 import su.afk.kemonos.core.preferences.site.withSite
 import su.afk.kemonos.domain.SelectedSite

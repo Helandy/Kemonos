@@ -45,6 +45,7 @@ dependencies {
     implementation(libs.bundles.media3)
     implementation(libs.bundles.datastore)
 
+    implementation(project(":core:auth"))
     implementation(project(":feature:profile-api"))
     implementation(project(":core-domain"))
     implementation(project(":core-api"))

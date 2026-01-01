@@ -44,7 +44,8 @@ dependencies {
     implementation(project(":navigation"))
 
     implementation(project(":core-domain"))
-    implementation(project(":core"))
+    implementation(project(":core:core"))
+    implementation(project(":core:auth"))
     implementation(project(":core-api"))
     implementation(project(":storage-api"))
     implementation(project(":feature:creatorProfile-api"))

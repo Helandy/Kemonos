@@ -84,7 +84,8 @@ dependencies {
     implementation(project(":feature:common:commonScreen"))
 
     implementation(project(":core-api"))
-    implementation(project(":core"))
+    implementation(project(":core:core"))
+    implementation(project(":core:auth"))
 
     implementation(project(":storage-api"))
     implementation(project(":storage"))
