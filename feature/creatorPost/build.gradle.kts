@@ -22,20 +22,18 @@ android {
 }
 
 dependencies {
-    implementation(libs.bundles.hilt)
-    implementation(libs.play.services.cast)
     ksp(libs.dagger.hilt.compiler)
+    implementation(libs.bundles.hilt)
 
+    implementation(platform(libs.androidx.compose.bom))
     implementation(libs.bundles.compose.core)
 
     implementation(libs.bundles.serialization.json)
+
     implementation(libs.bundles.navigation3)
 
     implementation(libs.bundles.coil)
     implementation(libs.bundles.retrofit)
-
-    implementation(libs.bundles.room)
-    ksp(libs.androidx.room.compiler)
 
     implementation(project(":common"))
     implementation(project(":navigation"))

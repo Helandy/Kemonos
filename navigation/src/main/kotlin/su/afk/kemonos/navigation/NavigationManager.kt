@@ -14,15 +14,17 @@ class NavigationManager(
     initialTab: BottomTab,
 ) {
 
-    val appBackStack: SnapshotStateList<NavKey> = mutableStateListOf(MainDest)
+    /** Стек MainDest при запуске */
+    val startAppBackStack: SnapshotStateList<NavKey> = mutableStateListOf(MainDest)
 
-    /** Активный стек либо appBackStack (пока на MainDest), либо стек таба*/
+    /** Активный стек либо startAppBackStack, либо стек табов */
     val backStack: SnapshotStateList<NavKey>
-        get() = if (appBackStack.isNotEmpty()) appBackStack else stacks.getValue(currentTab)
+        get() = if (startAppBackStack.isNotEmpty()) startAppBackStack else stacks.getValue(currentTab)
 
     private val stacks: Map<BottomTab, SnapshotStateList<NavKey>> =
         BottomTab.entries.associateWith { mutableStateListOf<NavKey>() }
 
+    /** Стек табов при работе */
     var currentTab: BottomTab by mutableStateOf(initialTab)
         private set
 
@@ -37,7 +39,7 @@ class NavigationManager(
 
     /** уходим с MainDest в табы */
     fun enterTabs() {
-        appBackStack.clear()
+        startAppBackStack.clear()
     }
 
     fun switchTab(tab: BottomTab, reselectPopToRoot: Boolean = true) {

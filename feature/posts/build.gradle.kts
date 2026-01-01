@@ -9,6 +9,10 @@ plugins {
 android {
     namespace = "su.afk.kemonos.posts"
     compileSdk = libs.versions.compileSdk.get().toInt()
+
+    defaultConfig {
+        minSdk = libs.versions.minSdk.get().toInt()
+    }
     buildFeatures { compose = true }
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_21
@@ -16,17 +20,15 @@ android {
     }
 }
 dependencies {
-    implementation(libs.bundles.hilt)
     ksp(libs.dagger.hilt.compiler)
+    implementation(libs.bundles.hilt)
 
+    implementation(platform(libs.androidx.compose.bom))
     implementation(libs.bundles.compose.core)
 
     implementation(libs.bundles.navigation3)
 
     implementation(libs.bundles.retrofit)
-
-    implementation(libs.bundles.room)
-    ksp(libs.androidx.room.compiler)
 
     implementation(libs.bundles.paging)
 

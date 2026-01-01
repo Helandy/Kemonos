@@ -33,7 +33,7 @@ class MainRoutingGraph @Inject constructor(
                 containerColor = background,
                 contentWindowInsets = WindowInsets.safeDrawing,
                 bottomBar = {
-                    val inTabs = navManager.appBackStack.isEmpty()
+                    val inTabs = navManager.startAppBackStack.isEmpty()
                     if (inTabs) {
                         BottomNavigationBar(
                             currentTab = navManager.currentTab,

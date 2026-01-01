@@ -13,19 +13,12 @@ android {
     defaultConfig {
         minSdk = libs.versions.minSdk.get().toInt()
     }
-
+    buildFeatures {
+        compose = true
+    }
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_21
         targetCompatibility = JavaVersion.VERSION_21
-    }
-
-    kotlin {
-        compilerOptions {
-            jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_21)
-        }
-    }
-    buildFeatures {
-        compose = true
     }
 }
 

@@ -8,7 +8,7 @@ plugins {
 }
 
 android {
-    namespace = "su.afk.kemono.posts"
+    namespace = "su.afk.kemonos.storage"
     compileSdk = libs.versions.compileSdk.get().toInt()
 
     defaultConfig {
@@ -20,18 +20,18 @@ android {
         targetCompatibility = JavaVersion.VERSION_21
     }
 }
+
 dependencies {
-    implementation(libs.bundles.hilt)
     ksp(libs.dagger.hilt.compiler)
+    implementation(libs.bundles.hilt)
 
-    implementation(libs.bundles.compose.core)
-
-    implementation(libs.bundles.retrofit)
     implementation(libs.bundles.serialization.json)
-    implementation(libs.bundles.room)
+
     ksp(libs.androidx.room.compiler)
+    implementation(libs.bundles.room)
 
     implementation(project(":storage-api"))
+
     implementation(project(":core-domain"))
     implementation(project(":core"))
     implementation(project(":common"))

@@ -1,4 +1,4 @@
-package su.afk.kemonos.domain
+package su.afk.kemonos.main.domain
 
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
@@ -9,6 +9,7 @@ import su.afk.kemonos.core.auth.IsAuthCoomerUseCase
 import su.afk.kemonos.core.auth.IsAuthKemonoUseCase
 import su.afk.kemonos.core.network.util.isClientError4xx
 import su.afk.kemonos.core.preferences.site.withSite
+import su.afk.kemonos.domain.SelectedSite
 import su.afk.kemonos.profile.api.domain.IGetAccountUseCase
 import javax.inject.Inject
 

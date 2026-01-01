@@ -1,4 +1,4 @@
-package su.afk.kemonos.presenter.main
+package su.afk.kemonos.main.presenter
 
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.navigation3.runtime.EntryProviderScope
@@ -11,7 +11,7 @@ import su.afk.kemonos.navigation.NavigationManager
 class MainNavigator @Inject constructor() : NavRegistrar {
     override fun register(builder: EntryProviderScope<NavKey>, nav: NavigationManager) = with(builder) {
         entry<MainDest> {
-            MainScreen(viewModel = hiltViewModel())
+            MainScreen(viewModel = hiltViewModel<MainViewModel>())
         }
     }
 }

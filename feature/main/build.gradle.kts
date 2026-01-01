@@ -7,7 +7,7 @@ plugins {
 }
 
 android {
-    namespace = "su.afk.kemonos.creators"
+    namespace = "su.afk.kemonos.main"
     compileSdk = libs.versions.compileSdk.get().toInt()
 
     defaultConfig {
@@ -19,7 +19,6 @@ android {
         targetCompatibility = JavaVersion.VERSION_21
     }
 }
-
 dependencies {
     ksp(libs.dagger.hilt.compiler)
     implementation(libs.bundles.hilt)
@@ -29,16 +28,15 @@ dependencies {
 
     implementation(libs.bundles.navigation3)
 
-    implementation(libs.bundles.paging)
-    implementation(libs.bundles.retrofit)
 
     implementation(project(":common"))
     implementation(project(":navigation"))
     implementation(project(":core-domain"))
     implementation(project(":core"))
     implementation(project(":core-api"))
-    implementation(project(":storage-api"))
-    implementation(project(":feature:creators-api"))
 
-    implementation(project(":feature:creatorProfile-api"))
+    implementation(project(":feature:appUpdate-api"))
+    implementation(project(":feature:profile-api"))
+
+    implementation(project(":storage-api"))
 }

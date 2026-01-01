@@ -1,4 +1,4 @@
-package su.afk.kemonos.presenter.main.view
+package su.afk.kemonos.main.presenter.view
 
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material3.OutlinedTextField
@@ -16,15 +16,15 @@ internal fun BaseUrlDomainField(
     OutlinedTextField(
         modifier = Modifier.fillMaxWidth(),
         value = value,
-        onValueChange = { raw ->
-            val v = raw
+        onValueChange = { input ->
+            val value = input
                 .trim()
                 .removePrefix("https://")
                 .removePrefix("http://")
                 .removeSuffix("/api")
                 .removeSuffix("/api/")
                 .trim('/')
-            onValueChange(v)
+            onValueChange(value)
         },
         enabled = enabled,
         singleLine = true,

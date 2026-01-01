@@ -1,6 +1,5 @@
 plugins {
-    kotlin("jvm")
-    `java-library`
+    alias(libs.plugins.kotlin.jvm)
 }
 
 java {
@@ -11,6 +10,7 @@ java {
 
 dependencies {
     implementation(project(":core-domain"))
+
     implementation(libs.bundles.coroutines)
     implementation(libs.bundles.retrofit)
 }

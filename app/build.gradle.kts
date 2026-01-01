@@ -13,10 +13,13 @@ android {
 
     defaultConfig {
         applicationId = "su.afk.kemonos"
+
         minSdk = libs.versions.minSdk.get().toInt()
         targetSdk = libs.versions.compileSdk.get().toInt()
+
         versionName = libs.versions.appVersionName.get()
         versionCode = libs.versions.appVersionCode.get().toInt()
+
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
@@ -75,13 +78,19 @@ dependencies {
 
     implementation(project(":common"))
     implementation(project(":navigation"))
-
     implementation(project(":core-domain"))
-    implementation(project(":core"))
-    implementation(project(":core-api"))
 
-    implementation(project(":feature:creators"))
+    implementation(project(":feature:common:commonScreen-api"))
+    implementation(project(":feature:common:commonScreen"))
+
+    implementation(project(":core-api"))
+    implementation(project(":core"))
+
+    implementation(project(":storage-api"))
+    implementation(project(":storage"))
+
     implementation(project(":feature:creators-api"))
+    implementation(project(":feature:creators"))
 
     implementation(project(":feature:creatorProfile-api"))
     implementation(project(":feature:creatorProfile"))
@@ -89,19 +98,19 @@ dependencies {
     implementation(project(":feature:creatorPost-api"))
     implementation(project(":feature:creatorPost"))
 
-    implementation(project(":feature:posts"))
     implementation(project(":feature:posts-api"))
+    implementation(project(":feature:posts"))
 
-    implementation(project(":feature:profile"))
     implementation(project(":feature:profile-api"))
+    implementation(project(":feature:profile"))
 
     implementation(project(":feature:appUpdate-api"))
     implementation(project(":feature:appUpdate"))
 
-    implementation(project(":storage-api"))
-    implementation(project(":storage"))
+    implementation(project(":feature:download-api"))
+    implementation(project(":feature:download"))
 
-    implementation(project(":feature:common:commonScreen"))
-    implementation(project(":feature:common:commonScreen-api"))
+    implementation(project(":feature:main-api"))
+    implementation(project(":feature:main"))
 }
 
