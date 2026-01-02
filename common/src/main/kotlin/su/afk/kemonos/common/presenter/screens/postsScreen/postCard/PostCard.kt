@@ -17,7 +17,7 @@ import androidx.compose.ui.unit.dp
 import su.afk.kemonos.common.R
 import su.afk.kemonos.common.util.selectDomain.getImageBaseUrlByService
 import su.afk.kemonos.common.util.toUiDateTime
-import su.afk.kemonos.domain.domain.models.PostDomain
+import su.afk.kemonos.domain.models.PostDomain
 
 @Composable
 fun PostCard(

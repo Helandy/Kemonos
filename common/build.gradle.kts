@@ -18,13 +18,14 @@ android {
         sourceCompatibility = JavaVersion.VERSION_21
         targetCompatibility = JavaVersion.VERSION_21
     }
+    kotlinOptions {
+        freeCompilerArgs = listOf("-XXLanguage:+PropertyParamAnnotationDefaultTargetMode")
+    }
 }
 
 dependencies {
     ksp(libs.dagger.hilt.compiler)
     implementation(libs.bundles.hilt)
-
-    implementation(libs.bundles.lifecycle)
 
     implementation(libs.bundles.retrofit)
     implementation(libs.bundles.serialization.json)
@@ -38,15 +39,12 @@ dependencies {
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.bundles.compose.core)
 
-    implementation(libs.bundles.androidx.base)
     implementation(libs.bundles.coil)
-    implementation(libs.bundles.accompanist)
-    implementation(libs.bundles.media3)
-    implementation(libs.bundles.datastore)
 
     implementation(project(":navigation"))
-    implementation(project(":core-domain"))
-    implementation(project(":core-api"))
+    implementation(project(":core:domain"))
+    implementation(project(":core:network"))
+    implementation(project(":core:preferences"))
     implementation(project(":storage-api"))
     implementation(project(":feature:appUpdate-api"))
     implementation(project(":feature:common:commonScreen-api"))

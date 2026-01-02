@@ -8,7 +8,7 @@ import su.afk.kemonos.common.util.countVideoFiles
 import su.afk.kemonos.common.util.findFirstImagePath
 import su.afk.kemonos.common.util.isAudioFile
 import su.afk.kemonos.common.util.isVideoFile
-import su.afk.kemonos.domain.domain.models.PostDomain
+import su.afk.kemonos.domain.models.PostDomain
 
 @Composable
 internal fun rememberPostCardMeta(post: PostDomain): PostCardMeta {

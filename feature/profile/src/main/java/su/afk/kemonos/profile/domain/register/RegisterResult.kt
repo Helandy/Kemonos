@@ -1,6 +1,6 @@
 package su.afk.kemonos.profile.domain.register
 
-import su.afk.kemonos.domain.domain.models.ErrorItem
+import su.afk.kemonos.domain.models.ErrorItem
 
 enum class UsernameErrorCode { EMPTY }
 enum class PasswordErrorCode { TOO_SHORT }

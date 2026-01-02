@@ -1,6 +1,6 @@
 package su.afk.kemonos.storage.useCases
 
-import su.afk.kemonos.domain.domain.models.Profile
+import su.afk.kemonos.domain.models.Profile
 import su.afk.kemonos.storage.api.StoreProfileUseCase
 import su.afk.kemonos.storage.repository.profile.IStoreProfileRepository
 import javax.inject.Inject

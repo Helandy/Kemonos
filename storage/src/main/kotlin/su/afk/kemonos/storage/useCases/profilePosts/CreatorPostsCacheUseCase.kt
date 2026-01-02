@@ -1,6 +1,6 @@
 package su.afk.kemonos.storage.useCases.profilePosts
 
-import su.afk.kemonos.domain.domain.models.PostDomain
+import su.afk.kemonos.domain.models.PostDomain
 import su.afk.kemonos.storage.api.profilePosts.ICreatorPostsCacheUseCase
 import su.afk.kemonos.storage.repository.profilePosts.ICreatorPostsCacheRepository
 import javax.inject.Inject

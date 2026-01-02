@@ -24,7 +24,7 @@ import su.afk.kemonos.common.shared.view.SharedActionButton
 import su.afk.kemonos.creatorProfile.presenter.model.ProfileTab
 import su.afk.kemonos.creatorProfile.presenter.view.*
 import su.afk.kemonos.creatorProfile.presenter.view.discordProfile.DiscordProfilePlaceholder
-import su.afk.kemonos.domain.domain.models.PostDomain
+import su.afk.kemonos.domain.models.PostDomain
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

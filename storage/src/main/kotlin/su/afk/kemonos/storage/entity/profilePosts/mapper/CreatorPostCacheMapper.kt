@@ -3,9 +3,9 @@ package su.afk.kemonos.storage.entity.profilePosts.mapper
 import kotlinx.serialization.builtins.ListSerializer
 import kotlinx.serialization.builtins.serializer
 import kotlinx.serialization.json.Json
-import su.afk.kemonos.domain.domain.models.AttachmentDomain
-import su.afk.kemonos.domain.domain.models.FileDomain
-import su.afk.kemonos.domain.domain.models.PostDomain
+import su.afk.kemonos.domain.models.AttachmentDomain
+import su.afk.kemonos.domain.models.FileDomain
+import su.afk.kemonos.domain.models.PostDomain
 import su.afk.kemonos.storage.entity.profilePosts.CreatorPostCacheEntity
 import javax.inject.Inject
 import javax.inject.Singleton

@@ -9,7 +9,7 @@ java {
 }
 
 dependencies {
-    implementation(project(":core-domain"))
+    implementation(project(":core:domain"))
 
     implementation(project(":feature:creatorPost-api"))
     implementation(project(":feature:creatorProfile-api"))

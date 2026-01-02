@@ -1,6 +1,6 @@
 package su.afk.kemonos.storage.api
 
-import su.afk.kemonos.domain.domain.models.Profile
+import su.afk.kemonos.domain.models.Profile
 
 interface StoreProfileUseCase {
 

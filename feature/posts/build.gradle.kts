@@ -34,12 +34,11 @@ dependencies {
 
     implementation(project(":common"))
     implementation(project(":navigation"))
-    implementation(project(":core-domain"))
-    implementation(project(":core"))
-    implementation(project(":core-api"))
+    implementation(project(":core:domain"))
+    implementation(project(":core:preferences"))
+    implementation(project(":core:network"))
+
     implementation(project(":feature:posts-api"))
-
     implementation(project(":feature:creatorPost-api"))
-
     implementation(project(":storage-api"))
 }

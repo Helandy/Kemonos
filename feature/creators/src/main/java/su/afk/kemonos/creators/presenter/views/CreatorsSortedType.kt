@@ -4,7 +4,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.stringResource
 import su.afk.kemonos.common.R
 import su.afk.kemonos.common.presenter.views.searchBar.SortOption
-import su.afk.kemonos.domain.domain.models.CreatorsSort
+import su.afk.kemonos.domain.models.CreatorsSort
 
 @Composable
 fun creatorsSortOptions(): List<SortOption<CreatorsSort>> = listOf(

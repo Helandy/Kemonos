@@ -2,7 +2,7 @@ package su.afk.kemonos.creatorProfile.navigation
 
 import androidx.navigation3.runtime.NavKey
 import kotlinx.serialization.Serializable
-import su.afk.kemonos.domain.domain.models.Tag
+import su.afk.kemonos.domain.models.Tag
 
 object CreatorDest {
 

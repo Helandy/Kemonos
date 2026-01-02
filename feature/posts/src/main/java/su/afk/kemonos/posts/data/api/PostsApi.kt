@@ -3,7 +3,7 @@ package su.afk.kemonos.posts.data.api
 import retrofit2.Response
 import retrofit2.http.GET
 import retrofit2.http.Query
-import su.afk.kemonos.core.api.domain.net.intercaptiors.HeaderText
+import su.afk.kemonos.network.creators.HeaderText
 import su.afk.kemonos.posts.data.dto.PostsDto
 import su.afk.kemonos.posts.data.dto.popular.request.PeriodDto
 import su.afk.kemonos.posts.data.dto.popular.response.PopularPostsDto

@@ -1,14 +1,14 @@
 package su.afk.kemonos.storage.useCases
 
-import su.afk.kemonos.core.api.domain.useCase.ISelectedSiteUseCase
-import su.afk.kemonos.core.utils.withIo
-import su.afk.kemonos.domain.domain.models.Creators
-import su.afk.kemonos.domain.domain.models.CreatorsSort
+import su.afk.kemonos.domain.models.Creators
+import su.afk.kemonos.domain.models.CreatorsSort
+import su.afk.kemonos.preferences.site.ISelectedSiteUseCase
 import su.afk.kemonos.storage.api.StoreCreatorsUseCase
 import su.afk.kemonos.storage.entity.creators.CreatorsEntity
 import su.afk.kemonos.storage.entity.creators.CreatorsEntity.Companion.toDomain
 import su.afk.kemonos.storage.entity.creators.CreatorsEntity.Companion.toEntity
 import su.afk.kemonos.storage.repository.creators.IStoreCreatorsRepository
+import su.afk.kemonos.utils.withIo
 import javax.inject.Inject
 
 internal class StoreCreatorsUseCaseImpl @Inject constructor(

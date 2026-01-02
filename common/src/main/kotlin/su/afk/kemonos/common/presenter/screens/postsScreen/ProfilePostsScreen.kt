@@ -11,8 +11,8 @@ import androidx.paging.LoadState
 import androidx.paging.compose.LazyPagingItems
 import su.afk.kemonos.common.presenter.screens.postsScreen.paging.PagingAppendStateItem
 import su.afk.kemonos.common.presenter.screens.postsScreen.postCard.PostCard
-import su.afk.kemonos.domain.domain.models.ErrorItem
-import su.afk.kemonos.domain.domain.models.PostDomain
+import su.afk.kemonos.domain.models.ErrorItem
+import su.afk.kemonos.domain.models.PostDomain
 
 sealed interface PostsSource<T : Any> {
     data class Paging<T : Any>(val items: LazyPagingItems<T>) : PostsSource<T>

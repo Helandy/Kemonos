@@ -18,7 +18,7 @@ import androidx.compose.ui.unit.dp
 import androidx.core.net.toUri
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import su.afk.kemonos.app.update.api.model.AppUpdateInfo
-import su.afk.kemonos.domain.domain.models.ErrorItem
+import su.afk.kemonos.domain.models.ErrorItem
 import su.afk.kemonos.main.presenter.view.MainApiUnavailableCard
 import su.afk.kemonos.main.presenter.view.MainLoading
 import su.afk.kemonos.main.presenter.view.MainSuccess

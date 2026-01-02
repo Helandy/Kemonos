@@ -1,10 +1,10 @@
 package su.afk.kemonos.creatorPost.data.repository
 
-import su.afk.kemonos.core.api.domain.net.helpers.call
 import su.afk.kemonos.creatorPost.api.domain.model.CommentDomain
 import su.afk.kemonos.creatorPost.api.domain.model.CommentDomain.Companion.emptyComment
 import su.afk.kemonos.creatorPost.data.api.PostsApi
 import su.afk.kemonos.creatorPost.data.dto.comments.ProfilePostCommentsDto.Companion.toDomain
+import su.afk.kemonos.network.util.call
 import su.afk.kemonos.storage.api.IStoreCommentsUseCase
 import javax.inject.Inject
 

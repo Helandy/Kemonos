@@ -1,7 +1,7 @@
 package su.afk.kemonos.storage.useCases.popular
 
-import su.afk.kemonos.api.domain.popular.PopularPosts
 import su.afk.kemonos.domain.SelectedSite
+import su.afk.kemonos.posts.api.popular.PopularPosts
 import su.afk.kemonos.storage.api.popular.IPopularPostsCacheUseCase
 import su.afk.kemonos.storage.repository.popular.IPopularPostsCacheRepository
 import javax.inject.Inject

@@ -39,9 +39,10 @@ dependencies {
     implementation(project(":common"))
     implementation(project(":navigation"))
 
-    implementation(project(":core-domain"))
-    implementation(project(":core"))
-    implementation(project(":core-api"))
+    implementation(project(":core:domain"))
+    implementation(project(":core:auth"))
+    implementation(project(":core:network"))
+    implementation(project(":core:preferences"))
     implementation(project(":storage-api"))
 
     implementation(project(":feature:profile-api"))

@@ -1,7 +1,7 @@
 package su.afk.kemonos.storage.useCases.tags
 
-import su.afk.kemonos.api.domain.tags.Tags
 import su.afk.kemonos.domain.SelectedSite
+import su.afk.kemonos.posts.api.tags.Tags
 import su.afk.kemonos.storage.api.tags.IStoreTagsUseCase
 import su.afk.kemonos.storage.repository.tags.IStoreTagsRepository
 import javax.inject.Inject

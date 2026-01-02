@@ -1,8 +1,8 @@
 package su.afk.kemonos.posts.presenter.pagePopularPosts.utils
 
 import android.content.Context
-import su.afk.kemonos.api.domain.popular.PopularNavigationDates
 import su.afk.kemonos.posts.R
+import su.afk.kemonos.posts.api.popular.PopularNavigationDates
 import su.afk.kemonos.posts.domain.model.popular.Period
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter

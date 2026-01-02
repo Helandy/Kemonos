@@ -43,12 +43,13 @@ dependencies {
     implementation(project(":common"))
     implementation(project(":navigation"))
 
-    implementation(project(":core-domain"))
-    implementation(project(":core"))
-    implementation(project(":core-api"))
-    implementation(project(":storage-api"))
-    implementation(project(":feature:creatorProfile-api"))
+    implementation(project(":core:domain"))
+    implementation(project(":core:auth"))
+    implementation(project(":core:network"))
+    implementation(project(":core:preferences"))
 
+    implementation(project(":feature:creatorProfile-api"))
+    implementation(project(":storage-api"))
     implementation(project(":feature:profile-api"))
     implementation(project(":feature:creatorPost-api"))
     implementation(project(":feature:videoPlayer"))

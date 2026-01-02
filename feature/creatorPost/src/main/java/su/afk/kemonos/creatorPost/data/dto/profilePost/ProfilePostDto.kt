@@ -1,15 +1,15 @@
 package su.afk.kemonos.creatorPost.data.dto.profilePost
 
 import com.google.gson.annotations.SerializedName
-import su.afk.kemonos.common.data.common.AttachmentDto
-import su.afk.kemonos.common.data.common.AttachmentDto.Companion.toDomain
-import su.afk.kemonos.common.data.common.PostUnifiedDto
-import su.afk.kemonos.common.data.common.PostUnifiedDto.Companion.toDomain
+import su.afk.kemonos.common.data.dto.AttachmentDto
+import su.afk.kemonos.common.data.dto.AttachmentDto.Companion.toDomain
+import su.afk.kemonos.common.data.dto.PostUnifiedDto
+import su.afk.kemonos.common.data.dto.PostUnifiedDto.Companion.toDomain
 import su.afk.kemonos.creatorPost.api.domain.model.PostContentDomain
 import su.afk.kemonos.creatorPost.data.dto.profilePost.PreviewDto.Companion.toDomain
 import su.afk.kemonos.creatorPost.data.dto.profilePost.VideoDto.Companion.toDomain
-import su.afk.kemonos.domain.domain.models.PreviewDomain
-import su.afk.kemonos.domain.domain.models.VideoDomain
+import su.afk.kemonos.domain.models.PreviewDomain
+import su.afk.kemonos.domain.models.VideoDomain
 
 internal data class PostResponseDto(
     @SerializedName("post")

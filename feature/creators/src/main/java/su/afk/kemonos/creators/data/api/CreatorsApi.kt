@@ -2,9 +2,9 @@ package su.afk.kemonos.creators.data.api
 
 import retrofit2.Response
 import retrofit2.http.GET
-import su.afk.kemonos.common.data.creators.CreatorsDto
-import su.afk.kemonos.core.api.domain.net.intercaptiors.HeaderText
-import su.afk.kemonos.creators.data.data.RandomCreatorDto
+import su.afk.kemonos.creators.data.dto.CreatorsDto
+import su.afk.kemonos.creators.data.dto.RandomCreatorDto
+import su.afk.kemonos.network.creators.HeaderText
 
 internal interface CreatorsApi {
 

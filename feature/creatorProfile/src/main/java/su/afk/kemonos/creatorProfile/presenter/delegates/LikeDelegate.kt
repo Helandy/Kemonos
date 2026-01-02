@@ -1,11 +1,11 @@
 package su.afk.kemonos.creatorProfile.presenter.delegates
 
 import kotlinx.coroutines.flow.first
-import su.afk.kemonos.core.api.domain.useCase.ISelectedSiteUseCase
-import su.afk.kemonos.core.auth.IsAuthCoomerUseCase
-import su.afk.kemonos.core.auth.IsAuthKemonoUseCase
+import su.afk.kemonos.auth.IsAuthCoomerUseCase
+import su.afk.kemonos.auth.IsAuthKemonoUseCase
 import su.afk.kemonos.creatorProfile.domain.FavoritesCreatorUseCase
 import su.afk.kemonos.domain.SelectedSite
+import su.afk.kemonos.preferences.site.ISelectedSiteUseCase
 import javax.inject.Inject
 
 internal class LikeDelegate @Inject constructor(

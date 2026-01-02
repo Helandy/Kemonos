@@ -1,7 +1,7 @@
 package su.afk.kemonos.creatorProfile.domain.useCase
 
 import su.afk.kemonos.creatorProfile.data.CreatorsRepository
-import su.afk.kemonos.domain.domain.models.Tag
+import su.afk.kemonos.domain.models.Tag
 import javax.inject.Inject
 
 

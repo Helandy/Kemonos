@@ -6,8 +6,8 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import su.afk.kemonos.common.presenter.baseViewModel.BaseViewModel
-import su.afk.kemonos.core.api.domain.useCase.ISelectedSiteUseCase
 import su.afk.kemonos.domain.SelectedSite
+import su.afk.kemonos.preferences.site.ISelectedSiteUseCase
 
 abstract class SiteAwareBaseViewModel<S>(
     initialState: S,

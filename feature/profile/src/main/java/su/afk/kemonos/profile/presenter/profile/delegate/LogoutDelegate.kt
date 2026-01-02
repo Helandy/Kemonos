@@ -2,7 +2,7 @@ package su.afk.kemonos.profile.presenter.profile.delegate
 
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
-import su.afk.kemonos.core.auth.ClearAuthUseCase
+import su.afk.kemonos.auth.ClearAuthUseCase
 import su.afk.kemonos.domain.SelectedSite
 import su.afk.kemonos.profile.presenter.profile.ProfileState
 import javax.inject.Inject

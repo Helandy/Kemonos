@@ -4,13 +4,14 @@ import retrofit2.Response
 import retrofit2.http.GET
 import retrofit2.http.Path
 import retrofit2.http.Query
-import su.afk.kemonos.common.data.common.PostUnifiedDto
-import su.afk.kemonos.core.api.domain.net.intercaptiors.HeaderText
+import su.afk.kemonos.common.data.dto.PostUnifiedDto
+import su.afk.kemonos.creatorProfile.data.dto.profile.ProfileDto
 import su.afk.kemonos.creatorProfile.data.dto.profileAnnouncements.ProfileAnnouncementsDto
 import su.afk.kemonos.creatorProfile.data.dto.profileDms.DmDto
 import su.afk.kemonos.creatorProfile.data.dto.profileFanCards.ProfileFanCardsDto
 import su.afk.kemonos.creatorProfile.data.dto.profileLinks.ProfileLinksDto
 import su.afk.kemonos.creatorProfile.data.dto.profileTags.TagDto
+import su.afk.kemonos.network.creators.HeaderText
 
 internal interface CreatorProfileApi {
 
@@ -64,4 +65,12 @@ internal interface CreatorProfileApi {
         @Path("service") service: String,
         @Path("id") id: String,
     ): Response<List<ProfileLinksDto>>
+
+    /** Профиль */
+    @HeaderText
+    @GET("v1/{service}/user/{id}/profile")
+    suspend fun getProfile(
+        @Path("service") service: String,
+        @Path("id") id: String
+    ): Response<ProfileDto>
 }

@@ -31,7 +31,8 @@ dependencies {
 
     implementation(libs.bundles.navigation3)
 
-    implementation(project(":core-domain"))
+    implementation(project(":core:domain"))
+    implementation(project(":feature:main-api"))
     implementation(project(":feature:posts-api"))
     implementation(project(":feature:creators-api"))
     implementation(project(":feature:profile-api"))

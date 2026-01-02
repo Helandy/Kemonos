@@ -1,7 +1,7 @@
 package su.afk.kemonos.storage.repository.postsSearch
 
 import su.afk.kemonos.domain.SelectedSite
-import su.afk.kemonos.domain.domain.models.PostDomain
+import su.afk.kemonos.domain.models.PostDomain
 import su.afk.kemonos.storage.entity.postsSearch.dao.CoomerPostsSearchCacheDao
 import su.afk.kemonos.storage.entity.postsSearch.dao.KemonoPostsSearchCacheDao
 import su.afk.kemonos.storage.entity.postsSearch.mapper.PostsSearchCacheMapper

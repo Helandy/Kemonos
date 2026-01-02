@@ -9,15 +9,13 @@ import dagger.assisted.AssistedInject
 import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.receiveAsFlow
-import su.afk.kemonos.common.domain.useCase.GetProfileUseCase
 import su.afk.kemonos.common.error.IErrorHandlerUseCase
 import su.afk.kemonos.common.error.storage.RetryStorage
 import su.afk.kemonos.common.presenter.baseViewModel.BaseViewModel
 import su.afk.kemonos.common.shared.ShareActions
 import su.afk.kemonos.common.shared.ShareLinkBuilder
 import su.afk.kemonos.common.shared.ShareTarget
-import su.afk.kemonos.core.preferences.GetKemonoRootUrlUseCase
-import su.afk.kemonos.core.preferences.IGetCurrentSiteRootUrlUseCase
+import su.afk.kemonos.creatorProfile.api.IGetProfileUseCase
 import su.afk.kemonos.creatorProfile.api.domain.models.profileLinks.ProfileLink
 import su.afk.kemonos.creatorProfile.domain.paging.GetProfilePostsPagingUseCase
 import su.afk.kemonos.creatorProfile.navigation.CreatorDest
@@ -25,14 +23,16 @@ import su.afk.kemonos.creatorProfile.presenter.delegates.LikeDelegate
 import su.afk.kemonos.creatorProfile.presenter.delegates.LoadingTabsContent
 import su.afk.kemonos.creatorProfile.presenter.delegates.NavigationDelegate
 import su.afk.kemonos.creatorProfile.presenter.model.ProfileTab
-import su.afk.kemonos.domain.domain.models.PostDomain
-import su.afk.kemonos.domain.domain.models.Tag
+import su.afk.kemonos.domain.models.PostDomain
+import su.afk.kemonos.domain.models.Tag
 import su.afk.kemonos.navigation.NavigationManager
+import su.afk.kemonos.preferences.GetKemonoRootUrlUseCase
+import su.afk.kemonos.preferences.IGetCurrentSiteRootUrlUseCase
 
 internal class CreatorProfileViewModel @AssistedInject constructor(
     @Assisted private val dest: CreatorDest.CreatorProfile,
     private val errorHandlerUseCase: IErrorHandlerUseCase,
-    private val getProfileUseCase: GetProfileUseCase,
+    private val getProfileUseCase: IGetProfileUseCase,
     private val getKemonoRootUrlUseCase: GetKemonoRootUrlUseCase,
     private val getCurrentSiteRootUrlUseCase: IGetCurrentSiteRootUrlUseCase,
     private val likeDelegate: LikeDelegate,

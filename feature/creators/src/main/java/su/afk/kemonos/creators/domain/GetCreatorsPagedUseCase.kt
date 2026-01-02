@@ -5,8 +5,8 @@ import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import kotlinx.coroutines.flow.Flow
 import su.afk.kemonos.creators.data.ICreatorsRepository
-import su.afk.kemonos.domain.domain.models.Creators
-import su.afk.kemonos.domain.domain.models.CreatorsSort
+import su.afk.kemonos.domain.models.Creators
+import su.afk.kemonos.domain.models.CreatorsSort
 import su.afk.kemonos.storage.api.StoreCreatorsUseCase
 import javax.inject.Inject
 

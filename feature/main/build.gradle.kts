@@ -19,6 +19,7 @@ android {
         targetCompatibility = JavaVersion.VERSION_21
     }
 }
+
 dependencies {
     ksp(libs.dagger.hilt.compiler)
     implementation(libs.bundles.hilt)
@@ -31,12 +32,15 @@ dependencies {
 
     implementation(project(":common"))
     implementation(project(":navigation"))
-    implementation(project(":core-domain"))
-    implementation(project(":core"))
-    implementation(project(":core-api"))
 
+    implementation(project(":core:domain"))
+    implementation(project(":core:auth"))
+    implementation(project(":core:preferences"))
+    implementation(project(":core:network"))
+
+    implementation(project(":feature:main-api"))
+    implementation(project(":feature:posts-api"))
     implementation(project(":feature:appUpdate-api"))
     implementation(project(":feature:profile-api"))
-
     implementation(project(":storage-api"))
 }

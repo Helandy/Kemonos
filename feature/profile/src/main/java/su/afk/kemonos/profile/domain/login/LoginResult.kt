@@ -1,6 +1,6 @@
 package su.afk.kemonos.profile.domain.login
 
-import su.afk.kemonos.domain.domain.models.ErrorItem
+import su.afk.kemonos.domain.models.ErrorItem
 
 enum class LoginUsernameErrorCode { EMPTY }
 enum class LoginPasswordErrorCode { EMPTY }

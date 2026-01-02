@@ -34,7 +34,10 @@ local.properties
 /feature/common/commonScreen-api/build/*
 /common/build/*
 /core/build/*
-/core-api/build/*
+/core/auth/build/*
+/core/network/build/*
+/core/preferences/build/*
+/core/utils/build/*
 /storage/build/*
 /navigation/build/*
 /navigation-api/build/*

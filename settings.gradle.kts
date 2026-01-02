@@ -24,13 +24,15 @@ include(":app")
 
 include(":common")
 include(":navigation")
-include(":core-domain")
 
 include(":feature:common:commonScreen-api")
 include(":feature:common:commonScreen")
 
-include(":core-api")
-include(":core")
+include(":core:domain")
+include(":core:auth")
+include(":core:network")
+include(":core:preferences")
+include(":core:utils")
 
 include(":storage-api")
 include(":storage")

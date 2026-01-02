@@ -1,7 +1,7 @@
 package su.afk.kemonos.posts.data.dto.tags
 
 import com.google.gson.annotations.SerializedName
-import su.afk.kemonos.api.domain.tags.Tags
+import su.afk.kemonos.posts.api.tags.Tags
 
 internal data class TagsDto(
     @SerializedName("tag")
