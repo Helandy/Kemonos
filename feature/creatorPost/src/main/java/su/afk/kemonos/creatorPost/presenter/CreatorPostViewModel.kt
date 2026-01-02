@@ -9,7 +9,6 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
-import su.afk.kemonos.common.domain.useCase.GetProfileUseCase
 import su.afk.kemonos.common.error.IErrorHandlerUseCase
 import su.afk.kemonos.common.error.storage.RetryStorage
 import su.afk.kemonos.common.presenter.baseViewModel.BaseViewModel
@@ -23,13 +22,14 @@ import su.afk.kemonos.creatorPost.domain.useCase.GetVideoInfoUseCase
 import su.afk.kemonos.creatorPost.navigation.CreatorPostDest
 import su.afk.kemonos.creatorPost.presenter.delegates.LikeDelegate
 import su.afk.kemonos.creatorPost.presenter.delegates.NavigateDelegates
+import su.afk.kemonos.creatorProfile.api.IGetProfileUseCase
 import su.afk.kemonos.preferences.IGetCurrentSiteRootUrlUseCase
 
 internal class CreatorPostViewModel @AssistedInject constructor(
     @Assisted private val dest: CreatorPostDest.CreatorPost,
     private val getCommentsUseCase: GetCommentsUseCase,
     private val getPostUseCase: GetPostUseCase,
-    private val getProfileUseCase: GetProfileUseCase,
+    private val getProfileUseCase: IGetProfileUseCase,
     private val getCurrentSiteRootUrlUseCase: IGetCurrentSiteRootUrlUseCase,
     private val getVideoInfo: GetVideoInfoUseCase,
     private val likeDelegate: LikeDelegate,

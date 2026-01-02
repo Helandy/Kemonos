@@ -9,13 +9,13 @@ import dagger.assisted.AssistedInject
 import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.receiveAsFlow
-import su.afk.kemonos.common.domain.useCase.GetProfileUseCase
 import su.afk.kemonos.common.error.IErrorHandlerUseCase
 import su.afk.kemonos.common.error.storage.RetryStorage
 import su.afk.kemonos.common.presenter.baseViewModel.BaseViewModel
 import su.afk.kemonos.common.shared.ShareActions
 import su.afk.kemonos.common.shared.ShareLinkBuilder
 import su.afk.kemonos.common.shared.ShareTarget
+import su.afk.kemonos.creatorProfile.api.IGetProfileUseCase
 import su.afk.kemonos.creatorProfile.api.domain.models.profileLinks.ProfileLink
 import su.afk.kemonos.creatorProfile.domain.paging.GetProfilePostsPagingUseCase
 import su.afk.kemonos.creatorProfile.navigation.CreatorDest
@@ -32,7 +32,7 @@ import su.afk.kemonos.preferences.IGetCurrentSiteRootUrlUseCase
 internal class CreatorProfileViewModel @AssistedInject constructor(
     @Assisted private val dest: CreatorDest.CreatorProfile,
     private val errorHandlerUseCase: IErrorHandlerUseCase,
-    private val getProfileUseCase: GetProfileUseCase,
+    private val getProfileUseCase: IGetProfileUseCase,
     private val getKemonoRootUrlUseCase: GetKemonoRootUrlUseCase,
     private val getCurrentSiteRootUrlUseCase: IGetCurrentSiteRootUrlUseCase,
     private val likeDelegate: LikeDelegate,

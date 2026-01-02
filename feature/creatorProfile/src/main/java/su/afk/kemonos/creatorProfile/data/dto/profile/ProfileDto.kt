@@ -1,9 +1,9 @@
-package su.afk.kemonos.common.data.profile
+package su.afk.kemonos.creatorProfile.data.dto.profile
 
 import com.google.gson.annotations.SerializedName
 import su.afk.kemonos.domain.models.Profile
 
-data class ProfileDto(
+internal data class ProfileDto(
     @SerializedName("has_chats")
     val has_chats: Boolean?,
     @SerializedName("id")
