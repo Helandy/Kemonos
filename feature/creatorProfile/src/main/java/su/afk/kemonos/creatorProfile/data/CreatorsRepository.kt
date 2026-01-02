@@ -1,6 +1,6 @@
 package su.afk.kemonos.creatorProfile.data
 
-import su.afk.kemonos.common.data.common.PostUnifiedDto.Companion.toDomain
+import su.afk.kemonos.common.data.dto.PostUnifiedDto.Companion.toDomain
 import su.afk.kemonos.creatorProfile.api.domain.models.profileAnnouncements.ProfileAnnouncement
 import su.afk.kemonos.creatorProfile.api.domain.models.profileDms.Dm
 import su.afk.kemonos.creatorProfile.api.domain.models.profileFanCards.ProfileFanCard

@@ -1,4 +1,4 @@
-package su.afk.kemonos.api.domain.popular
+package su.afk.kemonos.posts.api.popular
 
 import kotlinx.serialization.Serializable
 import su.afk.kemonos.domain.models.PostDomain

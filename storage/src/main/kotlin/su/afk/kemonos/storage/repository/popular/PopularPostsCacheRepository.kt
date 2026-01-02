@@ -1,8 +1,8 @@
 package su.afk.kemonos.storage.repository.popular
 
 import kotlinx.serialization.json.Json
-import su.afk.kemonos.api.domain.popular.PopularPosts
 import su.afk.kemonos.domain.SelectedSite
+import su.afk.kemonos.posts.api.popular.PopularPosts
 import su.afk.kemonos.storage.entity.popular.PostsPopularCacheEntity
 import su.afk.kemonos.storage.entity.popular.dao.CoomerPostsPopularCacheDao
 import su.afk.kemonos.storage.entity.popular.dao.KemonoPostsPopularCacheDao

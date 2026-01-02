@@ -39,6 +39,7 @@ dependencies {
     implementation(project(":core:network"))
 
     implementation(project(":feature:main-api"))
+    implementation(project(":feature:posts-api"))
     implementation(project(":feature:appUpdate-api"))
     implementation(project(":feature:profile-api"))
     implementation(project(":storage-api"))

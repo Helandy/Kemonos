@@ -1,4 +1,4 @@
-package su.afk.kemonos.creators.data.data
+package su.afk.kemonos.creators.data.dto
 
 import com.google.gson.annotations.SerializedName
 import su.afk.kemonos.creators.domain.model.RandomCreator

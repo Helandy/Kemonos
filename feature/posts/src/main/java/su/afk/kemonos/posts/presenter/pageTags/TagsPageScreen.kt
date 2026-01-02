@@ -19,11 +19,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import su.afk.kemonos.api.domain.tags.Tags
 import su.afk.kemonos.common.R
 import su.afk.kemonos.common.presenter.baseScreen.BaseScreen
 import su.afk.kemonos.common.presenter.baseScreen.StandardTopBar
 import su.afk.kemonos.common.presenter.changeSite.SiteToggleFab
+import su.afk.kemonos.posts.api.tags.Tags
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

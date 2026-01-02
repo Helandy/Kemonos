@@ -1,4 +1,4 @@
-package su.afk.kemonos.common.repository.checkApi
+package su.afk.kemonos.posts.api.apiCheck
 
 import su.afk.kemonos.domain.models.ErrorItem
 

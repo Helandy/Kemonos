@@ -1,14 +1,14 @@
 package su.afk.kemonos.main.presenter.delegates
 
-import su.afk.kemonos.common.repository.checkApi.ICheckApiRepository
 import su.afk.kemonos.domain.models.ErrorItem
+import su.afk.kemonos.posts.api.ICheckApiUseCase
 import javax.inject.Inject
 
 internal class ApiCheckDelegate @Inject constructor(
-    private val repository: ICheckApiRepository,
+    private val checkApiUseCase: ICheckApiUseCase,
 ) {
     suspend fun check(): ApiCheckUiResult {
-        val check = repository.getApiCheck()
+        val check = checkApiUseCase()
         return if (check.success) ApiCheckUiResult.Success
         else ApiCheckUiResult.Failure(check.error)
     }

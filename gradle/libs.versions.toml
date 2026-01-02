@@ -26,7 +26,6 @@ securityCrypto = "1.1.0"
 # Для BOM не задавать вручную версии для compose libs
 # foundation/material3/icons/etс должно подтягиваться BOM
 composeBom = "2025.12.01"
-material = "1.13.0"
 
 # --- DI
 hilt = "2.57.2"
@@ -64,7 +63,6 @@ espresso = "3.7.0"
 # --- Base AndroidX
 androidx-core-ktx = { module = "androidx.core:core-ktx", version.ref = "androidxCore" }
 androidx-appcompat = { module = "androidx.appcompat:appcompat", version.ref = "appcompat" }
-material = { module = "com.google.android.material:material", version.ref = "material" }
 
 # --- Lifecycle
 androidx-lifecycle-runtime-ktx = { module = "androidx.lifecycle:lifecycle-runtime-ktx", version.ref = "lifecycle" }
@@ -165,12 +163,6 @@ ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 
 
 [bundles]
-androidx-base = [
-    "androidx-core-ktx",
-    "androidx-appcompat",
-    "material",
-]
-
 coroutines = [
     "kotlinx-coroutines-android",
 ]
@@ -183,6 +175,8 @@ lifecycle = [
 ]
 
 compose-core = [
+    "androidx-core-ktx",
+    "androidx-appcompat",
     "androidx-activity-compose",
     "androidx-foundation",
     "material3",

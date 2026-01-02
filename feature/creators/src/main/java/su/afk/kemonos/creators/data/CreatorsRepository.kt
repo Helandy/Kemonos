@@ -1,8 +1,8 @@
 package su.afk.kemonos.creators.data
 
-import su.afk.kemonos.common.data.creators.CreatorsDto.Companion.toDomain
 import su.afk.kemonos.creators.data.api.CreatorsApi
-import su.afk.kemonos.creators.data.data.RandomCreatorDto.Companion.toDomain
+import su.afk.kemonos.creators.data.dto.CreatorsDto.Companion.toDomain
+import su.afk.kemonos.creators.data.dto.RandomCreatorDto.Companion.toDomain
 import su.afk.kemonos.creators.domain.model.RandomCreator
 import su.afk.kemonos.domain.models.Creators
 import su.afk.kemonos.domain.models.CreatorsSort

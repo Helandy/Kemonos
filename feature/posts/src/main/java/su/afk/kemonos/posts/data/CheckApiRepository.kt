@@ -1,8 +1,9 @@
-package su.afk.kemonos.common.repository.checkApi
+package su.afk.kemonos.posts.data
 
-import su.afk.kemonos.common.api.KemonoApi
 import su.afk.kemonos.common.error.IErrorHandlerUseCase
 import su.afk.kemonos.domain.models.ErrorItem
+import su.afk.kemonos.posts.api.apiCheck.ApiCheckResult
+import su.afk.kemonos.posts.data.api.PostsApi
 import javax.inject.Inject
 
 interface ICheckApiRepository {
@@ -10,14 +11,14 @@ interface ICheckApiRepository {
 }
 
 internal class CheckApiRepository @Inject constructor(
-    private val api: KemonoApi,
+    private val api: PostsApi,
     private val errorHandler: IErrorHandlerUseCase,
 ) : ICheckApiRepository {
 
     /** проверка доступности Api сайта */
     override suspend fun getApiCheck(): ApiCheckResult {
         return try {
-            val resp = api.checkApiGetPosts()
+            val resp = api.getPosts()
 
             if (resp.isSuccessful) {
                 ApiCheckResult(success = true)

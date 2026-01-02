@@ -1,7 +1,7 @@
 package su.afk.kemonos.storage.repository.tags
 
-import su.afk.kemonos.api.domain.tags.Tags
 import su.afk.kemonos.domain.SelectedSite
+import su.afk.kemonos.posts.api.tags.Tags
 import su.afk.kemonos.preferences.useCase.CacheTimestampUseCase
 import su.afk.kemonos.storage.entity.tags.TagsEntity.Companion.toDomain
 import su.afk.kemonos.storage.entity.tags.TagsEntity.Companion.toEntity

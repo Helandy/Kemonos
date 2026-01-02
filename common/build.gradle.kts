@@ -27,8 +27,6 @@ dependencies {
     ksp(libs.dagger.hilt.compiler)
     implementation(libs.bundles.hilt)
 
-    implementation(libs.bundles.lifecycle)
-
     implementation(libs.bundles.retrofit)
     implementation(libs.bundles.serialization.json)
 
@@ -41,11 +39,7 @@ dependencies {
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.bundles.compose.core)
 
-    implementation(libs.bundles.androidx.base)
     implementation(libs.bundles.coil)
-    implementation(libs.bundles.accompanist)
-    implementation(libs.bundles.media3)
-    implementation(libs.bundles.datastore)
 
     implementation(project(":navigation"))
     implementation(project(":core:domain"))

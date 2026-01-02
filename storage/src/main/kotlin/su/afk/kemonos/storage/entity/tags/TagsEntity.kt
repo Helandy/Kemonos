@@ -1,7 +1,7 @@
 package su.afk.kemonos.storage.entity.tags
 
 import androidx.room.Entity
-import su.afk.kemonos.api.domain.tags.Tags
+import su.afk.kemonos.posts.api.tags.Tags
 
 @Entity(
     tableName = "tags",

@@ -5,8 +5,8 @@ import dagger.Module
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import dagger.multibindings.IntoSet
-import su.afk.kemonos.api.IPostsNavigator
 import su.afk.kemonos.navigation.NavRegistrar
+import su.afk.kemonos.posts.api.IPostsNavigator
 import su.afk.kemonos.posts.navigation.PostsNavigator
 import su.afk.kemonos.posts.presenter.pager.PostsPagerNavigator
 import su.afk.kemonos.posts.presenter.tagsSelect.NavigatorTagsSelect

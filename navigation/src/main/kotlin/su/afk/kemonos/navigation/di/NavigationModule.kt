@@ -5,11 +5,11 @@ import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
-import su.afk.kemonos.api.IPostsNavigator
 import su.afk.kemonos.creators.ICreatorsNavigator
 import su.afk.kemonos.main.api.IMainNavigator
 import su.afk.kemonos.navigation.NavigationManager
 import su.afk.kemonos.navigation.tab.BottomTab
+import su.afk.kemonos.posts.api.IPostsNavigator
 import su.afk.kemonos.profile.api.domain.IProfileNavigator
 import javax.inject.Singleton
 
