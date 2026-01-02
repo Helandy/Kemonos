@@ -46,7 +46,8 @@ dependencies {
 
     implementation(project(":navigation"))
     implementation(project(":core-domain"))
-    implementation(project(":core-api"))
+    implementation(project(":core:network"))
+    implementation(project(":core:preferences"))
     implementation(project(":storage-api"))
     implementation(project(":feature:appUpdate-api"))
     implementation(project(":feature:common:commonScreen-api"))

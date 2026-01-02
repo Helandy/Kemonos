@@ -1,7 +1,7 @@
 package su.afk.kemonos.storage.repository.favorites.artist
 
-import su.afk.kemonos.core.api.domain.useCase.CacheTimestampUseCase
 import su.afk.kemonos.domain.SelectedSite
+import su.afk.kemonos.preferences.useCase.CacheTimestampUseCase
 import su.afk.kemonos.profile.api.model.FavoriteArtist
 import su.afk.kemonos.storage.entity.favorites.artist.FavoriteArtistEntity.Companion.toDomain
 import su.afk.kemonos.storage.entity.favorites.artist.FavoriteArtistEntity.Companion.toEntity

@@ -3,7 +3,7 @@ package su.afk.kemonos.main.presenter.delegates
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
-import su.afk.kemonos.core.api.domain.useCase.IGetBaseUrlsUseCase
+import su.afk.kemonos.preferences.siteUrl.IGetBaseUrlsUseCase
 import javax.inject.Inject
 
 internal class BaseUrlsObserveDelegate @Inject constructor(

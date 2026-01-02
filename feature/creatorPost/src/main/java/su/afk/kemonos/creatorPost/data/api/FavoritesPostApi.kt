@@ -4,7 +4,7 @@ import retrofit2.Response
 import retrofit2.http.DELETE
 import retrofit2.http.POST
 import retrofit2.http.Path
-import su.afk.kemonos.core.api.domain.net.intercaptiors.auth.AuthCookie
+import su.afk.kemonos.network.auth.AuthCookie
 
 internal interface FavoritesPostApi {
 

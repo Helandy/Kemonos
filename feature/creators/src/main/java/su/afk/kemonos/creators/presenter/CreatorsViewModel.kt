@@ -8,7 +8,6 @@ import kotlinx.coroutines.launch
 import su.afk.kemonos.common.error.IErrorHandlerUseCase
 import su.afk.kemonos.common.error.storage.RetryStorage
 import su.afk.kemonos.common.presenter.changeSite.SiteAwareBaseViewModel
-import su.afk.kemonos.core.api.domain.useCase.ISelectedSiteUseCase
 import su.afk.kemonos.creatorProfile.api.ICreatorProfileNavigator
 import su.afk.kemonos.creators.domain.GetCreatorsPagedUseCase
 import su.afk.kemonos.creators.domain.RandomCreatorUseCase
@@ -16,6 +15,7 @@ import su.afk.kemonos.domain.SelectedSite
 import su.afk.kemonos.domain.domain.models.Creators
 import su.afk.kemonos.domain.domain.models.CreatorsSort
 import su.afk.kemonos.navigation.NavigationManager
+import su.afk.kemonos.preferences.site.ISelectedSiteUseCase
 import javax.inject.Inject
 
 @HiltViewModel

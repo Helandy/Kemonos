@@ -1,9 +1,9 @@
 package su.afk.kemonos.creatorPost.data.repository
 
-import su.afk.kemonos.core.api.domain.net.helpers.successOrFalse
 import su.afk.kemonos.creatorPost.data.api.FavoritesPostApi
 import su.afk.kemonos.domain.SelectedSite
 import su.afk.kemonos.domain.domain.models.PostDomain
+import su.afk.kemonos.network.util.successOrFalse
 import su.afk.kemonos.storage.api.favorites.IStoreFavoritePostsUseCase
 import javax.inject.Inject
 

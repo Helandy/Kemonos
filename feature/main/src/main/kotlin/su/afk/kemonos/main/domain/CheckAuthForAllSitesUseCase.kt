@@ -6,10 +6,10 @@ import kotlinx.coroutines.flow.first
 import su.afk.kemonos.auth.ClearAuthUseCase
 import su.afk.kemonos.auth.IsAuthCoomerUseCase
 import su.afk.kemonos.auth.IsAuthKemonoUseCase
-import su.afk.kemonos.core.api.domain.useCase.ISelectedSiteUseCase
-import su.afk.kemonos.core.network.util.isClientError4xx
-import su.afk.kemonos.core.preferences.site.withSite
 import su.afk.kemonos.domain.SelectedSite
+import su.afk.kemonos.network.util.isClientError4xx
+import su.afk.kemonos.preferences.site.ISelectedSiteUseCase
+import su.afk.kemonos.preferences.site.withSite
 import su.afk.kemonos.profile.api.domain.IGetAccountUseCase
 import javax.inject.Inject
 

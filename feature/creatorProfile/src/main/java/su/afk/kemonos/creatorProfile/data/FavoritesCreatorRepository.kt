@@ -1,8 +1,8 @@
 package su.afk.kemonos.creatorProfile.data
 
-import su.afk.kemonos.core.api.domain.net.helpers.successOrFalse
 import su.afk.kemonos.creatorProfile.data.api.FavoritesCreatorApi
 import su.afk.kemonos.domain.SelectedSite
+import su.afk.kemonos.network.util.successOrFalse
 import su.afk.kemonos.profile.api.domain.IRefreshFavoriteArtists
 import su.afk.kemonos.storage.api.favorites.IStoreFavoriteArtistsUseCase
 import javax.inject.Inject

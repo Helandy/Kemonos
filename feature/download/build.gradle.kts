@@ -35,8 +35,6 @@ dependencies {
     implementation(project(":common"))
     implementation(project(":navigation"))
     implementation(project(":core-domain"))
-    implementation(project(":core:core"))
-    implementation(project(":core-api"))
     implementation(project(":feature:posts-api"))
 
     implementation(project(":feature:creatorPost-api"))

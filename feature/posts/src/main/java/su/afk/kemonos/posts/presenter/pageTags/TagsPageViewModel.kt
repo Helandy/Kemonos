@@ -6,13 +6,13 @@ import su.afk.kemonos.api.domain.tags.Tags
 import su.afk.kemonos.common.error.IErrorHandlerUseCase
 import su.afk.kemonos.common.error.storage.RetryStorage
 import su.afk.kemonos.common.presenter.changeSite.SiteAwareBaseViewModel
-import su.afk.kemonos.core.api.domain.useCase.ISelectedSiteUseCase
-import su.afk.kemonos.core.storage.NavigationStorage
 import su.afk.kemonos.domain.SelectedSite
 import su.afk.kemonos.navigation.NavigationManager
+import su.afk.kemonos.navigation.NavigationStorage
 import su.afk.kemonos.posts.domain.usecase.GetAllTagsUseCase
 import su.afk.kemonos.posts.navigation.PostsDest
 import su.afk.kemonos.posts.presenter.util.Const.KEY_SELECTED_TAG
+import su.afk.kemonos.preferences.site.ISelectedSiteUseCase
 import javax.inject.Inject
 
 @HiltViewModel

@@ -5,12 +5,12 @@ import retrofit2.http.GET
 import retrofit2.http.Path
 import retrofit2.http.Query
 import su.afk.kemonos.common.data.common.PostUnifiedDto
-import su.afk.kemonos.core.api.domain.net.intercaptiors.HeaderText
 import su.afk.kemonos.creatorProfile.data.dto.profileAnnouncements.ProfileAnnouncementsDto
 import su.afk.kemonos.creatorProfile.data.dto.profileDms.DmDto
 import su.afk.kemonos.creatorProfile.data.dto.profileFanCards.ProfileFanCardsDto
 import su.afk.kemonos.creatorProfile.data.dto.profileLinks.ProfileLinksDto
 import su.afk.kemonos.creatorProfile.data.dto.profileTags.TagDto
+import su.afk.kemonos.network.creators.HeaderText
 
 internal interface CreatorProfileApi {
 

@@ -1,8 +1,6 @@
 package su.afk.kemonos.creatorProfile.data
 
 import su.afk.kemonos.common.data.common.PostUnifiedDto.Companion.toDomain
-import su.afk.kemonos.core.api.domain.net.helpers.call
-import su.afk.kemonos.core.api.domain.net.helpers.callOrNull
 import su.afk.kemonos.creatorProfile.api.domain.models.profileAnnouncements.ProfileAnnouncement
 import su.afk.kemonos.creatorProfile.api.domain.models.profileDms.Dm
 import su.afk.kemonos.creatorProfile.api.domain.models.profileFanCards.ProfileFanCard
@@ -17,6 +15,8 @@ import su.afk.kemonos.creatorProfile.data.dto.profileTags.TagDto.Companion.toDom
 import su.afk.kemonos.creatorProfile.util.Utils.queryKey
 import su.afk.kemonos.domain.domain.models.PostDomain
 import su.afk.kemonos.domain.domain.models.Tag
+import su.afk.kemonos.network.util.call
+import su.afk.kemonos.network.util.callOrNull
 import su.afk.kemonos.storage.api.creatorProfileCache.CreatorProfileCacheType
 import su.afk.kemonos.storage.api.creatorProfileCache.IStoreCreatorProfileCacheUseCase
 import su.afk.kemonos.storage.api.profilePosts.ICreatorPostsCacheUseCase

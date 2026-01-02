@@ -40,9 +40,9 @@ dependencies {
     implementation(project(":navigation"))
 
     implementation(project(":core-domain"))
-    implementation(project(":core:core"))
     implementation(project(":core:auth"))
-    implementation(project(":core-api"))
+    implementation(project(":core:network"))
+    implementation(project(":core:preferences"))
     implementation(project(":storage-api"))
 
     implementation(project(":feature:profile-api"))

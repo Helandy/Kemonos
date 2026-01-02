@@ -3,9 +3,9 @@ package su.afk.kemonos.creatorPost.data.api
 import retrofit2.Response
 import retrofit2.http.GET
 import retrofit2.http.Path
-import su.afk.kemonos.core.api.domain.net.intercaptiors.HeaderText
 import su.afk.kemonos.creatorPost.data.dto.comments.ProfilePostCommentsDto
 import su.afk.kemonos.creatorPost.data.dto.profilePost.PostResponseDto
+import su.afk.kemonos.network.creators.HeaderText
 
 internal interface PostsApi {
 

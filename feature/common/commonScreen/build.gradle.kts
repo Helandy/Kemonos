@@ -31,8 +31,6 @@ dependencies {
     implementation(project(":common"))
     implementation(project(":navigation"))
     implementation(project(":core-domain"))
-    implementation(project(":core:core"))
-    implementation(project(":core-api"))
 
     implementation(project(":feature:common:commonScreen-api"))
 }

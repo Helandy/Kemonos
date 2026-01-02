@@ -1,7 +1,7 @@
 package su.afk.kemonos.profile.domain.favorites
 
-import su.afk.kemonos.core.api.domain.useCase.ISelectedSiteUseCase
 import su.afk.kemonos.domain.SelectedSite
+import su.afk.kemonos.preferences.site.ISelectedSiteUseCase
 import su.afk.kemonos.profile.api.domain.IIsPostFavoriteUseCase
 import su.afk.kemonos.storage.api.favorites.IStoreFavoritePostsUseCase
 import javax.inject.Inject

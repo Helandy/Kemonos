@@ -32,10 +32,9 @@ dependencies {
     implementation(project(":common"))
     implementation(project(":navigation"))
     implementation(project(":core-domain"))
-    implementation(project(":core:core"))
     implementation(project(":core:auth"))
-    implementation(project(":core-api"))
-
+    implementation(project(":core:preferences"))
+    implementation(project(":core:network"))
     implementation(project(":feature:appUpdate-api"))
     implementation(project(":feature:profile-api"))
 

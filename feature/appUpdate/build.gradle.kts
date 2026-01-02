@@ -31,6 +31,5 @@ dependencies {
 
     implementation(libs.bundles.retrofit)
 
-    implementation(project(":core:core"))
     implementation(project(":feature:appUpdate-api"))
 }

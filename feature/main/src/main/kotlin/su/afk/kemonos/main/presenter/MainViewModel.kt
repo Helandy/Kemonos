@@ -8,12 +8,12 @@ import su.afk.kemonos.app.update.api.model.AppUpdateInfo
 import su.afk.kemonos.common.error.IErrorHandlerUseCase
 import su.afk.kemonos.common.error.storage.RetryStorage
 import su.afk.kemonos.common.presenter.baseViewModel.BaseViewModel
-import su.afk.kemonos.core.api.domain.useCase.ISetBaseUrlsUseCase
 import su.afk.kemonos.main.domain.CheckAuthForAllSitesUseCase
 import su.afk.kemonos.main.presenter.delegates.ApiCheckDelegate
 import su.afk.kemonos.main.presenter.delegates.AppUpdateGateDelegate
 import su.afk.kemonos.main.presenter.delegates.BaseUrlsObserveDelegate
 import su.afk.kemonos.navigation.NavigationManager
+import su.afk.kemonos.preferences.siteUrl.ISetBaseUrlsUseCase
 import su.afk.kemonos.storage.api.clear.IClearCacheStorageUseCase
 import javax.inject.Inject
 

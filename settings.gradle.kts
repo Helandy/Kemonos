@@ -29,14 +29,10 @@ include(":core-domain")
 include(":feature:common:commonScreen-api")
 include(":feature:common:commonScreen")
 
-include(":core-api")
-// todo убрать когда разберу модуль
-include(":core:core")
 include(":core:auth")
 include(":core:network")
 include(":core:preferences")
-// todo сомнительно так называть модуль
-include(":core:storage")
+include(":core:utils")
 
 include(":storage-api")
 include(":storage")

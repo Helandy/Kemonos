@@ -4,7 +4,7 @@ import retrofit2.Response
 import retrofit2.http.GET
 import retrofit2.http.Path
 import su.afk.kemonos.common.data.profile.ProfileDto
-import su.afk.kemonos.core.api.domain.net.intercaptiors.HeaderText
+import su.afk.kemonos.network.creators.HeaderText
 
 internal interface KemonoApi {
 

@@ -16,8 +16,6 @@ import su.afk.kemonos.common.presenter.baseViewModel.BaseViewModel
 import su.afk.kemonos.common.shared.ShareActions
 import su.afk.kemonos.common.shared.ShareLinkBuilder
 import su.afk.kemonos.common.shared.ShareTarget
-import su.afk.kemonos.core.preferences.GetKemonoRootUrlUseCase
-import su.afk.kemonos.core.preferences.IGetCurrentSiteRootUrlUseCase
 import su.afk.kemonos.creatorProfile.api.domain.models.profileLinks.ProfileLink
 import su.afk.kemonos.creatorProfile.domain.paging.GetProfilePostsPagingUseCase
 import su.afk.kemonos.creatorProfile.navigation.CreatorDest
@@ -28,6 +26,8 @@ import su.afk.kemonos.creatorProfile.presenter.model.ProfileTab
 import su.afk.kemonos.domain.domain.models.PostDomain
 import su.afk.kemonos.domain.domain.models.Tag
 import su.afk.kemonos.navigation.NavigationManager
+import su.afk.kemonos.preferences.GetKemonoRootUrlUseCase
+import su.afk.kemonos.preferences.IGetCurrentSiteRootUrlUseCase
 
 internal class CreatorProfileViewModel @AssistedInject constructor(
     @Assisted private val dest: CreatorDest.CreatorProfile,
