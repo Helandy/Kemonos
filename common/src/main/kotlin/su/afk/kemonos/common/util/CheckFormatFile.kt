@@ -1,6 +1,6 @@
 package su.afk.kemonos.common.util
 
-import su.afk.kemonos.domain.domain.models.PostDomain
+import su.afk.kemonos.domain.models.PostDomain
 
 fun isAudioFile(path: String?): Boolean {
     if (path == null) return false

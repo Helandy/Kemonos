@@ -7,6 +7,7 @@ import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import su.afk.kemonos.api.IPostsNavigator
 import su.afk.kemonos.creators.ICreatorsNavigator
+import su.afk.kemonos.main.api.IMainNavigator
 import su.afk.kemonos.navigation.NavigationManager
 import su.afk.kemonos.navigation.tab.BottomTab
 import su.afk.kemonos.profile.api.domain.IProfileNavigator
@@ -35,8 +36,10 @@ object NavigationModule {
     fun provideNavigationManager(
         roots: @JvmSuppressWildcards Map<BottomTab, NavKey>,
         initialTab: BottomTab,
+        mainNavigator: IMainNavigator,
     ): NavigationManager = NavigationManager(
         roots = roots,
+        mainDest = mainNavigator.getMainDest(),
         initialTab = initialTab,
     )
 }

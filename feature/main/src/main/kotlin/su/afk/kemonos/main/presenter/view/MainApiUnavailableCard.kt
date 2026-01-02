@@ -9,7 +9,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import su.afk.kemonos.common.R
-import su.afk.kemonos.domain.domain.models.ErrorItem
+import su.afk.kemonos.domain.models.ErrorItem
 import su.afk.kemonos.main.presenter.MainState.State
 
 @Composable

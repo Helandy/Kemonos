@@ -1,4 +1,4 @@
-package su.afk.kemonos.domain.domain.models
+package su.afk.kemonos.domain.models
 
 enum class CreatorsSort {
     POPULARITY,

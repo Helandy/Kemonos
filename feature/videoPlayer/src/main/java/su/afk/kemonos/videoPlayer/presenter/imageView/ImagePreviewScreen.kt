@@ -29,7 +29,7 @@ import coil3.request.crossfade
 import coil3.size.Precision
 import su.afk.kemonos.common.R
 import su.afk.kemonos.common.error.view.DefaultErrorContent
-import su.afk.kemonos.domain.domain.models.ErrorItem
+import su.afk.kemonos.domain.models.ErrorItem
 import kotlin.math.abs
 import kotlin.math.roundToInt
 

@@ -1,7 +1,7 @@
 package su.afk.kemonos.storage.repository.favorites.post
 
 import su.afk.kemonos.domain.SelectedSite
-import su.afk.kemonos.domain.domain.models.PostDomain
+import su.afk.kemonos.domain.models.PostDomain
 import su.afk.kemonos.preferences.useCase.CacheTimestampUseCase
 import su.afk.kemonos.storage.entity.favorites.post.FavoritePostsDao
 import su.afk.kemonos.storage.entity.favorites.post.mapper.FavoritePostMapper

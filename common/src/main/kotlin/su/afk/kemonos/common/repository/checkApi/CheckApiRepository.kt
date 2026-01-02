@@ -2,7 +2,7 @@ package su.afk.kemonos.common.repository.checkApi
 
 import su.afk.kemonos.common.api.KemonoApi
 import su.afk.kemonos.common.error.IErrorHandlerUseCase
-import su.afk.kemonos.domain.domain.models.ErrorItem
+import su.afk.kemonos.domain.models.ErrorItem
 import javax.inject.Inject
 
 interface ICheckApiRepository {

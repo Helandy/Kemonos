@@ -4,8 +4,8 @@ import androidx.paging.PagingData
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
 import su.afk.kemonos.domain.SelectedSite
-import su.afk.kemonos.domain.domain.models.Creators
-import su.afk.kemonos.domain.domain.models.CreatorsSort
+import su.afk.kemonos.domain.models.Creators
+import su.afk.kemonos.domain.models.CreatorsSort
 
 data class CreatorsState(
     val loading: Boolean = false,

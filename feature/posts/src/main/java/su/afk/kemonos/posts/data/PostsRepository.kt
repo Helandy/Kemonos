@@ -4,7 +4,7 @@ import su.afk.kemonos.api.domain.popular.PopularPosts
 import su.afk.kemonos.api.domain.tags.Tags
 import su.afk.kemonos.common.data.common.PostUnifiedDto.Companion.toDomain
 import su.afk.kemonos.domain.SelectedSite
-import su.afk.kemonos.domain.domain.models.PostDomain
+import su.afk.kemonos.domain.models.PostDomain
 import su.afk.kemonos.network.util.call
 import su.afk.kemonos.posts.data.api.PostsApi
 import su.afk.kemonos.posts.data.dto.popular.response.PopularPostsDto.Companion.toDomain

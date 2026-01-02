@@ -2,7 +2,7 @@ package su.afk.kemonos.creatorProfile.data.dto.profileTags
 
 
 import com.google.gson.annotations.SerializedName
-import su.afk.kemonos.domain.domain.models.Tag
+import su.afk.kemonos.domain.models.Tag
 
 internal data class TagDto(
     @SerializedName("post_count")

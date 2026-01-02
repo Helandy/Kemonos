@@ -10,7 +10,7 @@ import dagger.hilt.android.EntryPointAccessors
 import su.afk.kemonos.commonscreen.ErrorScreen
 import su.afk.kemonos.commonscreen.ErrorViewModel
 import su.afk.kemonos.commonscreen.di.ErrorNavigatorEntryPoint
-import su.afk.kemonos.domain.domain.models.ErrorItem
+import su.afk.kemonos.domain.models.ErrorItem
 import su.afk.kemonos.navigation.NavRegistrar
 import su.afk.kemonos.navigation.NavigationManager
 import javax.inject.Inject

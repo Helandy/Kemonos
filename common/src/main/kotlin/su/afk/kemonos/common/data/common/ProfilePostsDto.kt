@@ -3,7 +3,7 @@ package su.afk.kemonos.common.data.common
 import com.google.gson.annotations.SerializedName
 import su.afk.kemonos.common.data.common.AttachmentDto.Companion.toDomain
 import su.afk.kemonos.common.data.common.FileDto.Companion.toDomain
-import su.afk.kemonos.domain.domain.models.PostDomain
+import su.afk.kemonos.domain.models.PostDomain
 
 /** Общая модель для поиск и избранного */
 data class PostUnifiedDto(

@@ -4,7 +4,7 @@ import androidx.paging.PagingSource
 import androidx.paging.PagingState
 import su.afk.kemonos.api.domain.popular.PopularPosts
 import su.afk.kemonos.domain.SelectedSite
-import su.afk.kemonos.domain.domain.models.PostDomain
+import su.afk.kemonos.domain.models.PostDomain
 import su.afk.kemonos.posts.data.PostsRepository
 import su.afk.kemonos.posts.domain.model.popular.Period
 

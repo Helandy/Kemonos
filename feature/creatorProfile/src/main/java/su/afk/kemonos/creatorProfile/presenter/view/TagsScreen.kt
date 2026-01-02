@@ -11,7 +11,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.key
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import su.afk.kemonos.domain.domain.models.Tag
+import su.afk.kemonos.domain.models.Tag
 
 @Composable
 fun TagsScreen(

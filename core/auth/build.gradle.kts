@@ -27,6 +27,6 @@ dependencies {
     implementation(libs.bundles.datastore)
     implementation(libs.androidx.security.crypto)
 
-    implementation(project(":core-domain"))
+    implementation(project(":core:domain"))
     implementation(project(":feature:profile-api"))
 }

@@ -45,7 +45,7 @@ dependencies {
     implementation(libs.bundles.datastore)
 
     implementation(project(":navigation"))
-    implementation(project(":core-domain"))
+    implementation(project(":core:domain"))
     implementation(project(":core:network"))
     implementation(project(":core:preferences"))
     implementation(project(":storage-api"))

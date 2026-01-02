@@ -1,10 +1,10 @@
 package su.afk.kemonos.creatorPost.api.domain.model
 
 import kotlinx.serialization.Serializable
-import su.afk.kemonos.domain.domain.models.AttachmentDomain
-import su.afk.kemonos.domain.domain.models.PostDomain
-import su.afk.kemonos.domain.domain.models.PreviewDomain
-import su.afk.kemonos.domain.domain.models.VideoDomain
+import su.afk.kemonos.domain.models.AttachmentDomain
+import su.afk.kemonos.domain.models.PostDomain
+import su.afk.kemonos.domain.models.PreviewDomain
+import su.afk.kemonos.domain.models.VideoDomain
 
 @Serializable
 data class PostContentDomain(

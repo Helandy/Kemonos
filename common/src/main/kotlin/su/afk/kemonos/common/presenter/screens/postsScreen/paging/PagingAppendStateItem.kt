@@ -9,7 +9,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.paging.LoadState
-import su.afk.kemonos.domain.domain.models.ErrorItem
+import su.afk.kemonos.domain.models.ErrorItem
 
 /**
  * Paging loadger + error retry button

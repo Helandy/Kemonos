@@ -8,7 +8,7 @@ import su.afk.kemonos.common.error.storage.RetryStorage
 import su.afk.kemonos.common.presenter.baseViewModel.BaseViewModel
 import su.afk.kemonos.creatorPost.api.ICreatorPostNavigator
 import su.afk.kemonos.domain.SelectedSite
-import su.afk.kemonos.domain.domain.models.PostDomain
+import su.afk.kemonos.domain.models.PostDomain
 import su.afk.kemonos.navigation.NavigationManager
 import su.afk.kemonos.navigation.NavigationStorage
 import su.afk.kemonos.preferences.site.ISelectedSiteUseCase

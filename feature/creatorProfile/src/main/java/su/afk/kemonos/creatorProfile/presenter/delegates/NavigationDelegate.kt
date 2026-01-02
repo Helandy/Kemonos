@@ -3,7 +3,7 @@ package su.afk.kemonos.creatorProfile.presenter.delegates
 import su.afk.kemonos.creatorPost.api.ICreatorPostNavigator
 import su.afk.kemonos.creatorProfile.api.domain.models.profileLinks.ProfileLink
 import su.afk.kemonos.creatorProfile.navigation.CreatorDest
-import su.afk.kemonos.domain.domain.models.PostDomain
+import su.afk.kemonos.domain.models.PostDomain
 import su.afk.kemonos.navigation.NavigationManager
 import su.afk.kemonos.videoPlayer.navigation.VideoPlayerDest
 import javax.inject.Inject

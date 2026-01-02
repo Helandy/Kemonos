@@ -13,7 +13,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import su.afk.kemonos.creatorProfile.presenter.model.ProfileTab
-import su.afk.kemonos.domain.domain.models.Tag
+import su.afk.kemonos.domain.models.Tag
 
 @Composable
 internal fun ProfileTabsBar(

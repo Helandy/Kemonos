@@ -12,7 +12,7 @@ import su.afk.kemonos.common.error.IErrorHandlerUseCase
 import su.afk.kemonos.common.error.storage.RetryStorage
 import su.afk.kemonos.common.presenter.changeSite.SiteAwareBaseViewModel
 import su.afk.kemonos.domain.SelectedSite
-import su.afk.kemonos.domain.domain.models.PostDomain
+import su.afk.kemonos.domain.models.PostDomain
 import su.afk.kemonos.posts.domain.pagingSearch.GetSearchPostsPagingUseCase
 import su.afk.kemonos.posts.domain.usecase.GetRandomPost
 import su.afk.kemonos.posts.presenter.common.NavigateToPostDelegate

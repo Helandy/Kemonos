@@ -1,7 +1,7 @@
 package su.afk.kemonos.main.presenter.delegates
 
 import su.afk.kemonos.common.repository.checkApi.ICheckApiRepository
-import su.afk.kemonos.domain.domain.models.ErrorItem
+import su.afk.kemonos.domain.models.ErrorItem
 import javax.inject.Inject
 
 internal class ApiCheckDelegate @Inject constructor(

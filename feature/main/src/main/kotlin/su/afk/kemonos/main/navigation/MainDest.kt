@@ -1,4 +1,4 @@
-package su.afk.kemonos.domain.template
+package su.afk.kemonos.main.navigation
 
 import androidx.navigation3.runtime.NavKey
 

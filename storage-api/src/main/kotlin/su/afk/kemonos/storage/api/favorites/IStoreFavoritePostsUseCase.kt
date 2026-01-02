@@ -1,7 +1,7 @@
 package su.afk.kemonos.storage.api.favorites
 
 import su.afk.kemonos.domain.SelectedSite
-import su.afk.kemonos.domain.domain.models.PostDomain
+import su.afk.kemonos.domain.models.PostDomain
 
 interface IStoreFavoritePostsUseCase {
     suspend fun getAll(site: SelectedSite): List<PostDomain>

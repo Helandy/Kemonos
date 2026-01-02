@@ -8,9 +8,9 @@ import su.afk.kemonos.creatorProfile.api.domain.models.profileDms.Dm
 import su.afk.kemonos.creatorProfile.api.domain.models.profileFanCards.ProfileFanCard
 import su.afk.kemonos.creatorProfile.api.domain.models.profileLinks.ProfileLink
 import su.afk.kemonos.creatorProfile.presenter.model.ProfileTab
-import su.afk.kemonos.domain.domain.models.PostDomain
-import su.afk.kemonos.domain.domain.models.Profile
-import su.afk.kemonos.domain.domain.models.Tag
+import su.afk.kemonos.domain.models.PostDomain
+import su.afk.kemonos.domain.models.Profile
+import su.afk.kemonos.domain.models.Tag
 
 internal data class CreatorProfileState(
     val loading: Boolean = false,

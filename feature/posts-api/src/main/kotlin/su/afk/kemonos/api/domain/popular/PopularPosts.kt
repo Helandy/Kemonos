@@ -1,7 +1,7 @@
 package su.afk.kemonos.api.domain.popular
 
 import kotlinx.serialization.Serializable
-import su.afk.kemonos.domain.domain.models.PostDomain
+import su.afk.kemonos.domain.models.PostDomain
 
 @Serializable
 data class PopularPosts(

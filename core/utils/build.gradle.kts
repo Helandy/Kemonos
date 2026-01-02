@@ -11,5 +11,5 @@ java {
 dependencies {
     implementation(libs.bundles.coroutines)
 
-    implementation(project(":core-domain"))
+    implementation(project(":core:domain"))
 }

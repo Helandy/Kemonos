@@ -9,9 +9,9 @@ import su.afk.kemonos.common.presenter.baseScreen.DefaultEmptyContent
 import su.afk.kemonos.common.presenter.baseScreen.DefaultLoadingContent
 import su.afk.kemonos.common.presenter.screens.postsScreen.PostsSource
 import su.afk.kemonos.common.presenter.screens.postsScreen.ProfilePostsGrid
-import su.afk.kemonos.domain.domain.models.ErrorItem
-import su.afk.kemonos.domain.domain.models.PostDomain
-import su.afk.kemonos.domain.domain.models.Tag
+import su.afk.kemonos.domain.models.ErrorItem
+import su.afk.kemonos.domain.models.PostDomain
+import su.afk.kemonos.domain.models.Tag
 
 @Composable
 fun PostsTabContent(

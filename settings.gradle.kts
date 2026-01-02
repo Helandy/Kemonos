@@ -24,11 +24,11 @@ include(":app")
 
 include(":common")
 include(":navigation")
-include(":core-domain")
 
 include(":feature:common:commonScreen-api")
 include(":feature:common:commonScreen")
 
+include(":core:domain")
 include(":core:auth")
 include(":core:network")
 include(":core:preferences")

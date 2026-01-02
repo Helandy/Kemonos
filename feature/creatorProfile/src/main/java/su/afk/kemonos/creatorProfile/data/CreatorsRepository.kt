@@ -13,8 +13,8 @@ import su.afk.kemonos.creatorProfile.data.dto.profileFanCards.ProfileFanCardsDto
 import su.afk.kemonos.creatorProfile.data.dto.profileLinks.ProfileLinksDto.Companion.toDomain
 import su.afk.kemonos.creatorProfile.data.dto.profileTags.TagDto.Companion.toDomain
 import su.afk.kemonos.creatorProfile.util.Utils.queryKey
-import su.afk.kemonos.domain.domain.models.PostDomain
-import su.afk.kemonos.domain.domain.models.Tag
+import su.afk.kemonos.domain.models.PostDomain
+import su.afk.kemonos.domain.models.Tag
 import su.afk.kemonos.network.util.call
 import su.afk.kemonos.network.util.callOrNull
 import su.afk.kemonos.storage.api.creatorProfileCache.CreatorProfileCacheType

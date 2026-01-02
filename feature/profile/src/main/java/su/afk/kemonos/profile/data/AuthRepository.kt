@@ -5,7 +5,7 @@ import su.afk.kemonos.auth.ClearAuthUseCase
 import su.afk.kemonos.auth.SaveAuthSiteUseCase
 import su.afk.kemonos.common.error.extractBackendMessage
 import su.afk.kemonos.domain.SelectedSite
-import su.afk.kemonos.domain.domain.models.ErrorItem
+import su.afk.kemonos.domain.models.ErrorItem
 import su.afk.kemonos.network.util.safeString
 import su.afk.kemonos.preferences.site.ISelectedSiteUseCase
 import su.afk.kemonos.profile.api.model.Login

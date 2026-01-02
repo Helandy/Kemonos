@@ -24,7 +24,7 @@ dependencies {
 
     implementation(libs.bundles.retrofit)
 
-    implementation(project(":core-domain"))
+    implementation(project(":core:domain"))
     implementation(project(":core:auth"))
     implementation(project(":core:preferences"))
     implementation(project(":core:utils"))

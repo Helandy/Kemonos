@@ -1,6 +1,6 @@
 package su.afk.kemonos.storage.repository.profilePosts
 
-import su.afk.kemonos.domain.domain.models.PostDomain
+import su.afk.kemonos.domain.models.PostDomain
 import su.afk.kemonos.storage.entity.profilePosts.dao.CreatorPostsCacheDao
 import su.afk.kemonos.storage.entity.profilePosts.mapper.CreatorPostCacheMapper
 import javax.inject.Inject

@@ -2,7 +2,7 @@ package su.afk.kemonos.profile.data
 
 import su.afk.kemonos.common.data.common.PostUnifiedDto.Companion.toDomain
 import su.afk.kemonos.domain.SelectedSite
-import su.afk.kemonos.domain.domain.models.PostDomain
+import su.afk.kemonos.domain.models.PostDomain
 import su.afk.kemonos.network.util.call
 import su.afk.kemonos.profile.api.model.FavoriteArtist
 import su.afk.kemonos.profile.data.api.FavoritesApi

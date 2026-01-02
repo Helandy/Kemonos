@@ -5,7 +5,7 @@ import okhttp3.ResponseBody
 import retrofit2.HttpException
 import su.afk.kemonos.common.R
 import su.afk.kemonos.commonscreen.navigator.IErrorNavigator
-import su.afk.kemonos.domain.domain.models.ErrorItem
+import su.afk.kemonos.domain.models.ErrorItem
 import su.afk.kemonos.navigation.NavigationManager
 import java.io.IOException
 import java.net.SocketTimeoutException

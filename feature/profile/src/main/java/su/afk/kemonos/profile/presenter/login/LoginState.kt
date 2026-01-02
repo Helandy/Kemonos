@@ -1,7 +1,7 @@
 package su.afk.kemonos.profile.presenter.login
 
 import su.afk.kemonos.domain.SelectedSite
-import su.afk.kemonos.domain.domain.models.ErrorItem
+import su.afk.kemonos.domain.models.ErrorItem
 import su.afk.kemonos.profile.domain.login.LoginPasswordErrorCode
 import su.afk.kemonos.profile.domain.login.LoginUsernameErrorCode
 

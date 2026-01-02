@@ -1,7 +1,7 @@
 package su.afk.kemonos.posts.presenter.common
 
 import su.afk.kemonos.creatorPost.api.ICreatorPostNavigator
-import su.afk.kemonos.domain.domain.models.PostDomain
+import su.afk.kemonos.domain.models.PostDomain
 import su.afk.kemonos.navigation.NavigationManager
 import javax.inject.Inject
 

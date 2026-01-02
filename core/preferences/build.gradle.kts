@@ -24,7 +24,7 @@ dependencies {
 
     implementation(libs.bundles.datastore)
 
-    implementation(project(":core-domain"))
+    implementation(project(":core:domain"))
     implementation(project(":core:auth"))
     implementation(project(":core:utils"))
 }

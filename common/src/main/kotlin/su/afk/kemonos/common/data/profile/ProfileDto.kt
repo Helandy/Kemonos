@@ -1,7 +1,7 @@
 package su.afk.kemonos.common.data.profile
 
 import com.google.gson.annotations.SerializedName
-import su.afk.kemonos.domain.domain.models.Profile
+import su.afk.kemonos.domain.models.Profile
 
 data class ProfileDto(
     @SerializedName("has_chats")

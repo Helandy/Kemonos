@@ -78,11 +78,11 @@ dependencies {
 
     implementation(project(":common"))
     implementation(project(":navigation"))
-    implementation(project(":core-domain"))
 
     implementation(project(":feature:common:commonScreen-api"))
     implementation(project(":feature:common:commonScreen"))
 
+    implementation(project(":core:domain"))
     implementation(project(":core:auth"))
     implementation(project(":core:network"))
     implementation(project(":core:preferences"))

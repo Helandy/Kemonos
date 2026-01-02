@@ -5,7 +5,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
 import su.afk.kemonos.api.domain.popular.PopularInfo
 import su.afk.kemonos.api.domain.popular.PopularProps
-import su.afk.kemonos.domain.domain.models.PostDomain
+import su.afk.kemonos.domain.models.PostDomain
 import su.afk.kemonos.posts.domain.model.popular.Period
 
 internal data class PopularPostsState(

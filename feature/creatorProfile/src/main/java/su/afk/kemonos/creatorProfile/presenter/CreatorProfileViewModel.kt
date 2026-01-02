@@ -23,8 +23,8 @@ import su.afk.kemonos.creatorProfile.presenter.delegates.LikeDelegate
 import su.afk.kemonos.creatorProfile.presenter.delegates.LoadingTabsContent
 import su.afk.kemonos.creatorProfile.presenter.delegates.NavigationDelegate
 import su.afk.kemonos.creatorProfile.presenter.model.ProfileTab
-import su.afk.kemonos.domain.domain.models.PostDomain
-import su.afk.kemonos.domain.domain.models.Tag
+import su.afk.kemonos.domain.models.PostDomain
+import su.afk.kemonos.domain.models.Tag
 import su.afk.kemonos.navigation.NavigationManager
 import su.afk.kemonos.preferences.GetKemonoRootUrlUseCase
 import su.afk.kemonos.preferences.IGetCurrentSiteRootUrlUseCase

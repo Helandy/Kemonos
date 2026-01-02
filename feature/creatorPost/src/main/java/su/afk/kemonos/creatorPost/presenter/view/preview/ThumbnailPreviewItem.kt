@@ -18,7 +18,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import su.afk.kemonos.common.R
 import su.afk.kemonos.common.presenter.views.imageLoader.AsyncImageWithStatus
-import su.afk.kemonos.domain.domain.models.PreviewDomain
+import su.afk.kemonos.domain.models.PreviewDomain
 import java.net.URLEncoder
 
 private data class PreviewUrls(

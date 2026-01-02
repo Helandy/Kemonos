@@ -32,7 +32,7 @@ dependencies {
 
     implementation(project(":storage-api"))
 
-    implementation(project(":core-domain"))
+    implementation(project(":core:domain"))
     implementation(project(":core:preferences"))
     implementation(project(":core:utils"))
     implementation(project(":common"))

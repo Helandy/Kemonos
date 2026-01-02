@@ -2,7 +2,7 @@ package su.afk.kemonos.common.data.common
 
 
 import com.google.gson.annotations.SerializedName
-import su.afk.kemonos.domain.domain.models.AttachmentDomain
+import su.afk.kemonos.domain.models.AttachmentDomain
 
 data class AttachmentDto(
     @SerializedName("name")

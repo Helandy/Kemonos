@@ -2,7 +2,7 @@ package su.afk.kemonos.storage.entity.profile
 
 import androidx.room.Entity
 import androidx.room.Index
-import su.afk.kemonos.domain.domain.models.Profile
+import su.afk.kemonos.domain.models.Profile
 
 @Entity(
     tableName = "profiles",

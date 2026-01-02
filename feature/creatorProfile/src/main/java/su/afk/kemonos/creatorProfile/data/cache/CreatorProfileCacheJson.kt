@@ -6,7 +6,7 @@ import su.afk.kemonos.creatorProfile.api.domain.models.profileAnnouncements.Prof
 import su.afk.kemonos.creatorProfile.api.domain.models.profileDms.Dm
 import su.afk.kemonos.creatorProfile.api.domain.models.profileFanCards.ProfileFanCard
 import su.afk.kemonos.creatorProfile.api.domain.models.profileLinks.ProfileLink
-import su.afk.kemonos.domain.domain.models.Tag
+import su.afk.kemonos.domain.models.Tag
 import javax.inject.Inject
 
 class CreatorProfileCacheJson @Inject constructor(

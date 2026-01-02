@@ -36,5 +36,5 @@ dependencies {
 
     implementation(project(":navigation"))
     implementation(project(":common"))
-    implementation(project(":core-domain"))
+    implementation(project(":core:domain"))
 }

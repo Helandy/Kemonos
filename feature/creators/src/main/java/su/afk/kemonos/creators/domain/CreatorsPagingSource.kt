@@ -2,8 +2,8 @@ package su.afk.kemonos.creators.domain
 
 import androidx.paging.PagingSource
 import androidx.paging.PagingState
-import su.afk.kemonos.domain.domain.models.Creators
-import su.afk.kemonos.domain.domain.models.CreatorsSort
+import su.afk.kemonos.domain.models.Creators
+import su.afk.kemonos.domain.models.CreatorsSort
 import su.afk.kemonos.storage.api.StoreCreatorsUseCase
 
 internal class CreatorsPagingSource(

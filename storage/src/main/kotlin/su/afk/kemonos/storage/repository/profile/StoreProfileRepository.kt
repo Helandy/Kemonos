@@ -1,6 +1,6 @@
 package su.afk.kemonos.storage.repository.profile
 
-import su.afk.kemonos.domain.domain.models.Profile
+import su.afk.kemonos.domain.models.Profile
 import su.afk.kemonos.storage.entity.profile.ProfileEntity.Companion.toDomain
 import su.afk.kemonos.storage.entity.profile.ProfileEntity.Companion.toEntity
 import su.afk.kemonos.storage.entity.profile.dao.ProfileDao

@@ -2,7 +2,7 @@ package su.afk.kemonos.creatorPost.domain.useCase
 
 import su.afk.kemonos.creatorPost.data.repository.IFavoritesPostRepository
 import su.afk.kemonos.domain.SelectedSite
-import su.afk.kemonos.domain.domain.models.PostDomain
+import su.afk.kemonos.domain.models.PostDomain
 import su.afk.kemonos.profile.api.domain.IIsPostFavoriteUseCase
 import javax.inject.Inject
 

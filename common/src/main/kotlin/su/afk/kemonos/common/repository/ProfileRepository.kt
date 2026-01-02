@@ -2,7 +2,7 @@ package su.afk.kemonos.common.repository
 
 import su.afk.kemonos.common.api.KemonoApi
 import su.afk.kemonos.common.data.profile.ProfileDto.Companion.toDomain
-import su.afk.kemonos.domain.domain.models.Profile
+import su.afk.kemonos.domain.models.Profile
 import su.afk.kemonos.network.util.call
 import su.afk.kemonos.storage.api.StoreProfileUseCase
 import javax.inject.Inject

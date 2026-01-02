@@ -17,7 +17,7 @@ import kotlinx.coroutines.flow.StateFlow
 import su.afk.kemonos.common.util.openVideoExternally
 import su.afk.kemonos.creatorPost.domain.model.video.VideoInfoState
 import su.afk.kemonos.creatorPost.presenter.util.VideoThumbnail
-import su.afk.kemonos.domain.domain.models.VideoDomain
+import su.afk.kemonos.domain.models.VideoDomain
 import kotlin.math.roundToInt
 
 /**

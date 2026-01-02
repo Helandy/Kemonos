@@ -1,7 +1,7 @@
 package su.afk.kemonos.storage.useCases.favorites
 
 import su.afk.kemonos.domain.SelectedSite
-import su.afk.kemonos.domain.domain.models.PostDomain
+import su.afk.kemonos.domain.models.PostDomain
 import su.afk.kemonos.storage.api.favorites.IStoreFavoritePostsUseCase
 import su.afk.kemonos.storage.repository.favorites.post.IStoreFavoritePostsRepository
 import javax.inject.Inject

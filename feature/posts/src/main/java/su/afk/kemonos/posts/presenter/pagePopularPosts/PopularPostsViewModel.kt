@@ -7,7 +7,7 @@ import su.afk.kemonos.common.error.IErrorHandlerUseCase
 import su.afk.kemonos.common.error.storage.RetryStorage
 import su.afk.kemonos.common.presenter.changeSite.SiteAwareBaseViewModel
 import su.afk.kemonos.domain.SelectedSite
-import su.afk.kemonos.domain.domain.models.PostDomain
+import su.afk.kemonos.domain.models.PostDomain
 import su.afk.kemonos.posts.domain.model.popular.Period
 import su.afk.kemonos.posts.domain.model.popular.PopularNavSlot
 import su.afk.kemonos.posts.domain.pagingPopular.GetPopularPostsUseCase

@@ -11,7 +11,4 @@ java {
 
 dependencies {
     implementation(libs.bundles.serialization.json)
-
-    /** Временно пока не вынесется main в отдельную фичу */
-    implementation(libs.bundles.navigation3)
 }

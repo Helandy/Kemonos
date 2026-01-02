@@ -6,16 +6,16 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.navigation3.runtime.NavKey
-import su.afk.kemonos.domain.template.MainDest
 import su.afk.kemonos.navigation.tab.BottomTab
 
 class NavigationManager(
     private val roots: Map<BottomTab, NavKey>,
+    private val mainDest: NavKey,
     initialTab: BottomTab,
 ) {
 
     /** Стек MainDest при запуске */
-    val startAppBackStack: SnapshotStateList<NavKey> = mutableStateListOf(MainDest)
+    val startAppBackStack: SnapshotStateList<NavKey> = mutableStateListOf(mainDest)
 
     /** Активный стек либо startAppBackStack, либо стек табов */
     val backStack: SnapshotStateList<NavKey>

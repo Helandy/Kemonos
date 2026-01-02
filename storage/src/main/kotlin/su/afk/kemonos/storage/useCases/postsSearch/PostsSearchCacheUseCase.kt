@@ -1,7 +1,7 @@
 package su.afk.kemonos.storage.useCases.postsSearch
 
 import su.afk.kemonos.domain.SelectedSite
-import su.afk.kemonos.domain.domain.models.PostDomain
+import su.afk.kemonos.domain.models.PostDomain
 import su.afk.kemonos.storage.api.postsSearch.IPostsSearchCacheUseCase
 import su.afk.kemonos.storage.repository.postsSearch.IPostsSearchCacheRepository
 import javax.inject.Inject

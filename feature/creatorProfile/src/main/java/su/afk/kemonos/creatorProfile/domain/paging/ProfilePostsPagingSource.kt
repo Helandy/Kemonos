@@ -3,7 +3,7 @@ package su.afk.kemonos.creatorProfile.domain.paging
 import androidx.paging.PagingSource
 import androidx.paging.PagingState
 import su.afk.kemonos.creatorProfile.data.CreatorsRepository
-import su.afk.kemonos.domain.domain.models.PostDomain
+import su.afk.kemonos.domain.models.PostDomain
 
 internal class ProfilePostsPagingSource(
     private val repository: CreatorsRepository,

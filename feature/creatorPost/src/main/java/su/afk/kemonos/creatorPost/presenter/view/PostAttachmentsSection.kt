@@ -16,7 +16,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import su.afk.kemonos.common.R
-import su.afk.kemonos.domain.domain.models.AttachmentDomain
+import su.afk.kemonos.domain.models.AttachmentDomain
 import java.net.URLEncoder
 
 @Composable

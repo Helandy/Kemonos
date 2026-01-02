@@ -5,7 +5,7 @@ import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import kotlinx.coroutines.flow.Flow
 import su.afk.kemonos.creatorProfile.data.CreatorsRepository
-import su.afk.kemonos.domain.domain.models.PostDomain
+import su.afk.kemonos.domain.models.PostDomain
 import javax.inject.Inject
 
 internal class GetProfilePostsPagingUseCase @Inject constructor(
