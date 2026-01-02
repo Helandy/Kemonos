@@ -25,19 +25,4 @@ dependencies {
 
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.bundles.compose.core)
-
-    implementation(libs.bundles.navigation3)
-
-    implementation(libs.bundles.retrofit)
-
-    implementation(libs.bundles.paging)
-
-    implementation(project(":common"))
-    implementation(project(":navigation"))
-    implementation(project(":core:domain"))
-    implementation(project(":feature:posts-api"))
-
-    implementation(project(":feature:creatorPost-api"))
-
-    implementation(project(":storage-api"))
 }

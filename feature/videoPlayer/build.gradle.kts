@@ -34,7 +34,7 @@ dependencies {
     implementation(libs.bundles.media3)
     implementation(libs.bundles.coil)
 
-    implementation(project(":navigation"))
+    implementation(project(":core:navigation"))
     implementation(project(":common"))
     implementation(project(":core:domain"))
 }

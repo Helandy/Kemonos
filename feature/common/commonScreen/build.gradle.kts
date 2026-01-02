@@ -29,7 +29,7 @@ dependencies {
     implementation(libs.bundles.navigation3)
 
     implementation(project(":common"))
-    implementation(project(":navigation"))
+    implementation(project(":core:navigation"))
     implementation(project(":core:domain"))
 
     implementation(project(":feature:common:commonScreen-api"))
