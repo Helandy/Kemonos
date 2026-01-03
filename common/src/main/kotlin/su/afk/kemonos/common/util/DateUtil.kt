@@ -1,6 +1,8 @@
 package su.afk.kemonos.common.util
 
+import java.time.Instant
 import java.time.LocalDateTime
+import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 
 /**
@@ -31,4 +33,10 @@ fun String.toUiDateTime(): String {
 
 fun LocalDateTime.toUiDateTime(): String {
     return this.format(outputFormatter)
+}
+
+/** epoch millis -> dd.MM.yyyy */
+fun Long.toUiDateTime(zoneId: ZoneId = ZoneId.systemDefault()): String {
+    val dt = LocalDateTime.ofInstant(Instant.ofEpochMilli(this), zoneId)
+    return dt.format(outputFormatter)
 }

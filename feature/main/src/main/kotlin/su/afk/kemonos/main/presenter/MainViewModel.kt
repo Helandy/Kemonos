@@ -15,6 +15,8 @@ import su.afk.kemonos.main.presenter.delegates.BaseUrlsObserveDelegate
 import su.afk.kemonos.navigation.NavigationManager
 import su.afk.kemonos.preferences.siteUrl.ISetBaseUrlsUseCase
 import su.afk.kemonos.storage.api.clear.IClearCacheStorageUseCase
+import su.afk.kemonos.utils.buildBaseUrl
+import su.afk.kemonos.utils.normalizeDomain
 import javax.inject.Inject
 
 @HiltViewModel
@@ -67,9 +69,9 @@ internal class MainViewModel @Inject constructor(
                     kemonoUrl = kemono,
                     coomerUrl = coomer,
                     inputKemonoDomain = state.value.inputKemonoDomain
-                        .ifEmpty { baseUrlsObserveDelegate.extractDomain(kemono) },
+                        .ifEmpty { normalizeDomain(kemono) },
                     inputCoomerDomain = state.value.inputCoomerDomain
-                        .ifEmpty { baseUrlsObserveDelegate.extractDomain(coomer) },
+                        .ifEmpty { normalizeDomain(coomer) },
                 )
             }
         }
@@ -120,8 +122,4 @@ internal class MainViewModel @Inject constructor(
     fun onInputCoomerDomainChanged(value: String) {
         setState { copy(inputCoomerDomain = value) }
     }
-
-    /** util: домен -> base api url */
-    private fun buildBaseUrl(domain: String): String =
-        "https://${domain.trim().trim('/')}/api/"
 }

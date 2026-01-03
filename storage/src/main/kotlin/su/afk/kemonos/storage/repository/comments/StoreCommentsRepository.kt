@@ -1,6 +1,8 @@
 package su.afk.kemonos.storage.repository.comments
 
 import su.afk.kemonos.creatorPost.api.domain.model.CommentDomain
+import su.afk.kemonos.preferences.useCase.CacheTimes.TLL_1_DAYS
+import su.afk.kemonos.preferences.useCase.CacheTimes.TTL_7_DAYS
 import su.afk.kemonos.storage.entity.comments.CommentWithRevisions.Companion.toDomain
 import su.afk.kemonos.storage.entity.comments.dao.CommentsDao
 import su.afk.kemonos.storage.entity.comments.entity.CommentEntity.Companion.toEntity
@@ -23,7 +25,7 @@ internal class StoreCommentsRepository @Inject constructor(
         postId: String
     ): List<CommentDomain>? {
         val now = System.currentTimeMillis()
-        val cached = dao.getThreadFresh(service, userId, postId, now, TTL_1_DAY_MS)
+        val cached = dao.getThreadFresh(service, userId, postId, now, TLL_1_DAYS)
             .map { it.toDomain() }
 
         return cached.takeIf { it.isNotEmpty() }
@@ -54,12 +56,7 @@ internal class StoreCommentsRepository @Inject constructor(
     override suspend fun clearCacheOver7Days() {
         dao.deleteOlderThan(
             now = System.currentTimeMillis(),
-            maxAgeMs = MAX_7_DAYS_MS
+            maxAgeMs = TTL_7_DAYS
         )
-    }
-
-    companion object {
-        private const val TTL_1_DAY_MS = 24L * 60 * 60 * 1000
-        private const val MAX_7_DAYS_MS = 7L * 24 * 60 * 60 * 1000
     }
 }

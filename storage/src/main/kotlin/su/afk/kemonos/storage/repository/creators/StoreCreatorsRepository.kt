@@ -2,7 +2,10 @@ package su.afk.kemonos.storage.repository.creators
 
 import su.afk.kemonos.domain.SelectedSite
 import su.afk.kemonos.domain.models.CreatorsSort
-import su.afk.kemonos.preferences.useCase.CacheTimestampUseCase
+import su.afk.kemonos.preferences.useCase.CacheKeys.CREATORS_COOMER
+import su.afk.kemonos.preferences.useCase.CacheKeys.CREATORS_KEMONO
+import su.afk.kemonos.preferences.useCase.CacheTimes.TTL_7_DAYS
+import su.afk.kemonos.preferences.useCase.ICacheTimestampUseCase
 import su.afk.kemonos.storage.entity.creators.CreatorsEntity
 import su.afk.kemonos.storage.entity.creators.dao.CoomerCreatorsDao
 import su.afk.kemonos.storage.entity.creators.dao.KemonoCreatorsDao
@@ -29,7 +32,7 @@ interface IStoreCreatorsRepository {
 internal class StoreCreatorsRepository @Inject constructor(
     private val kemonoDao: KemonoCreatorsDao,
     private val coomerDao: CoomerCreatorsDao,
-    private val cacheTimestamps: CacheTimestampUseCase
+    private val cacheTimestamps: ICacheTimestampUseCase
 ) : IStoreCreatorsRepository {
 
     override suspend fun updateCreators(site: SelectedSite, creators: List<CreatorsEntity>) {
@@ -129,7 +132,7 @@ internal class StoreCreatorsRepository @Inject constructor(
     }
 
     private fun key(site: SelectedSite): String =
-        if (site == SelectedSite.K) KEY_KEMONO else KEY_COOMER
+        if (site == SelectedSite.K) CREATORS_KEMONO else CREATORS_COOMER
 
     private fun getCacheTimestamp(site: SelectedSite): Long =
         cacheTimestamps.getCacheTimestamp(keyPref = key(site))
@@ -140,12 +143,6 @@ internal class StoreCreatorsRepository @Inject constructor(
     private fun isCacheFresh(site: SelectedSite): Boolean {
         val ts = getCacheTimestamp(site)
         if (ts == 0L) return false
-        return System.currentTimeMillis() - ts < CACHE_TTL_MS
-    }
-
-    private companion object {
-        private const val CACHE_TTL_MS = 7L * 24 * 60 * 60 * 1000 // 7 дней
-        private const val KEY_KEMONO = "kemono_creators_cache_time"
-        private const val KEY_COOMER = "coomer_creators_cache_time"
+        return System.currentTimeMillis() - ts < TTL_7_DAYS
     }
 }

@@ -1,11 +1,13 @@
 package su.afk.kemonos.storage.repository.profilePosts
 
 import su.afk.kemonos.domain.models.PostDomain
+import su.afk.kemonos.preferences.useCase.CacheTimes.TTL_1_HOURS
+import su.afk.kemonos.preferences.useCase.CacheTimes.TTL_3_DAYS
 import su.afk.kemonos.storage.entity.profilePosts.dao.CreatorPostsCacheDao
 import su.afk.kemonos.storage.entity.profilePosts.mapper.CreatorPostCacheMapper
 import javax.inject.Inject
 
-interface ICreatorPostsCacheRepository {
+interface IStorageCreatorPostsCacheRepository {
     suspend fun getFreshPageOrNull(queryKey: String, offset: Int): List<PostDomain>?
     suspend fun getStalePageOrEmpty(queryKey: String, offset: Int): List<PostDomain>
     suspend fun putPage(queryKey: String, offset: Int, items: List<PostDomain>)
@@ -14,10 +16,10 @@ interface ICreatorPostsCacheRepository {
     suspend fun clearAll()
 }
 
-internal class CreatorPostsCacheRepository @Inject constructor(
+internal class StorageCreatorPostsCacheRepository @Inject constructor(
     private val dao: CreatorPostsCacheDao,
     private val mapper: CreatorPostCacheMapper,
-) : ICreatorPostsCacheRepository {
+) : IStorageCreatorPostsCacheRepository {
 
     override suspend fun getFreshPageOrNull(queryKey: String, offset: Int): List<PostDomain>? {
         val minTs = System.currentTimeMillis() - ttlFor(queryKey)
@@ -61,16 +63,16 @@ internal class CreatorPostsCacheRepository @Inject constructor(
         val now = System.currentTimeMillis()
 
         /** search/tag (1 час) */
-        dao.deleteExpiredSearchTag(minUpdatedAt = now - TTL_SEARCH_TAG)
+        dao.deleteExpiredSearchTag(minUpdatedAt = now - TTL_1_HOURS)
 
         /** default (3 дня) */
-        dao.deleteExpiredDefault(minUpdatedAt = now - TTL_DEFAULT)
+        dao.deleteExpiredDefault(minUpdatedAt = now - TTL_3_DAYS)
     }
 
     override suspend fun clearAll() = dao.clearAll()
 
     private fun ttlFor(queryKey: String): Long =
-        if (isSearchOrTag(queryKey)) TTL_SEARCH_TAG else TTL_DEFAULT
+        if (isSearchOrTag(queryKey)) TTL_1_HOURS else TTL_3_DAYS
 
     /**
      * queryKey = service|userId|search|tag
@@ -81,12 +83,5 @@ internal class CreatorPostsCacheRepository @Inject constructor(
         val search = parts.getOrNull(2).orEmpty()
         val tag = parts.getOrNull(3).orEmpty()
         return search.isNotBlank() || tag.isNotBlank()
-    }
-
-    private companion object {
-        /** 1 час */
-        private const val TTL_SEARCH_TAG = 1L * 60 * 60 * 1000
-        /** 3 дня */
-        private const val TTL_DEFAULT = 3L * 24 * 60 * 60 * 1000
     }
 }

@@ -43,6 +43,7 @@ dependencies {
     implementation(project(":core:auth"))
     implementation(project(":core:network"))
     implementation(project(":core:preferences"))
+    implementation(project(":core:utils"))
     implementation(project(":storage-api"))
 
     implementation(project(":feature:profile-api"))

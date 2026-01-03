@@ -1,11 +1,12 @@
 package su.afk.kemonos.storage.repository.post
 
 import su.afk.kemonos.creatorPost.api.domain.model.PostContentDomain
+import su.afk.kemonos.preferences.useCase.CacheTimes.TTL_7_DAYS
 import su.afk.kemonos.storage.entity.post.dao.PostContentCacheDao
 import su.afk.kemonos.storage.entity.post.mapper.PostContentCacheMapper
 import javax.inject.Inject
 
-interface IPostStorageRepository {
+interface IStoragePostStorageRepository {
     suspend fun getOrNull(service: String, userId: String, postId: String): PostContentDomain?
     suspend fun getFreshOrNull(service: String, userId: String, postId: String): PostContentDomain?
     suspend fun upsert(item: PostContentDomain)
@@ -13,10 +14,10 @@ interface IPostStorageRepository {
     suspend fun clearAll()
 }
 
-internal class PostStorageRepository @Inject constructor(
+internal class StoragePostStorageRepository @Inject constructor(
     private val dao: PostContentCacheDao,
     private val mapper: PostContentCacheMapper
-) : IPostStorageRepository {
+) : IStoragePostStorageRepository {
 
     override suspend fun getOrNull(service: String, userId: String, postId: String): PostContentDomain? =
         dao.get(service, userId, postId)?.let(mapper::toDomain)
@@ -26,7 +27,7 @@ internal class PostStorageRepository @Inject constructor(
         userId: String,
         postId: String,
     ): PostContentDomain? {
-        val minTs = System.currentTimeMillis() - CACHE_TIME
+        val minTs = System.currentTimeMillis() - TTL_7_DAYS
         return dao.getFresh(service, userId, postId, minTs)?.let(mapper::toDomain)
     }
 
@@ -35,13 +36,9 @@ internal class PostStorageRepository @Inject constructor(
     }
 
     override suspend fun clearCache() {
-        val minTs = System.currentTimeMillis() - CACHE_TIME
+        val minTs = System.currentTimeMillis() - TTL_7_DAYS
         dao.clearOlderThan(minTs)
     }
 
     override suspend fun clearAll() = dao.clearAll()
-
-    private companion object {
-        private const val CACHE_TIME = 7L * 24 * 60 * 60 * 1000 // 7 дней
-    }
 }

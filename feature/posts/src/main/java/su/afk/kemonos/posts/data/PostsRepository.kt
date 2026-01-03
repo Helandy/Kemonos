@@ -14,7 +14,7 @@ import su.afk.kemonos.posts.domain.model.popular.Period
 import su.afk.kemonos.posts.domain.model.popular.Period.Companion.toDto
 import su.afk.kemonos.posts.domain.model.random.RandomDomain
 import su.afk.kemonos.posts.util.Utils.queryKey
-import su.afk.kemonos.storage.api.popular.IPopularPostsCacheUseCase
+import su.afk.kemonos.storage.api.popular.IStoragePopularPostsCacheUseCase
 import su.afk.kemonos.storage.api.postsSearch.IPostsSearchCacheUseCase
 import su.afk.kemonos.storage.api.tags.IStoreTagsUseCase
 import javax.inject.Inject
@@ -31,7 +31,7 @@ internal class PostsRepository @Inject constructor(
     private val postsApi: PostsApi,
     private val tagsStore: IStoreTagsUseCase,
     private val postsSearchCache: IPostsSearchCacheUseCase,
-    private val popularCache: IPopularPostsCacheUseCase,
+    private val popularCache: IStoragePopularPostsCacheUseCase,
 ) : IPostsRepository{
 
     /** Поиск постов */

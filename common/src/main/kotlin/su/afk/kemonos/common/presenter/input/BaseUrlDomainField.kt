@@ -1,4 +1,4 @@
-package su.afk.kemonos.main.presenter.view
+package su.afk.kemonos.common.presenter.input
 
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material3.OutlinedTextField
@@ -7,7 +7,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 
 @Composable
-internal fun BaseUrlDomainField(
+fun BaseUrlDomainField(
     value: String,
     onValueChange: (String) -> Unit,
     label: @Composable () -> Unit,

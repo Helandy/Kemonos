@@ -2,6 +2,7 @@ package su.afk.kemonos.storage.repository.postsSearch
 
 import su.afk.kemonos.domain.SelectedSite
 import su.afk.kemonos.domain.models.PostDomain
+import su.afk.kemonos.preferences.useCase.CacheTimes.TTL_1_HOURS
 import su.afk.kemonos.storage.entity.postsSearch.dao.CoomerPostsSearchCacheDao
 import su.afk.kemonos.storage.entity.postsSearch.dao.KemonoPostsSearchCacheDao
 import su.afk.kemonos.storage.entity.postsSearch.mapper.PostsSearchCacheMapper
@@ -28,7 +29,7 @@ internal class PostsSearchCacheRepository @Inject constructor(
         queryKey: String,
         offset: Int,
     ): List<PostDomain>? {
-        val minTs = System.currentTimeMillis() - TTL_MS
+        val minTs = System.currentTimeMillis() - TTL_1_HOURS
 
         val rows = when (site) {
             SelectedSite.K -> kemonoDao.getFreshPage(queryKey, offset, minTs)
@@ -83,7 +84,7 @@ internal class PostsSearchCacheRepository @Inject constructor(
     }
 
     override suspend fun clearCache(site: SelectedSite) {
-        val minTs = System.currentTimeMillis() - TTL_MS
+        val minTs = System.currentTimeMillis() - TTL_1_HOURS
         when (site) {
             SelectedSite.K -> kemonoDao.deleteOlderThan(minTs)
             SelectedSite.C -> coomerDao.deleteOlderThan(minTs)
@@ -95,9 +96,5 @@ internal class PostsSearchCacheRepository @Inject constructor(
             SelectedSite.K -> kemonoDao.clearAll()
             SelectedSite.C -> coomerDao.clearAll()
         }
-    }
-
-    private companion object {
-        private const val TTL_MS = 1L * 60 * 60 * 1000 // 1 час
     }
 }

@@ -7,7 +7,7 @@ import su.afk.kemonos.creators.domain.model.RandomCreator
 import su.afk.kemonos.domain.models.Creators
 import su.afk.kemonos.domain.models.CreatorsSort
 import su.afk.kemonos.network.util.call
-import su.afk.kemonos.storage.api.StoreCreatorsUseCase
+import su.afk.kemonos.storage.api.IStoreCreatorsUseCase
 import javax.inject.Inject
 
 interface ICreatorsRepository {
@@ -18,7 +18,7 @@ interface ICreatorsRepository {
 
 internal class CreatorsRepository @Inject constructor(
     private val api: CreatorsApi,
-    private val storeCreatorsUseCase: StoreCreatorsUseCase,
+    private val storeCreatorsUseCase: IStoreCreatorsUseCase,
 ) : ICreatorsRepository {
 
     override suspend fun getCreators(): List<Creators> {

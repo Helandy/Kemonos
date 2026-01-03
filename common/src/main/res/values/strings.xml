@@ -38,6 +38,8 @@
     <string name="profile_tab_dms">DM</string>
     <string name="profile_tab_links">Links</string>
     <string name="random">Random</string>
+    <string name="save">Save</string>
+    <string name="saved">Saved</string>
 
     <string name="open_with">Open via…</string>
     <string name="vlc_not_installed">VLC is not installed. Opening it through another application…</string>
@@ -127,6 +129,11 @@
 
     <string name="main_api_current_urls_title">Current URLs in settings:</string>
     <string name="main_api_current_urls_value">Kemono: %1$s\nCoomer: %2$s</string>
+
+    <string name="settings_api_subtitle">You can specify a different API domain if the default one is unavailable.
+    </string>
+
+    <string name="settings_api_fields_title">Custom domains</string>
 
     <string name="main_api_kemono_url_label">Kemono API URL</string>
     <string name="main_api_coomer_url_label">Coomer API URL</string>

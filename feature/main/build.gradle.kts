@@ -37,6 +37,7 @@ dependencies {
     implementation(project(":core:auth"))
     implementation(project(":core:preferences"))
     implementation(project(":core:network"))
+    implementation(project(":core:utils"))
 
     implementation(project(":feature:main-api"))
     implementation(project(":feature:posts-api"))

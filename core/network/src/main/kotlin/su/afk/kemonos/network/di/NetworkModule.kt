@@ -23,7 +23,7 @@ import javax.inject.Singleton
 @InstallIn(SingletonComponent::class)
 internal object NetworkModule {
 
-    // todo не факт что верно
+    // todo не факт что верно надо подумать тут
     @Provides
     @Singleton
     fun provideBaseUrlProvider(

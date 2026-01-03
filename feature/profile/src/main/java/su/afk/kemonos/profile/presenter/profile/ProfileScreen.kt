@@ -11,7 +11,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -21,8 +20,8 @@ import kotlinx.coroutines.launch
 import su.afk.kemonos.common.presenter.baseScreen.BaseScreen
 import su.afk.kemonos.domain.SelectedSite
 import su.afk.kemonos.profile.R
-import su.afk.kemonos.profile.presenter.profile.views.BottomLinksBlock
 import su.afk.kemonos.profile.presenter.profile.views.LogoutDialog
+import su.afk.kemonos.profile.presenter.profile.views.SettingsButton
 import su.afk.kemonos.profile.presenter.profile.views.SitePage
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -31,7 +30,6 @@ internal fun ProfileScreen(
     viewModel: ProfileViewModel,
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
-    val uriHandler = LocalUriHandler.current
 
     val pagerState = rememberPagerState(pageCount = { 2 })
     val scope = rememberCoroutineScope()
@@ -108,14 +106,8 @@ internal fun ProfileScreen(
                 }
             }
 
-            // ---------- Bottom ----------
-            BottomLinksBlock(
-                kemonoUrl = state.kemonoUrl,
-                coomerUrl = state.coomerUrl,
-                appVersion = state.appVersion,
-                onGitHubClick = {
-                    uriHandler.openUri("https://github.com/Helandy/Kemonos")
-                }
+            SettingsButton(
+                onClick = viewModel::navigateToSettings
             )
         }
 

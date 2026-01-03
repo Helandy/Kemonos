@@ -2,7 +2,10 @@ package su.afk.kemonos.storage.repository.tags
 
 import su.afk.kemonos.domain.SelectedSite
 import su.afk.kemonos.posts.api.tags.Tags
-import su.afk.kemonos.preferences.useCase.CacheTimestampUseCase
+import su.afk.kemonos.preferences.useCase.CacheKeys.TAGS_COOMER
+import su.afk.kemonos.preferences.useCase.CacheKeys.TAGS_KEMONO
+import su.afk.kemonos.preferences.useCase.CacheTimes.TTL_30_DAYS
+import su.afk.kemonos.preferences.useCase.ICacheTimestampUseCase
 import su.afk.kemonos.storage.entity.tags.TagsEntity.Companion.toDomain
 import su.afk.kemonos.storage.entity.tags.TagsEntity.Companion.toEntity
 import su.afk.kemonos.storage.entity.tags.dao.CoomerTagsDao
@@ -20,7 +23,7 @@ interface IStoreTagsRepository {
 internal class StoreTagsRepository @Inject constructor(
     private val kemonoTagsDao: KemonoTagsDao,
     private val coomerTagsDao: CoomerTagsDao,
-    private val cacheTimestamps: CacheTimestampUseCase,
+    private val cacheTimestamps: ICacheTimestampUseCase,
 ) : IStoreTagsRepository {
 
     override suspend fun getAll(site: SelectedSite): List<Tags> {
@@ -64,15 +67,9 @@ internal class StoreTagsRepository @Inject constructor(
     private fun isCacheFreshInternal(site: SelectedSite): Boolean {
         val ts = getCacheTimestamp(site)
         if (ts == 0L) return false
-        return System.currentTimeMillis() - ts < CACHE_TTL_MS
+        return System.currentTimeMillis() - ts < TTL_30_DAYS
     }
 
     private fun key(site: SelectedSite): String =
-        if (site == SelectedSite.K) KEY_KEMONO else KEY_COOMER
-
-    private companion object {
-        private const val CACHE_TTL_MS = 30L * 24 * 60 * 60 * 1000 // 30 дней
-        private const val KEY_KEMONO = "kemono_tags_cache_time"
-        private const val KEY_COOMER = "coomer_tags_cache_time"
-    }
+        if (site == SelectedSite.K) TAGS_KEMONO else TAGS_COOMER
 }

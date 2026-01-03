@@ -1,5 +1,6 @@
 package su.afk.kemonos.storage.repository.creatorProfileCache
 
+import su.afk.kemonos.preferences.useCase.CacheTimes.TTL_7_DAYS
 import su.afk.kemonos.storage.api.creatorProfileCache.CreatorProfileCacheType
 import su.afk.kemonos.storage.entity.creatorProfileCache.CreatorProfileCacheEntity
 import su.afk.kemonos.storage.entity.creatorProfileCache.dao.CreatorProfileCacheDao
@@ -19,7 +20,7 @@ internal class StoreCreatorProfileCacheRepository @Inject constructor(
 ) : IStoreCreatorProfileCacheRepository {
 
     override suspend fun getFreshJsonOrNull(service: String, id: String, type: CreatorProfileCacheType): String? {
-        val minTs = System.currentTimeMillis() - CACHE_TTL_MS
+        val minTs = System.currentTimeMillis() - TTL_7_DAYS
         return dao.getFresh(service = service, profileId = id, type = type, minCachedAt = minTs)?.json
     }
 
@@ -47,11 +48,7 @@ internal class StoreCreatorProfileCacheRepository @Inject constructor(
     }
 
     override suspend fun clearCacheOver7Days() {
-        val minTs = System.currentTimeMillis() - CACHE_TTL_MS
+        val minTs = System.currentTimeMillis() - TTL_7_DAYS
         dao.deleteOlderThan(minTs)
-    }
-
-    private companion object {
-        const val CACHE_TTL_MS = 7L * 24 * 60 * 60 * 1000 // 7 дней
     }
 }

@@ -18,12 +18,4 @@ internal class BaseUrlsObserveDelegate @Inject constructor(
                 .collect { (k, c) -> onUrls(k, c) }
         }
     }
-
-    fun extractDomain(baseUrl: String): String =
-        baseUrl
-            .removePrefix("https://")
-            .removePrefix("http://")
-            .removeSuffix("/api/")
-            .removeSuffix("/api")
-            .trim('/')
 }

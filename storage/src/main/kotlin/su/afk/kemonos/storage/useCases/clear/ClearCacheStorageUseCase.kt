@@ -4,11 +4,11 @@ import su.afk.kemonos.domain.SelectedSite
 import su.afk.kemonos.storage.api.clear.IClearCacheStorageUseCase
 import su.afk.kemonos.storage.repository.comments.IStoreCommentsRepository
 import su.afk.kemonos.storage.repository.creatorProfileCache.IStoreCreatorProfileCacheRepository
-import su.afk.kemonos.storage.repository.popular.IPopularPostsCacheRepository
-import su.afk.kemonos.storage.repository.post.IPostStorageRepository
+import su.afk.kemonos.storage.repository.popular.IStoragePopularPostsCacheRepository
+import su.afk.kemonos.storage.repository.post.IStoragePostStorageRepository
 import su.afk.kemonos.storage.repository.postsSearch.IPostsSearchCacheRepository
 import su.afk.kemonos.storage.repository.profile.IStoreProfileRepository
-import su.afk.kemonos.storage.repository.profilePosts.ICreatorPostsCacheRepository
+import su.afk.kemonos.storage.repository.profilePosts.IStorageCreatorPostsCacheRepository
 import su.afk.kemonos.storage.repository.tags.IStoreTagsRepository
 import su.afk.kemonos.storage.repository.video.IStoreVideoInfoRepository
 import javax.inject.Inject
@@ -16,11 +16,11 @@ import javax.inject.Inject
 internal class ClearCacheStorageUseCase @Inject constructor(
     private val storeCommentsRepository: IStoreCommentsRepository,
     private val storeCreatorProfileCacheRepository: IStoreCreatorProfileCacheRepository,
-    private val popularPostsCacheRepository: IPopularPostsCacheRepository,
-    private val postStorageRepository: IPostStorageRepository,
+    private val popularPostsCacheRepository: IStoragePopularPostsCacheRepository,
+    private val postStorageRepository: IStoragePostStorageRepository,
     private val postsSearchCacheRepository: IPostsSearchCacheRepository,
     private val storeProfileRepository: IStoreProfileRepository,
-    private val creatorPostsCacheRepository: ICreatorPostsCacheRepository,
+    private val creatorPostsCacheRepository: IStorageCreatorPostsCacheRepository,
     private val storeTagsRepository: IStoreTagsRepository,
     private val storeVideoInfoRepository: IStoreVideoInfoRepository,
 ) : IClearCacheStorageUseCase {

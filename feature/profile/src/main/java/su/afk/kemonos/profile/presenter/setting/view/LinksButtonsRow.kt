@@ -1,4 +1,4 @@
-package su.afk.kemonos.profile.presenter.profile.views
+package su.afk.kemonos.profile.presenter.setting.view
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row

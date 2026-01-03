@@ -38,6 +38,8 @@
     <string name="profile_tab_dms">ЛС</string>
     <string name="profile_tab_links">Ссылки</string>
     <string name="random">Случайный</string>
+    <string name="save">Сохранить</string>
+    <string name="saved">Сохранено</string>
 
     <string name="open_with">Открыть через…</string>
     <string name="vlc_not_installed">VLC не установлен. Открываю через другое приложение…</string>
@@ -125,6 +127,9 @@
 
     <string name="main_api_current_urls_title">Текущие адреса в настройках:</string>
     <string name="main_api_current_urls_value">Kemono: %1$s\nCoomer: %2$s</string>
+
+    <string name="settings_api_subtitle">Можно указать другой домен API, если основной недоступен.</string>
+    <string name="settings_api_fields_title">Новые домены</string>
 
     <string name="main_api_kemono_url_label">Адрес API Kemono</string>
     <string name="main_api_coomer_url_label">Адрес API Coomer</string>

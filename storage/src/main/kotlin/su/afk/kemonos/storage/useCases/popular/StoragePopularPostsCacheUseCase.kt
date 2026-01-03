@@ -2,13 +2,13 @@ package su.afk.kemonos.storage.useCases.popular
 
 import su.afk.kemonos.domain.SelectedSite
 import su.afk.kemonos.posts.api.popular.PopularPosts
-import su.afk.kemonos.storage.api.popular.IPopularPostsCacheUseCase
-import su.afk.kemonos.storage.repository.popular.IPopularPostsCacheRepository
+import su.afk.kemonos.storage.api.popular.IStoragePopularPostsCacheUseCase
+import su.afk.kemonos.storage.repository.popular.IStoragePopularPostsCacheRepository
 import javax.inject.Inject
 
-internal class PopularPostsCacheUseCase @Inject constructor(
-    private val repo: IPopularPostsCacheRepository,
-) : IPopularPostsCacheUseCase {
+internal class StoragePopularPostsCacheUseCase @Inject constructor(
+    private val repo: IStoragePopularPostsCacheRepository,
+) : IStoragePopularPostsCacheUseCase {
 
     override suspend fun getFreshOrNull(site: SelectedSite, queryKey: String, offset: Int): PopularPosts? =
         repo.getFreshOrNull(site = site, queryKey, offset)
@@ -20,4 +20,6 @@ internal class PopularPostsCacheUseCase @Inject constructor(
         repo.put(site = site, queryKey, offset, value)
 
     override suspend fun clearCache(site: SelectedSite) = repo.clearCache(site = site)
+
+    override suspend fun clearAll(site: SelectedSite) = repo.clearAll(site = site)
 }

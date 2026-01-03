@@ -7,11 +7,11 @@ import kotlinx.coroutines.flow.Flow
 import su.afk.kemonos.creators.data.ICreatorsRepository
 import su.afk.kemonos.domain.models.Creators
 import su.afk.kemonos.domain.models.CreatorsSort
-import su.afk.kemonos.storage.api.StoreCreatorsUseCase
+import su.afk.kemonos.storage.api.IStoreCreatorsUseCase
 import javax.inject.Inject
 
 internal class GetCreatorsPagedUseCase @Inject constructor(
-    private val store: StoreCreatorsUseCase,
+    private val store: IStoreCreatorsUseCase,
     private val repository: ICreatorsRepository
 ) {
     fun paging(

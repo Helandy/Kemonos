@@ -1,13 +1,10 @@
-package su.afk.kemonos.profile.presenter.profile.views
+package su.afk.kemonos.profile.presenter.setting.view
 
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
 
 @Composable
 internal fun BottomLinksBlock(
@@ -16,9 +13,6 @@ internal fun BottomLinksBlock(
     appVersion: String,
     onGitHubClick: () -> Unit,
 ) {
-
-    Spacer(Modifier.height(32.dp))
-
     Column(
         modifier = Modifier.fillMaxWidth(),
         horizontalAlignment = Alignment.CenterHorizontally,
