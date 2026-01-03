@@ -24,12 +24,12 @@ internal fun GitHubButton(
             contentColor = MaterialTheme.colorScheme.onSecondaryContainer
         )
     ) {
+        Text(
+            text = stringResource(R.string.profile_app_version, appVersion),
+        )
         Icon(
             imageVector = Icons.AutoMirrored.Outlined.OpenInNew,
             contentDescription = null
-        )
-        Text(
-            text = stringResource(R.string.profile_app_version, appVersion),
         )
     }
 }

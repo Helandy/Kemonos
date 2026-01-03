@@ -36,7 +36,6 @@ internal fun CacheSettingsBlock(
 
             Spacer(Modifier.height(14.dp))
 
-            // --- Tags ---
             CacheRow(
                 title = stringResource(R.string.settings_cache_tags_kemono),
                 time = state.tagsKemonoCache,
@@ -52,7 +51,6 @@ internal fun CacheSettingsBlock(
                 busy = state.clearInProgress
             )
 
-            // --- Creators ---
             CacheRow(
                 title = stringResource(R.string.settings_cache_creators_kemono),
                 time = state.creatorsKemonoCache,
@@ -76,7 +74,6 @@ internal fun CacheSettingsBlock(
                 busy = state.clearInProgress
             )
 
-            // --- Creator profile posts cache (pages) ---
             CacheRow(
                 title = stringResource(R.string.settings_cache_creator_posts_pages),
                 time = state.creatorPostsCache,
@@ -85,7 +82,6 @@ internal fun CacheSettingsBlock(
                 busy = state.clearInProgress
             )
 
-            // --- Full post content cache ---
             CacheRow(
                 title = stringResource(R.string.settings_cache_post_contents),
                 time = state.postContentsCache,
@@ -94,7 +90,6 @@ internal fun CacheSettingsBlock(
                 busy = state.clearInProgress
             )
 
-            // --- Popular ---
             CacheRow(
                 title = stringResource(R.string.settings_cache_popular_kemono),
                 time = state.popularKemonoCache,
@@ -110,7 +105,6 @@ internal fun CacheSettingsBlock(
                 busy = state.clearInProgress
             )
 
-            // --- Favorites: posts ---
             CacheRow(
                 title = stringResource(R.string.settings_cache_fav_posts_kemono),
                 time = state.favPostsKemonoCache,
@@ -126,7 +120,6 @@ internal fun CacheSettingsBlock(
                 busy = state.clearInProgress
             )
 
-            // --- Favorites: creators ---
             CacheRow(
                 title = stringResource(R.string.settings_cache_fav_authors_kemono),
                 time = state.favCreatorsKemonoCache,

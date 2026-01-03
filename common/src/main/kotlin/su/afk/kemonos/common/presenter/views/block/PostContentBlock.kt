@@ -16,6 +16,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.net.toUri
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import su.afk.kemonos.common.R
 import su.afk.kemonos.common.presenter.webView.WebViewPool
@@ -42,7 +43,7 @@ fun PostContentBlock(
     val bgColor = MaterialTheme.colorScheme.background.toArgb()
 
     val htmlState by produceState<String?>(initialValue = null, body, siteBaseUrl, textColor, linkColor, bgColor) {
-        value = withContext(kotlinx.coroutines.Dispatchers.Default) {
+        value = withContext(Dispatchers.Default) {
             val normalized = normalizeHtml(
                 body = body,
             )
