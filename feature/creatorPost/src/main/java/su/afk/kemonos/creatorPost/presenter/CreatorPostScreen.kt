@@ -32,7 +32,7 @@ import su.afk.kemonos.creatorPost.presenter.view.PostCommentsSection
 import su.afk.kemonos.creatorPost.presenter.view.TagsRow
 import su.afk.kemonos.creatorPost.presenter.view.preview.EmbedPreviewItem
 import su.afk.kemonos.creatorPost.presenter.view.preview.ThumbnailPreviewItem
-import su.afk.kemonos.creatorPost.presenter.view.video.PostVideosSection
+import su.afk.kemonos.creatorPost.presenter.view.video.postVideosSection
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -164,12 +164,10 @@ internal fun CreatorPostScreen(
                 }
             }
 
-            item(key = "videos") {
-                PostVideosSection(
-                    videos = state.post?.videos.orEmpty(),
-                    observeVideoInfo = viewModel::observeVideoInfo,
-                )
-            }
+            postVideosSection(
+                videos = state.post?.videos.orEmpty(),
+                observeVideoInfo = viewModel::observeVideoInfo,
+            )
 
             item(key = "tags") {
                 TagsRow(tags = post.tags)

@@ -26,7 +26,6 @@ internal fun FavoriteProfilesScreen(viewModel: FavoriteProfilesViewModel) {
     val sortOptions = favoriteProfilesSortOptions()
 
     BaseScreen(
-        modifier = Modifier.padding(start = 4.dp),
         contentModifier = Modifier.padding(horizontal = 8.dp),
         isScroll = false,
         floatingActionButtonBottomPadding = 12.dp,

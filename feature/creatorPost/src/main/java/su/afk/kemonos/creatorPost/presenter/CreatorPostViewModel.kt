@@ -96,7 +96,8 @@ internal class CreatorPostViewModel @AssistedInject constructor(
     private val videoInfoFlows = mutableMapOf<String, StateFlow<VideoInfoState>>()
 
     fun observeVideoInfo(url: String, name: String): StateFlow<VideoInfoState> {
-        return videoInfoFlows.getOrPut(name) {
+        val key = url
+        return videoInfoFlows.getOrPut(key) {
             kotlinx.coroutines.flow.flow {
                 emit(VideoInfoState.Loading)
                 val info = getVideoInfo(url, name)
@@ -106,7 +107,7 @@ internal class CreatorPostViewModel @AssistedInject constructor(
             }.stateIn(
                 scope = viewModelScope,
                 started = kotlinx.coroutines.flow.SharingStarted.WhileSubscribed(stopTimeoutMillis = 5_000),
-                initialValue = VideoInfoState.Idle
+                initialValue = VideoInfoState.Loading
             )
         }
     }

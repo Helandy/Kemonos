@@ -4,12 +4,12 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.rememberPagerState
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.stringResource
@@ -17,13 +17,13 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import kotlinx.coroutines.launch
 import su.afk.kemonos.common.presenter.baseScreen.BaseScreen
 import su.afk.kemonos.domain.SelectedSite
 import su.afk.kemonos.profile.R
 import su.afk.kemonos.profile.presenter.profile.views.BottomLinksBlock
-import su.afk.kemonos.profile.presenter.profile.views.FavoritesCard
 import su.afk.kemonos.profile.presenter.profile.views.LogoutDialog
-import su.afk.kemonos.profile.presenter.profile.views.SiteAccountCard
+import su.afk.kemonos.profile.presenter.profile.views.SitePage
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -33,14 +33,15 @@ internal fun ProfileScreen(
     val state by viewModel.state.collectAsStateWithLifecycle()
     val uriHandler = LocalUriHandler.current
 
+    val pagerState = rememberPagerState(pageCount = { 2 })
+    val scope = rememberCoroutineScope()
+
     BaseScreen(
-        isScroll = true,
+        isScroll = false,
         isLoading = state.isLoading,
         contentModifier = Modifier.padding(horizontal = 8.dp),
     ) {
-        Column(
-            verticalArrangement = Arrangement.spacedBy(16.dp)
-        ) {
+        Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
             Text(
                 text = stringResource(R.string.profile_title),
                 style = MaterialTheme.typography.headlineSmall,
@@ -49,47 +50,72 @@ internal fun ProfileScreen(
                 fontWeight = FontWeight.SemiBold
             )
 
-            Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                SiteAccountCard(
-                    title = stringResource(R.string.profile_coomer_account_title),
-                    isLoggedIn = state.isLoginCoomer,
-                    login = state.coomerLogin,
-                    onLoginClick = { viewModel.onLoginClick(SelectedSite.C) },
-                    onLogoutClick = { viewModel.onLogoutClick(SelectedSite.C) },
+            // ---------- Tabs ----------
+            TabRow(selectedTabIndex = pagerState.currentPage) {
+                Tab(
+                    selected = pagerState.currentPage == 0,
+                    onClick = {
+                        scope.launch { pagerState.animateScrollToPage(0) }
+                    },
+                    text = { Text("Coomer") }
                 )
 
-                if (state.isLoginCoomer) {
-                    FavoritesCard(
-                        titleId = R.string.profile_favorites_title_coomer,
-                        onFavoriteProfiles = { viewModel.onFavoriteProfilesNavigate(SelectedSite.C) },
-                        onFavoritePosts = { viewModel.onFavoritePostNavigate(SelectedSite.C) }
+                Tab(
+                    selected = pagerState.currentPage == 1,
+                    onClick = {
+                        scope.launch { pagerState.animateScrollToPage(1) }
+                    },
+                    text = { Text("Kemono") }
+                )
+            }
+
+            // ---------- Pager ----------
+            HorizontalPager(
+                state = pagerState,
+                modifier = Modifier.fillMaxWidth(),
+                pageSpacing = 16.dp,
+            ) { page ->
+                when (page) {
+                    0 -> SitePage(
+                        title = stringResource(R.string.profile_coomer_account_title),
+                        isLoggedIn = state.isLoginCoomer,
+                        login = state.coomerLogin,
+                        site = SelectedSite.C,
+                        onLoginClick = { viewModel.onLoginClick(SelectedSite.C) },
+                        onLogoutClick = { viewModel.onLogoutClick(SelectedSite.C) },
+                        onFavoriteProfiles = {
+                            viewModel.onFavoriteProfilesNavigate(SelectedSite.C)
+                        },
+                        onFavoritePosts = {
+                            viewModel.onFavoritePostNavigate(SelectedSite.C)
+                        }
                     )
-                }
 
-                HorizontalDivider(modifier = Modifier.padding(8.dp))
-
-                SiteAccountCard(
-                    title = stringResource(R.string.profile_kemono_account_title),
-                    isLoggedIn = state.isLoginKemono,
-                    login = state.kemonoLogin,
-                    onLoginClick = { viewModel.onLoginClick(SelectedSite.K) },
-                    onLogoutClick = { viewModel.onLogoutClick(SelectedSite.K) },
-                )
-
-                if (state.isLoginKemono) {
-                    FavoritesCard(
-                        titleId = R.string.profile_favorites_title_kemono,
-                        onFavoriteProfiles = { viewModel.onFavoriteProfilesNavigate(SelectedSite.K) },
-                        onFavoritePosts = { viewModel.onFavoritePostNavigate(SelectedSite.K) }
+                    1 -> SitePage(
+                        title = stringResource(R.string.profile_kemono_account_title),
+                        isLoggedIn = state.isLoginKemono,
+                        login = state.kemonoLogin,
+                        site = SelectedSite.K,
+                        onLoginClick = { viewModel.onLoginClick(SelectedSite.K) },
+                        onLogoutClick = { viewModel.onLogoutClick(SelectedSite.K) },
+                        onFavoriteProfiles = {
+                            viewModel.onFavoriteProfilesNavigate(SelectedSite.K)
+                        },
+                        onFavoritePosts = {
+                            viewModel.onFavoritePostNavigate(SelectedSite.K)
+                        }
                     )
                 }
             }
 
+            // ---------- Bottom ----------
             BottomLinksBlock(
                 kemonoUrl = state.kemonoUrl,
                 coomerUrl = state.coomerUrl,
                 appVersion = state.appVersion,
-                onGitHubClick = { uriHandler.openUri("https://github.com/Helandy/Kemonos") }
+                onGitHubClick = {
+                    uriHandler.openUri("https://github.com/Helandy/Kemonos")
+                }
             )
         }
 

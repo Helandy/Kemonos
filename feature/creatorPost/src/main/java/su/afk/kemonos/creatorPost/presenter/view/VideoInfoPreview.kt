@@ -1,19 +1,22 @@
 package su.afk.kemonos.creatorPost.presenter.view
 
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kotlinx.coroutines.flow.StateFlow
+import su.afk.kemonos.common.R
 import su.afk.kemonos.common.util.openVideoExternally
 import su.afk.kemonos.creatorPost.domain.model.video.VideoInfoState
 import su.afk.kemonos.creatorPost.presenter.util.VideoThumbnail
@@ -31,8 +34,11 @@ internal fun VideoInfoPreview(
     observeVideoInfo: (String, String) -> StateFlow<VideoInfoState>,
 ) {
     val url = remember(video) { "${video.server}/data${video.path}" }
-    val infoState by observeVideoInfo(url, video.name).collectAsStateWithLifecycle()
+    val infoFlow = remember(url, video.name) { observeVideoInfo(url, video.name) }
+    val infoState by infoFlow.collectAsStateWithLifecycle()
     val context = LocalContext.current
+
+    var thumbLoading by remember(url) { mutableStateOf(true) }
 
     Column(Modifier.padding(vertical = 12.dp)) {
         Text(video.name, style = MaterialTheme.typography.titleSmall)
@@ -42,11 +48,41 @@ internal fun VideoInfoPreview(
                 .fillMaxWidth()
                 .aspectRatio(16f / 9f)
         ) {
-            /** Картинка */
             VideoThumbnail(
                 url = url,
-                modifier = Modifier.matchParentSize()
+                modifier = Modifier.matchParentSize(),
+                onLoadingChange = { thumbLoading = it }
             )
+
+            androidx.compose.animation.AnimatedVisibility(
+                visible = thumbLoading,
+                enter = fadeIn(),
+                exit = fadeOut(),
+                modifier = Modifier
+                    .align(Alignment.BottomStart)
+                    .padding(10.dp)
+            ) {
+                Surface(
+                    shape = RoundedCornerShape(48.dp),
+                    tonalElevation = 2.dp,
+                    color = MaterialTheme.colorScheme.surface.copy(alpha = 0.85f),
+                ) {
+                    Row(
+                        modifier = Modifier.padding(horizontal = 10.dp, vertical = 6.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        CircularProgressIndicator(
+                            strokeWidth = 2.dp,
+                            modifier = Modifier.size(16.dp)
+                        )
+                        Spacer(Modifier.width(8.dp))
+                        Text(
+                            text = stringResource(R.string.loading),
+                            style = MaterialTheme.typography.labelMedium
+                        )
+                    }
+                }
+            }
 
             /** Play Button */
             Button(

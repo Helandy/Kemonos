@@ -1,10 +1,9 @@
 package su.afk.kemonos.creatorPost.presenter.view.video
 
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -14,24 +13,30 @@ import su.afk.kemonos.creatorPost.domain.model.video.VideoInfoState
 import su.afk.kemonos.creatorPost.presenter.view.VideoInfoPreview
 import su.afk.kemonos.domain.models.VideoDomain
 
-@Composable
-fun PostVideosSection(
+internal fun LazyListScope.postVideosSection(
     videos: List<VideoDomain>,
     observeVideoInfo: (String, String) -> StateFlow<VideoInfoState>,
 ) {
     if (videos.isEmpty()) return
 
-    Column(modifier = Modifier.padding(top = 16.dp)) {
+    item(key = "videos_header") {
         Text(
-            stringResource(R.string.video_section),
-            style = MaterialTheme.typography.titleMedium
+            text = stringResource(R.string.video_section),
+            style = MaterialTheme.typography.titleMedium,
+            modifier = Modifier.padding(top = 16.dp)
         )
+    }
 
-        videos.forEach { video ->
-            VideoInfoPreview(
-                video = video,
-                observeVideoInfo = observeVideoInfo,
-            )
+    items(
+        count = videos.size,
+        key = { index ->
+            val v = videos[index]
+            "video:${v.server}:${v.name}:${v.path}"
         }
+    ) { index ->
+        VideoInfoPreview(
+            video = videos[index],
+            observeVideoInfo = observeVideoInfo
+        )
     }
 }
