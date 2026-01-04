@@ -17,6 +17,7 @@ import androidx.compose.ui.unit.dp
 import androidx.core.net.toUri
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import su.afk.kemonos.common.R
+import su.afk.kemonos.common.di.LocalDomainResolver
 import su.afk.kemonos.common.presenter.baseScreen.BaseScreen
 import su.afk.kemonos.common.presenter.views.block.PostContentBlock
 import su.afk.kemonos.common.presenter.views.block.PostTitleBlock
@@ -24,7 +25,6 @@ import su.afk.kemonos.common.presenter.views.creator.CreatorHeader
 import su.afk.kemonos.common.presenter.views.elements.FavoriteActionButton
 import su.afk.kemonos.common.shared.view.SharedActionButton
 import su.afk.kemonos.common.util.download.enqueueSystemDownload
-import su.afk.kemonos.common.util.selectDomain.getImageBaseUrlByService
 import su.afk.kemonos.common.util.toast
 import su.afk.kemonos.creatorPost.presenter.view.PostAttachmentsSection
 import su.afk.kemonos.creatorPost.presenter.view.TagsRow
@@ -39,6 +39,7 @@ internal fun CreatorPostScreen(
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     val context = LocalContext.current
+    val resolver = LocalDomainResolver.current
 
     BaseScreen(
         contentModifier = Modifier.padding(horizontal = 6.dp),
@@ -68,7 +69,8 @@ internal fun CreatorPostScreen(
         val profile = state.profile
         val previews = state.post?.previews
 
-        val imgBaseUrl = remember(post.service) { getImageBaseUrlByService(post.service) }
+        val imgBaseUrl = remember(post.service) { resolver.imageBaseUrlByService(post.service) }
+
         val uniquePreviews = remember(previews) {
             previews.orEmpty().distinctBy { p ->
                 when (p.type) {

@@ -14,6 +14,7 @@ internal fun SitePage(
     isLoggedIn: Boolean,
     login: Login?,
     site: SelectedSite,
+    updatedFavoritesCount: Int,
     onLoginClick: () -> Unit,
     onLogoutClick: () -> Unit,
     onFavoriteProfiles: () -> Unit,
@@ -35,7 +36,8 @@ internal fun SitePage(
                 else
                     R.string.profile_favorites_title_kemono,
                 onFavoriteProfiles = onFavoriteProfiles,
-                onFavoritePosts = onFavoritePosts
+                onFavoritePosts = onFavoritePosts,
+                updatesCount = updatedFavoritesCount
             )
         }
     }

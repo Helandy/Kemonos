@@ -10,6 +10,7 @@ import su.afk.kemonos.common.presenter.baseViewModel.BaseViewModel
 import su.afk.kemonos.domain.SelectedSite
 import su.afk.kemonos.navigation.NavigationManager
 import su.afk.kemonos.navigation.NavigationStorage
+import su.afk.kemonos.profile.data.FreshFavoriteArtistsUpdates
 import su.afk.kemonos.profile.navigation.AuthDest
 import su.afk.kemonos.profile.presenter.profile.delegate.LogoutDelegate
 import su.afk.kemonos.profile.utils.Const.KEY_SELECT_SITE
@@ -39,6 +40,9 @@ internal class ProfileViewModel @Inject constructor(
             val isKemono = auth.isKemonoAuthorized
             val isCoomer = auth.isCoomerAuthorized
 
+            val kCount = FreshFavoriteArtistsUpdates.get(SelectedSite.K).size
+            val cCount = FreshFavoriteArtistsUpdates.get(SelectedSite.C).size
+
             setState {
                 copy(
                     isLoading = false,
@@ -47,6 +51,8 @@ internal class ProfileViewModel @Inject constructor(
                     isLogin = isKemono || isCoomer,
                     kemonoLogin = auth.kemono.user,
                     coomerLogin = auth.coomer.user,
+                    kemonoUpdatedFavoritesCount = kCount,
+                    coomerUpdatedFavoritesCount = cCount,
                 )
             }
         }

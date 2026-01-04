@@ -12,16 +12,15 @@ import su.afk.kemonos.domain.SelectedSite
 import su.afk.kemonos.navigation.NavigationManager
 import su.afk.kemonos.navigation.NavigationStorage
 import su.afk.kemonos.preferences.site.ISelectedSiteUseCase
+import su.afk.kemonos.profile.api.domain.IGetFavoriteArtistsUseCase
 import su.afk.kemonos.profile.api.model.FavoriteArtist
-import su.afk.kemonos.profile.domain.favorites.GetFavoriteArtistsUseCase
 import su.afk.kemonos.profile.presenter.favoriteProfiles.views.FavoriteSortedType
 import su.afk.kemonos.profile.utils.Const.KEY_SELECT_SITE
 import javax.inject.Inject
 
 @HiltViewModel
 internal class FavoriteProfilesViewModel @Inject constructor(
-    private val getFavoriteArtistsUseCase: GetFavoriteArtistsUseCase,
-    private val errorHandlerUseCase: IErrorHandlerUseCase,
+    private val getFavoriteArtistsUseCase: IGetFavoriteArtistsUseCase,
     private val selectedSiteUseCase: ISelectedSiteUseCase,
     private val navManager: NavigationManager,
     private val creatorProfileNavigator: ICreatorProfileNavigator,

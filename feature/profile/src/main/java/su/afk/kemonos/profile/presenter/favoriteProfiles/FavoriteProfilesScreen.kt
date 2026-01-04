@@ -16,6 +16,8 @@ import su.afk.kemonos.common.presenter.baseScreen.StandardTopBar
 import su.afk.kemonos.common.presenter.baseScreen.TopBarScroll
 import su.afk.kemonos.common.presenter.views.creator.CreatorItem
 import su.afk.kemonos.common.presenter.views.searchBar.SearchBarNew
+import su.afk.kemonos.profile.data.FreshFavoriteArtistKey
+import su.afk.kemonos.profile.data.FreshFavoriteArtistsUpdates
 import su.afk.kemonos.profile.presenter.favoriteProfiles.views.favoriteProfilesSortOptions
 import su.afk.kemonos.profile.presenter.favoriteProfiles.views.uiDateBySort
 
@@ -66,6 +68,16 @@ internal fun FavoriteProfilesScreen(viewModel: FavoriteProfilesViewModel) {
                 items = state.searchCreators,
                 key = { "${it.service}:${it.id}:${it.indexed}" }
             ) { creator ->
+                val freshSet = FreshFavoriteArtistsUpdates.get(state.selectSite)
+
+                val isFresh = freshSet.contains(
+                    FreshFavoriteArtistKey(
+                        name = creator.name,
+                        service = creator.service,
+                        id = creator.id
+                    )
+                )
+
                 val dateForCard = creator.uiDateBySort(state.sortedType)
 
                 CreatorItem(
@@ -73,6 +85,7 @@ internal fun FavoriteProfilesScreen(viewModel: FavoriteProfilesViewModel) {
                     id = creator.id,
                     name = creator.name,
                     updated = dateForCard,
+                    isFresh = isFresh,
                     onClick = { viewModel.onCreatorClick(creator) }
                 )
                 HorizontalDivider()

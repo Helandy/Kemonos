@@ -18,9 +18,9 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import su.afk.kemonos.common.R
+import su.afk.kemonos.common.di.LocalDomainResolver
 import su.afk.kemonos.common.presenter.views.imageLoader.AsyncImageWithStatus
 import su.afk.kemonos.common.util.getColorForFavorites
-import su.afk.kemonos.common.util.selectDomain.getImageBaseUrlByService
 import su.afk.kemonos.common.util.toUiDateTime
 
 @Composable
@@ -37,9 +37,8 @@ fun CreatorHeader(
     val avatarSize = 42.dp
     var expanded by remember { mutableStateOf(false) }
 
-    val imgBaseUrl = remember(service) {
-        getImageBaseUrlByService(service)
-    }
+    val resolver = LocalDomainResolver.current
+    val imgBaseUrl = remember(service) { resolver.imageBaseUrlByService(service) }
 
     Row(
         modifier = Modifier.fillMaxWidth(),

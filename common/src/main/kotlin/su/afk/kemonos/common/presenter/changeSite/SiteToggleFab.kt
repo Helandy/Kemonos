@@ -27,7 +27,7 @@ fun SiteToggleFab(
         modifier = modifier
             .alpha(if (enable) 1f else 0.5f)
             .clickable(enabled = enable) {},
-        containerColor = MaterialTheme.colorScheme.primary,
+        containerColor = MaterialTheme.colorScheme.primaryContainer,
     ) {
         Icon(
             painter = painterResource(

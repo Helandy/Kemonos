@@ -19,12 +19,12 @@ import androidx.core.net.toUri
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import su.afk.kemonos.common.R
+import su.afk.kemonos.common.di.LocalDomainResolver
 import su.afk.kemonos.common.presenter.webView.WebViewPool
 import su.afk.kemonos.common.presenter.webView.rememberPooledWebView
 import su.afk.kemonos.common.presenter.webView.util.isEffectivelyEmptyHtml
 import su.afk.kemonos.common.presenter.webView.util.normalizeHtml
 import su.afk.kemonos.common.presenter.webView.util.wrapHtml
-import su.afk.kemonos.common.util.selectDomain.getBaseUrlByService
 
 @Composable
 fun PostContentBlock(
@@ -36,7 +36,8 @@ fun PostContentBlock(
     if (isEffectivelyEmpty) return
 
     val context = LocalContext.current
-    val siteBaseUrl = remember(service) { getBaseUrlByService(service) }
+    val resolver = LocalDomainResolver.current
+    val siteBaseUrl = remember(service) { resolver.baseUrlByService(service) }
 
     val textColor = MaterialTheme.colorScheme.onBackground.toArgb()
     val linkColor = MaterialTheme.colorScheme.primary.toArgb()

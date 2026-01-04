@@ -79,6 +79,7 @@ internal fun ProfileScreen(
                         isLoggedIn = state.isLoginCoomer,
                         login = state.coomerLogin,
                         site = SelectedSite.C,
+                        updatedFavoritesCount = state.coomerUpdatedFavoritesCount,
                         onLoginClick = { viewModel.onLoginClick(SelectedSite.C) },
                         onLogoutClick = { viewModel.onLogoutClick(SelectedSite.C) },
                         onFavoriteProfiles = {
@@ -94,6 +95,7 @@ internal fun ProfileScreen(
                         isLoggedIn = state.isLoginKemono,
                         login = state.kemonoLogin,
                         site = SelectedSite.K,
+                        updatedFavoritesCount = state.kemonoUpdatedFavoritesCount,
                         onLoginClick = { viewModel.onLoginClick(SelectedSite.K) },
                         onLogoutClick = { viewModel.onLogoutClick(SelectedSite.K) },
                         onFavoriteProfiles = {

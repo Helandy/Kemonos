@@ -17,10 +17,10 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import su.afk.kemonos.common.di.LocalDomainResolver
 import su.afk.kemonos.common.presenter.views.imageLoader.AsyncImageWithStatus
 import su.afk.kemonos.common.presenter.views.utilUI.formatNumberWithSpaces
 import su.afk.kemonos.common.util.getColorForFavorites
-import su.afk.kemonos.common.util.selectDomain.getImageBaseUrlByService
 import su.afk.kemonos.common.util.toUiDateTime
 
 @Composable
@@ -30,13 +30,13 @@ fun CreatorItem(
     name: String,
     favorited: Int? = null,
     updated: String? = null,
+    isFresh: Boolean = false,
     onClick: () -> Unit
 ) {
     val avatarSize = LocalWindowInfo.current.containerSize.width * 0.145f
 
-    val imgBaseUrl = remember(service) {
-        getImageBaseUrlByService(service)
-    }
+    val resolver = LocalDomainResolver.current
+    val imgBaseUrl = remember(service) { resolver.imageBaseUrlByService(service) }
 
     Box(
         modifier = Modifier
@@ -127,12 +127,27 @@ fun CreatorItem(
                         }
 
                         updated?.let {
-                            Text(
-                                text = updated.toUiDateTime(),
-                                style = MaterialTheme.typography.bodySmall,
-                                fontWeight = FontWeight.Bold,
-                                color = getColorForFavorites(service)
-                            )
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                if (isFresh) {
+                                    Text(
+                                        text = "NEW",
+                                        style = MaterialTheme.typography.labelSmall,
+                                        fontWeight = FontWeight.ExtraBold,
+                                        color = MaterialTheme.colorScheme.error.copy(alpha = 0.8f)
+                                    )
+
+                                    Spacer(Modifier.width(6.dp))
+                                }
+
+                                Text(
+                                    text = updated.toUiDateTime(),
+                                    style = MaterialTheme.typography.bodySmall,
+                                    fontWeight = FontWeight.Bold,
+                                    color = getColorForFavorites(service)
+                                )
+                            }
                         }
                     }
                 }
