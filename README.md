@@ -12,6 +12,11 @@
 <p align="center">
   <strong>📱 Android • Kotlin • Jetpack Compose</strong>
 </p>
+<p align="center">
+  <a href="https://github.com/Helandy/Kemonos/releases">
+    <strong>⬇️ Download latest version (Releases)</strong>
+  </a>
+</p>
 
 ---
 
