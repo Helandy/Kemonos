@@ -23,6 +23,7 @@ import su.afk.kemonos.storage.api.profilePosts.IStorageCreatorPostsCacheUseCase
 import su.afk.kemonos.storage.api.tags.IStoreTagsUseCase
 import su.afk.kemonos.utils.buildBaseUrl
 import su.afk.kemonos.utils.normalizeDomain
+import su.afk.kemonos.utils.toRootUrl
 import javax.inject.Inject
 
 @HiltViewModel
@@ -71,8 +72,8 @@ internal class SettingViewModel @Inject constructor(
                 copy(
                     isSaving = false,
                     saveSuccess = true,
-                    kemonoUrl = kemono,
-                    coomerUrl = coomer
+                    kemonoUrl = kemono.toRootUrl(),
+                    coomerUrl = coomer.toRootUrl()
                 )
             }
         }.onFailure { e ->

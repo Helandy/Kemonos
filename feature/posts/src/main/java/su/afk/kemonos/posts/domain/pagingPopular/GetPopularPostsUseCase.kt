@@ -3,7 +3,10 @@ package su.afk.kemonos.posts.domain.pagingPopular
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
+import androidx.paging.filter
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
+import su.afk.kemonos.common.presenter.screens.postsScreen.stableKey
 import su.afk.kemonos.domain.SelectedSite
 import su.afk.kemonos.domain.models.PostDomain
 import su.afk.kemonos.posts.api.popular.PopularPosts
@@ -20,6 +23,7 @@ internal class GetPopularPostsUseCase @Inject constructor(
         period: Period,
         onMeta: (PopularPosts) -> Unit,
     ): Flow<PagingData<PostDomain>> {
+
         return Pager(
             config = PagingConfig(
                 pageSize = PAGE_SIZE,
@@ -37,7 +41,13 @@ internal class GetPopularPostsUseCase @Inject constructor(
                     onMeta = onMeta,
                 )
             }
-        ).flow
+        ).flow.map { pagingData ->
+            val seen = HashSet<String>(PAGE_SIZE * 2)
+
+            pagingData.filter { post ->
+                seen.add(post.stableKey())
+            }
+        }
     }
 
     companion object {

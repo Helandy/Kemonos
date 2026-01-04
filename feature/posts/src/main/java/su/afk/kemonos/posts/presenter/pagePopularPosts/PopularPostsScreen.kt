@@ -3,7 +3,6 @@ package su.afk.kemonos.posts.presenter.pagePopularPosts
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.grid.LazyGridState
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -28,7 +27,6 @@ internal fun PopularPostsScreen(
     val siteSwitching by viewModel.siteSwitching.collectAsStateWithLifecycle()
 
     val posts = state.posts.collectAsLazyPagingItems()
-    TopAppBarDefaults.enterAlwaysScrollBehavior()
 
     val isPageLoading = posts.loadState.refresh is LoadState.Loading
     val isBusy = isPageLoading || siteSwitching
