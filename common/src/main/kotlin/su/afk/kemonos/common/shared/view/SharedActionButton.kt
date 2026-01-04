@@ -11,11 +11,13 @@ import androidx.compose.runtime.Composable
 fun SharedActionButton(
     onClick: () -> Unit,
 ) {
-    SmallFloatingActionButton(onClick = onClick) {
+    SmallFloatingActionButton(
+        onClick = onClick,
+        containerColor = MaterialTheme.colorScheme.secondaryContainer
+    ) {
         Icon(
             imageVector = Icons.Filled.Share,
             contentDescription = "Share",
-            tint = MaterialTheme.colorScheme.onSurfaceVariant
         )
     }
 }

@@ -113,5 +113,6 @@
     <string name="settings_cache_fav_authors_coomer">Избранные авторы (Coomer)</string>
 
     <string name="settings_cache_profiles">Профили авторов</string>
+    <string name="settings_github_ideas">Ошибки/идеи/предложения — оставляйте на GitHub</string>
 
 </resources>

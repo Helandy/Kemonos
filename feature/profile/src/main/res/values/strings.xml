@@ -113,5 +113,6 @@
     <string name="settings_cache_fav_authors_coomer">Favorite creators (Coomer)</string>
 
     <string name="settings_cache_profiles">Creator profiles</string>
+    <string name="settings_github_ideas">Bugs/ideas/suggestions — please leave them on GitHub</string>
 
 </resources>

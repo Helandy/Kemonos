@@ -1,4 +1,4 @@
-package su.afk.kemonos.common.presenter.views.block
+package su.afk.kemonos.creatorPost.presenter.view
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
@@ -14,7 +14,7 @@ import su.afk.kemonos.common.R
 import su.afk.kemonos.common.util.toUiDateTime
 
 @Composable
-fun PostTitleBlock(
+internal fun PostTitleBlock(
     title: String,
     published: String?,
     edited: String?,

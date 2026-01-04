@@ -19,16 +19,12 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import su.afk.kemonos.common.R
 import su.afk.kemonos.common.di.LocalDomainResolver
 import su.afk.kemonos.common.presenter.baseScreen.BaseScreen
-import su.afk.kemonos.common.presenter.views.block.PostContentBlock
-import su.afk.kemonos.common.presenter.views.block.PostTitleBlock
 import su.afk.kemonos.common.presenter.views.creator.CreatorHeader
 import su.afk.kemonos.common.presenter.views.elements.FavoriteActionButton
 import su.afk.kemonos.common.shared.view.SharedActionButton
 import su.afk.kemonos.common.util.download.enqueueSystemDownload
 import su.afk.kemonos.common.util.toast
-import su.afk.kemonos.creatorPost.presenter.view.PostAttachmentsSection
-import su.afk.kemonos.creatorPost.presenter.view.TagsRow
-import su.afk.kemonos.creatorPost.presenter.view.postCommentsSection
+import su.afk.kemonos.creatorPost.presenter.view.*
 import su.afk.kemonos.creatorPost.presenter.view.preview.postPreviewsSection
 import su.afk.kemonos.creatorPost.presenter.view.video.postVideosSection
 

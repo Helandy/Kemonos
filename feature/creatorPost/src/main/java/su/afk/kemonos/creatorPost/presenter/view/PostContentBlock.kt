@@ -1,4 +1,4 @@
-package su.afk.kemonos.common.presenter.views.block
+package su.afk.kemonos.creatorPost.presenter.view
 
 import android.content.Intent
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -27,7 +27,7 @@ import su.afk.kemonos.common.presenter.webView.util.normalizeHtml
 import su.afk.kemonos.common.presenter.webView.util.wrapHtml
 
 @Composable
-fun PostContentBlock(
+internal fun PostContentBlock(
     service: String,
     body: String
 ) {
@@ -78,7 +78,13 @@ fun PostContentBlock(
                 )
             }
         }
-    )
+    ).apply {
+        /** не блокировать долгий тап, иначе выделение/копирование не появится */
+        /** false -> отдать обработку WebView (выделение текста, контекстное меню) */
+        isLongClickable = true
+        isHapticFeedbackEnabled = true
+        setOnLongClickListener { false }
+    }
 
     AndroidView(
         modifier = Modifier.fillMaxWidth().heightIn(min = 1.dp),
