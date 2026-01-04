@@ -5,7 +5,7 @@ import retrofit2.http.GET
 import retrofit2.http.Query
 import su.afk.kemonos.common.data.dto.PostUnifiedDto
 import su.afk.kemonos.network.auth.AuthCookie
-import su.afk.kemonos.network.creators.HeaderText
+import su.afk.kemonos.network.textInterceptor.HeaderText
 import su.afk.kemonos.profile.data.dto.favorites.artist.FavoriteArtistDto
 
 internal interface FavoritesApi {

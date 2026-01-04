@@ -4,10 +4,10 @@ import androidx.paging.PagingSource
 import androidx.paging.PagingState
 import su.afk.kemonos.domain.models.Creators
 import su.afk.kemonos.domain.models.CreatorsSort
-import su.afk.kemonos.storage.api.StoreCreatorsUseCase
+import su.afk.kemonos.storage.api.IStoreCreatorsUseCase
 
 internal class CreatorsPagingSource(
-    private val store: StoreCreatorsUseCase,
+    private val store: IStoreCreatorsUseCase,
     private val service: String,
     private val query: String,
     private val sort: CreatorsSort,

@@ -20,7 +20,6 @@ internal class TagsSelectViewModel @Inject constructor(
     private val getSearchPostsPagingUseCase: GetSearchPostsPagingUseCase,
     private val navigateToPostDelegate: NavigateToPostDelegate,
     private val navigationStorage: NavigationStorage,
-    private val errorHandlerUseCase: IErrorHandlerUseCase,
     override val errorHandler: IErrorHandlerUseCase,
     override val retryStorage: RetryStorage,
 ) : BaseViewModel<TagsSelectState>(TagsSelectState()) {
@@ -55,5 +54,5 @@ internal class TagsSelectViewModel @Inject constructor(
 
     fun navigateToPost(post: PostDomain) = navigateToPostDelegate.navigateToPost(post = post)
 
-    fun parseError(t: Throwable) = errorHandlerUseCase.parse(t)
+    fun parseError(t: Throwable) = errorHandler.parse(t)
 }

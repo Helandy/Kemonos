@@ -4,7 +4,7 @@ import su.afk.kemonos.creatorPost.api.domain.model.PostContentDomain
 import su.afk.kemonos.creatorPost.data.api.PostsApi
 import su.afk.kemonos.creatorPost.data.dto.profilePost.PostResponseDto.Companion.toDomain
 import su.afk.kemonos.network.util.call
-import su.afk.kemonos.storage.api.post.IPostUseCase
+import su.afk.kemonos.storage.api.post.IStoragePostUseCase
 import javax.inject.Inject
 
 internal interface IPostRepository {
@@ -13,7 +13,7 @@ internal interface IPostRepository {
 
 internal class PostRepository @Inject constructor(
     private val api: PostsApi,
-    private val postUseCase: IPostUseCase
+    private val postUseCase: IStoragePostUseCase
 ) : IPostRepository {
 
     /** Получение поста */

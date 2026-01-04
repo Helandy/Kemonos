@@ -11,7 +11,7 @@ import su.afk.kemonos.creatorProfile.data.dto.profileDms.DmDto
 import su.afk.kemonos.creatorProfile.data.dto.profileFanCards.ProfileFanCardsDto
 import su.afk.kemonos.creatorProfile.data.dto.profileLinks.ProfileLinksDto
 import su.afk.kemonos.creatorProfile.data.dto.profileTags.TagDto
-import su.afk.kemonos.network.creators.HeaderText
+import su.afk.kemonos.network.textInterceptor.HeaderText
 
 internal interface CreatorProfileApi {
 

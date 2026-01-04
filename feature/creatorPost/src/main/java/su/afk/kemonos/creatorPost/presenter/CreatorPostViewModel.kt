@@ -15,6 +15,7 @@ import su.afk.kemonos.common.presenter.baseViewModel.BaseViewModel
 import su.afk.kemonos.common.shared.ShareActions
 import su.afk.kemonos.common.shared.ShareLinkBuilder
 import su.afk.kemonos.common.shared.ShareTarget
+import su.afk.kemonos.common.translate.IOpenTranslateUseCase
 import su.afk.kemonos.creatorPost.domain.model.video.VideoInfoState
 import su.afk.kemonos.creatorPost.domain.useCase.GetCommentsUseCase
 import su.afk.kemonos.creatorPost.domain.useCase.GetPostUseCase
@@ -34,6 +35,7 @@ internal class CreatorPostViewModel @AssistedInject constructor(
     private val getVideoInfo: GetVideoInfoUseCase,
     private val likeDelegate: LikeDelegate,
     private val navigateDelegates: NavigateDelegates,
+    private val openTranslateUseCase: IOpenTranslateUseCase,
     override val errorHandler: IErrorHandlerUseCase,
     override val retryStorage: RetryStorage,
 ) : BaseViewModel<CreatorPostState>(CreatorPostState()) {
@@ -96,7 +98,8 @@ internal class CreatorPostViewModel @AssistedInject constructor(
     private val videoInfoFlows = mutableMapOf<String, StateFlow<VideoInfoState>>()
 
     fun observeVideoInfo(url: String, name: String): StateFlow<VideoInfoState> {
-        return videoInfoFlows.getOrPut(name) {
+        val key = url
+        return videoInfoFlows.getOrPut(key) {
             kotlinx.coroutines.flow.flow {
                 emit(VideoInfoState.Loading)
                 val info = getVideoInfo(url, name)
@@ -106,7 +109,7 @@ internal class CreatorPostViewModel @AssistedInject constructor(
             }.stateIn(
                 scope = viewModelScope,
                 started = kotlinx.coroutines.flow.SharingStarted.WhileSubscribed(stopTimeoutMillis = 5_000),
-                initialValue = VideoInfoState.Idle
+                initialValue = VideoInfoState.Loading
             )
         }
     }

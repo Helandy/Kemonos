@@ -8,13 +8,21 @@ internal class ApiCheckDelegate @Inject constructor(
     private val checkApiUseCase: ICheckApiUseCase,
 ) {
     suspend fun check(): ApiCheckUiResult {
-        val check = checkApiUseCase()
-        return if (check.success) ApiCheckUiResult.Success
-        else ApiCheckUiResult.Failure(check.error)
+        val result = checkApiUseCase()
+
+        return if (result.allOk) ApiCheckUiResult.Success
+        else ApiCheckUiResult.Failure(
+            kemonoError = result.kemono.error,
+            coomerError = result.coomer.error,
+        )
     }
 
     sealed interface ApiCheckUiResult {
         data object Success : ApiCheckUiResult
-        data class Failure(val error: ErrorItem?) : ApiCheckUiResult
+
+        data class Failure(
+            val kemonoError: ErrorItem?,
+            val coomerError: ErrorItem?,
+        ) : ApiCheckUiResult
     }
 }

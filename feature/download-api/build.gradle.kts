@@ -1,6 +1,5 @@
 plugins {
     alias(libs.plugins.kotlin.jvm)
-    alias(libs.plugins.kotlin.serialization)
 }
 
 java {
@@ -10,8 +9,5 @@ java {
 }
 
 dependencies {
-    implementation(project(":core:domain"))
-
-    implementation(libs.bundles.serialization.json)
     implementation(libs.bundles.navigation3)
 }

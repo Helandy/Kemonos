@@ -75,6 +75,44 @@
     <string name="logout_message">Вы уверены, что хотите выйти из %1$s?</string>
     <string name="logout_confirm">Выйти</string>
     <string name="cancel">Отмена</string>
+
     <string name="kemono">Kemono</string>
     <string name="coomer">Coomer</string>
+
+    <string name="setting">Настройки</string>
+
+    <!-- Cache -->
+    <string name="settings_cache_title">Кэш данных</string>
+    <string name="settings_cache_hint">
+        Приложение автоматически управляет кэшированием.
+        Очистка кэша может помочь при некорректном отображении или устаревших данных.
+    </string>
+
+    <string name="settings_cache_never">нет данных</string>
+    <string name="settings_cache_last">Последнее обновление: %1$s</string>
+    <string name="settings_cache_next">Актуально до: %1$s</string>
+    <string name="settings_cache_clear">Очистить</string>
+
+    <!-- Cache categories -->
+    <string name="settings_cache_tags_kemono">Теги (Kemono)</string>
+    <string name="settings_cache_tags_coomer">Теги (Coomer)</string>
+
+    <string name="settings_cache_creators_kemono">Авторы (Kemono)</string>
+    <string name="settings_cache_creators_coomer">Авторы (Coomer)</string>
+
+    <string name="settings_cache_creator_posts_pages">Посты в профилях авторов</string>
+    <string name="settings_cache_post_contents">Полные посты (контент)</string>
+
+    <string name="settings_cache_popular_kemono">Популярное (Kemono)</string>
+    <string name="settings_cache_popular_coomer">Популярное (Coomer)</string>
+
+    <string name="settings_cache_fav_posts_kemono">Избранные посты (Kemono)</string>
+    <string name="settings_cache_fav_posts_coomer">Избранные посты (Coomer)</string>
+
+    <string name="settings_cache_fav_authors_kemono">Избранные авторы (Kemono)</string>
+    <string name="settings_cache_fav_authors_coomer">Избранные авторы (Coomer)</string>
+
+    <string name="settings_cache_profiles">Профили авторов</string>
+    <string name="settings_github_ideas">Ошибки/идеи/предложения — оставляйте на GitHub</string>
+
 </resources>

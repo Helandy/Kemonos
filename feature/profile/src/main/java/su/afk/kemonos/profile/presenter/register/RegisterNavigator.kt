@@ -11,7 +11,7 @@ import su.afk.kemonos.profile.navigation.AuthDest
 class RegisterNavigator @Inject constructor() : NavRegistrar {
     override fun register(builder: EntryProviderScope<NavKey>, nav: NavigationManager) = with(builder) {
         entry<AuthDest.Register> {
-            RegisterScreen(viewModel = hiltViewModel())
+            RegisterScreen(viewModel = hiltViewModel<RegisterViewModel>())
         }
     }
 }

@@ -2,6 +2,7 @@ package su.afk.kemonos.profile.presenter.profile.views
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.material3.Badge
 import androidx.compose.material3.Card
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -17,6 +18,7 @@ import su.afk.kemonos.profile.R
 @Composable
 internal fun FavoritesCard(
     titleId: Int,
+    updatesCount: Int,
     onFavoriteProfiles: () -> Unit,
     onFavoritePosts: () -> Unit,
 ) {
@@ -42,6 +44,21 @@ internal fun FavoritesCard(
                 contentAlignment = Alignment.Center,
             ) {
                 Text(text = stringResource(R.string.profile_favorites_profiles))
+
+                if (updatesCount > 0) {
+                    Badge(
+                        modifier = Modifier
+                            .align(Alignment.TopEnd)
+                            .offset(x = 6.dp, y = (-6).dp),
+                        containerColor = MaterialTheme.colorScheme.error,
+                        contentColor = MaterialTheme.colorScheme.onError
+                    ) {
+                        Text(
+                            text = updatesCount.toString(),
+                            style = MaterialTheme.typography.labelSmall,
+                        )
+                    }
+                }
             }
         }
 

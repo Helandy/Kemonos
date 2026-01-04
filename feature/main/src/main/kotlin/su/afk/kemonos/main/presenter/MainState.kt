@@ -7,7 +7,9 @@ internal class MainState {
 
     data class State(
         val isLoading: Boolean = true,
-        val error: ErrorItem? = null,
+
+        val kemonoError: ErrorItem? = null,
+        val coomerError: ErrorItem? = null,
 
         val apiSuccess: Boolean? = null,
 

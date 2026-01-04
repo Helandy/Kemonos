@@ -8,10 +8,12 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Modifier
+import su.afk.kemonos.common.di.LocalDomainResolver
 import su.afk.kemonos.common.presenter.baseScreen.LocalAppScaffoldPadding
 import su.afk.kemonos.navigation.AppNavHost
 import su.afk.kemonos.navigation.NavRegistrar
 import su.afk.kemonos.navigation.NavigationManager
+import su.afk.kemonos.preferences.IDomainResolver
 import su.afk.kemonos.presenter.bottomBar.BottomNavigationBar
 import su.afk.kemonos.ui.theme.KemonosTheme
 import javax.inject.Inject
@@ -19,6 +21,7 @@ import javax.inject.Singleton
 
 @Singleton
 class MainRoutingGraph @Inject constructor(
+    private val domainResolver: IDomainResolver,
     private val navManager: NavigationManager,
     private val registrars: Set<@JvmSuppressWildcards NavRegistrar>
 ) {
@@ -42,7 +45,10 @@ class MainRoutingGraph @Inject constructor(
                     }
                 }
             ) { innerPadding ->
-                CompositionLocalProvider(LocalAppScaffoldPadding provides innerPadding) {
+                CompositionLocalProvider(
+                    LocalAppScaffoldPadding provides innerPadding,
+                    LocalDomainResolver provides domainResolver,
+                ) {
                     AppNavHost(
                         navManager = navManager,
                         registrars = registrars,

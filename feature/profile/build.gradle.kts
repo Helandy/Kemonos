@@ -37,12 +37,13 @@ dependencies {
     implementation(libs.bundles.retrofit)
 
     implementation(project(":common"))
-    implementation(project(":navigation"))
+    implementation(project(":core:navigation"))
 
     implementation(project(":core:domain"))
     implementation(project(":core:auth"))
     implementation(project(":core:network"))
     implementation(project(":core:preferences"))
+    implementation(project(":core:utils"))
     implementation(project(":storage-api"))
 
     implementation(project(":feature:profile-api"))

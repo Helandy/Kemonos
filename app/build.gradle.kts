@@ -77,7 +77,7 @@ dependencies {
     implementation(libs.bundles.navigation3)
 
     implementation(project(":common"))
-    implementation(project(":navigation"))
+    implementation(project(":core:navigation"))
 
     implementation(project(":feature:common:commonScreen-api"))
     implementation(project(":feature:common:commonScreen"))

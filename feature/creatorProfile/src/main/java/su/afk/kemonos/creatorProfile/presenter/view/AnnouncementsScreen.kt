@@ -123,11 +123,17 @@ fun AnnouncementCard(
                     .heightIn(min = 1.dp)
             )
 
-            Text(
-                text = stringResource(R.string.dm_added, announcement.added.toUiDateTime()),
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
-            )
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Spacer(modifier = Modifier.weight(1f))
+                Text(
+                    text = stringResource(R.string.dm_added, announcement.added.toUiDateTime()),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
         }
     }
 }

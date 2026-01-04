@@ -15,7 +15,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import su.afk.kemonos.common.R
-import su.afk.kemonos.common.util.selectDomain.getImageBaseUrlByService
+import su.afk.kemonos.common.di.LocalDomainResolver
 import su.afk.kemonos.common.util.toUiDateTime
 import su.afk.kemonos.domain.models.PostDomain
 
@@ -25,7 +25,8 @@ fun PostCard(
     onClick: () -> Unit,
     showFavCount: Boolean = false,
 ) {
-    val imgBaseUrl = remember(post.service) { getImageBaseUrlByService(post.service) }
+    val resolver = LocalDomainResolver.current
+    val imgBaseUrl = remember(post.service) { resolver.imageBaseUrlByService(post.service) }
     val meta = rememberPostCardMeta(post)
 
     Column(modifier = Modifier.clickable { onClick() }) {

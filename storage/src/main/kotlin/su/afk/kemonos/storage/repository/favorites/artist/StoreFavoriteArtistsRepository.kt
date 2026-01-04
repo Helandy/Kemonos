@@ -1,7 +1,9 @@
 package su.afk.kemonos.storage.repository.favorites.artist
 
 import su.afk.kemonos.domain.SelectedSite
-import su.afk.kemonos.preferences.useCase.CacheTimestampUseCase
+import su.afk.kemonos.preferences.useCase.CacheKeys.FAVORITES_ARTISTS
+import su.afk.kemonos.preferences.useCase.CacheTimes.TTL_1_HOURS
+import su.afk.kemonos.preferences.useCase.ICacheTimestampUseCase
 import su.afk.kemonos.profile.api.model.FavoriteArtist
 import su.afk.kemonos.storage.entity.favorites.artist.FavoriteArtistEntity.Companion.toDomain
 import su.afk.kemonos.storage.entity.favorites.artist.FavoriteArtistEntity.Companion.toEntity
@@ -19,7 +21,7 @@ interface IStoreFavoriteArtistsRepository {
 
 internal class StoreFavoriteArtistsRepository @Inject constructor(
     private val dao: FavoriteArtistsDao,
-    private val cacheTimestamps: CacheTimestampUseCase,
+    private val cacheTimestamps: ICacheTimestampUseCase,
 ) : IStoreFavoriteArtistsRepository {
 
     override suspend fun getAll(site: SelectedSite): List<FavoriteArtist> =
@@ -42,16 +44,11 @@ internal class StoreFavoriteArtistsRepository @Inject constructor(
     override suspend fun isCacheFresh(site: SelectedSite): Boolean {
         val ts = cacheTimestamps.getCacheTimestamp(cacheKey(site))
         if (ts == 0L) return false
-        return System.currentTimeMillis() - ts < CACHE_TTL_MS
+        return System.currentTimeMillis() - ts < TTL_1_HOURS
     }
 
     override suspend fun exists(site: SelectedSite, service: String, creatorId: String): Boolean =
         dao.exists(site, service, creatorId)
 
-    private fun cacheKey(site: SelectedSite) = "${KEY}_${site.name}"
-
-    private companion object {
-        private const val CACHE_TTL_MS = 1L * 60 * 60 * 1000
-        private const val KEY = "favorites_artists_cache_time"
-    }
+    private fun cacheKey(site: SelectedSite) = "${FAVORITES_ARTISTS}_${site.name}"
 }

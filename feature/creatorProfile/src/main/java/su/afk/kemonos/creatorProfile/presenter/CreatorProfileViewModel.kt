@@ -31,7 +31,6 @@ import su.afk.kemonos.preferences.IGetCurrentSiteRootUrlUseCase
 
 internal class CreatorProfileViewModel @AssistedInject constructor(
     @Assisted private val dest: CreatorDest.CreatorProfile,
-    private val errorHandlerUseCase: IErrorHandlerUseCase,
     private val getProfileUseCase: IGetProfileUseCase,
     private val getKemonoRootUrlUseCase: GetKemonoRootUrlUseCase,
     private val getCurrentSiteRootUrlUseCase: IGetCurrentSiteRootUrlUseCase,
@@ -271,7 +270,7 @@ internal class CreatorProfileViewModel @AssistedInject constructor(
     /** Открытие поста */
     fun navigateToPost(post: PostDomain) = navigationDelegate.navigateToPost(post)
 
-    fun parseError(t: Throwable) = errorHandlerUseCase.parse(t)
+    fun parseError(t: Throwable) = errorHandler.parse(t)
 
     fun back() {
         navManager.back()

@@ -13,7 +13,7 @@ import su.afk.kemonos.network.api.BaseUrlProvider
 import su.afk.kemonos.network.api.ReplaceBaseUrlInterceptor
 import su.afk.kemonos.network.api.SwitchingBaseUrlProvider
 import su.afk.kemonos.network.auth.AuthCookieInterceptor
-import su.afk.kemonos.network.creators.CreatorsTextInterceptor
+import su.afk.kemonos.network.textInterceptor.TextInterceptor
 import su.afk.kemonos.preferences.UrlPrefs
 import java.util.concurrent.TimeUnit
 import javax.inject.Named
@@ -23,11 +23,10 @@ import javax.inject.Singleton
 @InstallIn(SingletonComponent::class)
 internal object NetworkModule {
 
-    // todo не факт что верно
     @Provides
     @Singleton
     fun provideBaseUrlProvider(
-        scope: CoroutineScope,
+        @Named("AppScope") scope: CoroutineScope,
         prefs: UrlPrefs
     ): BaseUrlProvider = SwitchingBaseUrlProvider(scope, prefs)
 
@@ -37,7 +36,7 @@ internal object NetworkModule {
         logging: HttpLoggingInterceptor,
         baseProvider: BaseUrlProvider,
         authCookieInterceptor: AuthCookieInterceptor,
-        creatorsTextInterceptor: CreatorsTextInterceptor
+        creatorsTextInterceptor: TextInterceptor
     ): OkHttpClient = OkHttpClient.Builder()
         .addInterceptor(ReplaceBaseUrlInterceptor(baseProvider))
         .addInterceptor(authCookieInterceptor)

@@ -7,5 +7,5 @@ import javax.inject.Inject
 internal class CheckApiUseCase @Inject constructor(
     private val checkApiRepository: CheckApiRepository
 ) : ICheckApiUseCase {
-    override suspend operator fun invoke() = checkApiRepository.getApiCheck()
+    override suspend operator fun invoke() = checkApiRepository.getApiCheckForAllSites()
 }

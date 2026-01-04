@@ -10,9 +10,7 @@ import su.afk.kemonos.common.presenter.baseViewModel.BaseViewModel
 import su.afk.kemonos.domain.SelectedSite
 import su.afk.kemonos.navigation.NavigationManager
 import su.afk.kemonos.navigation.NavigationStorage
-import su.afk.kemonos.preferences.GetCoomerRootUrlUseCase
-import su.afk.kemonos.preferences.GetKemonoRootUrlUseCase
-import su.afk.kemonos.profile.BuildConfig
+import su.afk.kemonos.profile.data.FreshFavoriteArtistsUpdates
 import su.afk.kemonos.profile.navigation.AuthDest
 import su.afk.kemonos.profile.presenter.profile.delegate.LogoutDelegate
 import su.afk.kemonos.profile.utils.Const.KEY_SELECT_SITE
@@ -23,8 +21,6 @@ internal class ProfileViewModel @Inject constructor(
     private val observeAuthStateUseCase: ObserveAuthStateUseCase,
     private val navigationManager: NavigationManager,
     private val navigationStorage: NavigationStorage,
-    private val getCoomerRootUrlUseCase: GetCoomerRootUrlUseCase,
-    private val getKemonoRootUrlUseCase: GetKemonoRootUrlUseCase,
     private val logoutDelegate: LogoutDelegate,
     override val errorHandler: IErrorHandlerUseCase,
     override val retryStorage: RetryStorage,
@@ -36,8 +32,6 @@ internal class ProfileViewModel @Inject constructor(
 
     init {
         observeAuth()
-        observeUrls()
-        getAppVersion()
     }
 
     /** Проверка авторизации */
@@ -45,6 +39,9 @@ internal class ProfileViewModel @Inject constructor(
         observeAuthStateUseCase().distinctUntilChanged().collect { auth ->
             val isKemono = auth.isKemonoAuthorized
             val isCoomer = auth.isCoomerAuthorized
+
+            val kCount = FreshFavoriteArtistsUpdates.get(SelectedSite.K).size
+            val cCount = FreshFavoriteArtistsUpdates.get(SelectedSite.C).size
 
             setState {
                 copy(
@@ -54,17 +51,10 @@ internal class ProfileViewModel @Inject constructor(
                     isLogin = isKemono || isCoomer,
                     kemonoLogin = auth.kemono.user,
                     coomerLogin = auth.coomer.user,
+                    kemonoUpdatedFavoritesCount = kCount,
+                    coomerUpdatedFavoritesCount = cCount,
                 )
             }
-        }
-    }
-
-    /** Получение версии */
-    fun getAppVersion() {
-        setState {
-            copy(
-                appVersion = BuildConfig.VERSION_NAME
-            )
         }
     }
 
@@ -84,17 +74,6 @@ internal class ProfileViewModel @Inject constructor(
         updateState = { reducer -> setState(reducer) }
     )
 
-
-    /** Актуальные урлы на сайт */
-    private fun observeUrls() {
-        setState {
-            copy(
-                kemonoUrl = getKemonoRootUrlUseCase(),
-                coomerUrl = getCoomerRootUrlUseCase()
-            )
-        }
-    }
-
     /** Логин */
     fun onLoginClick(site: SelectedSite) {
         navigationStorage.put(KEY_SELECT_SITE, site)
@@ -112,6 +91,9 @@ internal class ProfileViewModel @Inject constructor(
         navigationStorage.put(KEY_SELECT_SITE, site)
         navigationManager.navigate(AuthDest.FavoritePosts)
     }
+
+    /** Настройки */
+    fun navigateToSettings() = navigationManager.navigate(AuthDest.Setting)
 
     fun onKeysClick() {
     }

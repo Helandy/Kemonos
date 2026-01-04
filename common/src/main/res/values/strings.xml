@@ -38,6 +38,8 @@
     <string name="profile_tab_dms">DM</string>
     <string name="profile_tab_links">Links</string>
     <string name="random">Random</string>
+    <string name="save">Save</string>
+    <string name="saved">Saved</string>
 
     <string name="open_with">Open via…</string>
     <string name="vlc_not_installed">VLC is not installed. Opening it through another application…</string>
@@ -128,6 +130,11 @@
     <string name="main_api_current_urls_title">Current URLs in settings:</string>
     <string name="main_api_current_urls_value">Kemono: %1$s\nCoomer: %2$s</string>
 
+    <string name="settings_api_subtitle">You can specify a different API domain if the default one is unavailable.
+    </string>
+
+    <string name="settings_api_fields_title">Custom domains</string>
+
     <string name="main_api_kemono_url_label">Kemono API URL</string>
     <string name="main_api_coomer_url_label">Coomer API URL</string>
 
@@ -157,4 +164,22 @@
     <string name="profile_app_version">GitHub Version: %1$s</string>
 
     <string name="main_api_skip_check_button">Skip check</string>
+
+    <!-- Main screen / API check (site status) -->
+    <string name="main_api_site_status_title">API status</string>
+
+    <string name="main_api_kemono_label">Kemono</string>
+    <string name="main_api_coomer_label">Coomer</string>
+
+    <string name="main_api_site_available">%1$s API is available</string>
+    <string name="main_api_site_unavailable">%1$s API is unavailable</string>
+
+    <string name="main_api_site_error_details_title">Error details</string>
+
+    <string name="main_api_section_domains_title">Site domains</string>
+    <string name="main_api_section_current_urls_title">Current URLs</string>
+
+    <string name="main_api_meta_request_id">requestId: %1$s</string>
+    <string name="main_api_meta_cause">cause: %1$s</string>
+
 </resources>

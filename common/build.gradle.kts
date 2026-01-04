@@ -41,7 +41,7 @@ dependencies {
 
     implementation(libs.bundles.coil)
 
-    implementation(project(":navigation"))
+    implementation(project(":core:navigation"))
     implementation(project(":core:domain"))
     implementation(project(":core:network"))
     implementation(project(":core:preferences"))

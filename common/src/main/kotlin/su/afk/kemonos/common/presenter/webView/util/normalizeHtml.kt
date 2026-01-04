@@ -7,9 +7,12 @@ private val ATTR_URL = Regex(
 
 private val IMG_TAG = Regex("""<img\b[^>]*>""", RegexOption.IGNORE_CASE)
 
-fun normalizeHtml(
-    body: String,
-): String {
+private val IMG_WITH_SRC = Regex(
+    """<img\b([^>]*?)\bsrc\s*=\s*(['"])([^'"]+)\2([^>]*)>""",
+    RegexOption.IGNORE_CASE
+)
+
+fun normalizeHtml(body: String): String {
     var out = body.replace(ATTR_URL) { mr ->
         val attr = mr.groupValues[1]
         val quote = mr.groupValues[2]
@@ -17,24 +20,11 @@ fun normalizeHtml(
 
         val fixed = when {
             url.isBlank() -> url
-
-            /**
-             * /img.kemono.cr/...
-             * */
-            url.startsWith("//") ->
-                "https:$url"
-
-            url.startsWith("http://", true) ||
-                    url.startsWith("https://", true) ->
-                url
-
-            /** относительный от корня — WebView разрулит через baseUrl */
-            url.startsWith("/") ->
-                url
-
+            url.startsWith("//") -> "https:$url"
+            url.startsWith("http://", true) || url.startsWith("https://", true) -> url
+            url.startsWith("/") -> url
             else -> url
         }
-
         """$attr=$quote$fixed$quote"""
     }
 
@@ -42,6 +32,16 @@ fun normalizeHtml(
         val tag = mr.value
         if (tag.contains("loading=", true)) tag
         else tag.dropLast(1) + """ loading="lazy" decoding="async">"""
+    }
+
+    out = out.replace(IMG_WITH_SRC) { mr ->
+        val before = mr.groupValues[1]
+        val quote = mr.groupValues[2]
+        val src = mr.groupValues[3]
+        val after = mr.groupValues[4]
+
+        val img = """<img$before src=$quote$src$quote$after data-img-link="1">"""
+        """<a href="$src">$img</a>"""
     }
 
     return out

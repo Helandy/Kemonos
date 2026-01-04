@@ -12,4 +12,6 @@ internal object AuthDest {
     object FavoriteProfiles : NavKey
 
     object FavoritePosts : NavKey
+
+    object Setting : NavKey
 }

@@ -14,6 +14,7 @@ import dagger.hilt.components.SingletonComponent
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
+import javax.inject.Named
 import javax.inject.Singleton
 
 @Module
@@ -22,8 +23,8 @@ object PrefsModule {
 
     @Provides
     @Singleton
-    fun provideAppScope(): CoroutineScope =
-        CoroutineScope(SupervisorJob() + Dispatchers.IO)
+    @Named("AppScope")
+    fun provideAppScope(): CoroutineScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
 
     @Provides
     @Singleton
@@ -36,7 +37,7 @@ object PrefsModule {
     @Singleton
     fun provideDataStore(
         @ApplicationContext context: Context,
-        appScope: CoroutineScope,
+        @Named("AppScope") appScope: CoroutineScope,
     ): DataStore<Preferences> =
         PreferenceDataStoreFactory.create(
             scope = appScope,

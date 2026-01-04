@@ -31,12 +31,13 @@ dependencies {
 
 
     implementation(project(":common"))
-    implementation(project(":navigation"))
+    implementation(project(":core:navigation"))
 
     implementation(project(":core:domain"))
     implementation(project(":core:auth"))
     implementation(project(":core:preferences"))
     implementation(project(":core:network"))
+    implementation(project(":core:utils"))
 
     implementation(project(":feature:main-api"))
     implementation(project(":feature:posts-api"))

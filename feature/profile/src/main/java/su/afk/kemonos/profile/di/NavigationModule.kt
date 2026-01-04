@@ -13,6 +13,7 @@ import su.afk.kemonos.profile.presenter.favoriteProfiles.FavoriteProfilesNavigat
 import su.afk.kemonos.profile.presenter.login.LoginNavigator
 import su.afk.kemonos.profile.presenter.profile.ProfileNavigatorRegister
 import su.afk.kemonos.profile.presenter.register.RegisterNavigator
+import su.afk.kemonos.profile.presenter.setting.SettingNavigatorRegister
 import javax.inject.Singleton
 
 @Module
@@ -22,6 +23,10 @@ interface NavigationModule {
     @Binds
     @IntoSet
     fun bindProfileProfile(impl: ProfileNavigatorRegister): NavRegistrar
+
+    @Binds
+    @IntoSet
+    fun bindSettingNavigatorRegister(impl: SettingNavigatorRegister): NavRegistrar
 
     @Binds
     @IntoSet

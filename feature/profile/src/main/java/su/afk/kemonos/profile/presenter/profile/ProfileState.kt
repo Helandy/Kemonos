@@ -13,10 +13,9 @@ internal data class ProfileState(
     val kemonoLogin: Login? = null,
     val coomerLogin: Login? = null,
 
-    val kemonoUrl: String = "",
-    val coomerUrl: String = "",
-    val appVersion: String = "",
-
     val showLogoutConfirm: Boolean = false,
     val logoutSite: SelectedSite? = null,
+
+    val kemonoUpdatedFavoritesCount: Int = 0,
+    val coomerUpdatedFavoritesCount: Int = 0,
 )

@@ -1,6 +1,8 @@
 package su.afk.kemonos.preferences.site
 
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import su.afk.kemonos.domain.SelectedSite
 import su.afk.kemonos.preferences.UrlPrefs
 import javax.inject.Inject
@@ -18,22 +20,29 @@ internal class SelectedSiteUseCase @Inject constructor(
 }
 
 /**
+ * Один глобальный замок на временное переключение.
+ * Иначе параллельные withSite(K) и withSite(C) будут гонять DataStore и ломать baseUrl.
+ */
+val SITE_SWITCH_MUTEX = Mutex()
+
+/**
  * Временное переключение сайта:
  *  - запоминаем старый
  *  - ставим нужный
  *  - выполняем блок
  *  - возвращаем старый обратно
+ *
+ * ВАЖНО: block теперь suspend, чтобы можно было вызывать retrofit suspend-функции внутри.
  */
 suspend inline fun <T> ISelectedSiteUseCase.withSite(
     site: SelectedSite,
-    block: () -> T
-): T {
+    crossinline block: suspend () -> T
+): T = SITE_SWITCH_MUTEX.withLock {
     val previous = getSite()
-    if (previous == site) return block()
+    if (previous == site) return@withLock block()
 
-    /** переключили */
     setSite(site)
-    return try {
+    try {
         block()
     } finally {
         setSite(previous)

@@ -6,7 +6,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -22,31 +21,28 @@ import kotlinx.coroutines.withContext
 fun VideoThumbnail(
     url: String,
     modifier: Modifier = Modifier,
+    onLoadingChange: (Boolean) -> Unit = {},
 ) {
-    var bitmap by remember { mutableStateOf<Bitmap?>(null) }
-    var loading by remember { mutableStateOf(true) }
-    var error by remember { mutableStateOf<Throwable?>(null) }
+    var bitmap by remember(url) { mutableStateOf<Bitmap?>(null) }
+    var loading by remember(url) { mutableStateOf(true) }
+    var error by remember(url) { mutableStateOf<Throwable?>(null) }
 
     LaunchedEffect(url) {
         loading = true
         error = null
         bitmap = null
+        onLoadingChange(true)
 
         val result = withContext(Dispatchers.IO) {
-            runCatching {
-                /** 1_000_000L – пример ~1 секунда */
-                getVideoFrame(url, timeUs = 1_000_000L)
-            }
+            runCatching { getVideoFrame(url, timeUs = 1_000_000L) }
         }
 
         result
-            .onSuccess { bmp ->
-                bitmap = bmp
+            .onSuccess { bmp -> bitmap = bmp }
+            .onFailure { t -> error = t }
+            .also {
                 loading = false
-            }
-            .onFailure { t ->
-                error = t
-                loading = false
+                onLoadingChange(false)
             }
     }
 
@@ -57,10 +53,6 @@ fun VideoThumbnail(
         contentAlignment = Alignment.Center
     ) {
         when {
-            loading -> {
-                CircularProgressIndicator(strokeWidth = 3.dp)
-            }
-
             bitmap != null -> {
                 Image(
                     bitmap = bitmap!!.asImageBitmap(),
@@ -70,8 +62,10 @@ fun VideoThumbnail(
                 )
             }
 
-            /** error */
+            loading -> Unit
+
             else -> {
+                // error placeholder
             }
         }
     }

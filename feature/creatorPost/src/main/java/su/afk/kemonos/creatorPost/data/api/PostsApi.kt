@@ -5,7 +5,7 @@ import retrofit2.http.GET
 import retrofit2.http.Path
 import su.afk.kemonos.creatorPost.data.dto.comments.ProfilePostCommentsDto
 import su.afk.kemonos.creatorPost.data.dto.profilePost.PostResponseDto
-import su.afk.kemonos.network.creators.HeaderText
+import su.afk.kemonos.network.textInterceptor.HeaderText
 
 internal interface PostsApi {
 

@@ -12,8 +12,8 @@ import su.afk.kemonos.preferences.siteUrl.GetFlowBaseUrlPrefsUseCase
 import su.afk.kemonos.preferences.siteUrl.IGetBaseUrlsUseCase
 import su.afk.kemonos.preferences.siteUrl.ISetBaseUrlsUseCase
 import su.afk.kemonos.preferences.siteUrl.SetBaseUrlsUseCase
-import su.afk.kemonos.preferences.useCase.CacheTimestampUseCase
 import su.afk.kemonos.preferences.useCase.CacheTimestampUseCaseImpl
+import su.afk.kemonos.preferences.useCase.ICacheTimestampUseCase
 import javax.inject.Singleton
 
 @Module
@@ -22,7 +22,7 @@ internal interface UseCaseModule {
 
     @Binds
     @Singleton
-    fun bindCacheTimestampUseCase(impl: CacheTimestampUseCaseImpl): CacheTimestampUseCase
+    fun bindCacheTimestampUseCase(impl: CacheTimestampUseCaseImpl): ICacheTimestampUseCase
 
     @Binds
     @Singleton
