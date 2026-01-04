@@ -160,4 +160,22 @@
     <string name="profile_app_version">GitHub Версия: %1$s</string>
 
     <string name="main_api_skip_check_button">Пропустить проверку</string>
+
+    <!-- Главный экран / Проверка API (статус сайтов) -->
+    <string name="main_api_site_status_title">Статус API</string>
+
+    <string name="main_api_kemono_label">Kemono</string>
+    <string name="main_api_coomer_label">Coomer</string>
+
+    <string name="main_api_site_available">API %1$s доступен</string>
+    <string name="main_api_site_unavailable">API %1$s недоступен</string>
+
+    <string name="main_api_site_error_details_title">Детали ошибки</string>
+
+    <string name="main_api_section_domains_title">Домены сайтов</string>
+    <string name="main_api_section_current_urls_title">Текущие URL</string>
+
+    <string name="main_api_meta_request_id">requestId: %1$s</string>
+    <string name="main_api_meta_cause">cause: %1$s</string>
+
 </resources>

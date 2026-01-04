@@ -1,11 +1,11 @@
-package su.afk.kemonos.network.creators
+package su.afk.kemonos.network.textInterceptor
 
 import okhttp3.Interceptor
 import okhttp3.Response
 import retrofit2.Invocation
 import javax.inject.Inject
 
-class CreatorsTextInterceptor @Inject constructor() : Interceptor {
+class TextInterceptor @Inject constructor() : Interceptor {
 
     override fun intercept(chain: Interceptor.Chain): Response {
         val request = chain.request()

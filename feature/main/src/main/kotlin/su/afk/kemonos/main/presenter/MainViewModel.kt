@@ -95,23 +95,32 @@ internal class MainViewModel @Inject constructor(
     }
 
     private fun runApiCheck() = viewModelScope.launch {
-        setState { copy(isLoading = true, error = null) }
+        setState { copy(isLoading = true, kemonoError = null, coomerError = null) }
 
         when (val result = apiCheckDelegate.check()) {
             ApiCheckDelegate.ApiCheckUiResult.Success -> {
+
                 checkAuthForAllSitesUseCase()
                 setState { copy(isLoading = false, apiSuccess = true) }
+
                 navManager.enterTabs()
             }
 
             is ApiCheckDelegate.ApiCheckUiResult.Failure -> {
-                setState { copy(isLoading = false, apiSuccess = false, error = result.error) }
+                setState {
+                    copy(
+                        isLoading = false,
+                        apiSuccess = false,
+                        kemonoError = result.kemonoError,
+                        coomerError = result.coomerError,
+                    )
+                }
             }
         }
     }
 
     fun onSkipCheck() {
-        setState { copy(isLoading = false, apiSuccess = true, error = null) }
+        setState { copy(isLoading = false, apiSuccess = true, kemonoError = null, coomerError = null) }
         navManager.enterTabs()
     }
 

@@ -164,4 +164,22 @@
     <string name="profile_app_version">GitHub Version: %1$s</string>
 
     <string name="main_api_skip_check_button">Skip check</string>
+
+    <!-- Main screen / API check (site status) -->
+    <string name="main_api_site_status_title">API status</string>
+
+    <string name="main_api_kemono_label">Kemono</string>
+    <string name="main_api_coomer_label">Coomer</string>
+
+    <string name="main_api_site_available">%1$s API is available</string>
+    <string name="main_api_site_unavailable">%1$s API is unavailable</string>
+
+    <string name="main_api_site_error_details_title">Error details</string>
+
+    <string name="main_api_section_domains_title">Site domains</string>
+    <string name="main_api_section_current_urls_title">Current URLs</string>
+
+    <string name="main_api_meta_request_id">requestId: %1$s</string>
+    <string name="main_api_meta_cause">cause: %1$s</string>
+
 </resources>

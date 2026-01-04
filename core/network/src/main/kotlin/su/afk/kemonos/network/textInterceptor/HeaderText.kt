@@ -1,4 +1,4 @@
-package su.afk.kemonos.network.creators
+package su.afk.kemonos.network.textInterceptor
 
 @Target(AnnotationTarget.FUNCTION)
 @Retention(AnnotationRetention.RUNTIME)

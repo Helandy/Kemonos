@@ -11,6 +11,7 @@ import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import kotlinx.coroutines.CoroutineScope
+import javax.inject.Named
 import javax.inject.Singleton
 
 @Module
@@ -22,7 +23,7 @@ internal object AuthPrefsModule {
     @AuthDataStore
     fun provideAuthDataStore(
         @ApplicationContext context: Context,
-        appScope: CoroutineScope,
+        @Named("AppScope") appScope: CoroutineScope,
     ): DataStore<Preferences> =
         PreferenceDataStoreFactory.create(
             scope = appScope,

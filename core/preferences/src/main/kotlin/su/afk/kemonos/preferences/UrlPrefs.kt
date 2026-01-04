@@ -12,12 +12,13 @@ import kotlinx.coroutines.flow.stateIn
 import su.afk.kemonos.domain.SelectedSite
 import su.afk.kemonos.utils.normalizeBaseUrl
 import javax.inject.Inject
+import javax.inject.Named
 import javax.inject.Singleton
 
 @Singleton
 class UrlPrefs @Inject constructor(
     private val dataStore: DataStore<Preferences>,
-    private val appScope: CoroutineScope,
+    @Named("AppScope") private val appScope: CoroutineScope,
 ) {
     val kemonoUrl: StateFlow<String> = dataStore.data
         .map { it[KEY_K]?.normalizeBaseUrl() ?: DEFAULT_K }

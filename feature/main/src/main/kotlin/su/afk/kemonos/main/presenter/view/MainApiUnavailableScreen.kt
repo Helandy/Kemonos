@@ -14,46 +14,119 @@ import su.afk.kemonos.domain.models.ErrorItem
 import su.afk.kemonos.main.presenter.MainState.State
 
 @Composable
-internal fun MainApiUnavailableCard(
+internal fun MainApiUnavailableContent(
     state: State,
-    onSkipCheck: () -> Unit,
-    onSaveAndCheck: () -> Unit,
     onInputKemonoChanged: (String) -> Unit,
     onInputCoomerChanged: (String) -> Unit,
 ) {
-    ElevatedCard(modifier = Modifier.padding(0.dp)) {
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            MainApiUnavailableHeader()
+    Column(
+        modifier = Modifier.fillMaxWidth().widthIn(max = 600.dp),
+        verticalArrangement = Arrangement.spacedBy(16.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        MainApiUnavailableHeader()
 
-            MainErrorBlock(error = state.error)
-
-            Spacer(Modifier.height(20.dp))
-
-            MainCurrentUrls(
-                kemonoUrl = state.kemonoUrl,
-                coomerUrl = state.coomerUrl
+        MainSectionCard(title = stringResource(R.string.main_api_site_status_title)) {
+            MainSiteErrorsBlock(
+                kemonoError = state.kemonoError,
+                coomerError = state.coomerError,
             )
+        }
 
-            Spacer(Modifier.height(20.dp))
-
+        MainSectionCard(title = stringResource(R.string.main_api_section_domains_title)) {
             MainDomainFields(
                 inputKemonoDomain = state.inputKemonoDomain,
                 inputCoomerDomain = state.inputCoomerDomain,
                 onInputKemonoChanged = onInputKemonoChanged,
                 onInputCoomerChanged = onInputCoomerChanged,
             )
+        }
 
-            Spacer(Modifier.height(20.dp))
-
-            MainActions(
-                onSkipCheck = onSkipCheck,
-                onSaveAndCheck = onSaveAndCheck,
+        MainSectionCard(title = stringResource(R.string.main_api_current_urls_title)) {
+            MainCurrentUrls(
+                kemonoUrl = state.kemonoUrl,
+                coomerUrl = state.coomerUrl
             )
+        }
+    }
+}
+
+@Composable
+private fun MainSectionCard(
+    title: String,
+    content: @Composable ColumnScope.() -> Unit
+) {
+    OutlinedCard(
+        modifier = Modifier.fillMaxWidth(),
+        shape = MaterialTheme.shapes.large
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(14.dp),
+            verticalArrangement = Arrangement.spacedBy(10.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+        ) {
+            Text(
+                modifier = Modifier.fillMaxWidth(),
+                text = title,
+                style = MaterialTheme.typography.labelLarge,
+                textAlign = TextAlign.Center,
+            )
+
+            Column(
+                modifier = Modifier.fillMaxWidth(),
+                verticalArrangement = Arrangement.spacedBy(10.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                content = content
+            )
+        }
+    }
+}
+
+@Composable
+internal fun MainSiteErrorsBlock(
+    kemonoError: ErrorItem?,
+    coomerError: ErrorItem?,
+) {
+    MainSiteStatusRow(
+        siteLabel = stringResource(R.string.main_api_kemono_label),
+        error = kemonoError
+    )
+
+    HorizontalDivider()
+
+    MainSiteStatusRow(
+        siteLabel = stringResource(R.string.main_api_coomer_label),
+        error = coomerError
+    )
+}
+
+@Composable
+private fun MainSiteStatusRow(
+    siteLabel: String,
+    error: ErrorItem?,
+) {
+    val isOk = error == null
+
+    Column(
+        modifier = Modifier.fillMaxWidth(),
+        verticalArrangement = Arrangement.spacedBy(10.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Text(
+            modifier = Modifier.fillMaxWidth(),
+            text = if (isOk)
+                stringResource(R.string.main_api_site_available, siteLabel)
+            else
+                stringResource(R.string.main_api_site_unavailable, siteLabel),
+            style = MaterialTheme.typography.titleSmall,
+            color = if (isOk) MaterialTheme.colorScheme.tertiary else MaterialTheme.colorScheme.error,
+            textAlign = TextAlign.Center,
+        )
+
+        if (!isOk) {
+            MainErrorBlock(error = error)
         }
     }
 }
@@ -75,8 +148,6 @@ internal fun MainApiUnavailableHeader() {
         textAlign = TextAlign.Center
     )
 }
-
-/** ========== Error UI ========== */
 
 @Composable
 internal fun MainErrorBlock(error: ErrorItem?) {
@@ -135,7 +206,7 @@ internal fun MainErrorMeta(meta: ErrorUiMeta) {
 
     meta.requestId?.let {
         Text(
-            text = "requestId: $it",
+            text = stringResource(R.string.main_api_meta_request_id, it),
             style = MaterialTheme.typography.bodySmall,
             textAlign = TextAlign.Center
         )
@@ -157,7 +228,7 @@ internal fun MainErrorDebugDetails(error: ErrorItem) {
 
     if (!error.cause.isNullOrBlank()) {
         Text(
-            text = "cause: ${error.cause}",
+            text = stringResource(R.string.main_api_meta_cause, error.cause.orEmpty()),
             style = MaterialTheme.typography.bodySmall,
             textAlign = TextAlign.Center
         )
@@ -177,12 +248,6 @@ internal fun MainErrorDebugDetails(error: ErrorItem) {
 
 @Composable
 internal fun MainCurrentUrls(kemonoUrl: String, coomerUrl: String) {
-    Text(
-        stringResource(R.string.main_api_current_urls_title),
-        style = MaterialTheme.typography.labelLarge,
-        textAlign = TextAlign.Center
-    )
-
     Text(
         text = stringResource(
             R.string.main_api_current_urls_value,

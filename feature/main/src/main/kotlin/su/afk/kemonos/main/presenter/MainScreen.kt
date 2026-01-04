@@ -1,10 +1,8 @@
 package su.afk.kemonos.main.presenter
 
 import android.content.Intent
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
@@ -18,16 +16,13 @@ import androidx.compose.ui.unit.dp
 import androidx.core.net.toUri
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import su.afk.kemonos.app.update.api.model.AppUpdateInfo
+import su.afk.kemonos.common.presenter.baseScreen.BaseScreen
 import su.afk.kemonos.domain.models.ErrorItem
-import su.afk.kemonos.main.presenter.view.MainApiUnavailableCard
-import su.afk.kemonos.main.presenter.view.MainLoading
-import su.afk.kemonos.main.presenter.view.MainSuccess
-import su.afk.kemonos.main.presenter.view.MainUpdateBanner
+import su.afk.kemonos.main.presenter.view.*
 
 @Composable
 internal fun MainScreen(viewModel: MainViewModel) {
     val state by viewModel.state.collectAsStateWithLifecycle()
-    state.updateInfo
     val context = LocalContext.current
 
     LaunchedEffect(Unit) {
@@ -52,6 +47,7 @@ internal fun MainScreen(viewModel: MainViewModel) {
     )
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun MainScreenContent(
     state: MainState.State,
@@ -64,12 +60,28 @@ internal fun MainScreenContent(
 ) {
     val updateInfo = state.updateInfo
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(8.dp),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
+    val showErrorScreen = updateInfo == null && !state.isLoading && state.apiSuccess != true
+
+    BaseScreen(
+        isScroll = showErrorScreen,
+        contentPadding = PaddingValues(12.dp),
+        contentAlignment = Alignment.TopCenter,
+        floatingActionButton = if (showErrorScreen) {
+            {
+                Surface(
+                    tonalElevation = 6.dp,
+                    shape = MaterialTheme.shapes.large,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Box(Modifier.padding(12.dp)) {
+                        MainActions(
+                            onSkipCheck = onSkipCheck,
+                            onSaveAndCheck = onSaveAndCheck,
+                        )
+                    }
+                }
+            }
+        } else null,
     ) {
         when {
             updateInfo != null -> MainUpdateBanner(
@@ -82,13 +94,15 @@ internal fun MainScreenContent(
 
             state.apiSuccess == true -> MainSuccess()
 
-            else -> MainApiUnavailableCard(
-                state = state,
-                onSkipCheck = onSkipCheck,
-                onSaveAndCheck = onSaveAndCheck,
-                onInputKemonoChanged = onInputKemonoChanged,
-                onInputCoomerChanged = onInputCoomerChanged,
-            )
+            else -> {
+                MainApiUnavailableContent(
+                    state = state,
+                    onInputKemonoChanged = onInputKemonoChanged,
+                    onInputCoomerChanged = onInputCoomerChanged,
+                )
+
+                Spacer(Modifier.height(96.dp))
+            }
         }
     }
 }
@@ -183,7 +197,7 @@ private fun MainScreenPreview_Error() = PreviewHost {
             inputKemonoDomain = "kemono.cr",
             inputCoomerDomain = "coomer.st",
             updateInfo = null,
-            error = ErrorItem(
+            kemonoError = ErrorItem(
                 title = "API недоступно",
                 message = "Не удалось выполнить запрос. Проверь домен или попробуй позже.",
                 code = 503,
