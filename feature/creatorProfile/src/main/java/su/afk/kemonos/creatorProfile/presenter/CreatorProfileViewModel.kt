@@ -23,11 +23,13 @@ import su.afk.kemonos.creatorProfile.presenter.delegates.LikeDelegate
 import su.afk.kemonos.creatorProfile.presenter.delegates.LoadingTabsContent
 import su.afk.kemonos.creatorProfile.presenter.delegates.NavigationDelegate
 import su.afk.kemonos.creatorProfile.presenter.model.ProfileTab
+import su.afk.kemonos.creatorProfile.util.Utils.queryKey
 import su.afk.kemonos.domain.models.PostDomain
 import su.afk.kemonos.domain.models.Tag
 import su.afk.kemonos.navigation.NavigationManager
 import su.afk.kemonos.preferences.GetKemonoRootUrlUseCase
 import su.afk.kemonos.preferences.IGetCurrentSiteRootUrlUseCase
+import su.afk.kemonos.storage.api.profilePosts.IStorageCreatorPostsCacheUseCase
 
 internal class CreatorProfileViewModel @AssistedInject constructor(
     @Assisted private val dest: CreatorDest.CreatorProfile,
@@ -39,6 +41,7 @@ internal class CreatorProfileViewModel @AssistedInject constructor(
     private val loadingTabsContent: LoadingTabsContent,
     private val getProfilePostsPagingUseCase: GetProfilePostsPagingUseCase,
     private val navManager: NavigationManager,
+    private val postsCache: IStorageCreatorPostsCacheUseCase,
     override val errorHandler: IErrorHandlerUseCase,
     override val retryStorage: RetryStorage,
 ) : BaseViewModel<CreatorProfileState>(CreatorProfileState()) {
@@ -274,6 +277,23 @@ internal class CreatorProfileViewModel @AssistedInject constructor(
 
     fun back() {
         navManager.back()
+    }
+
+    fun onPullRefresh() = viewModelScope.launch {
+        val qk = queryKey(
+            service = currentState.service,
+            id = currentState.id,
+            search = currentState.searchText,
+            tag = currentState.currentTag?.tag,
+        )
+        postsCache.clearQuery(qk)
+
+        setState { copy(loading = true) }
+        getProfileInfo()
+        setTabsToProfile()
+        isCreatorFavorite()
+
+        loadProfileAndPosts()
     }
 
     /** Копирование в буфер todo убрать context */

@@ -11,6 +11,7 @@ interface IStorageCreatorPostsCacheRepository {
     suspend fun getFreshPageOrNull(queryKey: String, offset: Int): List<PostDomain>?
     suspend fun getStalePageOrEmpty(queryKey: String, offset: Int): List<PostDomain>
     suspend fun putPage(queryKey: String, offset: Int, items: List<PostDomain>)
+    suspend fun clearQuery(queryKey: String)
     suspend fun clearPage(queryKey: String, offset: Int)
     suspend fun clearCache()
     suspend fun clearAll()
@@ -57,6 +58,10 @@ internal class StorageCreatorPostsCacheRepository @Inject constructor(
 
     override suspend fun clearPage(queryKey: String, offset: Int) {
         dao.deletePage(queryKey, offset)
+    }
+
+    override suspend fun clearQuery(queryKey: String) {
+        dao.deleteByQueryKey(queryKey)
     }
 
     override suspend fun clearCache() {

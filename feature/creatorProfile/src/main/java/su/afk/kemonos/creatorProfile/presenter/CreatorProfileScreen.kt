@@ -4,6 +4,8 @@ import android.content.Intent
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.LazyGridState
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.pulltorefresh.PullToRefreshBox
+import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -52,6 +54,9 @@ internal fun CreatorScreen(
         }
     }
 
+    val pullState = rememberPullToRefreshState()
+    val refreshing = postsRefreshing || state.loading
+
     BaseScreen(
         isScroll = false,
         contentModifier = Modifier.padding(horizontal = 8.dp),
@@ -71,7 +76,7 @@ internal fun CreatorScreen(
                 )
             }
         },
-        isLoading = state.loading && postsRefreshing,
+        isLoading = state.loading || postsRefreshing,
         isEmpty = state.profile == null && !state.loading && !postsRefreshing,
         onRetry = { viewModel.getProfileInfo() }
     ) {
@@ -112,12 +117,18 @@ internal fun CreatorScreen(
             onTagClear = { viewModel.clearTag() }
         )
 
-        SelectedTab(
-            state = state,
-            viewModel = viewModel,
-            posts = posts,
-            gridState = gridState
-        )
+        PullToRefreshBox(
+            state = pullState,
+            isRefreshing = refreshing,
+            onRefresh = { viewModel.onPullRefresh() }
+        ) {
+            SelectedTab(
+                state = state,
+                viewModel = viewModel,
+                posts = posts,
+                gridState = gridState,
+            )
+        }
     }
 }
 
