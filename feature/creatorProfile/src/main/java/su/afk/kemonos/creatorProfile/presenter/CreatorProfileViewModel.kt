@@ -1,6 +1,5 @@
 package su.afk.kemonos.creatorProfile.presenter
 
-import android.content.Context
 import android.util.Log
 import androidx.paging.cachedIn
 import dagger.assisted.Assisted
@@ -13,7 +12,6 @@ import su.afk.kemonos.common.error.IErrorHandlerUseCase
 import su.afk.kemonos.common.error.storage.RetryStorage
 import su.afk.kemonos.common.error.toFavoriteToastBar
 import su.afk.kemonos.common.presenter.baseViewModel.BaseViewModel
-import su.afk.kemonos.common.shared.ShareActions
 import su.afk.kemonos.common.shared.ShareLinkBuilder
 import su.afk.kemonos.common.shared.ShareTarget
 import su.afk.kemonos.creatorProfile.api.IGetProfileUseCase
@@ -310,8 +308,8 @@ internal class CreatorProfileViewModel @AssistedInject constructor(
         loadProfileAndPosts()
     }
 
-    /** Копирование в буфер todo убрать context */
-    fun copyProfileLink(context: Context) {
+    /** Копирование в буфер */
+    fun copyProfileLink() {
         val url = ShareLinkBuilder.build(
             ShareTarget.Profile(
                 siteRoot = getCurrentSiteRootUrlUseCase(),
@@ -319,7 +317,7 @@ internal class CreatorProfileViewModel @AssistedInject constructor(
                 userId = currentState.id
             )
         )
-        ShareActions.copyToClipboard(context, "Profile link", url)
+        _effect.trySend(CreatorProfileEffect.CopyPostLink(url))
     }
 }
 

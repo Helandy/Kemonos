@@ -1,6 +1,5 @@
 package su.afk.kemonos.creatorPost.presenter
 
-import android.content.Context
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
@@ -15,7 +14,6 @@ import su.afk.kemonos.common.error.IErrorHandlerUseCase
 import su.afk.kemonos.common.error.storage.RetryStorage
 import su.afk.kemonos.common.error.toFavoriteToastBar
 import su.afk.kemonos.common.presenter.baseViewModel.BaseViewModel
-import su.afk.kemonos.common.shared.ShareActions
 import su.afk.kemonos.common.shared.ShareLinkBuilder
 import su.afk.kemonos.common.shared.ShareTarget
 import su.afk.kemonos.common.translate.IOpenTranslateUseCase
@@ -165,8 +163,8 @@ internal class CreatorPostViewModel @AssistedInject constructor(
 
     fun navigateOpenImage(originalUrl: String) = navigateDelegates.navigateOpenImage(originalUrl)
 
-    /** Копирование в буфер todo убрать context */
-    fun copyPostLink(context: Context) {
+    /** Копирование в буфер */
+    fun copyPostLink() {
         val url = ShareLinkBuilder.build(
             ShareTarget.Post(
                 siteRoot = getCurrentSiteRootUrlUseCase(),
@@ -175,6 +173,6 @@ internal class CreatorPostViewModel @AssistedInject constructor(
                 postId = currentState.postId
             )
         )
-        ShareActions.copyToClipboard(context, "Post link", url)
+        _effect.trySend(CreatorPostEffect.CopyPostLink(url))
     }
 }

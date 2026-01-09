@@ -58,4 +58,5 @@ internal data class CreatorProfileState(
 sealed interface CreatorProfileEffect {
     data class OpenUrl(val url: String) : CreatorProfileEffect
     data class ShowToast(val message: String) : CreatorProfileEffect
+    data class CopyPostLink(val message: String) : CreatorProfileEffect
 }

@@ -22,6 +22,7 @@ import su.afk.kemonos.common.di.LocalDomainResolver
 import su.afk.kemonos.common.presenter.baseScreen.BaseScreen
 import su.afk.kemonos.common.presenter.views.creator.CreatorHeader
 import su.afk.kemonos.common.presenter.views.elements.FavoriteActionButton
+import su.afk.kemonos.common.shared.ShareActions
 import su.afk.kemonos.common.shared.view.SharedActionButton
 import su.afk.kemonos.common.util.download.enqueueSystemDownload
 import su.afk.kemonos.common.util.toast
@@ -42,6 +43,7 @@ internal fun CreatorPostScreen(
         viewModel.effect.collect { effect ->
             when (effect) {
                 is CreatorPostEffect.ShowToast -> context.toast(effect.message)
+                is CreatorPostEffect.CopyPostLink -> ShareActions.copyToClipboard(context, "Post link", effect.message)
             }
         }
     }
@@ -53,7 +55,7 @@ internal fun CreatorPostScreen(
         floatingActionButtonStart = {
             if (!state.loading) {
                 SharedActionButton(
-                    onClick = { viewModel.copyPostLink(context) }
+                    onClick = { viewModel.copyPostLink() }
                 )
             }
         },

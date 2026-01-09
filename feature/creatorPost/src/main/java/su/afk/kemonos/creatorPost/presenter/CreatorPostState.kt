@@ -24,4 +24,5 @@ internal data class CreatorPostState(
 
 sealed interface CreatorPostEffect {
     data class ShowToast(val message: String) : CreatorPostEffect
+    data class CopyPostLink(val message: String) : CreatorPostEffect
 }

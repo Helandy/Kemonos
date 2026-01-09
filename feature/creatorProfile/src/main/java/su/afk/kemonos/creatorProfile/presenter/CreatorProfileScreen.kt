@@ -22,6 +22,7 @@ import su.afk.kemonos.common.presenter.baseScreen.BaseScreen
 import su.afk.kemonos.common.presenter.screens.postsScreen.paging.PostsTabContent
 import su.afk.kemonos.common.presenter.views.creator.CreatorHeader
 import su.afk.kemonos.common.presenter.views.elements.FavoriteActionButton
+import su.afk.kemonos.common.shared.ShareActions
 import su.afk.kemonos.common.shared.view.SharedActionButton
 import su.afk.kemonos.common.util.toast
 import su.afk.kemonos.creatorProfile.presenter.model.ProfileTab
@@ -52,6 +53,11 @@ internal fun CreatorScreen(
                     context.startActivity(intent)
                 }
                 is CreatorProfileEffect.ShowToast -> context.toast(effect.message)
+                is CreatorProfileEffect.CopyPostLink -> ShareActions.copyToClipboard(
+                    context,
+                    "Profile link",
+                    effect.message
+                )
             }
         }
     }
@@ -65,7 +71,7 @@ internal fun CreatorScreen(
         floatingActionButtonStart = {
             if (!state.loading) {
                 SharedActionButton(
-                    onClick = { viewModel.copyProfileLink(context) }
+                    onClick = { viewModel.copyProfileLink() }
                 )
             }
         },
