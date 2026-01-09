@@ -38,7 +38,7 @@ internal fun CreatorPostScreen(
     val resolver = LocalDomainResolver.current
 
     BaseScreen(
-        contentModifier = Modifier.padding(horizontal = 6.dp),
+        contentModifier = Modifier.padding(horizontal = 8.dp),
         isScroll = false,
         floatingActionButtonBottomPadding = 12.dp,
         floatingActionButtonStart = {
