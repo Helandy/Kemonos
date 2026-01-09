@@ -26,21 +26,36 @@ class CheckAuthForAllSitesUseCase @Inject constructor(
     private val isAuthCoomerUseCase: IsAuthCoomerUseCase,
 ) {
 
-    suspend operator fun invoke() = coroutineScope {
+    suspend operator fun invoke(): Set<SelectedSite> = coroutineScope {
+        val needApiCheck = mutableSetOf<SelectedSite>()
+
         val isKemonoAuth = isAuthKemonoUseCase().first()
         val isCoomerAuth = isAuthCoomerUseCase().first()
 
-        if (isKemonoAuth) checkSiteAuth(SelectedSite.K)
-        if (isCoomerAuth) checkSiteAuth(SelectedSite.C)
+        if (isKemonoAuth) {
+            val stillAuth = checkSiteAuth(SelectedSite.K)
+            if (!stillAuth) needApiCheck += SelectedSite.K
+        } else {
+            needApiCheck += SelectedSite.K
+        }
+
+        if (isCoomerAuth) {
+            val stillAuth = checkSiteAuth(SelectedSite.C)
+            if (!stillAuth) needApiCheck += SelectedSite.C
+        } else {
+            needApiCheck += SelectedSite.C
+        }
+
+        needApiCheck
     }
 
-    private suspend fun checkSiteAuth(site: SelectedSite) {
+    /**
+     * @return true если авторизация валидна (или не доказано обратное),
+     *         false если словили 4xx и почистили сессию
+     */
+    private suspend fun checkSiteAuth(site: SelectedSite): Boolean {
         val result = selectedSiteProvider.withSite(site) {
             runCatching {
-                /**
-                 * 1) проверить сессию,
-                 * 2) обновить кэш избранного
-                 * */
                 getFavoriteArtistsUseCase(site = site, checkDifferent = true)
             }
         }
@@ -49,7 +64,10 @@ class CheckAuthForAllSitesUseCase @Inject constructor(
             val throwable = result.exceptionOrNull()
             if (throwable != null && throwable.isClientError4xx()) {
                 clearAuthUseCase(site)
+                return false
             }
         }
+
+        return true
     }
 }

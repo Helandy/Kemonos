@@ -8,6 +8,7 @@ import su.afk.kemonos.app.update.api.model.AppUpdateInfo
 import su.afk.kemonos.common.error.IErrorHandlerUseCase
 import su.afk.kemonos.common.error.storage.RetryStorage
 import su.afk.kemonos.common.presenter.baseViewModel.BaseViewModel
+import su.afk.kemonos.domain.SelectedSite
 import su.afk.kemonos.main.domain.CheckAuthForAllSitesUseCase
 import su.afk.kemonos.main.presenter.delegates.ApiCheckDelegate
 import su.afk.kemonos.main.presenter.delegates.AppUpdateGateDelegate
@@ -97,12 +98,14 @@ internal class MainViewModel @Inject constructor(
     private fun runApiCheck() = viewModelScope.launch {
         setState { copy(isLoading = true, kemonoError = null, coomerError = null) }
 
-        when (val result = apiCheckDelegate.check()) {
+        // 1) если есть cookie — дернем избранное, а если 4xx — cookie очистится
+        //    и сайт попадёт в sitesToApiCheck
+        val sitesToApiCheck: Set<SelectedSite> = checkAuthForAllSitesUseCase()
+
+        // 2) /posts дергаем только для сайтов, где авторизации нет (или она слетела)
+        when (val result = apiCheckDelegate.check(sitesToApiCheck)) {
             ApiCheckDelegate.ApiCheckUiResult.Success -> {
-
-                checkAuthForAllSitesUseCase()
                 setState { copy(isLoading = false, apiSuccess = true) }
-
                 navManager.enterTabs()
             }
 
