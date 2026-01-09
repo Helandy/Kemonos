@@ -25,14 +25,9 @@ internal class LikeDelegate @Inject constructor(
 
     /** добавить в избранное */
     /** удалить из избранное */
-    suspend fun onFavoriteClick(isFavorite: Boolean, service: String, id: String): Boolean {
-        // todo сделать получение ошибок в тост бар
-        return if (isFavorite) {
-            favoritesCreatorUseCase.removeCreator(service = service, id = id)
-        } else {
-            favoritesCreatorUseCase.addCreator(service = service, id = id)
-        }
-    }
+    suspend fun onFavoriteClick(isFavorite: Boolean, service: String, id: String): Result<Unit> =
+        if (isFavorite) favoritesCreatorUseCase.removeCreator(service, id)
+        else favoritesCreatorUseCase.addCreator(service, id)
 
     /** проверит в избранном ли автор */
     suspend fun isCreatorFavorite(service: String, id: String): Boolean {

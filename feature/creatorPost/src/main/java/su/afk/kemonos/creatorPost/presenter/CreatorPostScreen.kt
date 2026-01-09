@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
@@ -37,6 +38,14 @@ internal fun CreatorPostScreen(
     val context = LocalContext.current
     val resolver = LocalDomainResolver.current
 
+    LaunchedEffect(viewModel) {
+        viewModel.effect.collect { effect ->
+            when (effect) {
+                is CreatorPostEffect.ShowToast -> context.toast(effect.message)
+            }
+        }
+    }
+
     BaseScreen(
         contentModifier = Modifier.padding(horizontal = 4.dp),
         isScroll = false,
@@ -51,6 +60,7 @@ internal fun CreatorPostScreen(
         floatingActionButton = {
             if (state.isFavoriteShowButton && state.loading.not()) {
                 FavoriteActionButton(
+                    enabled = !state.favoriteActionLoading,
                     isFavorite = state.isFavorite,
                     onFavoriteClick = { viewModel.onFavoriteClick() }
                 )

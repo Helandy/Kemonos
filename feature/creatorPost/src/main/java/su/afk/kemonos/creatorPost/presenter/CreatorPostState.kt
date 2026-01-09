@@ -19,4 +19,9 @@ internal data class CreatorPostState(
 
     val isFavoriteShowButton: Boolean = false,
     val isFavorite: Boolean = false,
+    val favoriteActionLoading: Boolean = false,
 )
+
+sealed interface CreatorPostEffect {
+    data class ShowToast(val message: String) : CreatorPostEffect
+}

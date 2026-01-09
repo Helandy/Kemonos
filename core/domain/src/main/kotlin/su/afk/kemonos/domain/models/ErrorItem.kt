@@ -3,6 +3,7 @@ package su.afk.kemonos.domain.models
 data class ErrorItem(
     val title: String,
     val message: String,
+    val fallback: String? = null,
 
     val code: Int? = null,
     val url: String? = null,

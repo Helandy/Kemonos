@@ -5,12 +5,15 @@ import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import kotlinx.coroutines.async
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import su.afk.kemonos.common.error.IErrorHandlerUseCase
 import su.afk.kemonos.common.error.storage.RetryStorage
+import su.afk.kemonos.common.error.toFavoriteToastBar
 import su.afk.kemonos.common.presenter.baseViewModel.BaseViewModel
 import su.afk.kemonos.common.shared.ShareActions
 import su.afk.kemonos.common.shared.ShareLinkBuilder
@@ -39,6 +42,9 @@ internal class CreatorPostViewModel @AssistedInject constructor(
     override val errorHandler: IErrorHandlerUseCase,
     override val retryStorage: RetryStorage,
 ) : BaseViewModel<CreatorPostState>(CreatorPostState()) {
+
+    private val _effect = Channel<CreatorPostEffect>(Channel.BUFFERED)
+    val effect = _effect.receiveAsFlow()
 
     @AssistedFactory
     interface Factory {
@@ -116,14 +122,28 @@ internal class CreatorPostViewModel @AssistedInject constructor(
 
     /** Избранное */
     fun onFavoriteClick() = viewModelScope.launch {
+        if (currentState.favoriteActionLoading) return@launch
+
+        val wasFavorite = currentState.isFavorite
+        setState { copy(favoriteActionLoading = true) }
+
         val result = likeDelegate.onFavoriteClick(
-            isFavorite = currentState.isFavorite,
+            isFavorite = wasFavorite,
             post = currentState.post,
             service = currentState.service,
             creatorId = currentState.id,
             postId = currentState.postId
         )
-        if (result) setState { copy(isFavorite = !currentState.isFavorite) }
+
+        result
+            .onSuccess {
+                setState { copy(isFavorite = !wasFavorite) }
+            }
+            .onFailure { t ->
+                val errorMessage = errorHandler.parse(t).toFavoriteToastBar()
+                _effect.trySend(CreatorPostEffect.ShowToast(errorMessage))
+            }
+        setState { copy(favoriteActionLoading = false) }
     }
 
     /** Проверит в избранном ли пост */

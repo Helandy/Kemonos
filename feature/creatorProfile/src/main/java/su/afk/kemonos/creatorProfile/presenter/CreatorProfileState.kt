@@ -52,8 +52,10 @@ internal data class CreatorProfileState(
     /** в избранном ли автор */
     val isFavoriteShowButton: Boolean = false,
     val isFavorite: Boolean = false,
+    val favoriteActionLoading: Boolean = false,
 )
 
 sealed interface CreatorProfileEffect {
     data class OpenUrl(val url: String) : CreatorProfileEffect
+    data class ShowToast(val message: String) : CreatorProfileEffect
 }

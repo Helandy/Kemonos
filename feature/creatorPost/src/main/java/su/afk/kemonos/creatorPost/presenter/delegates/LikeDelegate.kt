@@ -32,8 +32,7 @@ internal class LikeDelegate @Inject constructor(
         service: String,
         creatorId: String,
         postId: String
-    ): Boolean {
-        // todo     /** сделать получение ошибок в тост бар */
+    ): Result<Unit> {
         return if (isFavorite) {
             favoritesPostUseCase.removePost(
                 site = selectedSiteUseCase.getSite(),
@@ -42,7 +41,7 @@ internal class LikeDelegate @Inject constructor(
                 postId = postId
             )
         } else {
-            val domain = post?.post ?: return false
+            val domain = post?.post ?: return Result.failure(IllegalStateException("Post is null"))
             favoritesPostUseCase.addPost(
                 site = selectedSiteUseCase.getSite(),
                 post = domain

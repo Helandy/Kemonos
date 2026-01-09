@@ -10,9 +10,9 @@ internal class FavoritesPostUseCase @Inject constructor(
     private val repository: IFavoritesPostRepository,
     private val isPostFavoriteUseCase: IIsPostFavoriteUseCase
 ) {
-    suspend fun addPost(site: SelectedSite, post: PostDomain) = repository.addPost(site, post)
+    suspend fun addPost(site: SelectedSite, post: PostDomain): Result<Unit> = repository.addPost(site, post)
 
-    suspend fun removePost(site: SelectedSite, service: String, creatorId: String, postId: String) =
+    suspend fun removePost(site: SelectedSite, service: String, creatorId: String, postId: String): Result<Unit> =
         repository.removePost(
             site = site,
             service = service,

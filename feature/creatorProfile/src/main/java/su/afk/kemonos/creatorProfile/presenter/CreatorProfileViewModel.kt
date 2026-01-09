@@ -11,6 +11,7 @@ import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.receiveAsFlow
 import su.afk.kemonos.common.error.IErrorHandlerUseCase
 import su.afk.kemonos.common.error.storage.RetryStorage
+import su.afk.kemonos.common.error.toFavoriteToastBar
 import su.afk.kemonos.common.presenter.baseViewModel.BaseViewModel
 import su.afk.kemonos.common.shared.ShareActions
 import su.afk.kemonos.common.shared.ShareLinkBuilder
@@ -243,12 +244,25 @@ internal class CreatorProfileViewModel @AssistedInject constructor(
 
     /** избранное */
     fun onFavoriteClick() = viewModelScope.launch {
+        if (currentState.favoriteActionLoading) return@launch
+
+        val wasFavorite = currentState.isFavorite
+        setState { copy(favoriteActionLoading = true) }
+
         val result = likeDelegate.onFavoriteClick(
             isFavorite = currentState.isFavorite,
             service = currentState.service,
             id = currentState.id
         )
-        if (result) setState { copy(isFavorite = !currentState.isFavorite) }
+        result
+            .onSuccess {
+                setState { copy(isFavorite = !wasFavorite) }
+            }
+            .onFailure { t ->
+                val errorMessage = errorHandler.parse(t).toFavoriteToastBar()
+                _effect.trySend(CreatorProfileEffect.ShowToast(errorMessage))
+            }
+        setState { copy(favoriteActionLoading = false) }
     }
 
     /** проверит в избранном ли автор */

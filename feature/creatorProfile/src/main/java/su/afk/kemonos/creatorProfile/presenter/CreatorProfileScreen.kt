@@ -23,6 +23,7 @@ import su.afk.kemonos.common.presenter.screens.postsScreen.paging.PostsTabConten
 import su.afk.kemonos.common.presenter.views.creator.CreatorHeader
 import su.afk.kemonos.common.presenter.views.elements.FavoriteActionButton
 import su.afk.kemonos.common.shared.view.SharedActionButton
+import su.afk.kemonos.common.util.toast
 import su.afk.kemonos.creatorProfile.presenter.model.ProfileTab
 import su.afk.kemonos.creatorProfile.presenter.view.*
 import su.afk.kemonos.creatorProfile.presenter.view.discordProfile.DiscordProfilePlaceholder
@@ -50,6 +51,7 @@ internal fun CreatorScreen(
                     val intent = Intent(Intent.ACTION_VIEW, effect.url.toUri())
                     context.startActivity(intent)
                 }
+                is CreatorProfileEffect.ShowToast -> context.toast(effect.message)
             }
         }
     }
@@ -71,6 +73,7 @@ internal fun CreatorScreen(
         floatingActionButton = {
             if (state.isFavoriteShowButton && state.loading.not()) {
                 FavoriteActionButton(
+                    enabled = !state.favoriteActionLoading,
                     isFavorite = state.isFavorite,
                     onFavoriteClick = { viewModel.onFavoriteClick() }
                 )
