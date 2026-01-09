@@ -3,6 +3,7 @@ package su.afk.kemonos.creatorPost.presenter.view
 import android.content.Intent
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -87,7 +88,7 @@ internal fun PostContentBlock(
     }
 
     AndroidView(
-        modifier = Modifier.fillMaxWidth().heightIn(min = 1.dp),
+        modifier = Modifier.padding(4.dp).fillMaxWidth().heightIn(min = 1.dp),
         factory = { webView },
         update = { view ->
             val html = htmlState!!

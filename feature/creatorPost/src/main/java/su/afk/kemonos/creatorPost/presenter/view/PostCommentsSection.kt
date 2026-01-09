@@ -62,7 +62,7 @@ internal fun CommentItem(
         comment.content.stripHtml()
     }
 
-    Column(modifier = Modifier.padding(vertical = 2.dp)) {
+    Column(modifier = Modifier.padding(vertical = 2.dp, horizontal = 4.dp)) {
         Text(
             text = author,
             style = MaterialTheme.typography.labelMedium,
