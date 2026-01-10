@@ -154,11 +154,12 @@ internal class FavoriteProfilesViewModel @Inject constructor(
             .let { listOf("All") + it }
 
 
-    fun onCreatorClick(creator: FavoriteArtist) {
+    fun onCreatorClick(creator: FavoriteArtist, isFresh: Boolean) = viewModelScope.launch {
         navManager.navigate(
             creatorProfileNavigator.getCreatorProfileDest(
                 service = creator.service,
                 id = creator.id,
+                isFresh = isFresh
             )
         )
     }

@@ -86,7 +86,7 @@ internal fun FavoriteProfilesScreen(viewModel: FavoriteProfilesViewModel) {
                     name = creator.name,
                     updated = dateForCard,
                     isFresh = isFresh,
-                    onClick = { viewModel.onCreatorClick(creator) }
+                    onClick = { viewModel.onCreatorClick(creator, isFresh) }
                 )
                 HorizontalDivider()
             }

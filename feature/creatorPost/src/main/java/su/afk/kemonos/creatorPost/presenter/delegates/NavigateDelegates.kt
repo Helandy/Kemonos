@@ -10,7 +10,7 @@ internal class NavigateDelegates @Inject constructor(
     private val creatorProfileNavigator: ICreatorProfileNavigator,
 ) {
     /** навиагция на профиль автора */
-    fun navigateToCreatorProfile(id: String, service: String) {
+    suspend fun navigateToCreatorProfile(id: String, service: String) {
         navManager.navigate(
             creatorProfileNavigator.getCreatorProfileDest(
                 service = service,

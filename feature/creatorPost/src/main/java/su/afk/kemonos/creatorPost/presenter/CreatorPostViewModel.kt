@@ -159,7 +159,11 @@ internal class CreatorPostViewModel @AssistedInject constructor(
     }
 
     /** навиагция на профиль автора */
-    fun navigateToCreatorProfile() = navigateDelegates.navigateToCreatorProfile(currentState.id, currentState.service)
+    fun navigateToCreatorProfile() {
+        viewModelScope.launch {
+            navigateDelegates.navigateToCreatorProfile(currentState.id, currentState.service)
+        }
+    }
 
     fun navigateOpenImage(originalUrl: String) = navigateDelegates.navigateOpenImage(originalUrl)
 

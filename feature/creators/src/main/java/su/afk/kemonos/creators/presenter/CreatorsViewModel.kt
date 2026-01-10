@@ -107,7 +107,7 @@ internal class CreatorsViewModel @Inject constructor(
         }
     }
 
-    fun onCreatorClick(creator: Creators) {
+    fun onCreatorClick(creator: Creators) = viewModelScope.launch {
         navManager.navigate(
             creatorProfileNavigator.getCreatorProfileDest(
                 service = creator.service,
