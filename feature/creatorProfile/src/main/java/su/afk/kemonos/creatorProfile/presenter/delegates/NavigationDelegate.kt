@@ -1,21 +1,22 @@
 package su.afk.kemonos.creatorProfile.presenter.delegates
 
+import su.afk.kemonos.commonscreen.navigator.IImageViewNavigator
 import su.afk.kemonos.creatorPost.api.ICreatorPostNavigator
 import su.afk.kemonos.creatorProfile.api.domain.models.profileLinks.ProfileLink
 import su.afk.kemonos.creatorProfile.navigation.CreatorDest
 import su.afk.kemonos.domain.models.PostDomain
 import su.afk.kemonos.navigation.NavigationManager
-import su.afk.kemonos.videoPlayer.navigation.VideoPlayerDest
 import javax.inject.Inject
 
 internal class NavigationDelegate @Inject constructor(
     private val navManager: NavigationManager,
     private val creatorPostNavigator: ICreatorPostNavigator,
+    private val imageViewNavigator: IImageViewNavigator,
 ) {
     /**  navigate to open funcard image */
     fun navigateToOpenImage(originalUrl: String) {
         navManager.navigate(
-            VideoPlayerDest.ImageViewDest(
+            imageViewNavigator(
                 imageUrl = originalUrl,
                 onBack = { navManager.back() }
             )

@@ -1,13 +1,14 @@
 package su.afk.kemonos.creatorPost.presenter.delegates
 
+import su.afk.kemonos.commonscreen.navigator.IImageViewNavigator
 import su.afk.kemonos.creatorProfile.api.ICreatorProfileNavigator
 import su.afk.kemonos.navigation.NavigationManager
-import su.afk.kemonos.videoPlayer.navigation.VideoPlayerDest
 import javax.inject.Inject
 
 internal class NavigateDelegates @Inject constructor(
     private val navManager: NavigationManager,
     private val creatorProfileNavigator: ICreatorProfileNavigator,
+    private val imageViewNavigator: IImageViewNavigator,
 ) {
     /** навиагция на профиль автора */
     suspend fun navigateToCreatorProfile(id: String, service: String) {
@@ -21,7 +22,7 @@ internal class NavigateDelegates @Inject constructor(
 
     fun navigateOpenImage(originalUrl: String) {
         navManager.navigate(
-            VideoPlayerDest.ImageViewDest(
+            imageViewNavigator(
                 imageUrl = originalUrl,
                 onBack = { navManager.back() }
             )

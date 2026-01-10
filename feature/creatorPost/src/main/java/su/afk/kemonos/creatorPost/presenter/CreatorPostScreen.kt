@@ -24,7 +24,6 @@ import su.afk.kemonos.common.presenter.views.creator.CreatorHeader
 import su.afk.kemonos.common.presenter.views.elements.FavoriteActionButton
 import su.afk.kemonos.common.shared.ShareActions
 import su.afk.kemonos.common.shared.view.SharedActionButton
-import su.afk.kemonos.common.util.download.enqueueSystemDownload
 import su.afk.kemonos.common.util.toast
 import su.afk.kemonos.creatorPost.presenter.view.*
 import su.afk.kemonos.creatorPost.presenter.view.preview.postPreviewsSection
@@ -141,12 +140,7 @@ internal fun CreatorPostScreen(
                 downloadStarted = downloadStarted,
                 downloadStartedNamed = downloadStartedNamed,
                 download = { fullUrl, fileName ->
-                    enqueueSystemDownload(
-                        context = context,
-                        url = fullUrl,
-                        fileName = fileName,
-                        mimeType = null
-                    )
+                    viewModel.download(fullUrl, fileName)
                 },
                 toast = { msg -> context.toast(msg) }
             )

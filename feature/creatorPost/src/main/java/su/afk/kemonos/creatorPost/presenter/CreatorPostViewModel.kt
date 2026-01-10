@@ -25,6 +25,7 @@ import su.afk.kemonos.creatorPost.navigation.CreatorPostDest
 import su.afk.kemonos.creatorPost.presenter.delegates.LikeDelegate
 import su.afk.kemonos.creatorPost.presenter.delegates.NavigateDelegates
 import su.afk.kemonos.creatorProfile.api.IGetProfileUseCase
+import su.afk.kemonos.download.api.IDownloadUtil
 import su.afk.kemonos.preferences.IGetCurrentSiteRootUrlUseCase
 
 internal class CreatorPostViewModel @AssistedInject constructor(
@@ -36,6 +37,7 @@ internal class CreatorPostViewModel @AssistedInject constructor(
     private val getVideoInfo: GetVideoInfoUseCase,
     private val likeDelegate: LikeDelegate,
     private val navigateDelegates: NavigateDelegates,
+    private val downloadUtil: IDownloadUtil,
     private val openTranslateUseCase: IOpenTranslateUseCase,
     override val errorHandler: IErrorHandlerUseCase,
     override val retryStorage: RetryStorage,
@@ -178,5 +180,13 @@ internal class CreatorPostViewModel @AssistedInject constructor(
             )
         )
         _effect.trySend(CreatorPostEffect.CopyPostLink(url))
+    }
+
+    fun download(url: String, fileName: String?) {
+        downloadUtil.enqueueSystemDownload(
+            url = url,
+            fileName = fileName,
+            mimeType = null
+        )
     }
 }

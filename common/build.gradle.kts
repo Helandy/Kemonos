@@ -47,5 +47,5 @@ dependencies {
     implementation(project(":core:preferences"))
     implementation(project(":storage-api"))
     implementation(project(":feature:appUpdate-api"))
-    implementation(project(":feature:common:commonScreen-api"))
+    implementation(project(":feature:commonScreen-api"))
 }

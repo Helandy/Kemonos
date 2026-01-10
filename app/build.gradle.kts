@@ -79,8 +79,8 @@ dependencies {
     implementation(project(":common"))
     implementation(project(":core:navigation"))
 
-    implementation(project(":feature:common:commonScreen-api"))
-    implementation(project(":feature:common:commonScreen"))
+    implementation(project(":feature:commonScreen-api"))
+    implementation(project(":feature:commonScreen"))
 
     implementation(project(":core:domain"))
     implementation(project(":core:auth"))

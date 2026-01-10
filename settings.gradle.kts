@@ -24,8 +24,8 @@ include(":app")
 
 include(":common")
 
-include(":feature:common:commonScreen-api")
-include(":feature:common:commonScreen")
+include(":feature:commonScreen-api")
+include(":feature:commonScreen")
 
 include(":core:domain")
 include(":core:auth")
@@ -62,4 +62,5 @@ include(":feature:download")
 include(":feature:main-api")
 include(":feature:main")
 
+include(":feature:videoPlayer-api")
 include(":feature:videoPlayer")
