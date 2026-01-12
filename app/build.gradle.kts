@@ -73,6 +73,7 @@ dependencies {
 
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.bundles.compose.core)
+    debugImplementation(libs.bundles.compose.debug)
 
     implementation(libs.bundles.navigation3)
 
@@ -85,6 +86,7 @@ dependencies {
     implementation(project(":core:domain"))
     implementation(project(":core:auth"))
     implementation(project(":core:network"))
+    implementation(project(":core:deepLink"))
     implementation(project(":core:preferences"))
 
     implementation(project(":storage-api"))

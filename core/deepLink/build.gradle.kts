@@ -1,17 +1,37 @@
 plugins {
-    alias(libs.plugins.kotlin.jvm)
-    alias(libs.plugins.kotlin.serialization)
+    alias(libs.plugins.android.library)
+    alias(libs.plugins.kotlin.android)
+    alias(libs.plugins.hilt)
+    alias(libs.plugins.ksp)
 }
 
-java {
-    toolchain {
-        languageVersion.set(JavaLanguageVersion.of(libs.versions.jvmVersion.get().toInt()))
+android {
+    namespace = "su.afk.kemonos.deepLink"
+    compileSdk = libs.versions.compileSdk.get().toInt()
+
+    defaultConfig {
+        minSdk = libs.versions.minSdk.get().toInt()
+    }
+    buildFeatures {
+        compose = false
+    }
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_21
+        targetCompatibility = JavaVersion.VERSION_21
+    }
+    kotlinOptions {
+        freeCompilerArgs = listOf("-XXLanguage:+PropertyParamAnnotationDefaultTargetMode")
     }
 }
-
 dependencies {
-    implementation(project(":core:domain"))
+    implementation(libs.bundles.hilt)
+    ksp(libs.dagger.hilt.compiler)
 
-    implementation(libs.bundles.serialization.json)
     implementation(libs.bundles.navigation3)
+
+    implementation(project(":core:domain"))
+    implementation(project(":core:navigation"))
+
+    implementation(project(":feature:creatorProfile-api"))
+    implementation(project(":feature:creatorPost-api"))
 }

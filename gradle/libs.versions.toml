@@ -168,21 +168,17 @@ coroutines = [
 ]
 
 lifecycle = [
-    "androidx-lifecycle-runtime-ktx",
     "androidx-lifecycle-runtime-compose",
     "androidx-lifecycle-viewmodel-ktx",
-    "androidx-lifecycle-viewmodel-savedstate",
 ]
 
 compose-core = [
     "androidx-core-ktx",
-    "androidx-appcompat",
     "androidx-activity-compose",
     "androidx-foundation",
     "material3",
     "androidx-ui",
     "androidx-ui-graphics",
-    "androidx-ui-tooling",
     "androidx-ui-tooling-preview",
     "androidx-material-icons-extended",
 ]
