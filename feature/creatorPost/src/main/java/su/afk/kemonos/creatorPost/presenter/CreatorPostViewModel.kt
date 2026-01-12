@@ -16,7 +16,7 @@ import su.afk.kemonos.common.error.toFavoriteToastBar
 import su.afk.kemonos.common.presenter.baseViewModel.BaseViewModel
 import su.afk.kemonos.common.shared.ShareLinkBuilder
 import su.afk.kemonos.common.shared.ShareTarget
-import su.afk.kemonos.common.translate.IOpenTranslateUseCase
+import su.afk.kemonos.common.translate.TextTranslator
 import su.afk.kemonos.creatorPost.domain.model.video.VideoInfoState
 import su.afk.kemonos.creatorPost.domain.useCase.GetCommentsUseCase
 import su.afk.kemonos.creatorPost.domain.useCase.GetPostUseCase
@@ -38,7 +38,7 @@ internal class CreatorPostViewModel @AssistedInject constructor(
     private val likeDelegate: LikeDelegate,
     private val navigateDelegates: NavigateDelegates,
     private val downloadUtil: IDownloadUtil,
-    private val openTranslateUseCase: IOpenTranslateUseCase,
+    private val translator: TextTranslator,
     override val errorHandler: IErrorHandlerUseCase,
     override val retryStorage: RetryStorage,
 ) : BaseViewModel<CreatorPostState>(CreatorPostState()) {
@@ -52,7 +52,6 @@ internal class CreatorPostViewModel @AssistedInject constructor(
     }
 
     override fun onRetry() {
-        setState { copy(loading = true) }
         loadingPost()
     }
 
@@ -93,7 +92,12 @@ internal class CreatorPostViewModel @AssistedInject constructor(
                 loading = false,
                 post = post,
                 commentDomains = comments,
-                profile = profile
+                profile = profile,
+
+                translateExpanded = false,
+                translateLoading = false,
+                translateText = null,
+                translateError = null,
             )
         }
 
@@ -188,5 +192,36 @@ internal class CreatorPostViewModel @AssistedInject constructor(
             fileName = fileName,
             mimeType = null
         )
+    }
+
+    fun onToggleTranslate(rawHtml: String) {
+        val nextExpanded = !currentState.translateExpanded
+        setState { copy(translateExpanded = nextExpanded) }
+
+        if (!nextExpanded) return
+
+        if (currentState.translateText != null && currentState.translateError == null) return
+        if (currentState.translateLoading) return
+
+        viewModelScope.launch {
+            setState { copy(translateLoading = true, translateError = null) }
+
+            runCatching { translator.translateAuto(rawHtml) }
+                .onSuccess { text ->
+                    setState { copy(translateText = text, translateLoading = false) }
+                }
+                .onFailure { e ->
+                    setState {
+                        copy(
+                            translateLoading = false,
+                            translateError = e.message ?: "Translation error"
+                        )
+                    }
+                }
+        }
+    }
+
+    fun onHideTranslate() {
+        setState { copy(translateExpanded = false) }
     }
 }

@@ -182,4 +182,14 @@
     <string name="main_api_meta_request_id">requestId: %1$s</string>
     <string name="main_api_meta_cause">cause: %1$s</string>
 
+
+    <string name="translate_show">Translate</string>
+    <string name="translate_hide">Hide translation</string>
+    <string name="translate_in_progress">Translating…</string>
+
+    <string name="translate_title">Translation</string>
+    <string name="translate_model_loading">Downloading model / translating…</string>
+    <string name="translate_hint">Tap “Translate”</string>
+
+    <string name="translate_error_generic">Translation error</string>
 </resources>

@@ -178,4 +178,13 @@
     <string name="main_api_meta_request_id">requestId: %1$s</string>
     <string name="main_api_meta_cause">cause: %1$s</string>
 
+    <string name="translate_show">Перевести</string>
+    <string name="translate_hide">Скрыть перевод</string>
+    <string name="translate_in_progress">Перевожу…</string>
+
+    <string name="translate_title">Перевод</string>
+    <string name="translate_model_loading">Загружаю модель / перевожу…</string>
+    <string name="translate_hint">Нажми «Перевести»</string>
+
+    <string name="translate_error_generic">Ошибка перевода</string>
 </resources>

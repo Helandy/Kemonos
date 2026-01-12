@@ -27,6 +27,7 @@ import su.afk.kemonos.common.shared.view.SharedActionButton
 import su.afk.kemonos.common.util.toast
 import su.afk.kemonos.creatorPost.presenter.view.*
 import su.afk.kemonos.creatorPost.presenter.view.preview.postPreviewsSection
+import su.afk.kemonos.creatorPost.presenter.view.translate.PostTranslateItem
 import su.afk.kemonos.creatorPost.presenter.view.video.postVideosSection
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -114,9 +115,22 @@ internal fun CreatorPostScreen(
                 /** Заголовок поста */
                 PostTitleBlock(
                     title = post.title.orEmpty(),
+                )
+            }
+
+            item(key = "translate") {
+                PostTranslateItem(
                     published = post.published,
                     edited = post.edited,
                     added = post.added,
+                    rawHtml = post.content.orEmpty(),
+
+                    expanded = state.translateExpanded,
+                    loading = state.translateLoading,
+                    translated = state.translateText,
+                    error = state.translateError,
+
+                    onToggleTranslate = { viewModel.onToggleTranslate(post.content.orEmpty()) }
                 )
             }
 

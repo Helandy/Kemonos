@@ -1,15 +1,18 @@
 package su.afk.kemonos.common.di
 
-import dagger.Binds
 import dagger.Module
+import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
-import su.afk.kemonos.common.translate.IOpenTranslateUseCase
-import su.afk.kemonos.common.translate.OpenTranslateUseCase
+import su.afk.kemonos.common.translate.MlKitTextTranslator
+import su.afk.kemonos.common.translate.TextTranslator
+import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
-interface TranslateModule {
-    @Binds
-    fun bindOpenTranslateUseCase(impl: OpenTranslateUseCase): IOpenTranslateUseCase
+internal object TranslateModule {
+
+    @Provides
+    @Singleton
+    fun provideTextTranslator(): TextTranslator = MlKitTextTranslator()
 }

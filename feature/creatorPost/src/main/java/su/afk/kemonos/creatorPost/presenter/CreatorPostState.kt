@@ -20,6 +20,12 @@ internal data class CreatorPostState(
     val isFavoriteShowButton: Boolean = false,
     val isFavorite: Boolean = false,
     val favoriteActionLoading: Boolean = false,
+
+
+    val translateExpanded: Boolean = false,
+    val translateLoading: Boolean = false,
+    val translateText: String? = null,
+    val translateError: String? = null,
 )
 
 sealed interface CreatorPostEffect {

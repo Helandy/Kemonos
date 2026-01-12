@@ -40,6 +40,7 @@ dependencies {
     implementation(libs.bundles.compose.core)
 
     implementation(libs.bundles.coil)
+    implementation(libs.bundles.translate)
 
     implementation(project(":core:navigation"))
     implementation(project(":core:domain"))
