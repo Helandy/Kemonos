@@ -187,4 +187,8 @@
     <string name="translate_hint">Нажми «Перевести»</string>
 
     <string name="translate_error_generic">Ошибка перевода</string>
+
+    <string name="translate_quality_hint">
+        Перевод выполняется локальной моделью на устройстве и может быть неточным
+    </string>
 </resources>

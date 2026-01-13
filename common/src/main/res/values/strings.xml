@@ -192,4 +192,8 @@
     <string name="translate_hint">Tap “Translate”</string>
 
     <string name="translate_error_generic">Translation error</string>
+
+    <string name="translate_quality_hint">
+        This translation is generated locally on your device and may contain inaccuracies
+    </string>
 </resources>

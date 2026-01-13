@@ -1,23 +1,32 @@
 package su.afk.kemonos.creatorPost.presenter.view.translate
 
+import android.content.ClipData
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.ContentCopy
+import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.ClipEntry
+import androidx.compose.ui.platform.LocalClipboard
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import kotlinx.coroutines.launch
 import su.afk.kemonos.common.R
 import su.afk.kemonos.common.util.toUiDateTime
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun PostTranslateItem(
     published: String?,
     edited: String?,
     added: String?,
-    rawHtml: String,
+    body: String,
 
     expanded: Boolean,
     loading: Boolean,
@@ -27,8 +36,11 @@ internal fun PostTranslateItem(
     onToggleTranslate: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    Column(modifier = modifier.fillMaxWidth()) {
+    val clipboard = LocalClipboard.current
+    val tooltipState = rememberTooltipState()
+    val scope = rememberCoroutineScope()
 
+    Column(modifier = modifier.fillMaxWidth()) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -38,7 +50,8 @@ internal fun PostTranslateItem(
             val dateText = remember(published, edited) {
                 listOfNotNull(
                     published?.let { "📅 ${it.toUiDateTime()}" },
-                    edited?.takeIf { !it.isNullOrBlank() && it != published }?.let { "✏️ ${it.toUiDateTime()}" }
+                    edited?.takeIf { !it.isNullOrBlank() && it != published }
+                        ?.let { "✏️ ${it.toUiDateTime()}" }
                 ).joinToString(" / ")
             }
 
@@ -61,6 +74,24 @@ internal fun PostTranslateItem(
                     Text(stringResource(if (expanded) R.string.translate_hide else R.string.translate_show))
                 }
             }
+
+            Spacer(Modifier.width(4.dp))
+
+            IconButton(
+                enabled = body.isNotBlank(),
+                onClick = {
+                    scope.launch {
+                        val clip = ClipData.newPlainText("post", body)
+                        clipboard.setClipEntry(ClipEntry(clip))
+                    }
+                }
+            ) {
+                Icon(
+                    imageVector = Icons.Outlined.ContentCopy,
+                    contentDescription = stringResource(R.string.copy),
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
         }
 
         AnimatedVisibility(visible = expanded) {
@@ -72,9 +103,56 @@ internal fun PostTranslateItem(
                 shape = MaterialTheme.shapes.medium
             ) {
                 Column(Modifier.padding(12.dp)) {
-                    Text(stringResource(R.string.translate_title), style = MaterialTheme.typography.titleSmall)
-                    Spacer(Modifier.height(8.dp))
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Text(
+                            stringResource(R.string.translate_title),
+                            style = MaterialTheme.typography.titleSmall,
+                            modifier = Modifier.weight(1f)
+                        )
 
+                        TooltipBox(
+                            state = tooltipState,
+                            positionProvider = TooltipDefaults.rememberPlainTooltipPositionProvider(),
+                            tooltip = {
+                                PlainTooltip {
+                                    Text(stringResource(R.string.translate_quality_hint))
+                                }
+                            }
+                        ) {
+                            IconButton(
+                                onClick = {
+                                    scope.launch { tooltipState.show() }
+                                }
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Outlined.Info,
+                                    contentDescription = stringResource(R.string.translate_quality_hint),
+                                    tint = MaterialTheme.colorScheme.onSurfaceVariant
+                                )
+                            }
+                        }
+
+                        IconButton(
+                            enabled = !translated.isNullOrBlank(),
+                            onClick = {
+                                scope.launch {
+                                    val clip = ClipData.newPlainText("translation", translated.orEmpty())
+                                    clipboard.setClipEntry(ClipEntry(clip))
+                                }
+                            }
+                        ) {
+                            Icon(
+                                imageVector = Icons.Outlined.ContentCopy,
+                                contentDescription = stringResource(R.string.copy)
+                            )
+                        }
+
+                    }
+
+                    Spacer(Modifier.height(8.dp))
                     when {
                         loading -> Text(
                             stringResource(R.string.translate_model_loading),

@@ -123,7 +123,7 @@ internal fun CreatorPostScreen(
                     published = post.published,
                     edited = post.edited,
                     added = post.added,
-                    rawHtml = post.content.orEmpty(),
+                    body = post.content.orEmpty(),
 
                     expanded = state.translateExpanded,
                     loading = state.translateLoading,
