@@ -138,7 +138,7 @@ internal fun CreatorPostScreen(
                 /** Контент поста */
                 PostContentBlock(
                     service = post.service,
-                    body = post.content.orEmpty()
+                    body = state.postContentClean
                 )
             }
 

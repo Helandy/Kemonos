@@ -14,9 +14,11 @@ import su.afk.kemonos.common.error.IErrorHandlerUseCase
 import su.afk.kemonos.common.error.storage.RetryStorage
 import su.afk.kemonos.common.error.toFavoriteToastBar
 import su.afk.kemonos.common.presenter.baseViewModel.BaseViewModel
+import su.afk.kemonos.common.presenter.webView.util.cleanDuplicatedMediaFromContent
 import su.afk.kemonos.common.shared.ShareLinkBuilder
 import su.afk.kemonos.common.shared.ShareTarget
 import su.afk.kemonos.common.translate.TextTranslator
+import su.afk.kemonos.creatorPost.api.domain.model.PostContentDomain
 import su.afk.kemonos.creatorPost.domain.model.video.VideoInfoState
 import su.afk.kemonos.creatorPost.domain.useCase.GetCommentsUseCase
 import su.afk.kemonos.creatorPost.domain.useCase.GetPostUseCase
@@ -87,10 +89,18 @@ internal class CreatorPostViewModel @AssistedInject constructor(
         val comments = commentsDeferred.await()
         val profile = profileDeferred?.await()
 
+        val mediaRefs = post?.collectMediaRefsForDedup()
+        val cleanContent = cleanDuplicatedMediaFromContent(
+            html = post?.post?.content.orEmpty(),
+            attachmentPaths = mediaRefs.orEmpty(),
+        )
+
         setState {
             copy(
                 loading = false,
                 post = post,
+                postContentClean = cleanContent,
+
                 commentDomains = comments,
                 profile = profile,
 
@@ -221,7 +231,16 @@ internal class CreatorPostViewModel @AssistedInject constructor(
         }
     }
 
-    fun onHideTranslate() {
-        setState { copy(translateExpanded = false) }
-    }
+    fun PostContentDomain.collectMediaRefsForDedup(): List<String> = buildList {
+        // attachments в корне ответа
+        addAll(attachments.map { it.path })
+        // previews (чаще всего thumbnail/path)
+        addAll(previews.mapNotNull { it.path })
+        // если у PreviewDomain есть url
+        addAll(previews.mapNotNull { it.url })
+
+        // вложенные attachments/file внутри post
+        post.file?.path?.let(::add)
+        addAll(post.attachments.map { it.path })
+    }.filter { it.isNotBlank() }
 }

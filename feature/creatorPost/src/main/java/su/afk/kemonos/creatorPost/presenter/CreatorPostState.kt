@@ -12,6 +12,7 @@ internal data class CreatorPostState(
     val postId: String = "",
 
     val post: PostContentDomain? = null,
+    val postContentClean: String = "",
     val commentDomains: List<CommentDomain> = emptyList(),
 
     val profile: Profile? = null,
