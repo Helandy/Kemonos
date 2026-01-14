@@ -1,4 +1,4 @@
-package su.afk.kemonos.creatorPost.presenter.view
+package su.afk.kemonos.creatorPost.presenter.view.content
 
 import android.content.Intent
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -6,13 +6,11 @@ import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.produceState
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
@@ -32,10 +30,14 @@ internal fun PostContentBlock(
     service: String,
     body: String,
     onOpenImage: (String) -> Unit,
+    maxHeightPxState: MutableIntState,
 ) {
     if (body.isBlank()) return
     val isEffectivelyEmpty = remember(body) { isEffectivelyEmptyHtml(body) }
     if (isEffectivelyEmpty) return
+
+    val density = LocalDensity.current
+    val minHeightDp = with(density) { maxHeightPxState.intValue.toDp() }
 
     val context = LocalContext.current
     val resolver = LocalDomainResolver.current
@@ -102,7 +104,9 @@ internal fun PostContentBlock(
     }
 
     AndroidView(
-        modifier = Modifier.padding(4.dp).fillMaxWidth().heightIn(min = 1.dp),
+        modifier = Modifier.padding(4.dp)
+            .fillMaxWidth()
+            .heightIn(min = minHeightDp.coerceAtLeast(1.dp)),
         factory = { webView },
         update = { view ->
             val html = htmlState!!
@@ -120,30 +124,3 @@ internal fun PostContentBlock(
         onRelease = { view -> WebViewPool.release(view) }
     )
 }
-
-private const val IMAGE_CLICK_HOOK_JS = """
-<script>
-(function() {
-  function absUrl(src) {
-    try { return new URL(src, document.baseURI).href; } catch (e) { return src; }
-  }
-
-  document.addEventListener('click', function(e) {
-    var el = e.target;
-    if (!el) return;
-
-    // Ловим клик по IMG
-    if (el.tagName === 'IMG') {
-      e.preventDefault();
-      e.stopPropagation();
-
-      var src = el.currentSrc || el.src || el.getAttribute('src');
-      if (!src) return;
-
-      src = absUrl(src);
-      window.location.href = 'kemonos://open_image?url=' + encodeURIComponent(src);
-    }
-  }, true); // capture=true, чтобы перехватывать даже если IMG внутри <a>
-})();
-</script>
-"""

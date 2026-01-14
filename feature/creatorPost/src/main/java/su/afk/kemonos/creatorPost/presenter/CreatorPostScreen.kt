@@ -7,10 +7,8 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
@@ -25,7 +23,12 @@ import su.afk.kemonos.common.presenter.views.elements.FavoriteActionButton
 import su.afk.kemonos.common.shared.ShareActions
 import su.afk.kemonos.common.shared.view.SharedActionButton
 import su.afk.kemonos.common.util.toast
-import su.afk.kemonos.creatorPost.presenter.view.*
+import su.afk.kemonos.creatorPost.presenter.util.IntStateMapSaver
+import su.afk.kemonos.creatorPost.presenter.view.PostAttachmentsSection
+import su.afk.kemonos.creatorPost.presenter.view.PostTitleBlock
+import su.afk.kemonos.creatorPost.presenter.view.TagsRow
+import su.afk.kemonos.creatorPost.presenter.view.content.PostContentBlock
+import su.afk.kemonos.creatorPost.presenter.view.postCommentsSection
 import su.afk.kemonos.creatorPost.presenter.view.preview.postPreviewsSection
 import su.afk.kemonos.creatorPost.presenter.view.translate.PostTranslateItem
 import su.afk.kemonos.creatorPost.presenter.view.video.postVideosSection
@@ -38,6 +41,10 @@ internal fun CreatorPostScreen(
     val state by viewModel.state.collectAsStateWithLifecycle()
     val context = LocalContext.current
     val resolver = LocalDomainResolver.current
+
+    val webViewHeights = rememberSaveable(saver = IntStateMapSaver) {
+        mutableMapOf<String, MutableIntState>()
+    }
 
     LaunchedEffect(viewModel) {
         viewModel.effect.collect { effect ->
@@ -136,10 +143,16 @@ internal fun CreatorPostScreen(
 
             item(key = "contentBlock") {
                 /** Контент поста */
+                val post = state.post?.post ?: return@item
+
+                val contentKey = "${post.service}:${state.id}:${state.postId}"
+                val heightState = webViewHeights.getOrPut(contentKey) { mutableIntStateOf(0) }
+
                 PostContentBlock(
                     service = post.service,
                     body = state.postContentClean,
-                    onOpenImage = viewModel::navigateOpenImage
+                    onOpenImage = viewModel::navigateOpenImage,
+                    maxHeightPxState = heightState,
                 )
             }
 
