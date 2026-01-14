@@ -30,7 +30,8 @@ import su.afk.kemonos.common.presenter.webView.util.wrapHtml
 @Composable
 internal fun PostContentBlock(
     service: String,
-    body: String
+    body: String,
+    onOpenImage: (String) -> Unit,
 ) {
     if (body.isBlank()) return
     val isEffectivelyEmpty = remember(body) { isEffectivelyEmptyHtml(body) }
@@ -49,8 +50,11 @@ internal fun PostContentBlock(
             val normalized = normalizeHtml(
                 body = body,
             )
+
+            val withImgClickHook = normalized + IMAGE_CLICK_HOOK_JS
+
             wrapHtml(
-                body = normalized,
+                body = withImgClickHook,
                 textColor = textColor,
                 linkColor = linkColor,
                 backgroundColor = bgColor,
@@ -73,9 +77,19 @@ internal fun PostContentBlock(
         context = context,
         bgColor = bgColor,
         onOpenUrl = { url ->
+            val uri = url.toUri()
+
+            /** Клик по картинке  */
+            if (uri.scheme == "kemonos" && uri.host == "open_image") {
+                val original = uri.getQueryParameter("url") ?: return@rememberPooledWebView
+                onOpenImage(original)
+                return@rememberPooledWebView
+            }
+
+            /** Прочие клики наружу */
             runCatching {
                 context.startActivity(
-                    Intent(Intent.ACTION_VIEW, url.toUri()).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                    Intent(Intent.ACTION_VIEW, uri).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                 )
             }
         }
@@ -95,9 +109,41 @@ internal fun PostContentBlock(
             val last = view.tag as? String
             if (last != html) {
                 view.tag = html
-                view.loadDataWithBaseURL(siteBaseUrl, html, "text/html", "utf-8", null)
+
+                view.stopLoading()
+                view.loadUrl("about:blank")
+                view.post {
+                    view.loadDataWithBaseURL(siteBaseUrl, html, "text/html", "utf-8", null)
+                }
             }
         },
         onRelease = { view -> WebViewPool.release(view) }
     )
 }
+
+private const val IMAGE_CLICK_HOOK_JS = """
+<script>
+(function() {
+  function absUrl(src) {
+    try { return new URL(src, document.baseURI).href; } catch (e) { return src; }
+  }
+
+  document.addEventListener('click', function(e) {
+    var el = e.target;
+    if (!el) return;
+
+    // Ловим клик по IMG
+    if (el.tagName === 'IMG') {
+      e.preventDefault();
+      e.stopPropagation();
+
+      var src = el.currentSrc || el.src || el.getAttribute('src');
+      if (!src) return;
+
+      src = absUrl(src);
+      window.location.href = 'kemonos://open_image?url=' + encodeURIComponent(src);
+    }
+  }, true); // capture=true, чтобы перехватывать даже если IMG внутри <a>
+})();
+</script>
+"""

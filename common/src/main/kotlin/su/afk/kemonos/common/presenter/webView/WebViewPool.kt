@@ -51,8 +51,10 @@ object WebViewPool {
         (wv.parent as? ViewGroup)?.removeView(wv)
 
         wv.setBackgroundColor(bgColor)
+
+        // todo Подумать о варианте выкидывания webView
         wv.settings.apply {
-            javaScriptEnabled = false
+            javaScriptEnabled = true
             domStorageEnabled = false
             loadsImagesAutomatically = true
             useWideViewPort = true

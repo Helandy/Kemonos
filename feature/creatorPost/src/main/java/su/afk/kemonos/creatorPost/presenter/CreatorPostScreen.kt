@@ -138,7 +138,8 @@ internal fun CreatorPostScreen(
                 /** Контент поста */
                 PostContentBlock(
                     service = post.service,
-                    body = state.postContentClean
+                    body = state.postContentClean,
+                    onOpenImage = viewModel::navigateOpenImage
                 )
             }
 
