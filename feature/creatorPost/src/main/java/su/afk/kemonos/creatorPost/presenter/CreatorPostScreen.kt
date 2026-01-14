@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -76,7 +77,7 @@ internal fun CreatorPostScreen(
             }
         },
         isLoading = state.loading,
-        isEmpty = state.post == null,
+        isEmpty = state.post == null && !state.loading,
         onRetry = { viewModel.loadingPost() }
     ) {
         val post = state.post?.post ?: return@BaseScreen
@@ -99,7 +100,13 @@ internal fun CreatorPostScreen(
         val downloadStarted = stringResource(R.string.download_started)
         val downloadStartedNamed = stringResource(R.string.download_started_named)
 
+        val listState = rememberSaveable(
+            state.postId,
+            saver = LazyListState.Saver
+        ) { LazyListState() }
+
         LazyColumn(
+            state = listState,
             modifier = Modifier.fillMaxSize(),
         ) {
             item(key = "HeaderBlock") {
