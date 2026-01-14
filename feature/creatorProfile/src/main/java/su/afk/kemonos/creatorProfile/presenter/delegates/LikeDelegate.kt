@@ -31,9 +31,11 @@ internal class LikeDelegate @Inject constructor(
 
     /** проверит в избранном ли автор */
     suspend fun isCreatorFavorite(service: String, id: String): Boolean {
-        return favoritesCreatorUseCase.isCreatorFavorite(
-            service = service,
-            id = id
-        )
+        return runCatching {
+            favoritesCreatorUseCase.isCreatorFavorite(
+                service = service,
+                id = id
+            )
+        }.getOrElse { false }
     }
 }

@@ -45,7 +45,7 @@ internal class CreatorsViewModel @Inject constructor(
     override suspend fun reloadSite(site: SelectedSite) {
         setState {
             copy(
-                selectedService = "All",
+                selectedService = "Services",
                 searchQuery = "",
                 sortedType = CreatorsSort.POPULARITY,
                 sortAscending = false,

@@ -51,13 +51,13 @@ internal class LikeDelegate @Inject constructor(
 
     /** Проверит в избранном ли пост */
     suspend fun isPostFavorite(service: String, creatorId: String, postId: String): Boolean {
-        val favorite = favoritesPostUseCase.isPostFavorite(
-            site = selectedSiteUseCase.getSite(),
-            service = service,
-            creatorId = creatorId,
-            postId = postId,
-        )
-
-        return favorite
+        return runCatching {
+            favoritesPostUseCase.isPostFavorite(
+                site = selectedSiteUseCase.getSite(),
+                service = service,
+                creatorId = creatorId,
+                postId = postId,
+            )
+        }.getOrElse { false }
     }
 }

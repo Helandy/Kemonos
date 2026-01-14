@@ -7,7 +7,7 @@ import su.afk.kemonos.storage.entity.creators.CreatorsEntity
 internal interface CoomerCreatorsDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertAll(entities: List<CreatorsEntity>)
+    suspend fun insertServices(entities: List<CreatorsEntity>)
 
     @Query("DELETE FROM creators")
     suspend fun clear()
@@ -15,7 +15,7 @@ internal interface CoomerCreatorsDao {
     @Transaction
     suspend fun replaceAllChunked(entities: List<CreatorsEntity>, chunkSize: Int = 2000) {
         clear()
-        entities.chunked(chunkSize).forEach { insertAll(it) }
+        entities.chunked(chunkSize).forEach { insertServices(it) }
     }
 
     @Query("SELECT DISTINCT service FROM creators ORDER BY service ASC")
@@ -25,7 +25,7 @@ internal interface CoomerCreatorsDao {
     @Query(
         """
         SELECT * FROM creators
-        WHERE (:service = 'All' OR service = :service)
+        WHERE (:service = 'Services' OR service = :service)
           AND (:q = '' OR name LIKE '%' || :q || '%')
         ORDER BY favorited ASC
         LIMIT :limit OFFSET :offset
@@ -36,7 +36,7 @@ internal interface CoomerCreatorsDao {
     @Query(
         """
         SELECT * FROM creators
-        WHERE (:service = 'All' OR service = :service)
+        WHERE (:service = 'Services' OR service = :service)
           AND (:q = '' OR name LIKE '%' || :q || '%')
         ORDER BY favorited DESC
         LIMIT :limit OFFSET :offset
@@ -48,7 +48,7 @@ internal interface CoomerCreatorsDao {
     @Query(
         """
         SELECT * FROM creators
-        WHERE (:service = 'All' OR service = :service)
+        WHERE (:service = 'Services' OR service = :service)
           AND (:q = '' OR name LIKE '%' || :q || '%')
         ORDER BY indexed ASC
         LIMIT :limit OFFSET :offset
@@ -59,7 +59,7 @@ internal interface CoomerCreatorsDao {
     @Query(
         """
         SELECT * FROM creators
-        WHERE (:service = 'All' OR service = :service)
+        WHERE (:service = 'Services' OR service = :service)
           AND (:q = '' OR name LIKE '%' || :q || '%')
         ORDER BY indexed DESC
         LIMIT :limit OFFSET :offset
@@ -71,7 +71,7 @@ internal interface CoomerCreatorsDao {
     @Query(
         """
         SELECT * FROM creators
-        WHERE (:service = 'All' OR service = :service)
+        WHERE (:service = 'Services' OR service = :service)
           AND (:q = '' OR name LIKE '%' || :q || '%')
         ORDER BY updated ASC
         LIMIT :limit OFFSET :offset
@@ -82,7 +82,7 @@ internal interface CoomerCreatorsDao {
     @Query(
         """
         SELECT * FROM creators
-        WHERE (:service = 'All' OR service = :service)
+        WHERE (:service = 'Services' OR service = :service)
           AND (:q = '' OR name LIKE '%' || :q || '%')
         ORDER BY updated DESC
         LIMIT :limit OFFSET :offset
@@ -94,7 +94,7 @@ internal interface CoomerCreatorsDao {
     @Query(
         """
         SELECT * FROM creators
-        WHERE (:service = 'All' OR service = :service)
+        WHERE (:service = 'Services' OR service = :service)
           AND (:q = '' OR name LIKE '%' || :q || '%')
         ORDER BY name COLLATE NOCASE ASC
         LIMIT :limit OFFSET :offset
@@ -105,7 +105,7 @@ internal interface CoomerCreatorsDao {
     @Query(
         """
         SELECT * FROM creators
-        WHERE (:service = 'All' OR service = :service)
+        WHERE (:service = 'Services' OR service = :service)
           AND (:q = '' OR name LIKE '%' || :q || '%')
         ORDER BY name COLLATE NOCASE DESC
         LIMIT :limit OFFSET :offset
