@@ -1,6 +1,9 @@
 package su.afk.kemonos.profile.presenter.register
 
+import android.app.Activity
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 import su.afk.kemonos.common.error.IErrorHandlerUseCase
 import su.afk.kemonos.common.error.storage.RetryStorage
@@ -13,6 +16,7 @@ import su.afk.kemonos.preferences.site.ISelectedSiteUseCase
 import su.afk.kemonos.profile.domain.register.RegisterResult
 import su.afk.kemonos.profile.domain.register.RegisterUseCase
 import su.afk.kemonos.profile.navigation.AuthDest
+import su.afk.kemonos.profile.utils.AppCredentialStore
 import su.afk.kemonos.profile.utils.Const.KEY_SELECT_SITE
 import javax.inject.Inject
 
@@ -22,6 +26,7 @@ internal class RegisterViewModel @Inject constructor(
     private val navigationManager: NavigationManager,
     private val navigationStorage: NavigationStorage,
     private val selectedSiteProvider: ISelectedSiteUseCase,
+    private val credentialStore: AppCredentialStore,
     override val errorHandler: IErrorHandlerUseCase,
     override val retryStorage: RetryStorage,
 ) : BaseViewModel<RegisterState>(RegisterState()) {
@@ -93,6 +98,8 @@ internal class RegisterViewModel @Inject constructor(
                     )
                 }
 
+                _effect.trySend(RegisterEffect.SavePassword(state.value.username, state.value.password))
+
                 navigationStorage.put(KEY_SELECT_SITE, state.value.selectSite)
                 navigationManager.navigate(AuthDest.Login)
             }
@@ -123,5 +130,12 @@ internal class RegisterViewModel @Inject constructor(
     fun onNavigateToLoginClick() {
         navigationStorage.put(KEY_SELECT_SITE, state.value.selectSite)
         navigationManager.replace(AuthDest.Login)
+    }
+
+    private val _effect = Channel<RegisterEffect>(Channel.BUFFERED)
+    val effect = _effect.receiveAsFlow()
+
+    fun savePassword(activity: Activity, username: String, password: String) = viewModelScope.launch {
+        runCatching { credentialStore.savePassword(activity, username, password) }
     }
 }

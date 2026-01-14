@@ -17,3 +17,8 @@ internal data class LoginState(
     val usernameError: LoginUsernameErrorCode? = null,
     val passwordError: LoginPasswordErrorCode? = null,
 )
+
+sealed interface LoginEffect {
+    data object PickPassword : LoginEffect
+    data class SavePassword(val username: String, val password: String) : LoginEffect
+}

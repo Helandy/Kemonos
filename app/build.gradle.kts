@@ -47,6 +47,15 @@ android {
         }
     }
 
+    splits {
+        abi {
+            isEnable = true
+            reset()
+            include("arm64-v8a", "armeabi-v7a")
+            isUniversalApk = false
+        }
+    }
+
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_21
         targetCompatibility = JavaVersion.VERSION_21
@@ -63,10 +72,10 @@ android.applicationVariants.configureEach {
     val vName = versionName ?: "0.0"
     outputs.configureEach {
         val out = this as com.android.build.gradle.internal.api.BaseVariantOutputImpl
-        out.outputFileName = "kemonos-$vName.apk"
+        val abi = out.getFilter(com.android.build.OutputFile.ABI) ?: "universal"
+        out.outputFileName = "kemonos-$vName-$abi.apk"
     }
 }
-
 dependencies {
     implementation(libs.bundles.hilt)
     ksp(libs.dagger.hilt.compiler)

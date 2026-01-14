@@ -20,3 +20,7 @@ internal data class RegisterState(
     val passwordError: PasswordErrorCode? = null,
     val confirmError: ConfirmErrorCode? = null,
 )
+
+sealed interface RegisterEffect {
+    data class SavePassword(val username: String, val password: String) : RegisterEffect
+}

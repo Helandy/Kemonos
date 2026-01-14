@@ -13,6 +13,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
@@ -43,6 +44,7 @@ fun <T> SearchBarNew(
     showRandom: Boolean = false,
     onRandomClick: (() -> Unit)? = null,
 ) {
+    val focusManager = LocalFocusManager.current
     val density = LocalDensity.current
 
     var serviceChipWidth by remember { mutableIntStateOf(0) }
@@ -80,7 +82,10 @@ fun <T> SearchBarNew(
                     imeAction = ImeAction.Search
                 ),
                 keyboardActions = KeyboardActions(
-                    onSearch = { onQueryChange(query) }
+                    onSearch = {
+                        focusManager.clearFocus()
+                        onQueryChange(query)
+                    }
                 ),
                 modifier = Modifier.fillMaxWidth()
             )

@@ -36,6 +36,8 @@ dependencies {
 
     implementation(libs.bundles.retrofit)
 
+    implementation(libs.bundles.androidx.credentials)
+
     implementation(project(":common"))
     implementation(project(":core:navigation"))
 

@@ -2,6 +2,7 @@ package su.afk.kemonos.profile.presenter.favoritePosts
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.grid.LazyGridState
+import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
@@ -11,6 +12,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -28,6 +30,8 @@ internal fun FavoritePostsScreen(viewModel: FavoritePostsViewModel) {
     val gridState = rememberSaveable(saver = LazyGridState.Saver) {
         LazyGridState()
     }
+
+    val focusManager = LocalFocusManager.current
 
     val pullState = rememberPullToRefreshState()
     val refreshing = state.loading
@@ -47,6 +51,11 @@ internal fun FavoritePostsScreen(viewModel: FavoritePostsViewModel) {
                     label = { Text(stringResource(R.string.search)) },
                     singleLine = true,
                     modifier = Modifier.fillMaxWidth().padding(bottom = 6.dp),
+                    keyboardActions = KeyboardActions(
+                        onSearch = {
+                            focusManager.clearFocus()
+                        }
+                    )
                 )
             }
         },

@@ -9,6 +9,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -19,6 +20,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import su.afk.kemonos.common.R.drawable.coomer_logo
 import su.afk.kemonos.common.R.drawable.kemono_logo
 import su.afk.kemonos.common.presenter.baseScreen.BaseScreen
+import su.afk.kemonos.common.util.findActivity
 import su.afk.kemonos.domain.SelectedSite
 import su.afk.kemonos.profile.R
 import su.afk.kemonos.profile.presenter.login.util.loginPasswordErrorRes
@@ -30,6 +32,23 @@ internal fun LoginScreen(
     viewModel: LoginViewModel,
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
+
+    val context = LocalContext.current
+    val activity = remember(context) { context.findActivity() }
+
+    LaunchedEffect(activity) {
+        if (activity != null) viewModel.requestSavedCredentials()
+    }
+
+    LaunchedEffect(viewModel, activity) {
+        viewModel.effect.collect { effect ->
+            val a = activity ?: return@collect
+            when (effect) {
+                LoginEffect.PickPassword -> viewModel.pickPassword(a)
+                is LoginEffect.SavePassword -> viewModel.savePassword(a, effect.username, effect.password)
+            }
+        }
+    }
 
     BaseScreen(
         isScroll = false,
