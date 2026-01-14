@@ -81,4 +81,8 @@ interface CreatorPostsCacheDao {
 
     @Query("DELETE FROM creator_posts_cache")
     suspend fun clearAll()
+
+    /** удаление всех постов автора по ключу */
+    @Query("DELETE FROM creator_posts_cache WHERE queryKey = :queryKey")
+    suspend fun deleteByQueryKey(queryKey: String)
 }

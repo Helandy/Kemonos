@@ -182,4 +182,30 @@
     <string name="main_api_meta_request_id">requestId: %1$s</string>
     <string name="main_api_meta_cause">cause: %1$s</string>
 
+
+    <string name="translate_show">Translate</string>
+    <string name="translate_hide">Hide translation</string>
+    <string name="translate_in_progress">Translating…</string>
+
+    <string name="translate_title">Translation</string>
+    <string name="translate_model_loading">Downloading model / translating…</string>
+    <string name="translate_hint">Tap “Translate”</string>
+
+    <string name="translate_error_generic">Translation error</string>
+
+    <string name="translate_quality_hint">
+        This translation is generated locally on your device and may contain inaccuracies
+    </string>
+
+    <string name="settings_faq_title">FAQ</string>
+
+    <string name="settings_faq_q1_title">
+        Why there is no option to download all creator posts and videos?
+    </string>
+
+    <string name="settings_faq_q1_body">
+        Bulk downloading creates a very high load on content hosting sites, which slows down online viewing and causes
+        large delays.
+        You can still download content manually from each post if needed.
+    </string>
 </resources>

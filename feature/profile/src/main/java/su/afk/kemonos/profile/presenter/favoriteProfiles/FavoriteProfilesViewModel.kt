@@ -65,7 +65,7 @@ internal class FavoriteProfilesViewModel @Inject constructor(
                 loading = false,
                 favoriteProfiles = sorted,
                 searchCreators = sorted,
-                selectedService = "All"
+                selectedService = "Services"
             )
         }
     }
@@ -112,7 +112,7 @@ internal class FavoriteProfilesViewModel @Inject constructor(
         var filtered = current.favoriteProfiles
 
         /** Фильтр по сервису */
-        if (service != "All") {
+        if (service != "Services") {
             filtered = filtered.filter { it.service == service }
         }
 
@@ -151,14 +151,15 @@ internal class FavoriteProfilesViewModel @Inject constructor(
             .map { it.service }
             .distinct()
             .sorted()
-            .let { listOf("All") + it }
+            .let { listOf("Services") + it }
 
 
-    fun onCreatorClick(creator: FavoriteArtist) {
+    fun onCreatorClick(creator: FavoriteArtist, isFresh: Boolean) = viewModelScope.launch {
         navManager.navigate(
             creatorProfileNavigator.getCreatorProfileDest(
                 service = creator.service,
                 id = creator.id,
+                isFresh = isFresh
             )
         )
     }

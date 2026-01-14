@@ -13,9 +13,9 @@ data class CreatorsState(
     val refreshing: Boolean = false,
 
     /** Список сервисов для фильтра. */
-    val services: List<String> = listOf("All"),
+    val services: List<String> = listOf("Services"),
 
-    val selectedService: String = "All",
+    val selectedService: String = "Services",
     val searchQuery: String = "",
     val sortedType: CreatorsSort = CreatorsSort.POPULARITY,
     val sortAscending: Boolean = false,

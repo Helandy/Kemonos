@@ -4,6 +4,8 @@ import android.content.Intent
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.LazyGridState
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.pulltorefresh.PullToRefreshBox
+import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -20,7 +22,9 @@ import su.afk.kemonos.common.presenter.baseScreen.BaseScreen
 import su.afk.kemonos.common.presenter.screens.postsScreen.paging.PostsTabContent
 import su.afk.kemonos.common.presenter.views.creator.CreatorHeader
 import su.afk.kemonos.common.presenter.views.elements.FavoriteActionButton
+import su.afk.kemonos.common.shared.ShareActions
 import su.afk.kemonos.common.shared.view.SharedActionButton
+import su.afk.kemonos.common.util.toast
 import su.afk.kemonos.creatorProfile.presenter.model.ProfileTab
 import su.afk.kemonos.creatorProfile.presenter.view.*
 import su.afk.kemonos.creatorProfile.presenter.view.discordProfile.DiscordProfilePlaceholder
@@ -48,9 +52,18 @@ internal fun CreatorScreen(
                     val intent = Intent(Intent.ACTION_VIEW, effect.url.toUri())
                     context.startActivity(intent)
                 }
+                is CreatorProfileEffect.ShowToast -> context.toast(effect.message)
+                is CreatorProfileEffect.CopyPostLink -> ShareActions.copyToClipboard(
+                    context,
+                    "Profile link",
+                    effect.message
+                )
             }
         }
     }
+
+    val pullState = rememberPullToRefreshState()
+    val refreshing = postsRefreshing || state.loading
 
     BaseScreen(
         isScroll = false,
@@ -58,7 +71,7 @@ internal fun CreatorScreen(
         floatingActionButtonStart = {
             if (!state.loading) {
                 SharedActionButton(
-                    onClick = { viewModel.copyProfileLink(context) }
+                    onClick = { viewModel.copyProfileLink() }
                 )
             }
         },
@@ -66,12 +79,13 @@ internal fun CreatorScreen(
         floatingActionButton = {
             if (state.isFavoriteShowButton && state.loading.not()) {
                 FavoriteActionButton(
+                    enabled = !state.favoriteActionLoading,
                     isFavorite = state.isFavorite,
                     onFavoriteClick = { viewModel.onFavoriteClick() }
                 )
             }
         },
-        isLoading = state.loading && postsRefreshing,
+        isLoading = state.loading || postsRefreshing,
         isEmpty = state.profile == null && !state.loading && !postsRefreshing,
         onRetry = { viewModel.getProfileInfo() }
     ) {
@@ -112,12 +126,18 @@ internal fun CreatorScreen(
             onTagClear = { viewModel.clearTag() }
         )
 
-        SelectedTab(
-            state = state,
-            viewModel = viewModel,
-            posts = posts,
-            gridState = gridState
-        )
+        PullToRefreshBox(
+            state = pullState,
+            isRefreshing = refreshing,
+            onRefresh = { viewModel.onPullRefresh() }
+        ) {
+            SelectedTab(
+                state = state,
+                viewModel = viewModel,
+                posts = posts,
+                gridState = gridState,
+            )
+        }
     }
 }
 

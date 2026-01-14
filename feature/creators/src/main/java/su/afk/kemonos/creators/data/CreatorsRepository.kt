@@ -23,7 +23,7 @@ internal class CreatorsRepository @Inject constructor(
 
     override suspend fun getCreators(): List<Creators> {
         val cached = storeCreatorsUseCase.searchCreators(
-            service = "All",
+            service = "Services",
             query = "",
             sort = CreatorsSort.POPULARITY,
             ascending = false,

@@ -68,17 +68,11 @@ internal fun MainScreenContent(
         contentAlignment = Alignment.TopCenter,
         floatingActionButton = if (showErrorScreen) {
             {
-                Surface(
-                    tonalElevation = 6.dp,
-                    shape = MaterialTheme.shapes.large,
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    Box(Modifier.padding(12.dp)) {
-                        MainActions(
-                            onSkipCheck = onSkipCheck,
-                            onSaveAndCheck = onSaveAndCheck,
-                        )
-                    }
+                Box(Modifier.padding(12.dp)) {
+                    MainActions(
+                        onSkipCheck = onSkipCheck,
+                        onSaveAndCheck = onSaveAndCheck,
+                    )
                 }
             }
         } else null,

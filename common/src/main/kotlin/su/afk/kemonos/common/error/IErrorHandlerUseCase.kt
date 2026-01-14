@@ -75,6 +75,7 @@ class ErrorHandlerUseCaseImpl @Inject constructor(
             title = title,
             message = backendMessage ?: fallback,
             code = code,
+            fallback = fallback,
             url = url,
             method = method,
             requestId = requestId,
@@ -141,4 +142,12 @@ fun String.extractBackendMessage(): String? {
     if (!firstErr.isNullOrBlank()) return firstErr
 
     return trimmed
+}
+
+fun ErrorItem.toFavoriteToastBar(): String {
+    return listOfNotNull(
+        title.takeIf { it.isNotBlank() },
+        fallback?.takeIf { it.isNotBlank() }
+    ).distinct()
+        .joinToString(separator = "\n")
 }

@@ -59,8 +59,8 @@ internal sealed interface CacheClearAction {
     object CreatorProfiles : CacheClearAction
     object CreatorPostsPages : CacheClearAction
     object PostContents : CacheClearAction
-    data class PopularPosts(val site: SelectedSite) : CacheClearAction
+    object PopularPosts : CacheClearAction
 
-    data class FavoritesArtists(val site: SelectedSite) : CacheClearAction
-    data class FavoritesPosts(val site: SelectedSite) : CacheClearAction
+    object FavoritesArtists : CacheClearAction
+    object FavoritesPosts : CacheClearAction
 }

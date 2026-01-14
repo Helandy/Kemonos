@@ -11,25 +11,17 @@ internal class FavoritesCreatorUseCase @Inject constructor(
     private val selectedSiteUseCase: ISelectedSiteUseCase,
 ) {
 
-    suspend fun addCreator(service: String, id: String) = runCatching {
-        repository.addCreator(
+    suspend fun addCreator(service: String, id: String): Result<Unit> = repository.addCreator(
             site = selectedSiteUseCase.getSite(),
             service = service,
-            id = id,
+        id = id
         )
-    }.getOrElse {
-        false
-    }
 
-    suspend fun removeCreator(service: String, id: String) = runCatching {
-        repository.removeCreator(
+    suspend fun removeCreator(service: String, id: String): Result<Unit> = repository.removeCreator(
             site = selectedSiteUseCase.getSite(),
             service = service,
-            id = id,
+        id = id
         )
-    }.getOrElse {
-        false
-    }
 
     suspend fun isCreatorFavorite(service: String, id: String): Boolean {
         return isCreatorFavoriteUseCase.invoke(

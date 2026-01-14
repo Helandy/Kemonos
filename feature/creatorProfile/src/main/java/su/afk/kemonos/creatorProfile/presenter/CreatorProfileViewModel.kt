@@ -1,6 +1,5 @@
 package su.afk.kemonos.creatorProfile.presenter
 
-import android.content.Context
 import android.util.Log
 import androidx.paging.cachedIn
 import dagger.assisted.Assisted
@@ -11,8 +10,8 @@ import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.receiveAsFlow
 import su.afk.kemonos.common.error.IErrorHandlerUseCase
 import su.afk.kemonos.common.error.storage.RetryStorage
+import su.afk.kemonos.common.error.toFavoriteToastBar
 import su.afk.kemonos.common.presenter.baseViewModel.BaseViewModel
-import su.afk.kemonos.common.shared.ShareActions
 import su.afk.kemonos.common.shared.ShareLinkBuilder
 import su.afk.kemonos.common.shared.ShareTarget
 import su.afk.kemonos.creatorProfile.api.IGetProfileUseCase
@@ -23,11 +22,13 @@ import su.afk.kemonos.creatorProfile.presenter.delegates.LikeDelegate
 import su.afk.kemonos.creatorProfile.presenter.delegates.LoadingTabsContent
 import su.afk.kemonos.creatorProfile.presenter.delegates.NavigationDelegate
 import su.afk.kemonos.creatorProfile.presenter.model.ProfileTab
+import su.afk.kemonos.creatorProfile.util.Utils.queryKey
 import su.afk.kemonos.domain.models.PostDomain
 import su.afk.kemonos.domain.models.Tag
 import su.afk.kemonos.navigation.NavigationManager
 import su.afk.kemonos.preferences.GetKemonoRootUrlUseCase
 import su.afk.kemonos.preferences.IGetCurrentSiteRootUrlUseCase
+import su.afk.kemonos.storage.api.profilePosts.IStorageCreatorPostsCacheUseCase
 
 internal class CreatorProfileViewModel @AssistedInject constructor(
     @Assisted private val dest: CreatorDest.CreatorProfile,
@@ -39,6 +40,7 @@ internal class CreatorProfileViewModel @AssistedInject constructor(
     private val loadingTabsContent: LoadingTabsContent,
     private val getProfilePostsPagingUseCase: GetProfilePostsPagingUseCase,
     private val navManager: NavigationManager,
+    private val postsCache: IStorageCreatorPostsCacheUseCase,
     override val errorHandler: IErrorHandlerUseCase,
     override val retryStorage: RetryStorage,
 ) : BaseViewModel<CreatorProfileState>(CreatorProfileState()) {
@@ -240,12 +242,25 @@ internal class CreatorProfileViewModel @AssistedInject constructor(
 
     /** избранное */
     fun onFavoriteClick() = viewModelScope.launch {
+        if (currentState.favoriteActionLoading) return@launch
+
+        val wasFavorite = currentState.isFavorite
+        setState { copy(favoriteActionLoading = true) }
+
         val result = likeDelegate.onFavoriteClick(
             isFavorite = currentState.isFavorite,
             service = currentState.service,
             id = currentState.id
         )
-        if (result) setState { copy(isFavorite = !currentState.isFavorite) }
+        result
+            .onSuccess {
+                setState { copy(isFavorite = !wasFavorite) }
+            }
+            .onFailure { t ->
+                val errorMessage = errorHandler.parse(t).toFavoriteToastBar()
+                _effect.trySend(CreatorProfileEffect.ShowToast(errorMessage))
+            }
+        setState { copy(favoriteActionLoading = false) }
     }
 
     /** проверит в избранном ли автор */
@@ -276,8 +291,25 @@ internal class CreatorProfileViewModel @AssistedInject constructor(
         navManager.back()
     }
 
-    /** Копирование в буфер todo убрать context */
-    fun copyProfileLink(context: Context) {
+    fun onPullRefresh() = viewModelScope.launch {
+        val qk = queryKey(
+            service = currentState.service,
+            id = currentState.id,
+            search = currentState.searchText,
+            tag = currentState.currentTag?.tag,
+        )
+        postsCache.clearQuery(qk)
+
+        setState { copy(loading = true) }
+        getProfileInfo()
+        setTabsToProfile()
+        isCreatorFavorite()
+
+        loadProfileAndPosts()
+    }
+
+    /** Копирование в буфер */
+    fun copyProfileLink() {
         val url = ShareLinkBuilder.build(
             ShareTarget.Profile(
                 siteRoot = getCurrentSiteRootUrlUseCase(),
@@ -285,7 +317,7 @@ internal class CreatorProfileViewModel @AssistedInject constructor(
                 userId = currentState.id
             )
         )
-        ShareActions.copyToClipboard(context, "Profile link", url)
+        _effect.trySend(CreatorProfileEffect.CopyPostLink(url))
     }
 }
 

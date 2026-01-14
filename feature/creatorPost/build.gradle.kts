@@ -50,5 +50,6 @@ dependencies {
     implementation(project(":storage-api"))
     implementation(project(":feature:profile-api"))
     implementation(project(":feature:creatorProfile-api"))
-    implementation(project(":feature:videoPlayer"))
+    implementation(project(":feature:download-api"))
+    implementation(project(":feature:commonScreen-api"))
 }

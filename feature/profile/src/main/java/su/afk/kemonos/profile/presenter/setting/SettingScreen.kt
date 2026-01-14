@@ -15,6 +15,7 @@ import su.afk.kemonos.common.util.toUiDateTime
 import su.afk.kemonos.profile.presenter.setting.view.ApiSettingsBlock
 import su.afk.kemonos.profile.presenter.setting.view.BottomLinksBlock
 import su.afk.kemonos.profile.presenter.setting.view.CacheSettingsBlock
+import su.afk.kemonos.profile.presenter.setting.view.FaqBlock
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -41,6 +42,10 @@ internal fun SettingScreen(viewModel: SettingViewModel) {
             formatDateTime = { ms -> ms.toUiDateTime() },
             onClear = viewModel::onClear
         )
+
+        Spacer(Modifier.height(32.dp))
+
+        FaqBlock()
 
         Spacer(Modifier.height(32.dp))
 

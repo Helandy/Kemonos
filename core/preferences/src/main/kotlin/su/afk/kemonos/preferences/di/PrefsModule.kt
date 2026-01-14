@@ -28,6 +28,11 @@ object PrefsModule {
 
     @Provides
     @Singleton
+    @Named("MainScope")
+    fun provideMainScope(): CoroutineScope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
+
+    @Provides
+    @Singleton
     fun provideSharedPreferences(
         @ApplicationContext context: Context
     ): SharedPreferences =

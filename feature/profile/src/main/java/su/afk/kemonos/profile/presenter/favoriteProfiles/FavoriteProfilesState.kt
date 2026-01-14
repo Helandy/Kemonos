@@ -14,7 +14,7 @@ internal data class FavoriteProfilesState(
     val searchCreators: List<FavoriteArtist> = emptyList(),
     val searchQuery: String = "",
 
-    val selectedService: String = "All",
+    val selectedService: String = "Services",
     val sortedType: FavoriteSortedType = FavoriteSortedType.NewPostsDate,
     val sortAscending: Boolean = false,
 )

@@ -3,6 +3,7 @@ package su.afk.kemonos.creatorProfile.presenter.view
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.Icon
@@ -11,6 +12,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import su.afk.kemonos.common.R
@@ -23,6 +25,8 @@ fun SearchBar(
     onClose: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val focusManager = LocalFocusManager.current
+
     AnimatedVisibility(visible = visible) {
         OutlinedTextField(
             value = searchText,
@@ -39,7 +43,12 @@ fun SearchBar(
                 }) {
                     Icon(Icons.Default.Close, contentDescription = stringResource(R.string.close))
                 }
-            }
+            },
+            keyboardActions = KeyboardActions(
+                onSearch = {
+                    focusManager.clearFocus()
+                }
+            )
         )
     }
 }

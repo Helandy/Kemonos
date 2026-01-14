@@ -4,8 +4,9 @@ import androidx.navigation3.runtime.NavKey
 
 interface ICreatorProfileNavigator {
 
-    fun getCreatorProfileDest(
+    suspend fun getCreatorProfileDest(
         service: String,
         id: String,
+        isFresh: Boolean = false,
     ): NavKey
 }

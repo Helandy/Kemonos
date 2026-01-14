@@ -7,9 +7,8 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
@@ -21,11 +20,17 @@ import su.afk.kemonos.common.di.LocalDomainResolver
 import su.afk.kemonos.common.presenter.baseScreen.BaseScreen
 import su.afk.kemonos.common.presenter.views.creator.CreatorHeader
 import su.afk.kemonos.common.presenter.views.elements.FavoriteActionButton
+import su.afk.kemonos.common.shared.ShareActions
 import su.afk.kemonos.common.shared.view.SharedActionButton
-import su.afk.kemonos.common.util.download.enqueueSystemDownload
 import su.afk.kemonos.common.util.toast
-import su.afk.kemonos.creatorPost.presenter.view.*
+import su.afk.kemonos.creatorPost.presenter.util.IntStateMapSaver
+import su.afk.kemonos.creatorPost.presenter.view.PostAttachmentsSection
+import su.afk.kemonos.creatorPost.presenter.view.PostTitleBlock
+import su.afk.kemonos.creatorPost.presenter.view.TagsRow
+import su.afk.kemonos.creatorPost.presenter.view.content.PostContentBlock
+import su.afk.kemonos.creatorPost.presenter.view.postCommentsSection
 import su.afk.kemonos.creatorPost.presenter.view.preview.postPreviewsSection
+import su.afk.kemonos.creatorPost.presenter.view.translate.PostTranslateItem
 import su.afk.kemonos.creatorPost.presenter.view.video.postVideosSection
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -37,20 +42,34 @@ internal fun CreatorPostScreen(
     val context = LocalContext.current
     val resolver = LocalDomainResolver.current
 
+    val webViewHeights = rememberSaveable(saver = IntStateMapSaver) {
+        mutableMapOf<String, MutableIntState>()
+    }
+
+    LaunchedEffect(viewModel) {
+        viewModel.effect.collect { effect ->
+            when (effect) {
+                is CreatorPostEffect.ShowToast -> context.toast(effect.message)
+                is CreatorPostEffect.CopyPostLink -> ShareActions.copyToClipboard(context, "Post link", effect.message)
+            }
+        }
+    }
+
     BaseScreen(
-        contentModifier = Modifier.padding(horizontal = 6.dp),
+        contentModifier = Modifier.padding(horizontal = 4.dp),
         isScroll = false,
         floatingActionButtonBottomPadding = 12.dp,
         floatingActionButtonStart = {
             if (!state.loading) {
                 SharedActionButton(
-                    onClick = { viewModel.copyPostLink(context) }
+                    onClick = { viewModel.copyPostLink() }
                 )
             }
         },
         floatingActionButton = {
             if (state.isFavoriteShowButton && state.loading.not()) {
                 FavoriteActionButton(
+                    enabled = !state.favoriteActionLoading,
                     isFavorite = state.isFavorite,
                     onFavoriteClick = { viewModel.onFavoriteClick() }
                 )
@@ -103,17 +122,37 @@ internal fun CreatorPostScreen(
                 /** Заголовок поста */
                 PostTitleBlock(
                     title = post.title.orEmpty(),
+                )
+            }
+
+            item(key = "translate") {
+                PostTranslateItem(
                     published = post.published,
                     edited = post.edited,
                     added = post.added,
+                    body = post.content.orEmpty(),
+
+                    expanded = state.translateExpanded,
+                    loading = state.translateLoading,
+                    translated = state.translateText,
+                    error = state.translateError,
+
+                    onToggleTranslate = { viewModel.onToggleTranslate(post.content.orEmpty()) }
                 )
             }
 
             item(key = "contentBlock") {
                 /** Контент поста */
+                val post = state.post?.post ?: return@item
+
+                val contentKey = "${post.service}:${state.id}:${state.postId}"
+                val heightState = webViewHeights.getOrPut(contentKey) { mutableIntStateOf(0) }
+
                 PostContentBlock(
                     service = post.service,
-                    body = post.content.orEmpty()
+                    body = state.postContentClean,
+                    onOpenImage = viewModel::navigateOpenImage,
+                    maxHeightPxState = heightState,
                 )
             }
 
@@ -129,12 +168,7 @@ internal fun CreatorPostScreen(
                 downloadStarted = downloadStarted,
                 downloadStartedNamed = downloadStartedNamed,
                 download = { fullUrl, fileName ->
-                    enqueueSystemDownload(
-                        context = context,
-                        url = fullUrl,
-                        fileName = fileName,
-                        mimeType = null
-                    )
+                    viewModel.download(fullUrl, fileName)
                 },
                 toast = { msg -> context.toast(msg) }
             )

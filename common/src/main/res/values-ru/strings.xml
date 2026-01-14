@@ -178,4 +178,29 @@
     <string name="main_api_meta_request_id">requestId: %1$s</string>
     <string name="main_api_meta_cause">cause: %1$s</string>
 
+    <string name="translate_show">Перевести</string>
+    <string name="translate_hide">Скрыть перевод</string>
+    <string name="translate_in_progress">Перевожу…</string>
+
+    <string name="translate_title">Перевод</string>
+    <string name="translate_model_loading">Загружаю модель / перевожу…</string>
+    <string name="translate_hint">Нажми «Перевести»</string>
+
+    <string name="translate_error_generic">Ошибка перевода</string>
+
+    <string name="translate_quality_hint">
+        Перевод выполняется локальной моделью на устройстве и может быть неточным
+    </string>
+
+    <string name="settings_faq_title">FAQ</string>
+
+    <string name="settings_faq_q1_title">
+        Почему нельзя скачать все посты и видео автора сразу?
+    </string>
+
+    <string name="settings_faq_q1_body">
+        Массовое скачивание создаёт большую нагрузку на сайты, где хранится контент, из-за чего онлайн-просмотр начинает
+        тормозить.
+        При необходимости вы можете скачивать контент из каждого поста отдельно.
+    </string>
 </resources>

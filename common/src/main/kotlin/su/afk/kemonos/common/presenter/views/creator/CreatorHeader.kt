@@ -134,22 +134,6 @@ fun CreatorHeader(
                         expanded = expanded,
                         onDismissRequest = { expanded = false }
                     ) {
-                        // todo сделать строительство ссылок на платформу юзера
-                        //                    displayData?.let {
-                        //                        DropdownMenuItem(
-                        //                            text = {
-                        //                                Text(
-                        //                                    text = "🔗 ${it.service}",
-                        //                                    color = MaterialTheme.colorScheme.primary
-                        //                                )
-                        //                            },
-                        //                            onClick = {
-                        //                                val intent = Intent(Intent.ACTION_VIEW, it.href.toUri())
-                        //                                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                        //                                context.startActivity(intent)
-                        //                            }
-                        //                        )
-                        //                    }
                         updated?.let {
                             DropdownMenuItem(
                                 text = {

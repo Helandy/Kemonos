@@ -11,7 +11,7 @@ import su.afk.kemonos.preferences.site.withSite
 import javax.inject.Inject
 
 interface ICheckApiRepository {
-    suspend fun getApiCheckForAllSites(): ApiCheckForAllSitesResult
+    suspend fun getApiCheckForSites(sitesToCheck: Set<SelectedSite>): ApiCheckForAllSitesResult
 }
 
 internal class CheckApiRepository @Inject constructor(
@@ -20,28 +20,27 @@ internal class CheckApiRepository @Inject constructor(
     private val errorHandler: IErrorHandlerUseCase,
 ) : ICheckApiRepository {
 
-    /** проверка доступности Api сайта */
-    override suspend fun getApiCheckForAllSites(): ApiCheckForAllSitesResult {
-        val kemono = checkSite(SelectedSite.K)
-        val coomer = checkSite(SelectedSite.C)
+    override suspend fun getApiCheckForSites(sitesToCheck: Set<SelectedSite>): ApiCheckForAllSitesResult {
+        val kemono = if (SelectedSite.K in sitesToCheck) checkSite(SelectedSite.K)
+        else SingleSiteCheck(site = SelectedSite.K, success = true)
 
-        return ApiCheckForAllSitesResult(
-            kemono = kemono,
-            coomer = coomer,
-        )
+        val coomer = if (SelectedSite.C in sitesToCheck) checkSite(SelectedSite.C)
+        else SingleSiteCheck(site = SelectedSite.C, success = true)
+
+        return ApiCheckForAllSitesResult(kemono = kemono, coomer = coomer)
     }
 
     private suspend fun checkSite(site: SelectedSite): SingleSiteCheck {
         return try {
-            val resp = selectedSite.withSite(site) {
+            val response = selectedSite.withSite(site) {
                 api.getPosts()
             }
 
-            if (resp.isSuccessful) {
+            if (response.isSuccessful) {
                 SingleSiteCheck(site = site, success = true)
             } else {
-                val code = resp.code()
-                val body = resp.errorBody()?.string()
+                val code = response.code()
+                val body = response.errorBody()?.string()
                 SingleSiteCheck(
                     site = site,
                     success = false,
@@ -54,11 +53,7 @@ internal class CheckApiRepository @Inject constructor(
                 )
             }
         } catch (t: Throwable) {
-            SingleSiteCheck(
-                site = site,
-                success = false,
-                error = errorHandler.parse(t)
-            )
+            SingleSiteCheck(site = site, success = false, error = errorHandler.parse(t))
         }
     }
 }

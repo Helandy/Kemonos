@@ -21,5 +21,8 @@ internal class StorageCreatorPostsCacheUseCase @Inject constructor(
     override suspend fun clearPage(queryKey: String, offset: Int) =
         repo.clearPage(queryKey, offset)
 
+    override suspend fun clearQuery(queryKey: String) =
+        repo.clearQuery(queryKey)
+
     override suspend fun clearAll() = repo.clearAll()
 }

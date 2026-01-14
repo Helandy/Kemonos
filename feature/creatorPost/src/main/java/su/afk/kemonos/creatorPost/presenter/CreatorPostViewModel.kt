@@ -1,21 +1,24 @@
 package su.afk.kemonos.creatorPost.presenter
 
-import android.content.Context
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import kotlinx.coroutines.async
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import su.afk.kemonos.common.error.IErrorHandlerUseCase
 import su.afk.kemonos.common.error.storage.RetryStorage
+import su.afk.kemonos.common.error.toFavoriteToastBar
 import su.afk.kemonos.common.presenter.baseViewModel.BaseViewModel
-import su.afk.kemonos.common.shared.ShareActions
+import su.afk.kemonos.common.presenter.webView.util.cleanDuplicatedMediaFromContent
 import su.afk.kemonos.common.shared.ShareLinkBuilder
 import su.afk.kemonos.common.shared.ShareTarget
-import su.afk.kemonos.common.translate.IOpenTranslateUseCase
+import su.afk.kemonos.common.translate.TextTranslator
+import su.afk.kemonos.creatorPost.api.domain.model.PostContentDomain
 import su.afk.kemonos.creatorPost.domain.model.video.VideoInfoState
 import su.afk.kemonos.creatorPost.domain.useCase.GetCommentsUseCase
 import su.afk.kemonos.creatorPost.domain.useCase.GetPostUseCase
@@ -24,6 +27,7 @@ import su.afk.kemonos.creatorPost.navigation.CreatorPostDest
 import su.afk.kemonos.creatorPost.presenter.delegates.LikeDelegate
 import su.afk.kemonos.creatorPost.presenter.delegates.NavigateDelegates
 import su.afk.kemonos.creatorProfile.api.IGetProfileUseCase
+import su.afk.kemonos.download.api.IDownloadUtil
 import su.afk.kemonos.preferences.IGetCurrentSiteRootUrlUseCase
 
 internal class CreatorPostViewModel @AssistedInject constructor(
@@ -35,10 +39,14 @@ internal class CreatorPostViewModel @AssistedInject constructor(
     private val getVideoInfo: GetVideoInfoUseCase,
     private val likeDelegate: LikeDelegate,
     private val navigateDelegates: NavigateDelegates,
-    private val openTranslateUseCase: IOpenTranslateUseCase,
+    private val downloadUtil: IDownloadUtil,
+    private val translator: TextTranslator,
     override val errorHandler: IErrorHandlerUseCase,
     override val retryStorage: RetryStorage,
 ) : BaseViewModel<CreatorPostState>(CreatorPostState()) {
+
+    private val _effect = Channel<CreatorPostEffect>(Channel.BUFFERED)
+    val effect = _effect.receiveAsFlow()
 
     @AssistedFactory
     interface Factory {
@@ -46,7 +54,6 @@ internal class CreatorPostViewModel @AssistedInject constructor(
     }
 
     override fun onRetry() {
-        setState { copy(loading = true) }
         loadingPost()
     }
 
@@ -82,12 +89,25 @@ internal class CreatorPostViewModel @AssistedInject constructor(
         val comments = commentsDeferred.await()
         val profile = profileDeferred?.await()
 
+        val mediaRefs = post?.collectMediaRefsForDedup()
+        val cleanContent = cleanDuplicatedMediaFromContent(
+            html = post?.post?.content.orEmpty(),
+            attachmentPaths = mediaRefs.orEmpty(),
+        )
+
         setState {
             copy(
                 loading = false,
                 post = post,
+                postContentClean = cleanContent,
+
                 commentDomains = comments,
-                profile = profile
+                profile = profile,
+
+                translateExpanded = false,
+                translateLoading = false,
+                translateText = null,
+                translateError = null,
             )
         }
 
@@ -116,14 +136,28 @@ internal class CreatorPostViewModel @AssistedInject constructor(
 
     /** Избранное */
     fun onFavoriteClick() = viewModelScope.launch {
+        if (currentState.favoriteActionLoading) return@launch
+
+        val wasFavorite = currentState.isFavorite
+        setState { copy(favoriteActionLoading = true) }
+
         val result = likeDelegate.onFavoriteClick(
-            isFavorite = currentState.isFavorite,
+            isFavorite = wasFavorite,
             post = currentState.post,
             service = currentState.service,
             creatorId = currentState.id,
             postId = currentState.postId
         )
-        if (result) setState { copy(isFavorite = !currentState.isFavorite) }
+
+        result
+            .onSuccess {
+                setState { copy(isFavorite = !wasFavorite) }
+            }
+            .onFailure { t ->
+                val errorMessage = errorHandler.parse(t).toFavoriteToastBar()
+                _effect.trySend(CreatorPostEffect.ShowToast(errorMessage))
+            }
+        setState { copy(favoriteActionLoading = false) }
     }
 
     /** Проверит в избранном ли пост */
@@ -141,12 +175,16 @@ internal class CreatorPostViewModel @AssistedInject constructor(
     }
 
     /** навиагция на профиль автора */
-    fun navigateToCreatorProfile() = navigateDelegates.navigateToCreatorProfile(currentState.id, currentState.service)
+    fun navigateToCreatorProfile() {
+        viewModelScope.launch {
+            navigateDelegates.navigateToCreatorProfile(currentState.id, currentState.service)
+        }
+    }
 
     fun navigateOpenImage(originalUrl: String) = navigateDelegates.navigateOpenImage(originalUrl)
 
-    /** Копирование в буфер todo убрать context */
-    fun copyPostLink(context: Context) {
+    /** Копирование в буфер */
+    fun copyPostLink() {
         val url = ShareLinkBuilder.build(
             ShareTarget.Post(
                 siteRoot = getCurrentSiteRootUrlUseCase(),
@@ -155,6 +193,54 @@ internal class CreatorPostViewModel @AssistedInject constructor(
                 postId = currentState.postId
             )
         )
-        ShareActions.copyToClipboard(context, "Post link", url)
+        _effect.trySend(CreatorPostEffect.CopyPostLink(url))
     }
+
+    fun download(url: String, fileName: String?) {
+        downloadUtil.enqueueSystemDownload(
+            url = url,
+            fileName = fileName,
+            mimeType = null
+        )
+    }
+
+    fun onToggleTranslate(rawHtml: String) {
+        val nextExpanded = !currentState.translateExpanded
+        setState { copy(translateExpanded = nextExpanded) }
+
+        if (!nextExpanded) return
+
+        if (currentState.translateText != null && currentState.translateError == null) return
+        if (currentState.translateLoading) return
+
+        viewModelScope.launch {
+            setState { copy(translateLoading = true, translateError = null) }
+
+            runCatching { translator.translateAuto(rawHtml) }
+                .onSuccess { text ->
+                    setState { copy(translateText = text, translateLoading = false) }
+                }
+                .onFailure { e ->
+                    setState {
+                        copy(
+                            translateLoading = false,
+                            translateError = e.message ?: "Translation error"
+                        )
+                    }
+                }
+        }
+    }
+
+    fun PostContentDomain.collectMediaRefsForDedup(): List<String> = buildList {
+        // attachments в корне ответа
+        addAll(attachments.map { it.path })
+        // previews (чаще всего thumbnail/path)
+        addAll(previews.mapNotNull { it.path })
+        // если у PreviewDomain есть url
+        addAll(previews.mapNotNull { it.url })
+
+        // вложенные attachments/file внутри post
+        post.file?.path?.let(::add)
+        addAll(post.attachments.map { it.path })
+    }.filter { it.isNotBlank() }
 }

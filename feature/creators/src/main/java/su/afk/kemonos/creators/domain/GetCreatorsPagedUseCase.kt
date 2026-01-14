@@ -40,7 +40,7 @@ internal class GetCreatorsPagedUseCase @Inject constructor(
 
     suspend fun getServices(): List<String> {
         val list = store.getDistinctServices()
-        return listOf("All") + list
+        return listOf("Services") + list
     }
 
     suspend fun ensureFresh(): Boolean = repository.refreshCreatorsIfNeeded()

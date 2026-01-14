@@ -291,6 +291,9 @@ internal fun MainActions(
         horizontalArrangement = Arrangement.spacedBy(12.dp)
     ) {
         OutlinedButton(
+            colors = ButtonDefaults.outlinedButtonColors(
+                containerColor = MaterialTheme.colorScheme.primaryContainer,
+            ),
             onClick = onSkipCheck,
             modifier = Modifier.weight(1f)
         ) {

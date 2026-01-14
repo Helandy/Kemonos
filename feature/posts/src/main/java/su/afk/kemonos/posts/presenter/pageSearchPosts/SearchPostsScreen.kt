@@ -2,6 +2,7 @@ package su.afk.kemonos.posts.presenter.pageSearchPosts
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.grid.LazyGridState
+import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Casino
 import androidx.compose.material3.*
@@ -9,6 +10,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -38,6 +40,7 @@ internal fun SearchPostsScreen(
     val gridState = rememberSaveable(saver = LazyGridState.Saver) {
         LazyGridState()
     }
+    val focusManager = LocalFocusManager.current
 
     BaseScreen(
         contentPadding = PaddingValues(horizontal = 8.dp),
@@ -65,7 +68,12 @@ internal fun SearchPostsScreen(
                                 tint = MaterialTheme.colorScheme.primary
                             )
                         }
-                    }
+                    },
+                    keyboardActions = KeyboardActions(
+                        onSearch = {
+                            focusManager.clearFocus()
+                        }
+                    )
                 )
             }
         },

@@ -72,7 +72,7 @@ internal class StoreCreatorsRepository @Inject constructor(
         limit: Int,
         offset: Int
     ): List<CreatorsEntity> {
-        val s = service.ifBlank { "All" }
+        val s = service.ifBlank { "Services" }
         val q = query.trim()
 
         return when (site) {

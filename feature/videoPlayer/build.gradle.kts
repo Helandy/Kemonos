@@ -32,7 +32,6 @@ dependencies {
     implementation(libs.bundles.navigation3)
 
     implementation(libs.bundles.media3)
-    implementation(libs.bundles.coil)
 
     implementation(project(":core:navigation"))
     implementation(project(":common"))

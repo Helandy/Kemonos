@@ -40,6 +40,7 @@ dependencies {
     implementation(libs.bundles.compose.core)
 
     implementation(libs.bundles.coil)
+    implementation(libs.bundles.translate)
 
     implementation(project(":core:navigation"))
     implementation(project(":core:domain"))
@@ -47,5 +48,5 @@ dependencies {
     implementation(project(":core:preferences"))
     implementation(project(":storage-api"))
     implementation(project(":feature:appUpdate-api"))
-    implementation(project(":feature:common:commonScreen-api"))
+    implementation(project(":feature:commonScreen-api"))
 }

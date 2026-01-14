@@ -15,17 +15,8 @@ internal class PostsPagerViewModel @Inject constructor(
     initialState = PostsPagerState()
 ) {
 
-    fun onTabClick(page: PostsPage) {
-        setState {
-            copy(currentPage = page)
-        }
-    }
-
-    fun onPageChanged(page: PostsPage) {
-        if (page != state.value.currentPage) {
-            setState {
-                copy(currentPage = page)
-            }
-        }
+    fun setPage(page: PostsPage) {
+        if (page == state.value.currentPage) return
+        setState { copy(currentPage = page) }
     }
 }

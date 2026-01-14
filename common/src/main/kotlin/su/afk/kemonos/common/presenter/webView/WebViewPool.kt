@@ -7,9 +7,37 @@ import android.webkit.WebView
 import android.webkit.WebViewClient
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
 
 object WebViewPool {
     private val pool = ArrayDeque<WebView>(1)
+    private var prewarmed = false
+
+    /** прогрев при запуске апки */
+    fun prewarm(
+        context: Context,
+        bgColor: Int,
+        onOpenUrl: (String) -> Unit = {}
+    ) {
+        if (prewarmed) return
+
+        val mainLooper = android.os.Looper.getMainLooper()
+        if (android.os.Looper.myLooper() != mainLooper) {
+            android.os.Handler(mainLooper).post {
+                prewarm(context, bgColor, onOpenUrl)
+            }
+            return
+        }
+
+        prewarmed = true
+        if (pool.isNotEmpty()) return
+
+        val wv = acquire(context, bgColor, onOpenUrl)
+        runCatching { wv.loadUrl("about:blank") }
+
+        (wv.parent as? ViewGroup)?.removeView(wv)
+        pool.addLast(wv)
+    }
 
     fun acquire(
         context: Context,
@@ -23,8 +51,10 @@ object WebViewPool {
         (wv.parent as? ViewGroup)?.removeView(wv)
 
         wv.setBackgroundColor(bgColor)
+
+        // todo Подумать о варианте выкидывания webView
         wv.settings.apply {
-            javaScriptEnabled = false
+            javaScriptEnabled = true
             domStorageEnabled = false
             loadsImagesAutomatically = true
             useWideViewPort = true
@@ -67,7 +97,11 @@ fun rememberPooledWebView(
     bgColor: Int,
     onOpenUrl: (String) -> Unit
 ): WebView {
+    val latestOnOpenUrl = rememberUpdatedState(onOpenUrl)
+
     return remember(bgColor) {
-        WebViewPool.acquire(context, bgColor, onOpenUrl)
+        WebViewPool.acquire(context, bgColor) { url ->
+            latestOnOpenUrl.value(url)
+        }
     }
 }

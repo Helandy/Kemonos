@@ -1,10 +1,12 @@
 package su.afk.kemonos.posts.presenter.tagsSelect
 
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.lazy.grid.LazyGridState
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.paging.compose.collectAsLazyPagingItems
@@ -24,6 +26,7 @@ internal fun TagsPostsScreen(
 
     BaseScreen(
         isScroll = false,
+        contentPadding = PaddingValues(horizontal = 8.dp),
     ) {
         /** Контент */
         PostsTabContent(
