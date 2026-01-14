@@ -49,8 +49,28 @@ internal fun CreatorScreen(
         viewModel.effect.collect { effect ->
             when (effect) {
                 is CreatorProfileEffect.OpenUrl -> {
-                    val intent = Intent(Intent.ACTION_VIEW, effect.url.toUri())
-                    context.startActivity(intent)
+                    val uri = effect.url.toUri()
+
+                    val browserIntent = Intent(Intent.ACTION_VIEW, uri).apply {
+                        addCategory(Intent.CATEGORY_BROWSABLE)
+                        // Chrome
+                        setPackage("com.android.chrome")
+                        flags = Intent.FLAG_ACTIVITY_NEW_TASK
+                    }
+
+                    runCatching {
+                        context.startActivity(browserIntent)
+                    }.getOrElse {
+                        // если Chrome нет — покажем chooser
+                        val chooser = Intent.createChooser(
+                            Intent(Intent.ACTION_VIEW, uri).apply {
+                                addCategory(Intent.CATEGORY_BROWSABLE)
+                                flags = Intent.FLAG_ACTIVITY_NEW_TASK
+                            },
+                            "Open in browser"
+                        )
+                        context.startActivity(chooser)
+                    }
                 }
                 is CreatorProfileEffect.ShowToast -> context.toast(effect.message)
                 is CreatorProfileEffect.CopyPostLink -> ShareActions.copyToClipboard(
@@ -63,7 +83,7 @@ internal fun CreatorScreen(
     }
 
     val pullState = rememberPullToRefreshState()
-    val refreshing = postsRefreshing || state.loading
+    val refreshing = (postsRefreshing || state.loading) && !state.isDiscordProfile
 
     BaseScreen(
         isScroll = false,
@@ -85,7 +105,7 @@ internal fun CreatorScreen(
                 )
             }
         },
-        isLoading = state.loading || postsRefreshing,
+        isLoading = (state.loading || postsRefreshing) && !state.isDiscordProfile,
         isEmpty = state.profile == null && !state.loading && !postsRefreshing,
         onRetry = { viewModel.getProfileInfo() }
     ) {

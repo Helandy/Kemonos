@@ -1,6 +1,5 @@
 package su.afk.kemonos.creatorProfile.presenter
 
-import android.util.Log
 import androidx.paging.cachedIn
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
@@ -88,11 +87,11 @@ internal class CreatorProfileViewModel @AssistedInject constructor(
         val baseUrl = getKemonoRootUrlUseCase()
         val url = "$baseUrl/$service/server/${currentState.id}"
 
-        setState { copy(isDiscordProfile = true) }
+        if (currentState.discordUrlOpened) return true
 
+        setState { copy(isDiscordProfile = true, loading = false, discordUrlOpened = true) }
         _effect.trySend(CreatorProfileEffect.OpenUrl(url))
 
-        Log.e("super", "url $url")
         return true
     }
 

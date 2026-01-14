@@ -20,6 +20,7 @@ internal data class CreatorProfileState(
     var page: Int = 0,
 
     val isDiscordProfile: Boolean = false,
+    val discordUrlOpened: Boolean = false,
 
     /** Информация об авторе */
     val profile: Profile? = null,
