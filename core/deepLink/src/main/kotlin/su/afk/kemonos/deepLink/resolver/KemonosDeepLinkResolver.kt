@@ -26,6 +26,7 @@ internal class KemonosDeepLinkResolver @Inject constructor(
         // 2) /{service}/user/{id}/post/{postId}
 
         val service = s.getOrNull(0) ?: return null
+        if (service == "discord") return null
         val isUser = s.getOrNull(1) == "user"
         val id = s.getOrNull(2)
 

@@ -10,8 +10,8 @@ kotlin = "2.2.21"
 ksp = "2.2.20-2.0.4"
 
 # --- App versioning
-appVersionName = "1.4"
-appVersionCode = "13"
+appVersionName = "1.4.1"
+appVersionCode = "14"
 
 # --- AndroidX
 androidxCore = "1.17.0"
