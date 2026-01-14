@@ -6,6 +6,8 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.DividerDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.pulltorefresh.PullToRefreshBox
+import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
@@ -26,6 +28,9 @@ import su.afk.kemonos.profile.presenter.favoriteProfiles.views.uiDateBySort
 internal fun FavoriteProfilesScreen(viewModel: FavoriteProfilesViewModel) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     val sortOptions = favoriteProfilesSortOptions()
+
+    val pullState = rememberPullToRefreshState()
+    val refreshing = state.loading
 
     BaseScreen(
         contentModifier = Modifier.padding(horizontal = 8.dp),
@@ -53,42 +58,48 @@ internal fun FavoriteProfilesScreen(viewModel: FavoriteProfilesViewModel) {
         },
         isLoading = state.loading,
         isEmpty = state.searchCreators.isEmpty() && state.searchQuery.length >= 2,
-        onRetry = { viewModel.load() }
+        onRetry = viewModel::load,
     ) {
-        LazyColumn {
-            item {
-                HorizontalDivider(
-                    Modifier.padding(top = 4.dp),
-                    DividerDefaults.Thickness,
-                    DividerDefaults.color
-                )
-            }
-
-            items(
-                items = state.searchCreators,
-                key = { "${it.service}:${it.id}:${it.indexed}" }
-            ) { creator ->
-                val freshSet = FreshFavoriteArtistsUpdates.get(state.selectSite)
-
-                val isFresh = freshSet.contains(
-                    FreshFavoriteArtistKey(
-                        name = creator.name,
-                        service = creator.service,
-                        id = creator.id
+        PullToRefreshBox(
+            state = pullState,
+            isRefreshing = refreshing,
+            onRefresh = { viewModel.load() }
+        ) {
+            LazyColumn {
+                item {
+                    HorizontalDivider(
+                        Modifier.padding(top = 4.dp),
+                        DividerDefaults.Thickness,
+                        DividerDefaults.color
                     )
-                )
+                }
 
-                val dateForCard = creator.uiDateBySort(state.sortedType)
+                items(
+                    items = state.searchCreators,
+                    key = { "${it.service}:${it.id}:${it.indexed}" }
+                ) { creator ->
+                    val freshSet = FreshFavoriteArtistsUpdates.get(state.selectSite)
 
-                CreatorItem(
-                    service = creator.service,
-                    id = creator.id,
-                    name = creator.name,
-                    updated = dateForCard,
-                    isFresh = isFresh,
-                    onClick = { viewModel.onCreatorClick(creator, isFresh) }
-                )
-                HorizontalDivider()
+                    val isFresh = freshSet.contains(
+                        FreshFavoriteArtistKey(
+                            name = creator.name,
+                            service = creator.service,
+                            id = creator.id
+                        )
+                    )
+
+                    val dateForCard = creator.uiDateBySort(state.sortedType)
+
+                    CreatorItem(
+                        service = creator.service,
+                        id = creator.id,
+                        name = creator.name,
+                        updated = dateForCard,
+                        isFresh = isFresh,
+                        onClick = { viewModel.onCreatorClick(creator, isFresh) }
+                    )
+                    HorizontalDivider()
+                }
             }
         }
     }

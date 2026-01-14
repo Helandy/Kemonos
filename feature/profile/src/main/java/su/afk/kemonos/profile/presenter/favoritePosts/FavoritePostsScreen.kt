@@ -5,6 +5,8 @@ import androidx.compose.foundation.lazy.grid.LazyGridState
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
+import androidx.compose.material3.pulltorefresh.PullToRefreshBox
+import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -27,6 +29,9 @@ internal fun FavoritePostsScreen(viewModel: FavoritePostsViewModel) {
         LazyGridState()
     }
 
+    val pullState = rememberPullToRefreshState()
+    val refreshing = state.loading
+
     BaseScreen(
         contentPadding = PaddingValues(horizontal = 8.dp),
         isScroll = false,
@@ -46,14 +51,21 @@ internal fun FavoritePostsScreen(viewModel: FavoritePostsViewModel) {
             }
         },
         isLoading = state.loading,
-        isEmpty = !state.loading && state.favoritePosts.isEmpty()
+        isEmpty = !state.loading && state.favoritePosts.isEmpty(),
+        onRetry = viewModel::load,
     ) {
-        ProfilePostsGrid(
-            source = PostsSource.Static(state.favoritePosts),
-            postClick = { post ->
-                viewModel.navigateToPost(post)
-            },
-            gridState = gridState,
-        )
+        PullToRefreshBox(
+            state = pullState,
+            isRefreshing = refreshing,
+            onRefresh = { viewModel.load() }
+        ) {
+            ProfilePostsGrid(
+                source = PostsSource.Static(state.favoritePosts),
+                postClick = { post ->
+                    viewModel.navigateToPost(post)
+                },
+                gridState = gridState,
+            )
+        }
     }
 }
