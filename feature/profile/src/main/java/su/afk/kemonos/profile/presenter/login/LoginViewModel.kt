@@ -1,8 +1,6 @@
 package su.afk.kemonos.profile.presenter.login
 
 import android.app.Activity
-import androidx.credentials.exceptions.GetCredentialException
-import androidx.credentials.exceptions.NoCredentialException
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.receiveAsFlow
@@ -61,24 +59,16 @@ internal class LoginViewModel @Inject constructor(
     }
 
     fun onUsernameChange(value: String) {
-        setState {
-            copy(
-                username = value,
-                usernameError = null,
-            )
-        }
+        setState { copy(username = value, usernameError = null, filledFromCredentialManager = false) }
     }
 
     fun onPasswordChange(value: String) {
-        setState {
-            copy(
-                password = value,
-                passwordError = null,
-            )
-        }
+        setState { copy(password = value, passwordError = null, filledFromCredentialManager = false) }
     }
 
     fun onLoginClick() = viewModelScope.launch {
+        if (currentState.isLoading) return@launch
+
         setState { copy(isLoading = true, error = null) }
 
         when (val result = loginUseCase(
@@ -86,15 +76,19 @@ internal class LoginViewModel @Inject constructor(
             password = state.value.password,
         )) {
             is LoginResult.Success -> {
-                setState {
-                    copy(
-                        isLoading = false,
+                setState { copy(isLoading = false) }
+
+                val shouldAskToSave = !currentState.filledFromCredentialManager
+                if (shouldAskToSave) {
+                    _effect.trySend(
+                        LoginEffect.SavePasswordAndNavigate(
+                            username = state.value.username,
+                            password = state.value.password
+                        )
                     )
+                } else {
+                    _effect.trySend(LoginEffect.NavigateToProfile)
                 }
-
-                _effect.trySend(LoginEffect.SavePassword(state.value.username, state.value.password))
-
-                navigationManager.popBackTo(AuthDest.Profile)
             }
 
             is LoginResult.ValidationError -> {
@@ -115,7 +109,6 @@ internal class LoginViewModel @Inject constructor(
                     )
                 }
             }
-
         }
     }
 
@@ -128,38 +121,36 @@ internal class LoginViewModel @Inject constructor(
     private val _effect = Channel<LoginEffect>(Channel.BUFFERED)
     val effect = _effect.receiveAsFlow()
 
-    fun pickPassword(activity: Activity) = viewModelScope.launch {
-        runCatching { credentialStore.pickPassword(activity) }
-            .onSuccess { cred ->
-                if (cred == null) return@onSuccess
-                setState {
-                    copy(
-                        username = cred.id,
-                        password = cred.password,
-                        usernameError = null,
-                        passwordError = null,
-                        error = null
-                    )
-                }
-            }
-            .onFailure { e ->
-                when (e) {
-                    is NoCredentialException -> Unit
-                    is GetCredentialException -> Unit
-                    else -> Unit
-                }
-            }
+    // suspend, чтобы можно было await в Screen
+    suspend fun savePassword(activity: Activity, username: String, password: String) {
+        credentialStore.savePassword(activity, username, password)
     }
 
-    fun savePassword(activity: Activity, username: String, password: String) = viewModelScope.launch {
-        runCatching { credentialStore.savePassword(activity, username, password) }
+    fun navigateAfterLogin() {
+        navigationManager.popBackTo(AuthDest.Profile)
+    }
+
+    fun pickPassword(activity: Activity) = viewModelScope.launch {
+        val cred = runCatching { credentialStore.pickPassword(activity) }.getOrNull() ?: return@launch
+
+        setState {
+            copy(
+                username = cred.id,
+                password = cred.password,
+                filledFromCredentialManager = true,
+                usernameError = null,
+                passwordError = null,
+                error = null
+            )
+        }
+
+        onLoginClick()
     }
 
     /** Использовать существуюющие креды */
     fun requestSavedCredentials() {
         if (credentialsRequested) return
         if (currentState.username.isNotBlank() || currentState.password.isNotBlank()) return
-
         credentialsRequested = true
         _effect.trySend(LoginEffect.PickPassword)
     }

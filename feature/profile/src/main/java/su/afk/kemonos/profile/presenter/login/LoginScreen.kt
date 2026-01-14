@@ -45,10 +45,20 @@ internal fun LoginScreen(
             val a = activity ?: return@collect
             when (effect) {
                 LoginEffect.PickPassword -> viewModel.pickPassword(a)
-                is LoginEffect.SavePassword -> viewModel.savePassword(a, effect.username, effect.password)
+                is LoginEffect.SavePasswordAndNavigate -> {
+                    // дождаться системного UI
+                    runCatching {
+                        viewModel.savePassword(a, effect.username, effect.password)
+                    }
+                    // после этого можно уходить со страницы
+                    viewModel.navigateAfterLogin()
+                }
+
+                LoginEffect.NavigateToProfile -> viewModel.navigateAfterLogin()
             }
         }
     }
+
 
     BaseScreen(
         isScroll = false,
