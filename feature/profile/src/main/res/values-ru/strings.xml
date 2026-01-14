@@ -103,14 +103,9 @@
     <string name="settings_cache_creator_posts_pages">Посты в профилях авторов</string>
     <string name="settings_cache_post_contents">Полные посты (контент)</string>
 
-    <string name="settings_cache_popular_kemono">Популярное (Kemono)</string>
-    <string name="settings_cache_popular_coomer">Популярное (Coomer)</string>
-
-    <string name="settings_cache_fav_posts_kemono">Избранные посты (Kemono)</string>
-    <string name="settings_cache_fav_posts_coomer">Избранные посты (Coomer)</string>
-
-    <string name="settings_cache_fav_authors_kemono">Избранные авторы (Kemono)</string>
-    <string name="settings_cache_fav_authors_coomer">Избранные авторы (Coomer)</string>
+    <string name="settings_cache_popular_kemono">Популярное</string>
+    <string name="settings_cache_fav_posts_kemono">Избранные посты</string>
+    <string name="settings_cache_fav_authors_kemono">Избранные авторы</string>
 
     <string name="settings_cache_profiles">Профили авторов</string>
     <string name="settings_github_ideas">Ошибки/идеи/предложения — оставляйте на GitHub</string>

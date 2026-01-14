@@ -146,10 +146,10 @@ internal class SettingViewModel @Inject constructor(
                 CacheClearAction.CreatorPostsPages -> clearCreatorPostsCacheUseCase()
                 CacheClearAction.PostContents -> clearPostContentsCacheUseCase()
 
-                is CacheClearAction.PopularPosts -> clearPopularPostsCacheUseCase(action.site)
+                is CacheClearAction.PopularPosts -> clearPopularPostsCacheUseCase()
 
-                is CacheClearAction.FavoritesArtists -> clearFavoritesArtistsCacheUseCase(action.site)
-                is CacheClearAction.FavoritesPosts -> clearFavoritesPostsCacheUseCase(action.site)
+                is CacheClearAction.FavoritesArtists -> clearFavoritesArtistsCacheUseCase()
+                is CacheClearAction.FavoritesPosts -> clearFavoritesPostsCacheUseCase()
             }
         }.onSuccess {
             observeCacheTimes()
@@ -180,15 +180,18 @@ internal class SettingViewModel @Inject constructor(
         storagePostUseCase.clearAll()
     }
 
-    private suspend fun clearPopularPostsCacheUseCase(site: SelectedSite) {
-        storagePopularPostsCacheUseCase.clearAll(site)
+    private suspend fun clearPopularPostsCacheUseCase() {
+        storagePopularPostsCacheUseCase.clearAll(SelectedSite.K)
+        storagePopularPostsCacheUseCase.clearAll(SelectedSite.C)
     }
 
-    private suspend fun clearFavoritesArtistsCacheUseCase(site: SelectedSite) {
-        storeFavoriteArtistsUseCase.clear(site)
+    private suspend fun clearFavoritesArtistsCacheUseCase() {
+        storeFavoriteArtistsUseCase.clear(SelectedSite.K)
+        storeFavoriteArtistsUseCase.clear(SelectedSite.C)
     }
 
-    private suspend fun clearFavoritesPostsCacheUseCase(site: SelectedSite) {
-        storeFavoritePostsUseCase.clear(site)
+    private suspend fun clearFavoritesPostsCacheUseCase() {
+        storeFavoritePostsUseCase.clear(SelectedSite.K)
+        storeFavoritePostsUseCase.clear(SelectedSite.C)
     }
 }

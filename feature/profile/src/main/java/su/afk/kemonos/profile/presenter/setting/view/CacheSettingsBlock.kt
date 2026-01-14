@@ -94,14 +94,7 @@ internal fun CacheSettingsBlock(
                 title = stringResource(R.string.settings_cache_popular_kemono),
                 time = state.popularKemonoCache,
                 formatDateTime = formatDateTime,
-                onClear = { onClear(CacheClearAction.PopularPosts(SelectedSite.K)) },
-                busy = state.clearInProgress
-            )
-            CacheRow(
-                title = stringResource(R.string.settings_cache_popular_coomer),
-                time = state.popularCoomerCache,
-                formatDateTime = formatDateTime,
-                onClear = { onClear(CacheClearAction.PopularPosts(SelectedSite.C)) },
+                onClear = { onClear(CacheClearAction.PopularPosts) },
                 busy = state.clearInProgress
             )
 
@@ -109,14 +102,7 @@ internal fun CacheSettingsBlock(
                 title = stringResource(R.string.settings_cache_fav_posts_kemono),
                 time = state.favPostsKemonoCache,
                 formatDateTime = formatDateTime,
-                onClear = { onClear(CacheClearAction.FavoritesPosts(SelectedSite.K)) },
-                busy = state.clearInProgress
-            )
-            CacheRow(
-                title = stringResource(R.string.settings_cache_fav_posts_coomer),
-                time = state.favPostsCoomerCache,
-                formatDateTime = formatDateTime,
-                onClear = { onClear(CacheClearAction.FavoritesPosts(SelectedSite.C)) },
+                onClear = { onClear(CacheClearAction.FavoritesPosts) },
                 busy = state.clearInProgress
             )
 
@@ -124,14 +110,7 @@ internal fun CacheSettingsBlock(
                 title = stringResource(R.string.settings_cache_fav_authors_kemono),
                 time = state.favCreatorsKemonoCache,
                 formatDateTime = formatDateTime,
-                onClear = { onClear(CacheClearAction.FavoritesArtists(SelectedSite.K)) },
-                busy = state.clearInProgress
-            )
-            CacheRow(
-                title = stringResource(R.string.settings_cache_fav_authors_coomer),
-                time = state.favCreatorsCoomerCache,
-                formatDateTime = formatDateTime,
-                onClear = { onClear(CacheClearAction.FavoritesArtists(SelectedSite.C)) },
+                onClear = { onClear(CacheClearAction.FavoritesArtists) },
                 busy = state.clearInProgress,
                 showDivider = false,
             )
