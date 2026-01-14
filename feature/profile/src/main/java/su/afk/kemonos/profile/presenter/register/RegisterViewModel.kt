@@ -31,6 +31,8 @@ internal class RegisterViewModel @Inject constructor(
     override val retryStorage: RetryStorage,
 ) : BaseViewModel<RegisterState>(RegisterState()) {
 
+    private var pendingNavigateToLogin = false
+
     override fun onRetry() {
         super.onRetry()
         setState { copy(isLoading = false, error = null) }
@@ -92,16 +94,10 @@ internal class RegisterViewModel @Inject constructor(
             confirm = state.value.confirm
         )) {
             is RegisterResult.Success -> {
-                setState {
-                    copy(
-                        isLoading = false,
-                    )
-                }
+                setState { copy(isLoading = false) }
 
+                pendingNavigateToLogin = true
                 _effect.trySend(RegisterEffect.SavePassword(state.value.username, state.value.password))
-
-                navigationStorage.put(KEY_SELECT_SITE, state.value.selectSite)
-                navigationManager.navigate(AuthDest.Login)
             }
 
             is RegisterResult.ValidationError -> {
@@ -116,12 +112,7 @@ internal class RegisterViewModel @Inject constructor(
             }
 
             is RegisterResult.Error -> {
-                setState {
-                    copy(
-                        isLoading = false,
-                        error = result.error,
-                    )
-                }
+                setState { copy(isLoading = false, error = result.error) }
             }
         }
     }
@@ -135,7 +126,16 @@ internal class RegisterViewModel @Inject constructor(
     private val _effect = Channel<RegisterEffect>(Channel.BUFFERED)
     val effect = _effect.receiveAsFlow()
 
-    fun savePassword(activity: Activity, username: String, password: String) = viewModelScope.launch {
-        runCatching { credentialStore.savePassword(activity, username, password) }
+    suspend fun savePassword(activity: Activity, username: String, password: String) {
+        credentialStore.savePassword(activity, username, password)
+    }
+
+    /** Вызывается из UI когда сохранение (попытка) завершено */
+    fun onPasswordSaveFinished() {
+        if (!pendingNavigateToLogin) return
+        pendingNavigateToLogin = false
+
+        navigationStorage.put(KEY_SELECT_SITE, state.value.selectSite)
+        navigationManager.navigate(AuthDest.Login)
     }
 }

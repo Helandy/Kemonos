@@ -16,9 +16,12 @@ internal data class LoginState(
 
     val usernameError: LoginUsernameErrorCode? = null,
     val passwordError: LoginPasswordErrorCode? = null,
+
+    val filledFromCredentialManager: Boolean = false,
 )
 
 sealed interface LoginEffect {
     data object PickPassword : LoginEffect
-    data class SavePassword(val username: String, val password: String) : LoginEffect
+    data class SavePasswordAndNavigate(val username: String, val password: String) : LoginEffect
+    data object NavigateToProfile : LoginEffect
 }

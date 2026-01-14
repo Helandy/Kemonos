@@ -41,6 +41,8 @@ internal fun RegisterScreen(
             when (effect) {
                 is RegisterEffect.SavePassword -> {
                     viewModel.savePassword(a, effect.username, effect.password)
+
+                    viewModel.onPasswordSaveFinished()
                 }
             }
         }

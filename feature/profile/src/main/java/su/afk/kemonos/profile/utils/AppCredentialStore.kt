@@ -11,7 +11,11 @@ class AppCredentialStore @Inject constructor(
 ) {
     suspend fun pickPassword(activity: Activity): PasswordCredential? {
         val request = GetCredentialRequest(
-            credentialOptions = listOf(GetPasswordOption())
+            credentialOptions = listOf(
+                GetPasswordOption()
+            ),
+            // система решает — показывать UI или авто-выбирать
+            preferImmediatelyAvailableCredentials = true
         )
 
         val response = credentialManager.getCredential(
@@ -22,8 +26,8 @@ class AppCredentialStore @Inject constructor(
         return response.credential as? PasswordCredential
     }
 
-    suspend fun savePassword(activity: Activity, username: String, password: String) {
-        runCatching {
+    suspend fun savePassword(activity: Activity, username: String, password: String): Result<Unit> {
+        return runCatching {
             credentialManager.createCredential(
                 context = activity,
                 request = CreatePasswordRequest(id = username, password = password)
