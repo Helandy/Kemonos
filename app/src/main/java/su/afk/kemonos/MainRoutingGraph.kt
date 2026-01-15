@@ -8,8 +8,10 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Modifier
+import coil3.ImageLoader
 import su.afk.kemonos.common.di.LocalDomainResolver
 import su.afk.kemonos.common.presenter.baseScreen.LocalAppScaffoldPadding
+import su.afk.kemonos.common.presenter.views.imageLoader.LocalAppImageLoader
 import su.afk.kemonos.navigation.AppNavHost
 import su.afk.kemonos.navigation.NavRegistrar
 import su.afk.kemonos.navigation.NavigationManager
@@ -22,6 +24,7 @@ import javax.inject.Singleton
 @Singleton
 class MainRoutingGraph @Inject constructor(
     private val domainResolver: IDomainResolver,
+    private val imageLoader: ImageLoader,
     private val navManager: NavigationManager,
     private val registrars: Set<@JvmSuppressWildcards NavRegistrar>
 ) {
@@ -48,6 +51,7 @@ class MainRoutingGraph @Inject constructor(
                 CompositionLocalProvider(
                     LocalAppScaffoldPadding provides innerPadding,
                     LocalDomainResolver provides domainResolver,
+                    LocalAppImageLoader provides imageLoader,
                 ) {
                     AppNavHost(
                         navManager = navManager,
