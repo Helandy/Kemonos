@@ -85,6 +85,7 @@ dependencies {
     debugImplementation(libs.bundles.compose.debug)
 
     implementation(libs.bundles.navigation3)
+    implementation(libs.bundles.coil)
 
     implementation(project(":common"))
     implementation(project(":core:navigation"))

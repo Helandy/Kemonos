@@ -19,6 +19,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import coil3.ImageLoader
 import coil3.compose.AsyncImagePainter
 import coil3.compose.rememberAsyncImagePainter
 import kotlinx.coroutines.delay
@@ -31,7 +32,7 @@ import kotlinx.coroutines.delay
  */
 @Composable
 fun AsyncImageWithStatus(
-    model: String?,
+    model: Any?,
     contentDescription: String?,
     modifier: Modifier = Modifier,
     contentScale: ContentScale = ContentScale.Crop,
@@ -39,10 +40,14 @@ fun AsyncImageWithStatus(
     errorText: ((Throwable?) -> String)? = null,
     placeholder: (@Composable () -> Unit)? = null,
     onSuccessSize: ((Size) -> Unit)? = null,
+    imageLoader: ImageLoader = LocalAppImageLoader.current,
 ) {
     var showLoader by remember { mutableStateOf(false) }
 
-    val painter = rememberAsyncImagePainter(model)
+    val painter = rememberAsyncImagePainter(
+        model = model,
+        imageLoader = imageLoader,
+    )
     val state by painter.state.collectAsStateWithLifecycle()
 
     /* -------- «длинная» загрузка -------- */
@@ -64,7 +69,7 @@ fun AsyncImageWithStatus(
                 Image(
                     painter = painter,
                     contentDescription = contentDescription,
-                    modifier = modifier,
+                    modifier = Modifier.matchParentSize(),
                     contentScale = contentScale,
                     alignment = alignment
                 )
@@ -77,7 +82,7 @@ fun AsyncImageWithStatus(
                     Image(
                         painter = painter,
                         contentDescription = contentDescription,
-                        modifier = modifier,
+                        modifier = Modifier.matchParentSize(),
                         contentScale = contentScale,
                         alignment = alignment
                     )

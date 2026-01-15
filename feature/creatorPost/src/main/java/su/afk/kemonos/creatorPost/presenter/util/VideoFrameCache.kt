@@ -1,22 +1,23 @@
 package su.afk.kemonos.creatorPost.presenter.util
 
 import android.graphics.Bitmap
+import android.util.LruCache
 
 object VideoFrameCache {
 
-    private const val MAX_ENTRIES = 50
+    private const val MAX_CACHE_SIZE_BYTES = 48 * 1024 * 1024
 
-    private val cache = object : LinkedHashMap<String, Bitmap>(MAX_ENTRIES, 0.75f, true) {
-        override fun removeEldestEntry(eldest: MutableMap.MutableEntry<String, Bitmap>?): Boolean {
-            return size > MAX_ENTRIES
+    private val cache = object : LruCache<String, Bitmap>(MAX_CACHE_SIZE_BYTES) {
+        override fun sizeOf(key: String, value: Bitmap): Int {
+            return value.allocationByteCount
         }
     }
 
     @Synchronized
-    fun get(url: String): Bitmap? = cache[url]
+    fun get(url: String): Bitmap? = cache.get(url)
 
     @Synchronized
     fun put(url: String, bitmap: Bitmap) {
-        cache[url] = bitmap
+        cache.put(url, bitmap)
     }
 }
