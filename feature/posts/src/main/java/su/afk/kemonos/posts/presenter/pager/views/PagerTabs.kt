@@ -2,13 +2,14 @@ package su.afk.kemonos.posts.presenter.pager.views
 
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.PrimaryTabRow
+import androidx.compose.material3.ScrollableTabRow
 import androidx.compose.material3.Tab
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
 import su.afk.kemonos.posts.presenter.pager.model.ALL_POSTS_PAGES
 import su.afk.kemonos.posts.presenter.pager.model.PostsPage
 
@@ -24,9 +25,10 @@ internal fun PagerTabs(
     }
     val safeCurrentPage = pages.getOrNull(selectedIndex) ?: PostsPage.Search
 
-    PrimaryTabRow(
+    ScrollableTabRow(
         selectedTabIndex = selectedIndex,
         modifier = Modifier.fillMaxWidth(),
+        edgePadding = 8.dp,
     ) {
         pages.forEach { page ->
             Tab(
@@ -35,7 +37,8 @@ internal fun PagerTabs(
                 text = {
                     Text(
                         text = stringResource(page.titleRes),
-                        style = MaterialTheme.typography.bodyMedium
+                        style = MaterialTheme.typography.bodyMedium,
+                        maxLines = 1,
                     )
                 }
             )
