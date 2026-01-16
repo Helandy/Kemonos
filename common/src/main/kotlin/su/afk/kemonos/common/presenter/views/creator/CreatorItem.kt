@@ -34,7 +34,9 @@ fun CreatorItem(
     onClick: () -> Unit
 ) {
     val avatarSize = LocalWindowInfo.current.containerSize.width * 0.145f
+    val avatarShape = RoundedCornerShape(10.dp)
 
+    val accent = getColorForFavorites(service)
     val resolver = LocalDomainResolver.current
     val imgBaseUrl = remember(service) { resolver.imageBaseUrlByService(service) }
 
@@ -59,7 +61,6 @@ fun CreatorItem(
         Box(
             modifier = Modifier
                 .matchParentSize()
-                .clip(shape = RoundedCornerShape(4.dp))
                 .background(MaterialTheme.colorScheme.scrim.copy(alpha = 0.4f))
         )
 
@@ -75,7 +76,7 @@ fun CreatorItem(
                 contentDescription = name,
                 modifier = Modifier
                     .size(avatarSize.dp)
-                    .clip(RoundedCornerShape(12.dp)),
+                    .clip(avatarShape),
                 contentScale = ContentScale.Crop
             )
 
@@ -104,7 +105,7 @@ fun CreatorItem(
                         )
                         .border(
                             2.dp,
-                            getColorForFavorites(service),
+                            accent,
                             RoundedCornerShape(6.dp)
                         )
                         .padding(horizontal = 8.dp, vertical = 4.dp)
@@ -114,7 +115,7 @@ fun CreatorItem(
                             text = service,
                             style = MaterialTheme.typography.bodyMedium,
                             fontWeight = FontWeight.Bold,
-                            color = getColorForFavorites(service)
+                            color = accent
                         )
 
                         favorited?.let {
@@ -122,7 +123,7 @@ fun CreatorItem(
                                 text = formatNumberWithSpaces(favorited),
                                 style = MaterialTheme.typography.bodySmall,
                                 fontWeight = FontWeight.Bold,
-                                color = getColorForFavorites(service)
+                                color = accent
                             )
                         }
 
@@ -145,7 +146,7 @@ fun CreatorItem(
                                     text = updated.toUiDateTime(),
                                     style = MaterialTheme.typography.bodySmall,
                                     fontWeight = FontWeight.Bold,
-                                    color = getColorForFavorites(service)
+                                    color = accent
                                 )
                             }
                         }

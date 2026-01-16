@@ -118,6 +118,7 @@ internal fun CreatorScreen(
 
         if (profile == null) return@BaseScreen
 
+        // todo добавить баннер c.lf
         CreatorHeader(
             service = profile.service,
             creatorId = profile.id,

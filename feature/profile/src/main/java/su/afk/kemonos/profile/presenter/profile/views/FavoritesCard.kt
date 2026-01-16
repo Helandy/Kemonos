@@ -11,7 +11,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import su.afk.kemonos.common.presenter.utilsUI.PreviewScreen
 import su.afk.kemonos.profile.R
 
 /** Избранное */
@@ -28,14 +30,12 @@ internal fun FavoritesCard(
         fontWeight = FontWeight.Medium
     )
 
-    Row(
+    Column(
         modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.spacedBy(12.dp)
+        verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
         Card(
-            modifier = Modifier
-                .weight(1f)
-                .clickable { onFavoriteProfiles() }
+            modifier = Modifier.clickable { onFavoriteProfiles() }
         ) {
             Box(
                 modifier = Modifier
@@ -43,7 +43,11 @@ internal fun FavoritesCard(
                     .padding(12.dp),
                 contentAlignment = Alignment.Center,
             ) {
-                Text(text = stringResource(R.string.profile_favorites_profiles))
+                Text(
+                    text = stringResource(R.string.profile_favorites_profiles),
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.Medium
+                )
 
                 if (updatesCount > 0) {
                     Badge(
@@ -63,9 +67,7 @@ internal fun FavoritesCard(
         }
 
         Card(
-            modifier = Modifier
-                .weight(1f)
-                .clickable { onFavoritePosts() }
+            modifier = Modifier.clickable { onFavoritePosts() }
         ) {
             Box(
                 modifier = Modifier
@@ -73,8 +75,25 @@ internal fun FavoritesCard(
                     .padding(12.dp),
                 contentAlignment = Alignment.Center
             ) {
-                Text(text = stringResource(R.string.profile_favorites_posts))
+                Text(
+                    text = stringResource(R.string.profile_favorites_posts),
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.Medium
+                )
             }
         }
+    }
+}
+
+@Preview("PreviewFavoritesCard")
+@Composable
+private fun PreviewFavoritesCard() {
+    PreviewScreen {
+        FavoritesCard(
+            titleId = R.string.profile_favorites_title_coomer,
+            updatesCount = 1,
+            onFavoriteProfiles = {},
+            onFavoritePosts = {},
+        )
     }
 }

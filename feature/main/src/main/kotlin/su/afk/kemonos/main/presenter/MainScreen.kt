@@ -115,7 +115,6 @@ private fun MainScreenPreview_Update() = PreviewHost {
     MainScreenContent(
         state = MainState.State(
             isLoading = false,
-            apiSuccess = null,
             kemonoUrl = "https://kemono.cr",
             coomerUrl = "https://coomer.st",
             inputKemonoDomain = "kemono.cr",
@@ -124,7 +123,7 @@ private fun MainScreenPreview_Update() = PreviewHost {
                 latestVersionName = "1.0.0",
                 releaseUrl = "url",
                 changelog = "changelog",
-            )
+            ),
         ),
         onUpdateClick = {},
         onLaterClick = {},
@@ -140,13 +139,10 @@ private fun MainScreenPreview_Update() = PreviewHost {
 private fun MainScreenPreview_Loading() = PreviewHost {
     MainScreenContent(
         state = MainState.State(
-            isLoading = true,
-            apiSuccess = null,
             kemonoUrl = "https://kemono.cr",
             coomerUrl = "https://coomer.st",
             inputKemonoDomain = "kemono.cr",
             inputCoomerDomain = "coomer.st",
-            updateInfo = null
         ),
         onUpdateClick = {},
         onLaterClick = {},
@@ -168,7 +164,6 @@ private fun MainScreenPreview_Success() = PreviewHost {
             coomerUrl = "https://coomer.st",
             inputKemonoDomain = "kemono.cr",
             inputCoomerDomain = "coomer.st",
-            updateInfo = null
         ),
         onUpdateClick = {},
         onLaterClick = {},
@@ -185,12 +180,6 @@ private fun MainScreenPreview_Error() = PreviewHost {
     MainScreenContent(
         state = MainState.State(
             isLoading = false,
-            apiSuccess = false,
-            kemonoUrl = "https://kemono.cr",
-            coomerUrl = "https://coomer.st",
-            inputKemonoDomain = "kemono.cr",
-            inputCoomerDomain = "coomer.st",
-            updateInfo = null,
             kemonoError = ErrorItem(
                 title = "API недоступно",
                 message = "Не удалось выполнить запрос. Проверь домен или попробуй позже.",
@@ -200,7 +189,12 @@ private fun MainScreenPreview_Error() = PreviewHost {
                 requestId = "req_01HXYZ...",
                 body = """{"error":"Service Unavailable"}""",
                 cause = "Timeout"
-            )
+            ),
+            apiSuccess = false,
+            kemonoUrl = "https://kemono.cr",
+            coomerUrl = "https://coomer.st",
+            inputKemonoDomain = "kemono.cr",
+            inputCoomerDomain = "coomer.st",
         ),
         onUpdateClick = {},
         onLaterClick = {},

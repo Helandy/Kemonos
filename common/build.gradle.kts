@@ -42,6 +42,8 @@ dependencies {
     implementation(libs.bundles.coil)
     implementation(libs.bundles.translate)
 
+    debugImplementation(libs.bundles.compose.debug)
+
     implementation(project(":core:navigation"))
     implementation(project(":core:domain"))
     implementation(project(":core:network"))

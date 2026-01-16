@@ -67,7 +67,8 @@
     <string name="profile_kemono_account_title">Kemono account</string>
     <string name="profile_coomer_account_title">Coomer account</string>
 
-    <string name="profile_account_logged_in_summary">Logged in as %1$s • Joined: %2$s</string>
+    <string name="profile_account_logged_in_name">Logged in as %1$s</string>
+    <string name="profile_account_logged_in_date">Joined: %1$s</string>
     <string name="profile_logout_button">Logout</string>
 
     <!-- LogoutDialog -->
@@ -109,5 +110,20 @@
 
     <string name="settings_cache_profiles">Creator profiles</string>
     <string name="settings_github_ideas">Bugs/ideas/suggestions — please leave them on GitHub</string>
+
+    <!--    setting ui -->
+    <string name="settings_ui_title">Interface</string>
+    <string name="settings_ui_hint">Display and behavior settings.</string>
+    <!-- UI settings -->
+    <string name="settings_ui_creators_view_mode">Creators view</string>
+
+    <!-- Creator view mode -->
+    <string name="settings_ui_view_mode_list">List</string>
+    <string name="settings_ui_view_mode_grid">Grid</string>
+
+    <string name="settings_debug_skip_api_check_title">Skip API check on login</string>
+    <string name="settings_debug_skip_api_check_hint">Debug only. Bypasses API availability check when signing in.
+    </string>
+
 
 </resources>

@@ -4,6 +4,9 @@ import androidx.paging.cachedIn
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import su.afk.kemonos.common.error.IErrorHandlerUseCase
 import su.afk.kemonos.common.error.storage.RetryStorage
@@ -16,6 +19,7 @@ import su.afk.kemonos.domain.models.Creators
 import su.afk.kemonos.domain.models.CreatorsSort
 import su.afk.kemonos.navigation.NavigationManager
 import su.afk.kemonos.preferences.site.ISelectedSiteUseCase
+import su.afk.kemonos.preferences.ui.IUiSettingUseCase
 import javax.inject.Inject
 
 @HiltViewModel
@@ -24,6 +28,7 @@ internal class CreatorsViewModel @Inject constructor(
     private val navManager: NavigationManager,
     private val creatorProfileNavigator: ICreatorProfileNavigator,
     private val randomCreatorUseCase: RandomCreatorUseCase,
+    private val uiSetting: IUiSettingUseCase,
     override val selectedSiteUseCase: ISelectedSiteUseCase,
     override val errorHandler: IErrorHandlerUseCase,
     override val retryStorage: RetryStorage,
@@ -38,10 +43,6 @@ internal class CreatorsViewModel @Inject constructor(
         }
     }
 
-    init {
-        initSiteAware()
-    }
-
     override suspend fun reloadSite(site: SelectedSite) {
         setState {
             copy(
@@ -54,6 +55,20 @@ internal class CreatorsViewModel @Inject constructor(
 
         rebuildPaging()
         ensureFreshAndReloadServices()
+    }
+
+    init {
+        initSiteAware()
+        observeUiSetting()
+    }
+
+    /** UI настройки */
+    private fun observeUiSetting() {
+        uiSetting.prefs.distinctUntilChanged()
+            .onEach { model ->
+                setState { copy(uiSettingModel = model) }
+            }
+            .launchIn(viewModelScope)
     }
 
     fun setService(service: String) {

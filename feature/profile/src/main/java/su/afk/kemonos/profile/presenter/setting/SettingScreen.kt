@@ -16,6 +16,7 @@ import su.afk.kemonos.profile.presenter.setting.view.ApiSettingsBlock
 import su.afk.kemonos.profile.presenter.setting.view.BottomLinksBlock
 import su.afk.kemonos.profile.presenter.setting.view.CacheSettingsBlock
 import su.afk.kemonos.profile.presenter.setting.view.FaqBlock
+import su.afk.kemonos.profile.presenter.setting.view.uiSetting.UISettingBlock
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -33,6 +34,14 @@ internal fun SettingScreen(viewModel: SettingViewModel) {
             onKemonoChanged = viewModel::onInputKemonoDomainChanged,
             onCoomerChanged = viewModel::onInputCoomerDomainChanged,
             onSave = viewModel::onSaveUrls
+        )
+
+        Spacer(Modifier.height(32.dp))
+
+        UISettingBlock(
+            state = state,
+            onCreatorsViewMode = viewModel::setCreatorsViewMode,
+            onSkipApiCheckOnLogin = viewModel::setSkipApiCheckOnLogin
         )
 
         Spacer(Modifier.height(32.dp))

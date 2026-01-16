@@ -6,6 +6,7 @@ import kotlinx.coroutines.flow.flowOf
 import su.afk.kemonos.domain.SelectedSite
 import su.afk.kemonos.domain.models.Creators
 import su.afk.kemonos.domain.models.CreatorsSort
+import su.afk.kemonos.preferences.ui.UiSettingModel
 
 data class CreatorsState(
     val loading: Boolean = false,
@@ -24,4 +25,5 @@ data class CreatorsState(
     val creatorsPaged: Flow<PagingData<Creators>> = flowOf(PagingData.empty()),
 
     val selectedSite: SelectedSite = SelectedSite.K,
+    val uiSettingModel: UiSettingModel = UiSettingModel(),
 )

@@ -8,7 +8,6 @@ import androidx.compose.material.icons.outlined.ContentCopy
 import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -47,31 +46,38 @@ internal fun PostTranslateItem(
                 .padding(horizontal = 4.dp, vertical = 6.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            val dateText = remember(published, edited) {
-                listOfNotNull(
-                    published?.let { "📅 ${it.toUiDateTime()}" },
-                    edited?.takeIf { !it.isNullOrBlank() && it != published }
-                        ?.let { "✏️ ${it.toUiDateTime()}" }
-                ).joinToString(" / ")
+            Column(modifier = Modifier.weight(1f)) {
+                published?.let {
+                    Text(
+                        text = "📅 ${it.toUiDateTime()}",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
+                }
+
+                edited
+                    ?.takeIf { it != published }
+                    ?.let {
+                        Text(
+                            text = "✏️ ${it.toUiDateTime()}",
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        )
+                    }
             }
 
-            Text(
-                text = dateText,
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                modifier = Modifier.weight(1f)
-            )
-
-            TextButton(
-                enabled = !loading,
-                onClick = onToggleTranslate
-            ) {
-                if (loading) {
-                    CircularProgressIndicator(Modifier.size(16.dp), strokeWidth = 2.dp)
-                    Spacer(Modifier.width(6.dp))
-                    Text(stringResource(R.string.translate_in_progress))
-                } else {
-                    Text(stringResource(if (expanded) R.string.translate_hide else R.string.translate_show))
+            if (body.isNotBlank()) {
+                TextButton(
+                    enabled = !loading,
+                    onClick = onToggleTranslate
+                ) {
+                    if (loading) {
+                        CircularProgressIndicator(Modifier.size(16.dp), strokeWidth = 2.dp)
+                        Spacer(Modifier.width(6.dp))
+                        Text(stringResource(R.string.translate_in_progress))
+                    } else {
+                        Text(stringResource(if (expanded) R.string.translate_hide else R.string.translate_show))
+                    }
                 }
             }
 

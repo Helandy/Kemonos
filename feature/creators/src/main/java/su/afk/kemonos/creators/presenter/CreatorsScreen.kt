@@ -2,6 +2,8 @@ package su.afk.kemonos.creators.presenter
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.material3.DividerDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
@@ -18,8 +20,10 @@ import su.afk.kemonos.common.presenter.baseScreen.StandardTopBar
 import su.afk.kemonos.common.presenter.baseScreen.TopBarScroll
 import su.afk.kemonos.common.presenter.changeSite.SiteToggleFab
 import su.afk.kemonos.common.presenter.views.creator.CreatorItem
+import su.afk.kemonos.common.presenter.views.creator.grid.CreatorGridItem
 import su.afk.kemonos.common.presenter.views.searchBar.SearchBarNew
 import su.afk.kemonos.creators.presenter.views.creatorsSortOptions
+import su.afk.kemonos.preferences.ui.CreatorViewMode
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -77,28 +81,54 @@ internal fun CreatorsScreen(viewModel: CreatorsViewModel) {
         isLoading = isBusy || isFirstPageLoading || state.loading,
         isEmpty = showEmpty
     ) {
-        LazyColumn {
-            item {
-                HorizontalDivider(
-                    Modifier.padding(top = 4.dp),
-                    DividerDefaults.Thickness,
-                    DividerDefaults.color
-                )
-            }
+        val viewMode = state.uiSettingModel.creatorsViewMode
 
-            items(
-                count = pagingItems.itemCount,
-                key = pagingItems.itemKey { "${it.service}:${it.id}:${it.indexed}" }
-            ) { index ->
-                val creator = pagingItems[index] ?: return@items
-                CreatorItem(
-                    service = creator.service,
-                    id = creator.id,
-                    name = creator.name,
-                    favorited = creator.favorited,
-                    onClick = { viewModel.onCreatorClick(creator) }
-                )
-                HorizontalDivider()
+        if (viewMode == CreatorViewMode.LIST) {
+            LazyColumn {
+                item {
+                    HorizontalDivider(
+                        Modifier.padding(top = 4.dp),
+                        DividerDefaults.Thickness,
+                        DividerDefaults.color
+                    )
+                }
+
+                items(
+                    count = pagingItems.itemCount,
+                    key = pagingItems.itemKey { "${it.service}:${it.id}:${it.indexed}" }
+                ) { index ->
+                    val creator = pagingItems[index] ?: return@items
+
+                    CreatorItem(
+                        service = creator.service,
+                        id = creator.id,
+                        name = creator.name,
+                        favorited = creator.favorited,
+                        onClick = { viewModel.onCreatorClick(creator) }
+                    )
+                    HorizontalDivider()
+                }
+            }
+        } else {
+            LazyVerticalGrid(
+                columns = GridCells.Adaptive(minSize = 150.dp),
+                verticalArrangement = Arrangement.spacedBy(6.dp),
+                horizontalArrangement = Arrangement.spacedBy(6.dp),
+            ) {
+                items(
+                    count = pagingItems.itemCount,
+                    key = pagingItems.itemKey { "${it.service}:${it.id}:${it.indexed}" }
+                ) { index ->
+                    val creator = pagingItems[index] ?: return@items
+
+                    CreatorGridItem(
+                        service = creator.service,
+                        id = creator.id,
+                        name = creator.name,
+                        favorited = creator.favorited,
+                        onClick = { viewModel.onCreatorClick(creator) }
+                    )
+                }
             }
         }
     }
