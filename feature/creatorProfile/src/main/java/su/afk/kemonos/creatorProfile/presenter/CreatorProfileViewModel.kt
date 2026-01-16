@@ -214,27 +214,23 @@ internal class CreatorProfileViewModel @AssistedInject constructor(
 
     /** Поиск по тексту */
     fun setSearchText(text: String) {
+        if (text == currentState.searchText) return
         setState { copy(searchText = text) }
 
         searchJob?.cancel()
         searchJob = viewModelScope.launch {
             delay(2_000)
-            setState {
-                copy(
-                    selectedTab = ProfileTab.POSTS,
-                    profilePosts = getProfilePostsPagingUseCase(
-                        service = currentState.service,
-                        id = currentState.id,
-                        tag = null,
-                        search = text
-                    ).cachedIn(viewModelScope),
-                )
-            }
+            loadProfileAndPosts()
         }
     }
 
     /** скрыть поиск */
-    fun setSearchVisible(visible: Boolean) = setState { copy(isSearchVisible = visible) }
+    fun closeSearch() {
+        searchJob?.cancel()
+        setState { copy(isSearchVisible = false, searchText = "") }
+
+        loadProfileAndPosts()
+    }
 
     /** показать-скрыть поиск */
     fun toggleSearch() = setState { copy(isSearchVisible = !currentState.isSearchVisible) }

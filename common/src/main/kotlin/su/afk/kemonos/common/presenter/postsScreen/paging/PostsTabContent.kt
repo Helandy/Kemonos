@@ -1,4 +1,4 @@
-package su.afk.kemonos.common.presenter.screens.postsScreen.paging
+package su.afk.kemonos.common.presenter.postsScreen.paging
 
 import androidx.compose.foundation.lazy.grid.LazyGridState
 import androidx.compose.runtime.Composable
@@ -7,8 +7,8 @@ import androidx.paging.compose.LazyPagingItems
 import su.afk.kemonos.common.error.view.DefaultErrorContent
 import su.afk.kemonos.common.presenter.baseScreen.DefaultEmptyContent
 import su.afk.kemonos.common.presenter.baseScreen.DefaultLoadingContent
-import su.afk.kemonos.common.presenter.screens.postsScreen.PostsSource
-import su.afk.kemonos.common.presenter.screens.postsScreen.ProfilePostsGrid
+import su.afk.kemonos.common.presenter.postsScreen.PostsSource
+import su.afk.kemonos.common.presenter.postsScreen.ProfilePostsGrid
 import su.afk.kemonos.domain.models.ErrorItem
 import su.afk.kemonos.domain.models.PostDomain
 import su.afk.kemonos.domain.models.Tag

@@ -19,7 +19,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import su.afk.kemonos.common.R
 import su.afk.kemonos.common.di.LocalDomainResolver
-import su.afk.kemonos.common.presenter.views.imageLoader.AsyncImageWithStatus
+import su.afk.kemonos.common.imageLoader.AsyncImageWithStatus
 import su.afk.kemonos.common.util.getColorForFavorites
 import su.afk.kemonos.common.util.toUiDateTime
 
@@ -32,115 +32,129 @@ fun CreatorHeader(
     showSearchButton: Boolean,
     showInfoButton: Boolean,
     onSearchClick: () -> Unit,
-    onClickHeader: (() -> Unit?)?
+    onClickHeader: (() -> Unit)?,
 ) {
-    val avatarSize = 42.dp
+    val shape = RoundedCornerShape(12.dp)
+    val avatarSize = 54.dp
     var expanded by remember { mutableStateOf(false) }
 
     val resolver = LocalDomainResolver.current
     val imgBaseUrl = remember(service) { resolver.imageBaseUrlByService(service) }
+    val accent = getColorForFavorites(service)
 
-    Row(
-        modifier = Modifier.fillMaxWidth(),
-        verticalAlignment = Alignment.CenterVertically
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clip(shape)
     ) {
+        // 1) Фон: баннер
+        AsyncImageWithStatus(
+            model = "$imgBaseUrl/banners/${service}/${creatorId}",
+            contentDescription = "Banner for $creatorName",
+            contentScale = ContentScale.Crop,
+            modifier = Modifier.matchParentSize()
+        )
 
-        val headerModifier = if (onClickHeader != null) {
-            Modifier
-                .weight(1f)
-                .padding(end = 12.dp)
-                .clickable { onClickHeader() }
-        } else {
-            Modifier
-                .weight(1f)
-                .padding(end = 12.dp)
-        }
+        // 2) Затемнение (чтобы текст читался)
+        Box(
+            modifier = Modifier
+                .matchParentSize()
+                .background(MaterialTheme.colorScheme.scrim.copy(alpha = 0.40f))
+        )
 
-        /** Левая часть (аватар + инфо) занимает максимум места */
+        // 3) Контент
         Row(
-            modifier = headerModifier,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 12.dp, vertical = 10.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            AsyncImageWithStatus(
-                model = "$imgBaseUrl/icons/${service}/${creatorId}",
-                contentDescription = creatorName,
-                modifier = Modifier
-                    .size(avatarSize)
-                    .clip(RoundedCornerShape(8.dp)),
-                contentScale = ContentScale.Crop
-            )
-            /** Отступ между аватаркой и текстом */
-            Column(
-                modifier = Modifier
-                    .padding(start = 12.dp)
-                    .fillMaxWidth(),
-                verticalArrangement = Arrangement.Center
-            ) {
-                Text(
-                    text = creatorName,
-                    style = MaterialTheme.typography.titleLarge,
-                    color = MaterialTheme.colorScheme.onBackground,
-                    maxLines = 1
-                )
-                /** Сервис */
-                Box(
-                    modifier = Modifier
-                        .padding(top = 2.dp)
-                        .background(
-                            color = MaterialTheme.colorScheme.background.copy(alpha = 0.8f),
-                            shape = RoundedCornerShape(6.dp)
-                        )
-                        .border(
-                            1.dp,
-                            getColorForFavorites(service),
-                            RoundedCornerShape(6.dp)
-                        )
-                        .padding(horizontal = 6.dp, vertical = 4.dp)
-                ) {
-                    Text(
-                        text = service,
-                        style = MaterialTheme.typography.labelMedium,
-                        fontWeight = FontWeight.Bold,
-                        color = getColorForFavorites(service)
-                    )
-                }
-            }
-        }
+            val headerModifier = Modifier
+                .weight(1f)
+                .then(if (onClickHeader != null) Modifier.clickable { onClickHeader() } else Modifier)
+                .padding(end = 12.dp)
 
-        /** Правая часть: иконки */
-        if (showInfoButton) {
             Row(
-                modifier = Modifier.wrapContentSize(),
+                modifier = headerModifier,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                if (showSearchButton) {
-                    IconButton(onClick = onSearchClick) {
-                        Icon(
-                            imageVector = Icons.Default.Search,
-                            contentDescription = stringResource(R.string.search),
-                            tint = MaterialTheme.colorScheme.primary
+                AsyncImageWithStatus(
+                    model = "$imgBaseUrl/icons/${service}/${creatorId}",
+                    contentDescription = creatorName,
+                    modifier = Modifier
+                        .size(avatarSize)
+                        .clip(RoundedCornerShape(8.dp))
+                        .border(1.dp, accent, RoundedCornerShape(8.dp)),
+                    contentScale = ContentScale.Crop
+                )
+
+                Column(
+                    modifier = Modifier
+                        .padding(start = 12.dp)
+                        .fillMaxWidth(),
+                    verticalArrangement = Arrangement.Center
+                ) {
+                    Text(
+                        text = creatorName,
+                        style = MaterialTheme.typography.titleLarge,
+                        color = MaterialTheme.colorScheme.onPrimary, // на затемнённом фоне лучше так
+                        maxLines = 1
+                    )
+
+                    Box(
+                        modifier = Modifier
+                            .padding(top = 2.dp)
+                            .background(
+                                color = MaterialTheme.colorScheme.surface.copy(alpha = 0.78f),
+                                shape = RoundedCornerShape(6.dp)
+                            )
+                            .border(1.dp, accent, RoundedCornerShape(6.dp))
+                            .padding(horizontal = 6.dp, vertical = 4.dp)
+                    ) {
+                        Text(
+                            text = service,
+                            style = MaterialTheme.typography.labelMedium,
+                            fontWeight = FontWeight.Bold,
+                            color = accent
                         )
                     }
                 }
-                Box {
-                    IconButton(onClick = { expanded = true }) {
-                        Icon(
-                            imageVector = Icons.Default.Info,
-                            contentDescription = stringResource(R.string.info),
-                            tint = MaterialTheme.colorScheme.primary
-                        )
-                    }
-                    DropdownMenu(
-                        expanded = expanded,
-                        onDismissRequest = { expanded = false }
-                    ) {
-                        updated?.let {
-                            DropdownMenuItem(
-                                text = {
-                                    Text("📅 ${updated?.toUiDateTime()}")
-                                },
-                                onClick = {}
+            }
+
+            if (showInfoButton) {
+                Row(
+                    modifier = Modifier.wrapContentSize(),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    if (showSearchButton) {
+                        IconButton(onClick = onSearchClick) {
+                            Icon(
+                                imageVector = Icons.Default.Search,
+                                contentDescription = stringResource(R.string.search),
+                                tint = MaterialTheme.colorScheme.onPrimary
                             )
+                        }
+                    }
+
+                    Box {
+                        IconButton(onClick = { expanded = true }) {
+                            Icon(
+                                imageVector = Icons.Default.Info,
+                                contentDescription = stringResource(R.string.info),
+                                tint = MaterialTheme.colorScheme.onPrimary
+                            )
+                        }
+
+                        DropdownMenu(
+                            expanded = expanded,
+                            onDismissRequest = { expanded = false }
+                        ) {
+                            updated?.let { upd ->
+                                DropdownMenuItem(
+                                    text = { Text("📅 ${upd.toUiDateTime()}") },
+                                    onClick = {}
+                                )
+                            }
                         }
                     }
                 }

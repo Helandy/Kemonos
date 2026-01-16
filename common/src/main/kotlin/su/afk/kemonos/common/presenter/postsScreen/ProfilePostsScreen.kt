@@ -1,4 +1,4 @@
-package su.afk.kemonos.common.presenter.screens.postsScreen
+package su.afk.kemonos.common.presenter.postsScreen
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.lazy.grid.GridCells
@@ -9,8 +9,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.unit.dp
 import androidx.paging.LoadState
 import androidx.paging.compose.LazyPagingItems
-import su.afk.kemonos.common.presenter.screens.postsScreen.paging.PagingAppendStateItem
-import su.afk.kemonos.common.presenter.screens.postsScreen.postCard.PostCard
+import su.afk.kemonos.common.presenter.postsScreen.paging.PagingAppendStateItem
+import su.afk.kemonos.common.presenter.postsScreen.postCard.PostCard
 import su.afk.kemonos.domain.models.ErrorItem
 import su.afk.kemonos.domain.models.PostDomain
 

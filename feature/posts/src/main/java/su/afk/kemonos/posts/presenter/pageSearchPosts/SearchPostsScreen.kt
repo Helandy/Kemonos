@@ -21,7 +21,7 @@ import su.afk.kemonos.common.presenter.baseScreen.BaseScreen
 import su.afk.kemonos.common.presenter.baseScreen.StandardTopBar
 import su.afk.kemonos.common.presenter.baseScreen.TopBarScroll
 import su.afk.kemonos.common.presenter.changeSite.SiteToggleFab
-import su.afk.kemonos.common.presenter.screens.postsScreen.paging.PostsTabContent
+import su.afk.kemonos.common.presenter.postsScreen.paging.PostsTabContent
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

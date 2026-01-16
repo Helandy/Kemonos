@@ -1,4 +1,4 @@
-package su.afk.kemonos.common.presenter.views.imageLoader
+package su.afk.kemonos.common.imageLoader
 
 import android.content.Context
 import androidx.compose.runtime.staticCompositionLocalOf

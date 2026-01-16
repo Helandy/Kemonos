@@ -13,7 +13,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import su.afk.kemonos.common.presenter.views.imageLoader.AsyncImageWithStatus
+import su.afk.kemonos.common.imageLoader.AsyncImageWithStatus
 
 @Composable
 fun VideoThumbnail(

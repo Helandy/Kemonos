@@ -6,7 +6,7 @@ import androidx.paging.PagingData
 import androidx.paging.filter
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
-import su.afk.kemonos.common.presenter.screens.postsScreen.stableKey
+import su.afk.kemonos.common.presenter.postsScreen.stableKey
 import su.afk.kemonos.domain.SelectedSite
 import su.afk.kemonos.domain.models.PostDomain
 import su.afk.kemonos.posts.data.PostsRepository

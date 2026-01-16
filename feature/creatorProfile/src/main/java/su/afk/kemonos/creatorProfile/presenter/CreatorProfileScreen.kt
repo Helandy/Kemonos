@@ -1,14 +1,12 @@
 package su.afk.kemonos.creatorProfile.presenter
 
 import android.content.Intent
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.grid.LazyGridState
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -19,7 +17,9 @@ import androidx.paging.LoadState
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import su.afk.kemonos.common.presenter.baseScreen.BaseScreen
-import su.afk.kemonos.common.presenter.screens.postsScreen.paging.PostsTabContent
+import su.afk.kemonos.common.presenter.baseScreen.StandardTopBar
+import su.afk.kemonos.common.presenter.baseScreen.TopBarScroll
+import su.afk.kemonos.common.presenter.postsScreen.paging.PostsTabContent
 import su.afk.kemonos.common.presenter.views.creator.CreatorHeader
 import su.afk.kemonos.common.presenter.views.elements.FavoriteActionButton
 import su.afk.kemonos.common.shared.ShareActions
@@ -82,11 +82,71 @@ internal fun CreatorScreen(
         }
     }
 
+    var lastIndex by remember { mutableIntStateOf(0) }
+    var lastOffset by remember { mutableIntStateOf(0) }
+    var headerVisible by remember { mutableStateOf(true) }
+
+    LaunchedEffect(gridState) {
+        snapshotFlow { gridState.firstVisibleItemIndex to gridState.firstVisibleItemScrollOffset }
+            .collect { (index, offset) ->
+                val threshold = 10
+                val scrollingDown = index > lastIndex || (index == lastIndex && offset - lastOffset > threshold)
+                val scrollingUp = index < lastIndex || (index == lastIndex && lastOffset - offset > threshold)
+
+                // правило:
+                // вниз -> скрываем, вверх -> показываем
+                if (scrollingDown) headerVisible = false
+                else if (scrollingUp) headerVisible = true
+
+                lastIndex = index
+                lastOffset = offset
+            }
+    }
+
     val pullState = rememberPullToRefreshState()
     val refreshing = (postsRefreshing || state.loading) && !state.isDiscordProfile
 
     BaseScreen(
         isScroll = false,
+        topBarScroll = TopBarScroll.EnterAlways,
+        topBar = { scrollBehavior ->
+            StandardTopBar(
+                scrollBehavior = scrollBehavior,
+                windowInsets = WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)
+            ) {
+                Column {
+                    if (profile == null) return@Column
+
+                    CreatorHeader(
+                        service = profile.service,
+                        creatorId = profile.id,
+                        creatorName = profile.name,
+                        updated = profile.updated,
+                        showSearchButton = true,
+                        showInfoButton = true,
+                        onSearchClick = { viewModel.toggleSearch() },
+                        onClickHeader = null
+                    )
+
+                    SearchBar(
+                        searchText = state.searchText,
+                        onSearchTextChange = viewModel::setSearchText,
+                        visible = state.isSearchVisible,
+                        onClose = { viewModel.closeSearch() }
+                    )
+
+                    ProfileTabsBar(
+                        tabs = state.showTabs,
+                        selectedTab = state.selectedTab,
+                        onTabSelected = { tab ->
+                            viewModel.onTabChanged(tab)
+                        },
+                        currentTag = state.currentTag,
+                        onTagClear = { viewModel.clearTag() }
+                    )
+                }
+            }
+        },
         contentModifier = Modifier.padding(horizontal = 8.dp),
         floatingActionButtonStart = {
             if (!state.loading) {
@@ -117,35 +177,6 @@ internal fun CreatorScreen(
         }
 
         if (profile == null) return@BaseScreen
-
-        // todo добавить баннер c.lf
-        CreatorHeader(
-            service = profile.service,
-            creatorId = profile.id,
-            creatorName = profile.name,
-            updated = profile.updated,
-            showSearchButton = true,
-            showInfoButton = true,
-            onSearchClick = { viewModel.toggleSearch() },
-            onClickHeader = null
-        )
-
-        SearchBar(
-            searchText = state.searchText,
-            onSearchTextChange = { viewModel.setSearchText(it) },
-            visible = state.isSearchVisible,
-            onClose = { viewModel.setSearchVisible(false) }
-        )
-
-        ProfileTabsBar(
-            tabs = state.showTabs,
-            selectedTab = state.selectedTab,
-            onTabSelected = { tab ->
-                viewModel.onTabChanged(tab)
-            },
-            currentTag = state.currentTag,
-            onTagClear = { viewModel.clearTag() }
-        )
 
         PullToRefreshBox(
             state = pullState,

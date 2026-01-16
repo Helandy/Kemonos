@@ -20,8 +20,8 @@ import su.afk.kemonos.common.R
 import su.afk.kemonos.common.presenter.baseScreen.BaseScreen
 import su.afk.kemonos.common.presenter.baseScreen.StandardTopBar
 import su.afk.kemonos.common.presenter.baseScreen.TopBarScroll
-import su.afk.kemonos.common.presenter.screens.postsScreen.PostsSource
-import su.afk.kemonos.common.presenter.screens.postsScreen.ProfilePostsGrid
+import su.afk.kemonos.common.presenter.postsScreen.PostsSource
+import su.afk.kemonos.common.presenter.postsScreen.ProfilePostsGrid
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

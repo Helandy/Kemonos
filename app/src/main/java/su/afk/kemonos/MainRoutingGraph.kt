@@ -10,8 +10,8 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Modifier
 import coil3.ImageLoader
 import su.afk.kemonos.common.di.LocalDomainResolver
+import su.afk.kemonos.common.imageLoader.LocalAppImageLoader
 import su.afk.kemonos.common.presenter.baseScreen.LocalAppScaffoldPadding
-import su.afk.kemonos.common.presenter.views.imageLoader.LocalAppImageLoader
 import su.afk.kemonos.navigation.AppNavHost
 import su.afk.kemonos.navigation.NavRegistrar
 import su.afk.kemonos.navigation.NavigationManager

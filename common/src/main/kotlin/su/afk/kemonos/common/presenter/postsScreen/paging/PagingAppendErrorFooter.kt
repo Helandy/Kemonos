@@ -1,4 +1,4 @@
-package su.afk.kemonos.common.presenter.screens.postsScreen.paging
+package su.afk.kemonos.common.presenter.postsScreen.paging
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth

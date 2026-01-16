@@ -1,4 +1,4 @@
-package su.afk.kemonos.common.presenter.screens.postsScreen.postCard
+package su.afk.kemonos.common.presenter.postsScreen.postCard
 
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -11,9 +11,9 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import su.afk.kemonos.common.R
-import su.afk.kemonos.common.presenter.screens.postsScreen.postCard.model.PreviewState
-import su.afk.kemonos.common.presenter.screens.postsScreen.postCard.placeHolder.PreviewPlaceholder
-import su.afk.kemonos.common.presenter.views.imageLoader.AsyncImageWithStatus
+import su.afk.kemonos.common.imageLoader.AsyncImageWithStatus
+import su.afk.kemonos.common.presenter.postsScreen.postCard.model.PreviewState
+import su.afk.kemonos.common.presenter.postsScreen.postCard.placeHolder.PreviewPlaceholder
 
 @Composable
 internal fun PostPreview(

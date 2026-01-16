@@ -19,10 +19,10 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import su.afk.kemonos.common.di.LocalDomainResolver
-import su.afk.kemonos.common.presenter.utilsUI.PreviewScreen
-import su.afk.kemonos.common.presenter.views.imageLoader.AsyncImageWithStatus
+import su.afk.kemonos.common.imageLoader.AsyncImageWithStatus
 import su.afk.kemonos.common.presenter.views.utilUI.formatNumberWithSpaces
 import su.afk.kemonos.common.util.getColorForFavorites
+import su.afk.kemonos.common.utilsUI.PreviewScreen
 
 @Composable
 fun CreatorGridItem(

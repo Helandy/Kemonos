@@ -19,9 +19,10 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import su.afk.kemonos.common.R
-import su.afk.kemonos.common.presenter.views.imageLoader.AsyncImageWithStatus
+import su.afk.kemonos.common.imageLoader.AsyncImageWithStatus
 import su.afk.kemonos.domain.models.PreviewDomain
 import java.net.URLEncoder
+import kotlin.math.abs
 
 private data class PreviewUrls(
     val thumbUrl: String,
@@ -72,7 +73,7 @@ fun ThumbnailPreviewItem(
                 val h = size.height
                 if (w.isFinite() && h.isFinite() && w > 0f && h > 0f) {
                     val newRatio = w / h
-                    if (ratio == null || kotlin.math.abs(ratio!! - newRatio) > 0.01f) {
+                    if (ratio == null || abs(ratio!! - newRatio) > 0.01f) {
                         ratio = newRatio
                     }
                 }

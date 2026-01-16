@@ -1,4 +1,4 @@
-package su.afk.kemonos.common.presenter.utilsUI
+package su.afk.kemonos.common.utilsUI
 
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
@@ -6,8 +6,8 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.platform.LocalContext
 import su.afk.kemonos.common.di.LocalDomainResolver
 import su.afk.kemonos.common.di.PreviewDomainResolver
-import su.afk.kemonos.common.presenter.views.imageLoader.LocalAppImageLoader
-import su.afk.kemonos.common.presenter.views.imageLoader.previewImageLoader
+import su.afk.kemonos.common.imageLoader.LocalAppImageLoader
+import su.afk.kemonos.common.imageLoader.previewImageLoader
 
 /** Универсальный превьюер с мок зависимостями */
 @Composable

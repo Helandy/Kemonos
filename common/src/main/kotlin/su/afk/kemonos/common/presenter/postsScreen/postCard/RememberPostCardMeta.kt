@@ -1,9 +1,9 @@
-package su.afk.kemonos.common.presenter.screens.postsScreen.postCard
+package su.afk.kemonos.common.presenter.postsScreen.postCard
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
-import su.afk.kemonos.common.presenter.screens.postsScreen.postCard.model.PostCardMeta
-import su.afk.kemonos.common.presenter.screens.postsScreen.postCard.model.PreviewState
+import su.afk.kemonos.common.presenter.postsScreen.postCard.model.PostCardMeta
+import su.afk.kemonos.common.presenter.postsScreen.postCard.model.PreviewState
 import su.afk.kemonos.common.util.countVideoFiles
 import su.afk.kemonos.common.util.findFirstImagePath
 import su.afk.kemonos.common.util.isAudioFile
