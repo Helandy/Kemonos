@@ -11,6 +11,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import su.afk.kemonos.preferences.ui.CreatorViewMode
+import su.afk.kemonos.preferences.ui.PostsViewMode
 import su.afk.kemonos.profile.BuildConfig
 import su.afk.kemonos.profile.R
 import su.afk.kemonos.profile.presenter.setting.SettingState
@@ -18,8 +19,14 @@ import su.afk.kemonos.profile.presenter.setting.SettingState
 @Composable
 internal fun UISettingBlock(
     state: SettingState.State,
-    onCreatorsViewMode: (CreatorViewMode) -> Unit,
     onSkipApiCheckOnLogin: (Boolean) -> Unit,
+    onCreatorsViewMode: (CreatorViewMode) -> Unit,
+    onCreatorsFavoriteViewMode: (CreatorViewMode) -> Unit,
+    onProfilePostsViewMode: (PostsViewMode) -> Unit,
+    onFavoritePostsViewMode: (PostsViewMode) -> Unit,
+    onPopularPostsViewMode: (PostsViewMode) -> Unit,
+    onTagsPostsViewMode: (PostsViewMode) -> Unit,
+    onSearchPostsViewMode: (PostsViewMode) -> Unit,
 ) {
     val ui = state.uiSettingModel ?: return
 
@@ -40,13 +47,6 @@ internal fun UISettingBlock(
 
             Spacer(Modifier.height(14.dp))
 
-            CreatorsViewModeRow(
-                value = ui.creatorsViewMode,
-                onChange = onCreatorsViewMode
-            )
-
-            Spacer(Modifier.height(8.dp))
-
             if (BuildConfig.DEBUG) {
                 DebugSwitchRow(
                     title = stringResource(R.string.settings_debug_skip_api_check_title),
@@ -56,7 +56,52 @@ internal fun UISettingBlock(
                 )
             }
 
-            // todo прочие настройки
+            Spacer(Modifier.height(8.dp))
+
+            CreatorsViewModeRow(
+                title = stringResource(R.string.settings_ui_creators_view_mode),
+                value = ui.creatorsViewMode,
+                onChange = onCreatorsViewMode
+            )
+
+            CreatorsViewModeRow(
+                title = stringResource(R.string.settings_ui_creators_favorite_view_mode),
+                value = ui.creatorsViewMode,
+                onChange = onCreatorsFavoriteViewMode
+            )
+
+            Spacer(Modifier.height(8.dp))
+
+            PostsViewModeRow(
+                title = stringResource(R.string.settings_ui_posts_view_mode_profile),
+                value = ui.profilePostsViewMode,
+                onChange = onProfilePostsViewMode
+            )
+
+            PostsViewModeRow(
+                title = stringResource(R.string.settings_ui_posts_view_mode_favorite),
+                value = ui.favoritePostsViewMode,
+                onChange = onFavoritePostsViewMode
+            )
+
+            PostsViewModeRow(
+                title = stringResource(R.string.settings_ui_posts_view_mode_popular),
+                value = ui.popularPostsViewMode,
+                onChange = onPopularPostsViewMode
+            )
+
+            PostsViewModeRow(
+                title = stringResource(R.string.settings_ui_posts_view_mode_tags),
+                value = ui.tagsPostsViewMode,
+                onChange = onTagsPostsViewMode
+            )
+
+            PostsViewModeRow(
+                title = stringResource(R.string.settings_ui_posts_view_mode_search),
+                value = ui.searchPostsViewMode,
+                onChange = onSearchPostsViewMode
+            )
+
             Spacer(Modifier.height(8.dp))
         }
     }

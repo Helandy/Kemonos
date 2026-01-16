@@ -1,6 +1,7 @@
 package su.afk.kemonos.profile.presenter.favoriteProfiles
 
 import su.afk.kemonos.domain.SelectedSite
+import su.afk.kemonos.preferences.ui.UiSettingModel
 import su.afk.kemonos.profile.api.model.FavoriteArtist
 import su.afk.kemonos.profile.presenter.favoriteProfiles.views.FavoriteSortedType
 
@@ -17,4 +18,6 @@ internal data class FavoriteProfilesState(
     val selectedService: String = "Services",
     val sortedType: FavoriteSortedType = FavoriteSortedType.NewPostsDate,
     val sortAscending: Boolean = false,
+
+    val uiSettingModel: UiSettingModel = UiSettingModel(),
 )

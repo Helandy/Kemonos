@@ -30,6 +30,7 @@ internal fun TagsPostsScreen(
     ) {
         /** Контент */
         PostsTabContent(
+            postsViewMode = state.uiSettingModel.tagsPostsViewMode,
             posts = posts,
             gridState = gridState,
             currentTag = null,

@@ -11,7 +11,7 @@ import su.afk.kemonos.common.imageLoader.previewImageLoader
 
 /** Универсальный превьюер с мок зависимостями */
 @Composable
-fun PreviewScreen(
+fun KemonoPreviewScreen(
     content: @Composable () -> Unit
 ) {
     val context = LocalContext.current

@@ -19,8 +19,8 @@ import su.afk.kemonos.common.presenter.baseScreen.BaseScreen
 import su.afk.kemonos.common.presenter.baseScreen.StandardTopBar
 import su.afk.kemonos.common.presenter.baseScreen.TopBarScroll
 import su.afk.kemonos.common.presenter.changeSite.SiteToggleFab
-import su.afk.kemonos.common.presenter.views.creator.CreatorItem
 import su.afk.kemonos.common.presenter.views.creator.grid.CreatorGridItem
+import su.afk.kemonos.common.presenter.views.creator.list.CreatorListItem
 import su.afk.kemonos.common.presenter.views.searchBar.SearchBarNew
 import su.afk.kemonos.creators.presenter.views.creatorsSortOptions
 import su.afk.kemonos.preferences.ui.CreatorViewMode
@@ -99,7 +99,7 @@ internal fun CreatorsScreen(viewModel: CreatorsViewModel) {
                 ) { index ->
                     val creator = pagingItems[index] ?: return@items
 
-                    CreatorItem(
+                    CreatorListItem(
                         service = creator.service,
                         id = creator.id,
                         name = creator.name,

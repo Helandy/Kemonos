@@ -1,4 +1,4 @@
-package su.afk.kemonos.common.presenter.postsScreen
+package su.afk.kemonos.common.presenter.postsScreen.grid
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.lazy.grid.GridCells
@@ -20,14 +20,14 @@ sealed interface PostsSource<T : Any> {
 }
 
 @Composable
-fun ProfilePostsGrid(
+fun PostsGridPaging(
     source: PostsSource<PostDomain>,
     postClick: (PostDomain) -> Unit,
     showFavCount: Boolean = false,
     gridState: LazyGridState,
-    appendLoadState: LoadState? = null,
-    onRetryAppend: (() -> Unit)? = null,
-    parseError: ((Throwable) -> ErrorItem)? = null,
+    appendLoadState: LoadState,
+    onRetryAppend: () -> Unit,
+    parseError: (Throwable) -> ErrorItem,
 ) {
     LazyVerticalGrid(
         columns = GridCells.Adaptive(minSize = 150.dp),
@@ -50,15 +50,13 @@ fun ProfilePostsGrid(
                     )
                 }
 
-                /** Loading + error retry buuton */
-                if (appendLoadState != null && onRetryAppend != null && parseError != null) {
-                    item(span = { GridItemSpan(maxLineSpan) }) {
-                        PagingAppendStateItem(
-                            loadState = appendLoadState,
-                            onRetry = onRetryAppend,
-                            parseError = parseError
-                        )
-                    }
+                /** Loading + error retry button */
+                item(span = { GridItemSpan(maxLineSpan) }) {
+                    PagingAppendStateItem(
+                        loadState = appendLoadState,
+                        onRetry = onRetryAppend,
+                        parseError = parseError
+                    )
                 }
             }
 

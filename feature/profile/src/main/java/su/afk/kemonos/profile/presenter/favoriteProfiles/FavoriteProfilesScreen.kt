@@ -1,11 +1,7 @@
 package su.afk.kemonos.profile.presenter.favoriteProfiles
 
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.DividerDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
@@ -16,7 +12,9 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import su.afk.kemonos.common.presenter.baseScreen.BaseScreen
 import su.afk.kemonos.common.presenter.baseScreen.StandardTopBar
 import su.afk.kemonos.common.presenter.baseScreen.TopBarScroll
-import su.afk.kemonos.common.presenter.views.creator.CreatorItem
+import su.afk.kemonos.common.presenter.views.creator.AdaptiveCreatorsStatic
+import su.afk.kemonos.common.presenter.views.creator.grid.CreatorGridItem
+import su.afk.kemonos.common.presenter.views.creator.list.CreatorListItem
 import su.afk.kemonos.common.presenter.views.searchBar.SearchBarNew
 import su.afk.kemonos.profile.data.FreshFavoriteArtistKey
 import su.afk.kemonos.profile.data.FreshFavoriteArtistsUpdates
@@ -65,19 +63,11 @@ internal fun FavoriteProfilesScreen(viewModel: FavoriteProfilesViewModel) {
             isRefreshing = refreshing,
             onRefresh = { viewModel.load() }
         ) {
-            LazyColumn {
-                item {
-                    HorizontalDivider(
-                        Modifier.padding(top = 4.dp),
-                        DividerDefaults.Thickness,
-                        DividerDefaults.color
-                    )
-                }
-
-                items(
-                    items = state.searchCreators,
-                    key = { "${it.service}:${it.id}:${it.indexed}" }
-                ) { creator ->
+            AdaptiveCreatorsStatic(
+                viewMode = state.uiSettingModel.creatorsFavoriteViewMode,
+                items = state.searchCreators,
+                key = { "${it.service}:${it.id}:${it.indexed}" },
+                listItem = { creator ->
                     val freshSet = FreshFavoriteArtistsUpdates.get(state.selectSite)
 
                     val isFresh = freshSet.contains(
@@ -90,7 +80,7 @@ internal fun FavoriteProfilesScreen(viewModel: FavoriteProfilesViewModel) {
 
                     val dateForCard = creator.uiDateBySort(state.sortedType)
 
-                    CreatorItem(
+                    CreatorListItem(
                         service = creator.service,
                         id = creator.id,
                         name = creator.name,
@@ -98,9 +88,25 @@ internal fun FavoriteProfilesScreen(viewModel: FavoriteProfilesViewModel) {
                         isFresh = isFresh,
                         onClick = { viewModel.onCreatorClick(creator, isFresh) }
                     )
-                    HorizontalDivider()
+                },
+                gridItem = { creator ->
+                    val freshSet = FreshFavoriteArtistsUpdates.get(state.selectSite)
+                    val isFresh = freshSet.contains(
+                        FreshFavoriteArtistKey(
+                            name = creator.name,
+                            service = creator.service,
+                            id = creator.id
+                        )
+                    )
+
+                    CreatorGridItem(
+                        service = creator.service,
+                        id = creator.id,
+                        name = creator.name,
+                        onClick = { viewModel.onCreatorClick(creator, isFresh) }
+                    )
                 }
-            }
+            )
         }
     }
 }

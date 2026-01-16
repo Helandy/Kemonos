@@ -7,8 +7,10 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.paging.LoadState
+import su.afk.kemonos.common.utilsUI.KemonoPreviewScreen
 import su.afk.kemonos.domain.models.ErrorItem
 
 /**
@@ -40,5 +42,39 @@ internal fun PagingAppendStateItem(
         }
 
         is LoadState.NotLoading -> Unit
+    }
+}
+
+@Preview("PagingAppend • Loading")
+@Composable
+private fun PreviewPagingAppendLoading() {
+    KemonoPreviewScreen {
+        PagingAppendStateItem(
+            loadState = LoadState.Loading,
+            onRetry = {},
+            parseError = { error ->
+                ErrorItem(
+                    title = "Error",
+                    message = error.message ?: "Unknown error"
+                )
+            }
+        )
+    }
+}
+
+@Preview("PagingAppend • Error")
+@Composable
+private fun PreviewPagingAppendError() {
+    KemonoPreviewScreen {
+        PagingAppendStateItem(
+            loadState = LoadState.Error(RuntimeException("Network error")),
+            onRetry = {},
+            parseError = { error ->
+                ErrorItem(
+                    title = "Error",
+                    message = error.message ?: "Unknown error"
+                )
+            }
+        )
     }
 }

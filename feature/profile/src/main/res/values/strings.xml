@@ -116,14 +116,19 @@
     <string name="settings_ui_hint">Display and behavior settings.</string>
     <!-- UI settings -->
     <string name="settings_ui_creators_view_mode">Creators view</string>
+    <string name="settings_ui_creators_favorite_view_mode">Creators favorites view</string>
 
     <!-- Creator view mode -->
     <string name="settings_ui_view_mode_list">List</string>
     <string name="settings_ui_view_mode_grid">Grid</string>
 
     <string name="settings_debug_skip_api_check_title">Skip API check on login</string>
-    <string name="settings_debug_skip_api_check_hint">Debug only. Bypasses API availability check when signing in.
-    </string>
+    <string name="settings_debug_skip_api_check_hint">Debug only</string>
 
-
+    <string name="settings_ui_posts_view_mode">Posts layout</string>
+    <string name="settings_ui_posts_view_mode_profile">Profile posts layout</string>
+    <string name="settings_ui_posts_view_mode_favorite">Favorites posts layout</string>
+    <string name="settings_ui_posts_view_mode_popular">Popular posts layout</string>
+    <string name="settings_ui_posts_view_mode_tags">Tags posts layout</string>
+    <string name="settings_ui_posts_view_mode_search">Search posts layout</string>
 </resources>

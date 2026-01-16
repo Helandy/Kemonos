@@ -19,7 +19,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import su.afk.kemonos.common.R
 import su.afk.kemonos.common.di.LocalDomainResolver
 import su.afk.kemonos.common.presenter.baseScreen.BaseScreen
-import su.afk.kemonos.common.presenter.views.creator.CreatorHeader
+import su.afk.kemonos.common.presenter.views.creator.header.CreatorHeader
 import su.afk.kemonos.common.presenter.views.elements.FavoriteActionButton
 import su.afk.kemonos.common.shared.ShareActions
 import su.afk.kemonos.common.shared.view.SharedActionButton

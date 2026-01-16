@@ -13,6 +13,7 @@ import su.afk.kemonos.preferences.GetKemonoRootUrlUseCase
 import su.afk.kemonos.preferences.siteUrl.ISetBaseUrlsUseCase
 import su.afk.kemonos.preferences.ui.CreatorViewMode
 import su.afk.kemonos.preferences.ui.IUiSettingUseCase
+import su.afk.kemonos.preferences.ui.PostsViewMode
 import su.afk.kemonos.preferences.useCase.CacheKeys
 import su.afk.kemonos.preferences.useCase.CacheTimes
 import su.afk.kemonos.preferences.useCase.ICacheTimestampUseCase
@@ -131,13 +132,44 @@ internal class SettingViewModel @Inject constructor(
             .launchIn(viewModelScope)
     }
 
+    /** Debug: пропустить проверку API при входе */
+    fun setSkipApiCheckOnLogin(value: Boolean) = viewModelScope.launch {
+        uiSetting.setSkipApiCheckOnLogin(value)
+    }
+
     /** Вид отображения авторов  */
     fun setCreatorsViewMode(value: CreatorViewMode) = viewModelScope.launch {
         uiSetting.setCreatorsViewMode(value)
     }
 
-    /** Debug: пропустить проверку API при входе */
-    fun setSkipApiCheckOnLogin(value: Boolean) = viewModelScope.launch {
-        uiSetting.setSkipApiCheckOnLogin(value)
+    /** Вид отображения авторов избранное */
+    fun setCreatorsFavoriteViewMode(value: CreatorViewMode) = viewModelScope.launch {
+        uiSetting.setCreatorsFavoriteViewMode(value)
     }
+
+    /** Посты: профиль */
+    fun setProfilePostsViewMode(value: PostsViewMode) = viewModelScope.launch {
+        uiSetting.setProfilePostsViewMode(value)
+    }
+
+    /** Посты: избранное */
+    fun setFavoritePostsViewMode(value: PostsViewMode) = viewModelScope.launch {
+        uiSetting.setFavoritePostsViewMode(value)
+    }
+
+    /** Посты: популярное */
+    fun setPopularPostsViewMode(value: PostsViewMode) = viewModelScope.launch {
+        uiSetting.setPopularPostsViewMode(value)
+    }
+
+    /** Посты: теги */
+    fun setTagsPostsViewMode(value: PostsViewMode) = viewModelScope.launch {
+        uiSetting.setTagsPostsViewMode(value)
+    }
+
+    /** Посты: поиск */
+    fun setSearchPostsViewMode(value: PostsViewMode) = viewModelScope.launch {
+        uiSetting.setSearchPostsViewMode(value)
+    }
+
 }

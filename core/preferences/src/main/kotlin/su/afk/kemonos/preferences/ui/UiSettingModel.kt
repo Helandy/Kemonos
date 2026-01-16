@@ -1,42 +1,32 @@
 package su.afk.kemonos.preferences.ui
 
 enum class CreatorViewMode { LIST, GRID }
-//enum class PostsViewMode { GRID, LIST }
-//enum class PostPageMode { NORMAL, ONE_POST_PER_PAGE }
-
-//enum class DownloadPathTemplate {
-//    USER_POST_DATE_ID, // User/Post.Date.Id
-//    POST_DATE_ID_USER, // Post.Date.Id.User
-//    GROUP_BY_USER,     // User/...
-//}
-
-//enum class PopularDateFormat { MONTH_MONTH, DD_MM } // пример, настроишь как надо
-//enum class TranslationTarget { APP, GOOGLE_TRANSLATE } // LATER "открывать гугл переводчик"
+enum class PostsViewMode { LIST, GRID }
 
 data class UiSettingModel(
-    /** Вид отображения авторов  */
-    val creatorsViewMode: CreatorViewMode = DEFAULT_CREATORS_VIEW_MODE,
 
     /** debug-only: пропустить проверку API при входе */
     val skipApiCheckOnLogin: Boolean = false,
 
-//    val postsViewMode: PostsViewMode = PostsViewMode.GRID,
-//    val postPageMode: PostPageMode = PostPageMode.NORMAL, // LATER
+    /** Вид отображения авторов на главной */
+    val creatorsViewMode: CreatorViewMode = DEFAULT_CREATORS_VIEW_MODE,
 
-//    val downloadFolderUri: String? = null,               // LATER (SAF uri)
-//    val downloadCatalogVersion: Int = 1,                 // LATER
-//    val downloadPathTemplate: DownloadPathTemplate = DownloadPathTemplate.USER_POST_DATE_ID, // LATER
+    /** Вид отображения избранное  */
+    val creatorsFavoriteViewMode: CreatorViewMode = DEFAULT_CREATORS_VIEW_MODE,
 
-//    val suggestRandomCreatorsOnLaunch: Boolean = false,  // LATER
-//
-//    val popularDateFormat: PopularDateFormat = PopularDateFormat.MONTH_MONTH, // LATER
-//
-//    val translateTarget: TranslationTarget = TranslationTarget.APP, // LATER
-//    val translateLanguage: String = "en",                              // LATER конечный язык (ISO code)
-//
-//    val experimentalCalendar: Boolean = false,            // LATER
+    /** Посты: профиль автора */
+    val profilePostsViewMode: PostsViewMode = DEFAULT_POSTS_VIEW_MODE,
+    /** Посты: избранное */
+    val favoritePostsViewMode: PostsViewMode = DEFAULT_POSTS_VIEW_MODE,
+    /** Посты: популярное */
+    val popularPostsViewMode: PostsViewMode = DEFAULT_POSTS_VIEW_MODE,
+    /** Посты: теги */
+    val tagsPostsViewMode: PostsViewMode = DEFAULT_POSTS_VIEW_MODE,
+    /** Посты: поиск */
+    val searchPostsViewMode: PostsViewMode = DEFAULT_POSTS_VIEW_MODE,
 ) {
     companion object {
         val DEFAULT_CREATORS_VIEW_MODE = CreatorViewMode.LIST
+        val DEFAULT_POSTS_VIEW_MODE = PostsViewMode.GRID
     }
 }

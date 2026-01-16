@@ -116,13 +116,21 @@
     <string name="settings_ui_hint">Настройки отображения и поведения приложения.</string>
     <!-- UI настройки -->
     <string name="settings_ui_creators_view_mode">Вид авторов</string>
+    <string name="settings_ui_creators_favorite_view_mode">Вид авторов в избранном</string>
 
     <!-- Режим отображения авторов -->
     <string name="settings_ui_view_mode_list">Список</string>
     <string name="settings_ui_view_mode_grid">Сетка</string>
 
     <string name="settings_debug_skip_api_check_title">Пропустить проверку API при входе</string>
-    <string name="settings_debug_skip_api_check_hint">Только для Debug. Пропускает проверку доступности API при входе.
-    </string>
+    <string name="settings_debug_skip_api_check_hint">Только для Debug</string>
+
+    <string name="settings_ui_posts_view_mode">Отображение постов</string>
+
+    <string name="settings_ui_posts_view_mode_profile">Вид постов в профиле</string>
+    <string name="settings_ui_posts_view_mode_favorite">Вид постов в избранном</string>
+    <string name="settings_ui_posts_view_mode_popular">Вид постов в популярном</string>
+    <string name="settings_ui_posts_view_mode_tags">Вид постов в тегах</string>
+    <string name="settings_ui_posts_view_mode_search">Вид постов в поиске</string>
 
 </resources>

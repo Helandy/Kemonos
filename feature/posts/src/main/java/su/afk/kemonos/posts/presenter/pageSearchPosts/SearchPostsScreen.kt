@@ -89,6 +89,7 @@ internal fun SearchPostsScreen(
     ) {
         /** Контент */
         PostsTabContent(
+            postsViewMode = state.uiSettingModel.searchPostsViewMode,
             posts = posts,
             currentTag = null,
             onPostClick = viewModel::navigateToPost,

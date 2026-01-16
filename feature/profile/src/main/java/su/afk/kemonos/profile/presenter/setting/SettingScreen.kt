@@ -40,8 +40,14 @@ internal fun SettingScreen(viewModel: SettingViewModel) {
 
         UISettingBlock(
             state = state,
+            onSkipApiCheckOnLogin = viewModel::setSkipApiCheckOnLogin,
             onCreatorsViewMode = viewModel::setCreatorsViewMode,
-            onSkipApiCheckOnLogin = viewModel::setSkipApiCheckOnLogin
+            onCreatorsFavoriteViewMode = viewModel::setCreatorsFavoriteViewMode,
+            onProfilePostsViewMode = viewModel::setProfilePostsViewMode,
+            onFavoritePostsViewMode = viewModel::setFavoritePostsViewMode,
+            onPopularPostsViewMode = viewModel::setPopularPostsViewMode,
+            onTagsPostsViewMode = viewModel::setTagsPostsViewMode,
+            onSearchPostsViewMode = viewModel::setSearchPostsViewMode,
         )
 
         Spacer(Modifier.height(32.dp))

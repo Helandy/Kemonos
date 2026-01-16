@@ -22,7 +22,7 @@ import su.afk.kemonos.common.di.LocalDomainResolver
 import su.afk.kemonos.common.imageLoader.AsyncImageWithStatus
 import su.afk.kemonos.common.presenter.views.utilUI.formatNumberWithSpaces
 import su.afk.kemonos.common.util.getColorForFavorites
-import su.afk.kemonos.common.utilsUI.PreviewScreen
+import su.afk.kemonos.common.utilsUI.KemonoPreviewScreen
 
 @Composable
 fun CreatorGridItem(
@@ -147,7 +147,7 @@ fun CreatorGridItem(
 @Preview("previewCreatorGridItem")
 @Composable
 private fun PreviewCreatorGridItem() {
-    PreviewScreen {
+    KemonoPreviewScreen {
         CreatorGridItem(
             service = "patreon",
             id = "1",

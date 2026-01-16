@@ -6,6 +6,9 @@ import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.receiveAsFlow
 import su.afk.kemonos.common.error.IErrorHandlerUseCase
 import su.afk.kemonos.common.error.storage.RetryStorage
@@ -27,6 +30,7 @@ import su.afk.kemonos.domain.models.Tag
 import su.afk.kemonos.navigation.NavigationManager
 import su.afk.kemonos.preferences.GetKemonoRootUrlUseCase
 import su.afk.kemonos.preferences.IGetCurrentSiteRootUrlUseCase
+import su.afk.kemonos.preferences.ui.IUiSettingUseCase
 import su.afk.kemonos.storage.api.profilePosts.IStorageCreatorPostsCacheUseCase
 
 internal class CreatorProfileViewModel @AssistedInject constructor(
@@ -40,6 +44,7 @@ internal class CreatorProfileViewModel @AssistedInject constructor(
     private val getProfilePostsPagingUseCase: GetProfilePostsPagingUseCase,
     private val navManager: NavigationManager,
     private val postsCache: IStorageCreatorPostsCacheUseCase,
+    private val uiSetting: IUiSettingUseCase,
     override val errorHandler: IErrorHandlerUseCase,
     override val retryStorage: RetryStorage,
 ) : BaseViewModel<CreatorProfileState>(CreatorProfileState()) {
@@ -62,7 +67,17 @@ internal class CreatorProfileViewModel @AssistedInject constructor(
         loadProfileAndPosts()
     }
 
+    /** UI настройки */
+    private fun observeUiSetting() {
+        uiSetting.prefs.distinctUntilChanged()
+            .onEach { model ->
+                setState { copy(uiSettingModel = model) }
+            }
+            .launchIn(viewModelScope)
+    }
+
     init {
+        observeUiSetting()
         setState {
             copy(
                 service = dest.service,

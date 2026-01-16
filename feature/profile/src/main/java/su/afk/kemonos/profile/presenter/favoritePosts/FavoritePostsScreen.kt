@@ -20,8 +20,10 @@ import su.afk.kemonos.common.R
 import su.afk.kemonos.common.presenter.baseScreen.BaseScreen
 import su.afk.kemonos.common.presenter.baseScreen.StandardTopBar
 import su.afk.kemonos.common.presenter.baseScreen.TopBarScroll
-import su.afk.kemonos.common.presenter.postsScreen.PostsSource
-import su.afk.kemonos.common.presenter.postsScreen.ProfilePostsGrid
+import su.afk.kemonos.common.presenter.postsScreen.grid.PostsGrid
+import su.afk.kemonos.common.presenter.postsScreen.grid.PostsSource
+import su.afk.kemonos.common.presenter.postsScreen.list.PostsList
+import su.afk.kemonos.preferences.ui.PostsViewMode
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -68,13 +70,22 @@ internal fun FavoritePostsScreen(viewModel: FavoritePostsViewModel) {
             isRefreshing = refreshing,
             onRefresh = { viewModel.load() }
         ) {
-            ProfilePostsGrid(
-                source = PostsSource.Static(state.favoritePosts),
-                postClick = { post ->
-                    viewModel.navigateToPost(post)
-                },
-                gridState = gridState,
-            )
+            when (state.uiSettingModel.favoritePostsViewMode) {
+                PostsViewMode.GRID -> {
+                    PostsGrid(
+                        source = PostsSource.Static(state.favoritePosts),
+                        postClick = { viewModel.navigateToPost(it) },
+                        gridState = gridState,
+                    )
+                }
+
+                PostsViewMode.LIST -> {
+                    PostsList(
+                        source = PostsSource.Static(state.favoritePosts),
+                        onPostClick = { viewModel.navigateToPost(it) },
+                    )
+                }
+            }
         }
     }
 }

@@ -1,4 +1,4 @@
-package su.afk.kemonos.common.presenter.views.creator
+package su.afk.kemonos.common.presenter.views.creator.list
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -24,7 +24,7 @@ import su.afk.kemonos.common.util.getColorForFavorites
 import su.afk.kemonos.common.util.toUiDateTime
 
 @Composable
-fun CreatorItem(
+fun CreatorListItem(
     service: String,
     id: String,
     name: String,

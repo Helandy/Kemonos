@@ -20,7 +20,7 @@ import su.afk.kemonos.common.presenter.baseScreen.BaseScreen
 import su.afk.kemonos.common.presenter.baseScreen.StandardTopBar
 import su.afk.kemonos.common.presenter.baseScreen.TopBarScroll
 import su.afk.kemonos.common.presenter.postsScreen.paging.PostsTabContent
-import su.afk.kemonos.common.presenter.views.creator.CreatorHeader
+import su.afk.kemonos.common.presenter.views.creator.header.CreatorHeader
 import su.afk.kemonos.common.presenter.views.elements.FavoriteActionButton
 import su.afk.kemonos.common.shared.ShareActions
 import su.afk.kemonos.common.shared.view.SharedActionButton
@@ -114,37 +114,35 @@ internal fun CreatorScreen(
                 scrollBehavior = scrollBehavior,
                 windowInsets = WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)
             ) {
-                Column {
-                    if (profile == null) return@Column
+                if (profile == null) return@StandardTopBar
 
-                    CreatorHeader(
-                        service = profile.service,
-                        creatorId = profile.id,
-                        creatorName = profile.name,
-                        updated = profile.updated,
-                        showSearchButton = true,
-                        showInfoButton = true,
-                        onSearchClick = { viewModel.toggleSearch() },
-                        onClickHeader = null
-                    )
+                CreatorHeader(
+                    service = profile.service,
+                    creatorId = profile.id,
+                    creatorName = profile.name,
+                    updated = profile.updated,
+                    showSearchButton = true,
+                    showInfoButton = true,
+                    onSearchClick = { viewModel.toggleSearch() },
+                    onClickHeader = null
+                )
 
-                    SearchBar(
-                        searchText = state.searchText,
-                        onSearchTextChange = viewModel::setSearchText,
-                        visible = state.isSearchVisible,
-                        onClose = { viewModel.closeSearch() }
-                    )
+                SearchBar(
+                    searchText = state.searchText,
+                    onSearchTextChange = viewModel::setSearchText,
+                    visible = state.isSearchVisible,
+                    onClose = { viewModel.closeSearch() }
+                )
 
-                    ProfileTabsBar(
-                        tabs = state.showTabs,
-                        selectedTab = state.selectedTab,
-                        onTabSelected = { tab ->
-                            viewModel.onTabChanged(tab)
-                        },
-                        currentTag = state.currentTag,
-                        onTagClear = { viewModel.clearTag() }
-                    )
-                }
+                ProfileTabsBar(
+                    tabs = state.showTabs,
+                    selectedTab = state.selectedTab,
+                    onTabSelected = { tab ->
+                        viewModel.onTabChanged(tab)
+                    },
+                    currentTag = state.currentTag,
+                    onTagClear = { viewModel.clearTag() }
+                )
             }
         },
         contentModifier = Modifier.padding(horizontal = 8.dp),
@@ -203,6 +201,7 @@ private fun SelectedTab(
 ) {
     when (state.selectedTab) {
         ProfileTab.POSTS -> PostsTabContent(
+            postsViewMode = state.uiSettingModel.profilePostsViewMode,
             posts = posts,
             gridState = gridState,
             currentTag = state.currentTag,

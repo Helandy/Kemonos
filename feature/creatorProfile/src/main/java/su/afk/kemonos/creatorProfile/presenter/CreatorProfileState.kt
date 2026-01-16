@@ -11,6 +11,7 @@ import su.afk.kemonos.creatorProfile.presenter.model.ProfileTab
 import su.afk.kemonos.domain.models.PostDomain
 import su.afk.kemonos.domain.models.Profile
 import su.afk.kemonos.domain.models.Tag
+import su.afk.kemonos.preferences.ui.UiSettingModel
 
 internal data class CreatorProfileState(
     val loading: Boolean = false,
@@ -54,6 +55,8 @@ internal data class CreatorProfileState(
     val isFavoriteShowButton: Boolean = false,
     val isFavorite: Boolean = false,
     val favoriteActionLoading: Boolean = false,
+
+    val uiSettingModel: UiSettingModel = UiSettingModel(),
 )
 
 sealed interface CreatorProfileEffect {

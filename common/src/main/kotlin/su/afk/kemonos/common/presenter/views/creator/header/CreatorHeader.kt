@@ -1,4 +1,4 @@
-package su.afk.kemonos.common.presenter.views.creator
+package su.afk.kemonos.common.presenter.views.creator.header
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border

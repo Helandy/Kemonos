@@ -7,14 +7,17 @@ import androidx.paging.compose.LazyPagingItems
 import su.afk.kemonos.common.error.view.DefaultErrorContent
 import su.afk.kemonos.common.presenter.baseScreen.DefaultEmptyContent
 import su.afk.kemonos.common.presenter.baseScreen.DefaultLoadingContent
-import su.afk.kemonos.common.presenter.postsScreen.PostsSource
-import su.afk.kemonos.common.presenter.postsScreen.ProfilePostsGrid
+import su.afk.kemonos.common.presenter.postsScreen.grid.PostsGridPaging
+import su.afk.kemonos.common.presenter.postsScreen.grid.PostsSource
+import su.afk.kemonos.common.presenter.postsScreen.list.PostsListPaging
 import su.afk.kemonos.domain.models.ErrorItem
 import su.afk.kemonos.domain.models.PostDomain
 import su.afk.kemonos.domain.models.Tag
+import su.afk.kemonos.preferences.ui.PostsViewMode
 
 @Composable
 fun PostsTabContent(
+    postsViewMode: PostsViewMode,
     posts: LazyPagingItems<PostDomain>,
     gridState: LazyGridState,
     currentTag: Tag?,
@@ -23,15 +26,30 @@ fun PostsTabContent(
     showFavCount: Boolean = false,
     parseError: (Throwable) -> ErrorItem,
 ) {
-    ProfilePostsGrid(
-        source = PostsSource.Paging(posts),
-        postClick = onPostClick,
-        showFavCount = showFavCount,
-        gridState = gridState,
-        appendLoadState = posts.loadState.append,
-        onRetryAppend = { posts.retry() },
-        parseError = parseError
-    )
+    when (postsViewMode) {
+        PostsViewMode.GRID -> {
+            PostsGridPaging(
+                source = PostsSource.Paging(posts),
+                postClick = onPostClick,
+                showFavCount = showFavCount,
+                gridState = gridState,
+                appendLoadState = posts.loadState.append,
+                onRetryAppend = { posts.retry() },
+                parseError = parseError
+            )
+        }
+
+        PostsViewMode.LIST -> {
+            PostsListPaging(
+                posts = posts,
+                onPostClick = onPostClick,
+                showFavCount = showFavCount,
+                appendLoadState = posts.loadState.append,
+                onRetryAppend = { posts.retry() },
+                parseError = parseError
+            )
+        }
+    }
 
     when (val refresh = posts.loadState.refresh) {
         is LoadState.Loading -> DefaultLoadingContent()
