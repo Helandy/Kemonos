@@ -13,6 +13,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -99,7 +100,7 @@ fun CreatorHeader(
                     Text(
                         text = creatorName,
                         style = MaterialTheme.typography.titleLarge,
-                        color = accent,
+                        color = Color.White,
                         maxLines = 1
                     )
 
@@ -133,7 +134,7 @@ fun CreatorHeader(
                             Icon(
                                 imageVector = Icons.Default.Search,
                                 contentDescription = stringResource(R.string.search),
-                                tint = accent
+                                tint = Color.White
                             )
                         }
                     }
@@ -143,7 +144,7 @@ fun CreatorHeader(
                             Icon(
                                 imageVector = Icons.Default.Info,
                                 contentDescription = stringResource(R.string.info),
-                                tint = accent
+                                tint = Color.White
                             )
                         }
 
