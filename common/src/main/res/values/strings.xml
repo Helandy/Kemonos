@@ -208,4 +208,7 @@
         large delays.
         You can still download content manually from each post if needed.
     </string>
+
+
+    <string name="random_creators_title">Random creators</string>
 </resources>

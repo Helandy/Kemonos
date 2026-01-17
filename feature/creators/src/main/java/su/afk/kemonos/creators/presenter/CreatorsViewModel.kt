@@ -43,6 +43,7 @@ internal class CreatorsViewModel @Inject constructor(
         }
     }
 
+    /** Смена сайта и первичная загрузка */
     override suspend fun reloadSite(site: SelectedSite) {
         setState {
             copy(
@@ -58,8 +59,8 @@ internal class CreatorsViewModel @Inject constructor(
     }
 
     init {
-        initSiteAware()
         observeUiSetting()
+        initSiteAware()
     }
 
     /** UI настройки */
@@ -88,15 +89,36 @@ internal class CreatorsViewModel @Inject constructor(
 
     private fun rebuildPaging() {
         val s = state.value.selectedService
-        val q = state.value.searchQuery
+        val qRaw = state.value.searchQuery
+        val q = qRaw.trim()
         val sort = state.value.sortedType
         val asc = state.value.sortAscending
 
         val flow = getCreatorsPagedUseCase
-            .paging(service = s, query = q, sort = sort, ascending = asc)
+            .paging(service = s, query = qRaw, sort = sort, ascending = asc) // или q — как у тебя принято
             .cachedIn(viewModelScope)
 
         setState { copy(creatorsPaged = flow) }
+
+        /** Рандомные авторы */
+        viewModelScope.launch {
+            val suggest = state.value.uiSettingModel.suggestRandomAuthors
+
+            // не показываем в режиме поиска
+            val shouldShow = suggest && q.isEmpty()
+
+            if (!shouldShow) {
+                setState { copy(randomSuggestions = emptyList()) }
+                return@launch
+            }
+
+            val list = getCreatorsPagedUseCase.randomSuggestions(
+                service = s,
+                query = "",
+                limit = 50
+            )
+            setState { copy(randomSuggestions = list) }
+        }
     }
 
     private suspend fun ensureFreshAndReloadServices() {

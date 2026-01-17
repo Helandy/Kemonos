@@ -24,9 +24,13 @@ data class UiSettingModel(
     val tagsPostsViewMode: PostsViewMode = DEFAULT_POSTS_VIEW_MODE,
     /** Посты: поиск */
     val searchPostsViewMode: PostsViewMode = DEFAULT_POSTS_VIEW_MODE,
+
+    /** Предлагать рандомных авторов */
+    val suggestRandomAuthors: Boolean = DEFAULT_SUGGEST_RANDOM_AUTHORS
 ) {
     companion object {
         val DEFAULT_CREATORS_VIEW_MODE = CreatorViewMode.LIST
         val DEFAULT_POSTS_VIEW_MODE = PostsViewMode.GRID
+        val DEFAULT_SUGGEST_RANDOM_AUTHORS = false
     }
 }

@@ -41,6 +41,7 @@ internal fun SettingScreen(viewModel: SettingViewModel) {
         UISettingBlock(
             state = state,
             onSkipApiCheckOnLogin = viewModel::setSkipApiCheckOnLogin,
+            onSuggestRandomAuthors = viewModel::setSuggestRandomAuthors,
             onCreatorsViewMode = viewModel::setCreatorsViewMode,
             onCreatorsFavoriteViewMode = viewModel::setCreatorsFavoriteViewMode,
             onProfilePostsViewMode = viewModel::setProfilePostsViewMode,

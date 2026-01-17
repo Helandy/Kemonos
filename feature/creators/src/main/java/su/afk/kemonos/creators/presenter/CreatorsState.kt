@@ -24,6 +24,9 @@ data class CreatorsState(
     /** Пейджинг-результаты из БД. */
     val creatorsPaged: Flow<PagingData<Creators>> = flowOf(PagingData.empty()),
 
+    /** Рандомные авторы */
+    val randomSuggestions: List<Creators> = emptyList(),
+
     val selectedSite: SelectedSite = SelectedSite.K,
     val uiSettingModel: UiSettingModel = UiSettingModel(),
 )

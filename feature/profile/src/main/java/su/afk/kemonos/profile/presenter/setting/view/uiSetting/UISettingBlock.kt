@@ -20,6 +20,7 @@ import su.afk.kemonos.profile.presenter.setting.SettingState
 internal fun UISettingBlock(
     state: SettingState.State,
     onSkipApiCheckOnLogin: (Boolean) -> Unit,
+    onSuggestRandomAuthors: (Boolean) -> Unit,
     onCreatorsViewMode: (CreatorViewMode) -> Unit,
     onCreatorsFavoriteViewMode: (CreatorViewMode) -> Unit,
     onProfilePostsViewMode: (PostsViewMode) -> Unit,
@@ -58,6 +59,14 @@ internal fun UISettingBlock(
 
             Spacer(Modifier.height(8.dp))
 
+            SwitchRow(
+                title = stringResource(R.string.settings_ui_suggest_random_authors_title),
+                checked = ui.suggestRandomAuthors,
+                onCheckedChange = onSuggestRandomAuthors,
+            )
+
+            Spacer(Modifier.height(8.dp))
+
             CreatorsViewModeRow(
                 title = stringResource(R.string.settings_ui_creators_view_mode),
                 value = ui.creatorsViewMode,
@@ -66,7 +75,7 @@ internal fun UISettingBlock(
 
             CreatorsViewModeRow(
                 title = stringResource(R.string.settings_ui_creators_favorite_view_mode),
-                value = ui.creatorsViewMode,
+                value = ui.creatorsFavoriteViewMode,
                 onChange = onCreatorsFavoriteViewMode
             )
 

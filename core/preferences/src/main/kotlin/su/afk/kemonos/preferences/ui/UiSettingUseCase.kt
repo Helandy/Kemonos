@@ -27,6 +27,8 @@ internal class UiSettingUseCase @Inject constructor(
             popularPostsViewMode = p.readEnum(POPULAR_POSTS_VIEW_MODE, UiSettingModel.DEFAULT_POSTS_VIEW_MODE),
             tagsPostsViewMode = p.readEnum(TAGS_POSTS_VIEW_MODE, UiSettingModel.DEFAULT_POSTS_VIEW_MODE),
             searchPostsViewMode = p.readEnum(SEARCH_POSTS_VIEW_MODE, UiSettingModel.DEFAULT_POSTS_VIEW_MODE),
+
+            suggestRandomAuthors = p[SUGGEST_RANDOM_AUTHORS] ?: UiSettingModel.DEFAULT_SUGGEST_RANDOM_AUTHORS,
         )
     }
 
@@ -72,6 +74,13 @@ internal class UiSettingUseCase @Inject constructor(
         dataStore.edit { it[SEARCH_POSTS_VIEW_MODE] = value.name }
     }
 
+    /** Предлагать рандомных авторов */
+    override suspend fun setSuggestRandomAuthors(value: Boolean) {
+        dataStore.edit {
+            it[SUGGEST_RANDOM_AUTHORS] = value
+        }
+    }
+
 
     // ---- helpers ----
     private inline fun <reified T : Enum<T>> Preferences.readEnum(
@@ -92,5 +101,7 @@ internal class UiSettingUseCase @Inject constructor(
         val POPULAR_POSTS_VIEW_MODE = stringPreferencesKey("POPULAR_POSTS_VIEW_MODE")
         val TAGS_POSTS_VIEW_MODE = stringPreferencesKey("TAGS_POSTS_VIEW_MODE")
         val SEARCH_POSTS_VIEW_MODE = stringPreferencesKey("SEARCH_POSTS_VIEW_MODE")
+
+        val SUGGEST_RANDOM_AUTHORS = booleanPreferencesKey("SUGGEST_RANDOM_AUTHORS")
     }
 }

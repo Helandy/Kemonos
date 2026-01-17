@@ -172,4 +172,8 @@ internal class SettingViewModel @Inject constructor(
         uiSetting.setSearchPostsViewMode(value)
     }
 
+    /** Предлагать рандомных авторов */
+    fun setSuggestRandomAuthors(value: Boolean) = viewModelScope.launch {
+        uiSetting.setSuggestRandomAuthors(value)
+    }
 }

@@ -27,6 +27,13 @@ interface IStoreCreatorsRepository {
         limit: Int,
         offset: Int,
     ): List<CreatorsEntity>
+
+    suspend fun randomCreators(
+        site: SelectedSite,
+        service: String,
+        query: String,
+        limit: Int,
+    ): List<CreatorsEntity>
 }
 
 internal class StoreCreatorsRepository @Inject constructor(
@@ -129,6 +136,16 @@ internal class StoreCreatorsRepository @Inject constructor(
         CreatorsSort.NAME ->
             if (ascending) coomerDao.searchNameAsc(service, q, limit, offset)
             else coomerDao.searchNameDesc(service, q, limit, offset)
+    }
+
+    override suspend fun randomCreators(
+        site: SelectedSite,
+        service: String,
+        query: String,
+        limit: Int
+    ): List<CreatorsEntity> = when (site) {
+        SelectedSite.K -> kemonoDao.randomCreators(service, query.trim(), limit)
+        SelectedSite.C -> coomerDao.randomCreators(service, query.trim(), limit)
     }
 
     private fun key(site: SelectedSite): String =

@@ -1,28 +1,25 @@
 package su.afk.kemonos.creators.presenter
 
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.material3.DividerDefaults
+import androidx.compose.foundation.lazy.LazyListState
+import androidx.compose.foundation.lazy.grid.LazyGridState
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.paging.LoadState
 import androidx.paging.compose.collectAsLazyPagingItems
-import androidx.paging.compose.itemKey
 import su.afk.kemonos.common.presenter.baseScreen.BaseScreen
 import su.afk.kemonos.common.presenter.baseScreen.StandardTopBar
 import su.afk.kemonos.common.presenter.baseScreen.TopBarScroll
 import su.afk.kemonos.common.presenter.changeSite.SiteToggleFab
-import su.afk.kemonos.common.presenter.views.creator.grid.CreatorGridItem
-import su.afk.kemonos.common.presenter.views.creator.list.CreatorListItem
 import su.afk.kemonos.common.presenter.views.searchBar.SearchBarNew
-import su.afk.kemonos.creators.presenter.views.creatorsSortOptions
+import su.afk.kemonos.creators.presenter.model.creatorsSortOptions
+import su.afk.kemonos.creators.presenter.views.CreatorsContentPaging
 import su.afk.kemonos.preferences.ui.CreatorViewMode
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -44,6 +41,26 @@ internal fun CreatorsScreen(viewModel: CreatorsViewModel) {
     val showEmpty = state.searchQuery.trim().length >= 2 &&
             pagingItems.loadState.refresh is LoadState.NotLoading &&
             pagingItems.itemCount == 0
+
+    val listState = rememberSaveable(saver = LazyListState.Saver) { LazyListState() }
+    val gridState = rememberSaveable(saver = LazyGridState.Saver) { LazyGridState() }
+
+    // ключ, который меняется, когда random секция появляется/исчезает
+    val randomVisible = state.randomSuggestions.isNotEmpty()
+
+    LaunchedEffect(
+        state.uiSettingModel.creatorsViewMode,
+        randomVisible,
+        state.searchQuery.trim(),
+        state.selectedService,
+        state.sortedType,
+        state.sortAscending
+    ) {
+        when (state.uiSettingModel.creatorsViewMode) {
+            CreatorViewMode.LIST -> listState.scrollToItem(0)
+            CreatorViewMode.GRID -> gridState.scrollToItem(0)
+        }
+    }
 
     BaseScreen(
         isScroll = false,
@@ -83,53 +100,13 @@ internal fun CreatorsScreen(viewModel: CreatorsViewModel) {
     ) {
         val viewMode = state.uiSettingModel.creatorsViewMode
 
-        if (viewMode == CreatorViewMode.LIST) {
-            LazyColumn {
-                item {
-                    HorizontalDivider(
-                        Modifier.padding(top = 4.dp),
-                        DividerDefaults.Thickness,
-                        DividerDefaults.color
-                    )
-                }
-
-                items(
-                    count = pagingItems.itemCount,
-                    key = pagingItems.itemKey { "${it.service}:${it.id}:${it.indexed}" }
-                ) { index ->
-                    val creator = pagingItems[index] ?: return@items
-
-                    CreatorListItem(
-                        service = creator.service,
-                        id = creator.id,
-                        name = creator.name,
-                        favorited = creator.favorited,
-                        onClick = { viewModel.onCreatorClick(creator) }
-                    )
-                    HorizontalDivider()
-                }
-            }
-        } else {
-            LazyVerticalGrid(
-                columns = GridCells.Adaptive(minSize = 150.dp),
-                verticalArrangement = Arrangement.spacedBy(6.dp),
-                horizontalArrangement = Arrangement.spacedBy(6.dp),
-            ) {
-                items(
-                    count = pagingItems.itemCount,
-                    key = pagingItems.itemKey { "${it.service}:${it.id}:${it.indexed}" }
-                ) { index ->
-                    val creator = pagingItems[index] ?: return@items
-
-                    CreatorGridItem(
-                        service = creator.service,
-                        id = creator.id,
-                        name = creator.name,
-                        favorited = creator.favorited,
-                        onClick = { viewModel.onCreatorClick(creator) }
-                    )
-                }
-            }
-        }
+        CreatorsContentPaging(
+            viewMode = viewMode,
+            pagingItems = pagingItems,
+            randomItems = if (state.searchQuery.trim().isEmpty()) state.randomSuggestions else emptyList(),
+            onCreatorClick = viewModel::onCreatorClick,
+            listState = listState,
+            gridState = gridState,
+        )
     }
 }

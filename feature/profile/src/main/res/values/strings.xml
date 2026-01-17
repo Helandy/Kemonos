@@ -131,4 +131,8 @@
     <string name="settings_ui_posts_view_mode_popular">Popular posts layout</string>
     <string name="settings_ui_posts_view_mode_tags">Tags posts layout</string>
     <string name="settings_ui_posts_view_mode_search">Search posts layout</string>
+
+    <string name="settings_ui_suggest_random_authors_title">
+        Suggest random creators
+    </string>
 </resources>

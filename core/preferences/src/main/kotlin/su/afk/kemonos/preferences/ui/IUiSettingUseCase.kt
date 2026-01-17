@@ -20,4 +20,7 @@ interface IUiSettingUseCase {
     suspend fun setPopularPostsViewMode(value: PostsViewMode)
     suspend fun setTagsPostsViewMode(value: PostsViewMode)
     suspend fun setSearchPostsViewMode(value: PostsViewMode)
+
+    /** Предлагать рандомных авторов */
+    suspend fun setSuggestRandomAuthors(value: Boolean)
 }

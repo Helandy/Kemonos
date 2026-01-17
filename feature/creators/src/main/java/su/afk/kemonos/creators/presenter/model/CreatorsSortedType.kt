@@ -1,4 +1,4 @@
-package su.afk.kemonos.creators.presenter.views
+package su.afk.kemonos.creators.presenter.model
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.stringResource

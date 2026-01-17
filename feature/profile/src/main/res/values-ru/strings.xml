@@ -133,4 +133,7 @@
     <string name="settings_ui_posts_view_mode_tags">Вид постов в тегах</string>
     <string name="settings_ui_posts_view_mode_search">Вид постов в поиске</string>
 
+    <string name="settings_ui_suggest_random_authors_title">
+        Предлагать случайных авторов
+    </string>
 </resources>
