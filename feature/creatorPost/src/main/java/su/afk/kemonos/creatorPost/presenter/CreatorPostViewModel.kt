@@ -15,7 +15,6 @@ import su.afk.kemonos.common.presenter.webView.util.cleanDuplicatedMediaFromCont
 import su.afk.kemonos.common.shared.ShareLinkBuilder
 import su.afk.kemonos.common.shared.ShareTarget
 import su.afk.kemonos.common.translate.TextTranslator
-import su.afk.kemonos.common.translate.buildGoogleTranslateUrl
 import su.afk.kemonos.common.translate.preprocessForTranslation
 import su.afk.kemonos.creatorPost.api.domain.model.PostContentDomain
 import su.afk.kemonos.creatorPost.domain.model.video.VideoInfoState
@@ -224,26 +223,23 @@ internal class CreatorPostViewModel @AssistedInject constructor(
 
         when (currentState.uiSettingModel.translateTarget) {
             TranslateTarget.GOOGLE -> {
-                // Не держим блок раскрытым, потому что переводим не в приложении
                 setState { copy(translateExpanded = false) }
 
                 val plainText = rawHtml.preprocessForTranslation()
                 if (plainText.isBlank()) return
 
-                val url = buildGoogleTranslateUrl(
-                    text = plainText,
-                    targetLangTag = currentState.uiSettingModel.translateLanguageTag
+                _effect.trySend(
+                    CreatorPostEffect.OpenGoogleTranslate(
+                        text = plainText,
+                        targetLangTag = currentState.uiSettingModel.translateLanguageTag
+                    )
                 )
-                _effect.trySend(CreatorPostEffect.OpenUrl(url))
                 return
             }
 
-            TranslateTarget.APP -> {
-                // идем ниже — перевод внутри
-            }
+            TranslateTarget.APP -> Unit
         }
 
-        // если уже есть результат — не переводи повторно
         if (currentState.translateText != null && currentState.translateError == null) return
         if (currentState.translateLoading) return
 

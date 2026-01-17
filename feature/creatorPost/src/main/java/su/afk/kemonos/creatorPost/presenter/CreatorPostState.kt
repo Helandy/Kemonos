@@ -36,5 +36,8 @@ sealed interface CreatorPostEffect {
     data class ShowToast(val message: String) : CreatorPostEffect
     data class CopyPostLink(val message: String) : CreatorPostEffect
 
-    data class OpenUrl(val url: String) : CreatorPostEffect
+    data class OpenGoogleTranslate(
+        val text: String,
+        val targetLangTag: String,
+    ) : CreatorPostEffect
 }

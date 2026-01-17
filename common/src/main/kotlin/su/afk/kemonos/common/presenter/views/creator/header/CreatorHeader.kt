@@ -16,12 +16,14 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import su.afk.kemonos.common.R
 import su.afk.kemonos.common.di.LocalDomainResolver
 import su.afk.kemonos.common.imageLoader.AsyncImageWithStatus
 import su.afk.kemonos.common.util.getColorForFavorites
 import su.afk.kemonos.common.util.toUiDateTime
+import su.afk.kemonos.common.utilsUI.KemonoPreviewScreen
 
 @Composable
 fun CreatorHeader(
@@ -97,7 +99,7 @@ fun CreatorHeader(
                     Text(
                         text = creatorName,
                         style = MaterialTheme.typography.titleLarge,
-                        color = MaterialTheme.colorScheme.onPrimary, // на затемнённом фоне лучше так
+                        color = accent,
                         maxLines = 1
                     )
 
@@ -131,7 +133,7 @@ fun CreatorHeader(
                             Icon(
                                 imageVector = Icons.Default.Search,
                                 contentDescription = stringResource(R.string.search),
-                                tint = MaterialTheme.colorScheme.onPrimary
+                                tint = accent
                             )
                         }
                     }
@@ -141,7 +143,7 @@ fun CreatorHeader(
                             Icon(
                                 imageVector = Icons.Default.Info,
                                 contentDescription = stringResource(R.string.info),
-                                tint = MaterialTheme.colorScheme.onPrimary
+                                tint = accent
                             )
                         }
 
@@ -160,5 +162,22 @@ fun CreatorHeader(
                 }
             }
         }
+    }
+}
+
+@Preview("PreviewCreatorHeader")
+@Composable
+private fun PreviewCreatorHeader() {
+    KemonoPreviewScreen {
+        CreatorHeader(
+            service = "creator",
+            creatorId = "creator",
+            creatorName = "creator",
+            updated = null,
+            showSearchButton = true,
+            showInfoButton = true,
+            onSearchClick = {},
+            onClickHeader = {},
+        )
     }
 }

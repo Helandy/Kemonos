@@ -25,6 +25,7 @@ import su.afk.kemonos.common.shared.ShareActions
 import su.afk.kemonos.common.shared.view.SharedActionButton
 import su.afk.kemonos.common.util.toast
 import su.afk.kemonos.creatorPost.presenter.util.IntStateMapSaver
+import su.afk.kemonos.creatorPost.presenter.util.openGoogleTranslate
 import su.afk.kemonos.creatorPost.presenter.view.PostAttachmentsSection
 import su.afk.kemonos.creatorPost.presenter.view.PostTitleBlock
 import su.afk.kemonos.creatorPost.presenter.view.TagsRow
@@ -52,10 +53,8 @@ internal fun CreatorPostScreen(
             when (effect) {
                 is CreatorPostEffect.ShowToast -> context.toast(effect.message)
                 is CreatorPostEffect.CopyPostLink -> ShareActions.copyToClipboard(context, "Post link", effect.message)
-                is CreatorPostEffect.OpenUrl -> {
-                    Intent(Intent.ACTION_VIEW, effect.url.toUri())
-                        .apply { flags = Intent.FLAG_ACTIVITY_NEW_TASK }
-                        .also(context::startActivity)
+                is CreatorPostEffect.OpenGoogleTranslate -> {
+                    openGoogleTranslate(context, effect.text, effect.targetLangTag)
                 }
             }
         }
