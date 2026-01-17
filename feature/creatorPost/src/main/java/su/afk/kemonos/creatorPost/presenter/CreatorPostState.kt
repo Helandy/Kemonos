@@ -3,6 +3,7 @@ package su.afk.kemonos.creatorPost.presenter
 import su.afk.kemonos.creatorPost.api.domain.model.CommentDomain
 import su.afk.kemonos.creatorPost.api.domain.model.PostContentDomain
 import su.afk.kemonos.domain.models.Profile
+import su.afk.kemonos.preferences.ui.UiSettingModel
 
 internal data class CreatorPostState(
     val loading: Boolean = false,
@@ -27,9 +28,13 @@ internal data class CreatorPostState(
     val translateLoading: Boolean = false,
     val translateText: String? = null,
     val translateError: String? = null,
+
+    val uiSettingModel: UiSettingModel = UiSettingModel(),
 )
 
 sealed interface CreatorPostEffect {
     data class ShowToast(val message: String) : CreatorPostEffect
     data class CopyPostLink(val message: String) : CreatorPostEffect
+
+    data class OpenUrl(val url: String) : CreatorPostEffect
 }

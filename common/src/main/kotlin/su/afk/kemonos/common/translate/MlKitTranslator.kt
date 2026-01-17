@@ -10,6 +10,8 @@ import com.google.mlkit.nl.translate.Translator
 import com.google.mlkit.nl.translate.TranslatorOptions
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import java.net.URLEncoder
+import java.nio.charset.StandardCharsets
 import java.util.concurrent.ConcurrentHashMap
 import java.util.Locale as JLocale
 
@@ -29,21 +31,33 @@ internal class MlKitTextTranslator(
      */
     private val translators = ConcurrentHashMap<String, Translator>()
 
-    override suspend fun translateAuto(text: String): String = withContext(Dispatchers.IO) {
-        val cleaned = text.preprocessForTranslation()
-        if (cleaned.isBlank()) return@withContext ""
+    override suspend fun translateAuto(text: String, targetLangTag: String): String =
+        withContext(Dispatchers.IO) {
 
-        val source = detectLanguageSafe(cleaned)
-        if (source == target) return@withContext cleaned
+            val cleaned = text.preprocessForTranslation()
+            if (cleaned.isBlank()) return@withContext ""
 
-        val key = "$source->$target"
-        val translator = translators.getOrPut(key) { createTranslator(source, target) }
+            val target = resolveTarget(targetLangTag)
 
-        Tasks.await(translator.downloadModelIfNeeded(DownloadConditions.Builder().build()))
+            val source = detectLanguageSafe(cleaned)
+            if (source == target) return@withContext cleaned
 
-        val chunks = cleaned.chunkForTranslation(maxLen = 900)
-        val translatedChunks = chunks.map { Tasks.await(translator.translate(it)) }
-        translatedChunks.joinToString(separator = "")
+            val key = "$source->$target"
+            val translator = translators.getOrPut(key) { createTranslator(source, target) }
+
+            Tasks.await(translator.downloadModelIfNeeded(DownloadConditions.Builder().build()))
+
+            val chunks = cleaned.chunkForTranslation(maxLen = 900)
+            val translatedChunks = chunks.map { Tasks.await(translator.translate(it)) }
+            translatedChunks.joinToString(separator = "")
+        }
+
+    private fun resolveTarget(tag: String): String {
+        // "" => системный язык девайса
+        val raw = tag.ifBlank { JLocale.getDefault().language }
+
+        // ML Kit принимает BCP-47 (en, ru, de...). Если не поддерживается — fallback.
+        return TranslateLanguage.fromLanguageTag(raw) ?: TranslateLanguage.ENGLISH
     }
 
     private fun createTranslator(sourceLang: String, targetLang: String): Translator {
@@ -80,7 +94,7 @@ internal class MlKitTextTranslator(
 }
 
 /** Чистка текста перед переводом */
-private fun String.preprocessForTranslation(): String {
+fun String.preprocessForTranslation(): String {
     return this
         .replace(Regex("<br\\s*/?>", RegexOption.IGNORE_CASE), "\n")
         .replace(Regex("</p\\s*>", RegexOption.IGNORE_CASE), "\n\n")
@@ -117,4 +131,19 @@ private fun String.chunkForTranslation(maxLen: Int): List<String> {
         i = realEnd
     }
     return out
+}
+
+/**
+ * Google Translate:
+ * sl=auto (определить язык)
+ * tl=target (если пусто — можно не передавать, но лучше дать дефолт)
+ */
+fun buildGoogleTranslateUrl(
+    text: String,
+    targetLangTag: String,
+): String {
+    val encoded = URLEncoder.encode(text, StandardCharsets.UTF_8.toString())
+    val tl = targetLangTag.ifBlank { "auto" } // можно "en" если хочешь дефолт
+    // Если tl="auto" — Google сам решит, но обычно лучше "en" или язык системы.
+    return "https://translate.google.com/?sl=auto&tl=$tl&text=$encoded&op=translate"
 }

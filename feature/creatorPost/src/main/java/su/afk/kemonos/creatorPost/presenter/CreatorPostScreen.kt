@@ -52,6 +52,11 @@ internal fun CreatorPostScreen(
             when (effect) {
                 is CreatorPostEffect.ShowToast -> context.toast(effect.message)
                 is CreatorPostEffect.CopyPostLink -> ShareActions.copyToClipboard(context, "Post link", effect.message)
+                is CreatorPostEffect.OpenUrl -> {
+                    Intent(Intent.ACTION_VIEW, effect.url.toUri())
+                        .apply { flags = Intent.FLAG_ACTIVITY_NEW_TASK }
+                        .also(context::startActivity)
+                }
             }
         }
     }

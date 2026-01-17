@@ -5,10 +5,7 @@ import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import kotlinx.coroutines.async
 import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.catch
-import kotlinx.coroutines.flow.receiveAsFlow
-import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import su.afk.kemonos.common.error.IErrorHandlerUseCase
 import su.afk.kemonos.common.error.storage.RetryStorage
@@ -18,6 +15,8 @@ import su.afk.kemonos.common.presenter.webView.util.cleanDuplicatedMediaFromCont
 import su.afk.kemonos.common.shared.ShareLinkBuilder
 import su.afk.kemonos.common.shared.ShareTarget
 import su.afk.kemonos.common.translate.TextTranslator
+import su.afk.kemonos.common.translate.buildGoogleTranslateUrl
+import su.afk.kemonos.common.translate.preprocessForTranslation
 import su.afk.kemonos.creatorPost.api.domain.model.PostContentDomain
 import su.afk.kemonos.creatorPost.domain.model.video.VideoInfoState
 import su.afk.kemonos.creatorPost.domain.useCase.GetCommentsUseCase
@@ -29,6 +28,8 @@ import su.afk.kemonos.creatorPost.presenter.delegates.NavigateDelegates
 import su.afk.kemonos.creatorProfile.api.IGetProfileUseCase
 import su.afk.kemonos.download.api.IDownloadUtil
 import su.afk.kemonos.preferences.IGetCurrentSiteRootUrlUseCase
+import su.afk.kemonos.preferences.ui.IUiSettingUseCase
+import su.afk.kemonos.preferences.ui.TranslateTarget
 
 internal class CreatorPostViewModel @AssistedInject constructor(
     @Assisted private val dest: CreatorPostDest.CreatorPost,
@@ -41,6 +42,7 @@ internal class CreatorPostViewModel @AssistedInject constructor(
     private val navigateDelegates: NavigateDelegates,
     private val downloadUtil: IDownloadUtil,
     private val translator: TextTranslator,
+    private val uiSetting: IUiSettingUseCase,
     override val errorHandler: IErrorHandlerUseCase,
     override val retryStorage: RetryStorage,
 ) : BaseViewModel<CreatorPostState>(CreatorPostState()) {
@@ -57,7 +59,17 @@ internal class CreatorPostViewModel @AssistedInject constructor(
         loadingPost()
     }
 
+    /** UI настройки */
+    private fun observeUiSetting() {
+        uiSetting.prefs.distinctUntilChanged()
+            .onEach { model ->
+                setState { copy(uiSettingModel = model) }
+            }
+            .launchIn(viewModelScope)
+    }
+
     init {
+        observeUiSetting()
         setState {
             copy(
                 service = dest.service,
@@ -120,7 +132,7 @@ internal class CreatorPostViewModel @AssistedInject constructor(
     fun observeVideoInfo(url: String, name: String): StateFlow<VideoInfoState> {
         val key = url
         return videoInfoFlows.getOrPut(key) {
-            kotlinx.coroutines.flow.flow {
+            flow {
                 emit(VideoInfoState.Loading)
                 val info = getVideoInfo(url, name)
                 emit(VideoInfoState.Success(info))
@@ -128,7 +140,7 @@ internal class CreatorPostViewModel @AssistedInject constructor(
                 emit(VideoInfoState.Error(e))
             }.stateIn(
                 scope = viewModelScope,
-                started = kotlinx.coroutines.flow.SharingStarted.WhileSubscribed(stopTimeoutMillis = 5_000),
+                started = SharingStarted.WhileSubscribed(stopTimeoutMillis = 5_000),
                 initialValue = VideoInfoState.Loading
             )
         }
@@ -210,24 +222,49 @@ internal class CreatorPostViewModel @AssistedInject constructor(
 
         if (!nextExpanded) return
 
+        when (currentState.uiSettingModel.translateTarget) {
+            TranslateTarget.GOOGLE -> {
+                // Не держим блок раскрытым, потому что переводим не в приложении
+                setState { copy(translateExpanded = false) }
+
+                val plainText = rawHtml.preprocessForTranslation()
+                if (plainText.isBlank()) return
+
+                val url = buildGoogleTranslateUrl(
+                    text = plainText,
+                    targetLangTag = currentState.uiSettingModel.translateLanguageTag
+                )
+                _effect.trySend(CreatorPostEffect.OpenUrl(url))
+                return
+            }
+
+            TranslateTarget.APP -> {
+                // идем ниже — перевод внутри
+            }
+        }
+
+        // если уже есть результат — не переводи повторно
         if (currentState.translateText != null && currentState.translateError == null) return
         if (currentState.translateLoading) return
 
         viewModelScope.launch {
             setState { copy(translateLoading = true, translateError = null) }
 
-            runCatching { translator.translateAuto(rawHtml) }
-                .onSuccess { text ->
-                    setState { copy(translateText = text, translateLoading = false) }
+            runCatching {
+                translator.translateAuto(
+                    text = rawHtml,
+                    targetLangTag = currentState.uiSettingModel.translateLanguageTag
+                )
+            }.onSuccess { text ->
+                setState { copy(translateText = text, translateLoading = false) }
+            }.onFailure { e ->
+                setState {
+                    copy(
+                        translateLoading = false,
+                        translateError = e.message ?: "Translation error"
+                    )
                 }
-                .onFailure { e ->
-                    setState {
-                        copy(
-                            translateLoading = false,
-                            translateError = e.message ?: "Translation error"
-                        )
-                    }
-                }
+            }
         }
     }
 
