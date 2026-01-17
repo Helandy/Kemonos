@@ -66,7 +66,7 @@ internal fun MainScreenContent(
         isScroll = showErrorScreen,
         contentPadding = PaddingValues(12.dp),
         contentAlignment = Alignment.TopCenter,
-        floatingActionButton = if (showErrorScreen) {
+        floatingActionButtonEnd = if (showErrorScreen) {
             {
                 Box(Modifier.padding(12.dp)) {
                     MainActions(

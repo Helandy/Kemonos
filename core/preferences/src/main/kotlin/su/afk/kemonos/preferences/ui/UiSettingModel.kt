@@ -3,6 +3,18 @@ package su.afk.kemonos.preferences.ui
 enum class CreatorViewMode { LIST, GRID }
 enum class PostsViewMode { LIST, GRID }
 
+/** Куда переводить */
+enum class TranslateTarget {
+    APP,        // встроенный перевод
+    GOOGLE      // открыть Google Translate
+}
+
+/** Где показывать кнопку рандома */
+enum class RandomButtonPlacement {
+    SCREEN,     // отдельная кнопка на экране
+    SEARCH_BAR  // иконка в строке поиска
+}
+
 data class UiSettingModel(
 
     /** debug-only: пропустить проверку API при входе */
@@ -26,11 +38,23 @@ data class UiSettingModel(
     val searchPostsViewMode: PostsViewMode = DEFAULT_POSTS_VIEW_MODE,
 
     /** Предлагать рандомных авторов */
-    val suggestRandomAuthors: Boolean = DEFAULT_SUGGEST_RANDOM_AUTHORS
+    val suggestRandomAuthors: Boolean = DEFAULT_SUGGEST_RANDOM_AUTHORS,
+
+    /** Способ перевода */
+    val translateTarget: TranslateTarget = DEFAULT_TRANSLATE_TARGET,
+
+    /** Где показывать кнопку "рандом" */
+    val randomButtonPlacement: RandomButtonPlacement = DEFAULT_RANDOM_BUTTON_PLACEMENT,
+
+    /** Язык, на который переводим ("" = системный) */
+    val translateLanguageTag: String = DEFAULT_TRANSLATE_LANGUAGE_TAG,
 ) {
     companion object {
         val DEFAULT_CREATORS_VIEW_MODE = CreatorViewMode.LIST
         val DEFAULT_POSTS_VIEW_MODE = PostsViewMode.GRID
-        val DEFAULT_SUGGEST_RANDOM_AUTHORS = false
+        const val DEFAULT_SUGGEST_RANDOM_AUTHORS = false
+        val DEFAULT_TRANSLATE_TARGET = TranslateTarget.APP
+        val DEFAULT_RANDOM_BUTTON_PLACEMENT = RandomButtonPlacement.SEARCH_BAR
+        const val DEFAULT_TRANSLATE_LANGUAGE_TAG = "" // системный
     }
 }

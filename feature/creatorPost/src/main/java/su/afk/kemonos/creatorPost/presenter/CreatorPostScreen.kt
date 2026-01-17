@@ -67,7 +67,7 @@ internal fun CreatorPostScreen(
                 )
             }
         },
-        floatingActionButton = {
+        floatingActionButtonEnd = {
             if (state.isFavoriteShowButton && state.loading.not()) {
                 FavoriteActionButton(
                     enabled = !state.favoriteActionLoading,

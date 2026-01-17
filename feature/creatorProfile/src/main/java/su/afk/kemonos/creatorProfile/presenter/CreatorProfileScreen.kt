@@ -154,7 +154,7 @@ internal fun CreatorScreen(
             }
         },
         floatingActionButtonBottomPadding = 12.dp,
-        floatingActionButton = {
+        floatingActionButtonEnd = {
             if (state.isFavoriteShowButton && state.loading.not()) {
                 FavoriteActionButton(
                     enabled = !state.favoriteActionLoading,

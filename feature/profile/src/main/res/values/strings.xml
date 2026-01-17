@@ -135,4 +135,22 @@
     <string name="settings_ui_suggest_random_authors_title">
         Suggest random creators
     </string>
+
+    <string name="settings_translate_title">Translation</string>
+    <string name="settings_translate_app">In-app</string>
+    <string name="settings_translate_google">Google</string>
+
+    <string name="settings_random_button_title">“Random” button</string>
+    <string name="settings_random_button_screen">On screen</string>
+    <string name="settings_random_button_search">In search</string>
+
+    <string name="settings_translate_language_title">Translation language</string>
+    <string name="settings_translate_language_system">System</string>
+    <string name="settings_translate_language_choose">Choose</string>
+    <string name="settings_translate_language_system_hint">
+        Device language will be used: %1$s
+    </string>
+    <string name="settings_translate_language_current">
+        Selected: %1$s
+    </string>
 </resources>

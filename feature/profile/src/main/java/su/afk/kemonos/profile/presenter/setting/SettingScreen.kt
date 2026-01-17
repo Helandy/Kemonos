@@ -29,15 +29,6 @@ internal fun SettingScreen(viewModel: SettingViewModel) {
         isScroll = true,
         isLoading = state.loading,
     ) {
-        ApiSettingsBlock(
-            state = state,
-            onKemonoChanged = viewModel::onInputKemonoDomainChanged,
-            onCoomerChanged = viewModel::onInputCoomerDomainChanged,
-            onSave = viewModel::onSaveUrls
-        )
-
-        Spacer(Modifier.height(32.dp))
-
         UISettingBlock(
             state = state,
             onSkipApiCheckOnLogin = viewModel::setSkipApiCheckOnLogin,
@@ -49,6 +40,18 @@ internal fun SettingScreen(viewModel: SettingViewModel) {
             onPopularPostsViewMode = viewModel::setPopularPostsViewMode,
             onTagsPostsViewMode = viewModel::setTagsPostsViewMode,
             onSearchPostsViewMode = viewModel::setSearchPostsViewMode,
+            onTranslateTarget = viewModel::setTranslateTarget,
+            onRandomPlacement = viewModel::setRandomButtonPlacement,
+            onTranslateLanguageTag = viewModel::setTranslateLanguageTag,
+        )
+
+        Spacer(Modifier.height(32.dp))
+
+        ApiSettingsBlock(
+            state = state,
+            onKemonoChanged = viewModel::onInputKemonoDomainChanged,
+            onCoomerChanged = viewModel::onInputCoomerDomainChanged,
+            onSave = viewModel::onSaveUrls
         )
 
         Spacer(Modifier.height(32.dp))

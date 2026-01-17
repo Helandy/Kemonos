@@ -23,4 +23,13 @@ interface IUiSettingUseCase {
 
     /** Предлагать рандомных авторов */
     suspend fun setSuggestRandomAuthors(value: Boolean)
+
+    /** Способ перевода */
+    suspend fun setTranslateTarget(value: TranslateTarget)
+
+    /** Где показывать кнопку "рандом" */
+    suspend fun setRandomButtonPlacement(value: RandomButtonPlacement)
+
+    /** Язык, на который переводим ("" = системный) */
+    suspend fun setTranslateLanguageTag(value: String)
 }

@@ -12,6 +12,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import su.afk.kemonos.preferences.ui.CreatorViewMode
 import su.afk.kemonos.preferences.ui.PostsViewMode
+import su.afk.kemonos.preferences.ui.RandomButtonPlacement
+import su.afk.kemonos.preferences.ui.TranslateTarget
 import su.afk.kemonos.profile.BuildConfig
 import su.afk.kemonos.profile.R
 import su.afk.kemonos.profile.presenter.setting.SettingState
@@ -28,6 +30,9 @@ internal fun UISettingBlock(
     onPopularPostsViewMode: (PostsViewMode) -> Unit,
     onTagsPostsViewMode: (PostsViewMode) -> Unit,
     onSearchPostsViewMode: (PostsViewMode) -> Unit,
+    onTranslateTarget: (TranslateTarget) -> Unit,
+    onRandomPlacement: (RandomButtonPlacement) -> Unit,
+    onTranslateLanguageTag: (String) -> Unit,
 ) {
     val ui = state.uiSettingModel ?: return
 
@@ -63,6 +68,30 @@ internal fun UISettingBlock(
                 title = stringResource(R.string.settings_ui_suggest_random_authors_title),
                 checked = ui.suggestRandomAuthors,
                 onCheckedChange = onSuggestRandomAuthors,
+            )
+
+            Spacer(Modifier.height(8.dp))
+
+            TranslateTargetRow(
+                title = stringResource(R.string.settings_translate_title),
+                value = ui.translateTarget,
+                onChange = onTranslateTarget
+            )
+
+            Spacer(Modifier.height(8.dp))
+
+            RandomButtonPlacementRow(
+                title = stringResource(R.string.settings_random_button_title),
+                value = ui.randomButtonPlacement,
+                onChange = onRandomPlacement
+            )
+
+            Spacer(Modifier.height(8.dp))
+
+            TranslateLanguageRow(
+                title = stringResource(R.string.settings_translate_language_title),
+                languageTag = ui.translateLanguageTag,
+                onChange = onTranslateLanguageTag,
             )
 
             Spacer(Modifier.height(8.dp))

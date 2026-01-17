@@ -17,10 +17,12 @@ import su.afk.kemonos.common.presenter.baseScreen.BaseScreen
 import su.afk.kemonos.common.presenter.baseScreen.StandardTopBar
 import su.afk.kemonos.common.presenter.baseScreen.TopBarScroll
 import su.afk.kemonos.common.presenter.changeSite.SiteToggleFab
+import su.afk.kemonos.common.presenter.views.RandomFab
 import su.afk.kemonos.common.presenter.views.searchBar.SearchBarNew
 import su.afk.kemonos.creators.presenter.model.creatorsSortOptions
 import su.afk.kemonos.creators.presenter.views.CreatorsContentPaging
 import su.afk.kemonos.preferences.ui.CreatorViewMode
+import su.afk.kemonos.preferences.ui.RandomButtonPlacement
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -62,6 +64,9 @@ internal fun CreatorsScreen(viewModel: CreatorsViewModel) {
         }
     }
 
+    val showRandomInSearch = state.uiSettingModel.randomButtonPlacement == RandomButtonPlacement.SEARCH_BAR
+    val showRandomFab = state.uiSettingModel.randomButtonPlacement == RandomButtonPlacement.SCREEN
+
     BaseScreen(
         isScroll = false,
         contentModifier = Modifier.padding(horizontal = 8.dp),
@@ -83,7 +88,7 @@ internal fun CreatorsScreen(viewModel: CreatorsViewModel) {
                     onSortMethodSelect = viewModel::setSortType,
                     isAscending = state.sortAscending,
                     onToggleAscending = viewModel::toggleSortOrder,
-                    showRandom = true,
+                    showRandom = showRandomInSearch && !isBusy,
                     onRandomClick = viewModel::randomCreator,
                 )
             }
@@ -94,6 +99,15 @@ internal fun CreatorsScreen(viewModel: CreatorsViewModel) {
                 selectedSite = site,
                 onToggleSite = viewModel::switchSite,
             )
+        },
+
+        floatingActionButtonEnd = {
+            if (showRandomFab) {
+                RandomFab(
+                    enabled = !isBusy,
+                    onClick = viewModel::randomCreator,
+                )
+            }
         },
         isLoading = isBusy || isFirstPageLoading || state.loading,
         isEmpty = showEmpty

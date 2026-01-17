@@ -29,6 +29,9 @@ internal class UiSettingUseCase @Inject constructor(
             searchPostsViewMode = p.readEnum(SEARCH_POSTS_VIEW_MODE, UiSettingModel.DEFAULT_POSTS_VIEW_MODE),
 
             suggestRandomAuthors = p[SUGGEST_RANDOM_AUTHORS] ?: UiSettingModel.DEFAULT_SUGGEST_RANDOM_AUTHORS,
+            translateTarget = p.readEnum(TRANSLATE_TARGET, UiSettingModel.DEFAULT_TRANSLATE_TARGET),
+            randomButtonPlacement = p.readEnum(RANDOM_BUTTON_PLACEMENT, UiSettingModel.DEFAULT_RANDOM_BUTTON_PLACEMENT),
+            translateLanguageTag = p[TRANSLATE_LANGUAGE_TAG] ?: UiSettingModel.DEFAULT_TRANSLATE_LANGUAGE_TAG,
         )
     }
 
@@ -81,6 +84,20 @@ internal class UiSettingUseCase @Inject constructor(
         }
     }
 
+    /** Способ перевода */
+    override suspend fun setTranslateTarget(value: TranslateTarget) {
+        dataStore.edit { it[TRANSLATE_TARGET] = value.name }
+    }
+
+    /** Где показывать кнопку "рандом" */
+    override suspend fun setRandomButtonPlacement(value: RandomButtonPlacement) {
+        dataStore.edit { it[RANDOM_BUTTON_PLACEMENT] = value.name }
+    }
+
+    /** Язык, на который переводим */
+    override suspend fun setTranslateLanguageTag(value: String) {
+        dataStore.edit { it[TRANSLATE_LANGUAGE_TAG] = value }
+    }
 
     // ---- helpers ----
     private inline fun <reified T : Enum<T>> Preferences.readEnum(
@@ -103,5 +120,8 @@ internal class UiSettingUseCase @Inject constructor(
         val SEARCH_POSTS_VIEW_MODE = stringPreferencesKey("SEARCH_POSTS_VIEW_MODE")
 
         val SUGGEST_RANDOM_AUTHORS = booleanPreferencesKey("SUGGEST_RANDOM_AUTHORS")
+        val TRANSLATE_TARGET = stringPreferencesKey("TRANSLATE_TARGET")
+        val RANDOM_BUTTON_PLACEMENT = stringPreferencesKey("RANDOM_BUTTON_PLACEMENT")
+        val TRANSLATE_LANGUAGE_TAG = stringPreferencesKey("TRANSLATE_LANGUAGE")
     }
 }

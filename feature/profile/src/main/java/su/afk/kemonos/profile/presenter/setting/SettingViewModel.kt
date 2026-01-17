@@ -11,9 +11,7 @@ import su.afk.kemonos.common.presenter.baseViewModel.BaseViewModel
 import su.afk.kemonos.preferences.GetCoomerRootUrlUseCase
 import su.afk.kemonos.preferences.GetKemonoRootUrlUseCase
 import su.afk.kemonos.preferences.siteUrl.ISetBaseUrlsUseCase
-import su.afk.kemonos.preferences.ui.CreatorViewMode
-import su.afk.kemonos.preferences.ui.IUiSettingUseCase
-import su.afk.kemonos.preferences.ui.PostsViewMode
+import su.afk.kemonos.preferences.ui.*
 import su.afk.kemonos.preferences.useCase.CacheKeys
 import su.afk.kemonos.preferences.useCase.CacheTimes
 import su.afk.kemonos.preferences.useCase.ICacheTimestampUseCase
@@ -175,5 +173,20 @@ internal class SettingViewModel @Inject constructor(
     /** Предлагать рандомных авторов */
     fun setSuggestRandomAuthors(value: Boolean) = viewModelScope.launch {
         uiSetting.setSuggestRandomAuthors(value)
+    }
+
+    /** Способ перевода */
+    fun setTranslateTarget(value: TranslateTarget) = viewModelScope.launch {
+        uiSetting.setTranslateTarget(value)
+    }
+
+    /** Где показывать кнопку "рандом" */
+    fun setRandomButtonPlacement(value: RandomButtonPlacement) = viewModelScope.launch {
+        uiSetting.setRandomButtonPlacement(value)
+    }
+
+    /** Язык, на который переводим */
+    fun setTranslateLanguageTag(value: String) = viewModelScope.launch {
+        uiSetting.setTranslateLanguageTag(value)
     }
 }

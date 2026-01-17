@@ -136,4 +136,22 @@
     <string name="settings_ui_suggest_random_authors_title">
         Предлагать случайных авторов
     </string>
+
+    <string name="settings_translate_title">Перевод</string>
+    <string name="settings_translate_app">В приложении</string>
+    <string name="settings_translate_google">Google</string>
+
+    <string name="settings_random_button_title">Кнопка “Случайный”</string>
+    <string name="settings_random_button_screen">На экране</string>
+    <string name="settings_random_button_search">В поиске</string>
+
+    <string name="settings_translate_language_title">Язык перевода</string>
+    <string name="settings_translate_language_system">Системный</string>
+    <string name="settings_translate_language_choose">Выбрать</string>
+    <string name="settings_translate_language_system_hint">
+        Используется язык устройства: %1$s
+    </string>
+    <string name="settings_translate_language_current">
+        Выбран: %1$s
+    </string>
 </resources>
