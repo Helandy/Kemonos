@@ -26,7 +26,7 @@ credentials = "1.5.0"
 # --- Compose
 # Для BOM не задавать вручную версии для compose libs
 # foundation/material3/icons/etс должно подтягиваться BOM
-composeBom = "2025.12.01"
+composeBom = "2026.01.00"
 
 # --- DI
 hilt = "2.57.2"
@@ -45,7 +45,7 @@ kotlinxSerializationJson = "1.9.0"
 coil3 = "3.3.0"
 media3 = "1.9.0"
 accompanistSystemUiController = "0.36.0"
-multiplatformMarkdownRendererM3 = "0.39.0"
+multiplatformMarkdownRendererM3 = "0.39.1"
 
 # --- Navigation3
 navigation3 = "1.0.0"
