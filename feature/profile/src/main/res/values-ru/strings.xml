@@ -154,4 +154,10 @@
     <string name="settings_translate_language_current">
         Выбран: %1$s
     </string>
+
+    <string name="settings_debug_title">Debug</string>
+    <string name="settings_ui_general_title">Общие</string>
+    <string name="settings_translate_section_title">Перевод</string>
+    <string name="settings_random_section_title">Случайное</string>
+    <string name="settings_view_modes_section_title">Отображение</string>
 </resources>

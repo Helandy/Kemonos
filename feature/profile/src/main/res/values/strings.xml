@@ -153,4 +153,11 @@
     <string name="settings_translate_language_current">
         Selected: %1$s
     </string>
+
+    <!-- UI Settings sections -->
+    <string name="settings_debug_title">Debug</string>
+    <string name="settings_ui_general_title">General</string>
+    <string name="settings_translate_section_title">Translation</string>
+    <string name="settings_random_section_title">Random</string>
+    <string name="settings_view_modes_section_title">View modes</string>
 </resources>
