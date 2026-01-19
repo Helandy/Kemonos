@@ -69,12 +69,12 @@ fun CreatorHeader(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
+                .then(if (onClickHeader != null) Modifier.clickable { onClickHeader() } else Modifier)
                 .padding(horizontal = 12.dp, vertical = 10.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
             val headerModifier = Modifier
                 .weight(1f)
-                .then(if (onClickHeader != null) Modifier.clickable { onClickHeader() } else Modifier)
                 .padding(end = 12.dp)
 
             Row(
