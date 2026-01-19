@@ -205,5 +205,6 @@
     </string>
 
     <string name="random_creators_title">Случайные авторы</string>
+    <string name="creators_title">Авторы</string>
 
 </resources>

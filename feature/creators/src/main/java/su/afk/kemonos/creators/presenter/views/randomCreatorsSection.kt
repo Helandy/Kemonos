@@ -5,7 +5,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyGridScope
-import androidx.compose.material3.DividerDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -52,14 +51,6 @@ internal fun LazyListScope.randomCreatorsSection(
         )
         HorizontalDivider()
     }
-
-    item(key = "random_divider") {
-        HorizontalDivider(
-            Modifier.padding(top = 4.dp),
-            DividerDefaults.Thickness,
-            DividerDefaults.color
-        )
-    }
 }
 
 internal fun LazyGridScope.randomCreatorsSection(
@@ -93,14 +84,6 @@ internal fun LazyGridScope.randomCreatorsSection(
             name = creator.name,
             favorited = creator.favorited,
             onClick = { onCreatorClick(creator) }
-        )
-    }
-
-    item(key = "random_divider", span = { GridItemSpan(maxLineSpan) }) {
-        HorizontalDivider(
-            Modifier.padding(top = 4.dp),
-            DividerDefaults.Thickness,
-            DividerDefaults.color
         )
     }
 }

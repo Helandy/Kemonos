@@ -209,6 +209,6 @@
         You can still download content manually from each post if needed.
     </string>
 
-
     <string name="random_creators_title">Random creators</string>
+    <string name="creators_title">Creators</string>
 </resources>
