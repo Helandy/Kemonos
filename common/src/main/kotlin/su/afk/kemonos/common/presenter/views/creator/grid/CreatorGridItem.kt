@@ -22,6 +22,7 @@ import su.afk.kemonos.common.di.LocalDomainResolver
 import su.afk.kemonos.common.imageLoader.AsyncImageWithStatus
 import su.afk.kemonos.common.presenter.views.utilUI.formatNumberWithSpaces
 import su.afk.kemonos.common.util.getColorForFavorites
+import su.afk.kemonos.common.util.toUiDateTime
 import su.afk.kemonos.common.utilsUI.KemonoPreviewScreen
 
 @Composable
@@ -30,8 +31,9 @@ fun CreatorGridItem(
     id: String,
     name: String,
     favorited: Int? = null,
+    updated: String? = null,
+    isFresh: Boolean = false,
     onClick: () -> Unit,
-    modifier: Modifier = Modifier,
 ) {
     val resolver = LocalDomainResolver.current
     val imgBaseUrl = remember(service) { resolver.imageBaseUrlByService(service) }
@@ -42,13 +44,12 @@ fun CreatorGridItem(
     val chipShape = RoundedCornerShape(10.dp)
 
     Box(
-        modifier = modifier
+        modifier = Modifier
             .fillMaxWidth()
             .aspectRatio(4f / 3f)
             .clip(shape)
             .clickable { onClick() }
     ) {
-        // Фон: баннер
         AsyncImageWithStatus(
             model = "$imgBaseUrl/banners/${service}/${id}",
             contentDescription = "Banner for $name",
@@ -56,20 +57,17 @@ fun CreatorGridItem(
             modifier = Modifier.matchParentSize()
         )
 
-        /** Затемнение */
         Box(
             modifier = Modifier
                 .matchParentSize()
                 .background(MaterialTheme.colorScheme.scrim.copy(alpha = 0.4f))
         )
 
-        // Контент
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(10.dp)
         ) {
-            // Верх: ава слева, инфо справа
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.Top
@@ -87,7 +85,6 @@ fun CreatorGridItem(
 
                 Spacer(Modifier.width(8.dp))
 
-                // Инфо-блок справа сверху
                 Column(
                     modifier = Modifier
                         .weight(1f)
@@ -121,6 +118,27 @@ fun CreatorGridItem(
                                     overflow = TextOverflow.Ellipsis
                                 )
                             }
+
+                            updated?.let {
+                                if (isFresh) {
+                                    Text(
+                                        text = "NEW",
+                                        style = MaterialTheme.typography.labelSmall,
+                                        fontWeight = FontWeight.ExtraBold,
+                                        color = MaterialTheme.colorScheme.error.copy(alpha = 0.8f)
+                                    )
+                                    Spacer(Modifier.width(6.dp))
+                                }
+
+                                Text(
+                                    text = it.toUiDateTime(),
+                                    style = MaterialTheme.typography.labelSmall,
+                                    fontWeight = FontWeight.Bold,
+                                    color = accent,
+                                    maxLines = 1,
+                                    overflow = TextOverflow.Ellipsis
+                                )
+                            }
                         }
                     }
                 }
@@ -128,7 +146,6 @@ fun CreatorGridItem(
 
             Spacer(Modifier.weight(1f))
 
-            // Низ: ник
             Text(
                 text = name,
                 style = MaterialTheme.typography.titleMedium,

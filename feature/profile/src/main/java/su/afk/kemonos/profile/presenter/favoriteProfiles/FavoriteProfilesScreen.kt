@@ -99,10 +99,14 @@ internal fun FavoriteProfilesScreen(viewModel: FavoriteProfilesViewModel) {
                         )
                     )
 
+                    val dateForCard = creator.uiDateBySort(state.sortedType)
+
                     CreatorGridItem(
                         service = creator.service,
                         id = creator.id,
                         name = creator.name,
+                        updated = dateForCard,
+                        isFresh = isFresh,
                         onClick = { viewModel.onCreatorClick(creator, isFresh) }
                     )
                 }

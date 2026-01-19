@@ -11,14 +11,16 @@ import androidx.compose.ui.unit.dp
 
 @Composable
 internal fun PostTitleBlock(
-    title: String,
+    title: String?,
 ) {
-    Text(
-        text = title,
-        style = MaterialTheme.typography.headlineSmall.copy(fontWeight = FontWeight.Bold),
-        color = MaterialTheme.colorScheme.onBackground,
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(bottom = 4.dp)
-    )
+    if (!title.isNullOrEmpty()) {
+        Text(
+            text = title,
+            style = MaterialTheme.typography.headlineSmall.copy(fontWeight = FontWeight.Bold),
+            color = MaterialTheme.colorScheme.onBackground,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(start = 4.dp, top = 4.dp, bottom = 4.dp)
+        )
+    }
 }

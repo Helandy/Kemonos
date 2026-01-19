@@ -33,7 +33,7 @@ fun CreatorListItem(
     isFresh: Boolean = false,
     onClick: () -> Unit
 ) {
-    val avatarSize = LocalWindowInfo.current.containerSize.width * 0.145f
+    val avatarSize = LocalWindowInfo.current.containerSize.width * 0.13f
     val avatarShape = RoundedCornerShape(10.dp)
 
     val accent = getColorForFavorites(service)
@@ -44,7 +44,7 @@ fun CreatorListItem(
         modifier = Modifier
             .fillMaxWidth()
             .padding(vertical = 6.dp)
-            .height(150.dp)
+            .height(110.dp)
             .clickable { onClick() }
     ) {
         /** Фоновое изображение (баннер) */

@@ -132,7 +132,7 @@ internal fun CreatorPostScreen(
             item(key = "TitleBlock") {
                 /** Заголовок поста */
                 PostTitleBlock(
-                    title = post.title.orEmpty(),
+                    title = post.title,
                 )
             }
 

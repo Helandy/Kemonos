@@ -79,24 +79,24 @@ internal fun PostTranslateItem(
                         Text(stringResource(if (expanded) R.string.translate_hide else R.string.translate_show))
                     }
                 }
-            }
 
-            Spacer(Modifier.width(4.dp))
+                Spacer(Modifier.width(4.dp))
 
-            IconButton(
-                enabled = body.isNotBlank(),
-                onClick = {
-                    scope.launch {
-                        val clip = ClipData.newPlainText("post", body)
-                        clipboard.setClipEntry(ClipEntry(clip))
+                IconButton(
+                    enabled = body.isNotBlank(),
+                    onClick = {
+                        scope.launch {
+                            val clip = ClipData.newPlainText("post", body)
+                            clipboard.setClipEntry(ClipEntry(clip))
+                        }
                     }
+                ) {
+                    Icon(
+                        imageVector = Icons.Outlined.ContentCopy,
+                        contentDescription = stringResource(R.string.copy),
+                        tint = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
                 }
-            ) {
-                Icon(
-                    imageVector = Icons.Outlined.ContentCopy,
-                    contentDescription = stringResource(R.string.copy),
-                    tint = MaterialTheme.colorScheme.onSurfaceVariant
-                )
             }
         }
 
