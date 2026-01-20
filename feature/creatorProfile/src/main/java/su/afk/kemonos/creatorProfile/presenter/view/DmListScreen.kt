@@ -18,10 +18,12 @@ import androidx.compose.ui.unit.dp
 import su.afk.kemonos.common.R
 import su.afk.kemonos.common.util.toUiDateTime
 import su.afk.kemonos.creatorProfile.api.domain.models.profileDms.Dm
+import su.afk.kemonos.preferences.ui.DateFormatMode
 import java.time.LocalDateTime
 
 @Composable
 fun DmListScreen(
+    dateMode: DateFormatMode,
     dms: List<Dm>,
     modifier: Modifier = Modifier
 ) {
@@ -51,9 +53,9 @@ fun DmListScreen(
             items(sortedDms, key = { it.hash }) { dm ->
                 val expanded = expandedDmHash == dm.hash
                 DmItem(
+                    dateMode = dateMode,
                     dm = dm,
                     expanded = expanded,
-
                     onClick = {
                         expandedDmHash = if (expanded) null else dm.hash
                     }
@@ -65,6 +67,7 @@ fun DmListScreen(
 
 @Composable
 fun DmItem(
+    dateMode: DateFormatMode,
     dm: Dm,
     expanded: Boolean,
     onClick: () -> Unit
@@ -94,7 +97,7 @@ fun DmItem(
             ) {
                 Spacer(Modifier.weight(1f))
                 Text(
-                    text = stringResource(R.string.dm_published, dm.published.toUiDateTime()),
+                    text = stringResource(R.string.dm_published, dm.published.toUiDateTime(dateMode)),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )

@@ -1,6 +1,7 @@
 package su.afk.kemonos.profile.presenter.profile
 
 import su.afk.kemonos.domain.SelectedSite
+import su.afk.kemonos.preferences.ui.UiSettingModel
 import su.afk.kemonos.profile.api.model.Login
 
 internal data class ProfileState(
@@ -18,4 +19,6 @@ internal data class ProfileState(
 
     val kemonoUpdatedFavoritesCount: Int = 0,
     val coomerUpdatedFavoritesCount: Int = 0,
+
+    val uiSettingModel: UiSettingModel = UiSettingModel(),
 )

@@ -160,4 +160,7 @@
     <string name="settings_translate_section_title">Translation</string>
     <string name="settings_random_section_title">Random</string>
     <string name="settings_view_modes_section_title">View modes</string>
+
+
+    <string name="settings_ui_date_format_title">Date format</string>
 </resources>

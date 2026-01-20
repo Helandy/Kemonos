@@ -13,6 +13,7 @@ import su.afk.kemonos.common.presenter.postsScreen.paging.PagingAppendStateItem
 import su.afk.kemonos.common.presenter.postsScreen.postCard.PostCard
 import su.afk.kemonos.domain.models.ErrorItem
 import su.afk.kemonos.domain.models.PostDomain
+import su.afk.kemonos.preferences.ui.DateFormatMode
 
 sealed interface PostsSource<T : Any> {
     data class Paging<T : Any>(val items: LazyPagingItems<T>) : PostsSource<T>
@@ -21,6 +22,7 @@ sealed interface PostsSource<T : Any> {
 
 @Composable
 fun PostsGridPaging(
+    dateMode: DateFormatMode,
     source: PostsSource<PostDomain>,
     postClick: (PostDomain) -> Unit,
     showFavCount: Boolean = false,
@@ -47,6 +49,7 @@ fun PostsGridPaging(
                         post = post,
                         onClick = { postClick(post) },
                         showFavCount = showFavCount,
+                        dateMode = dateMode
                     )
                 }
 
@@ -71,6 +74,7 @@ fun PostsGridPaging(
                         post = post,
                         onClick = { postClick(post) },
                         showFavCount = showFavCount,
+                        dateMode = dateMode
                     )
                 }
             }

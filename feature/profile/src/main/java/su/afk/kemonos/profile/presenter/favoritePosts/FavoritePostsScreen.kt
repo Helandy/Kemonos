@@ -68,11 +68,12 @@ internal fun FavoritePostsScreen(viewModel: FavoritePostsViewModel) {
         PullToRefreshBox(
             state = pullState,
             isRefreshing = refreshing,
-            onRefresh = { viewModel.load() }
+            onRefresh = { viewModel.load(refresh = true) },
         ) {
             when (state.uiSettingModel.favoritePostsViewMode) {
                 PostsViewMode.GRID -> {
                     PostsGrid(
+                        dateMode = state.uiSettingModel.dateFormatMode,
                         source = PostsSource.Static(state.favoritePosts),
                         postClick = { viewModel.navigateToPost(it) },
                         gridState = gridState,
@@ -81,6 +82,7 @@ internal fun FavoritePostsScreen(viewModel: FavoritePostsViewModel) {
 
                 PostsViewMode.LIST -> {
                     PostsList(
+                        dateMode = state.uiSettingModel.dateFormatMode,
                         source = PostsSource.Static(state.favoritePosts),
                         onPostClick = { viewModel.navigateToPost(it) },
                     )

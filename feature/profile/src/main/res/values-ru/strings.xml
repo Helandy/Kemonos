@@ -160,4 +160,6 @@
     <string name="settings_translate_section_title">Перевод</string>
     <string name="settings_random_section_title">Случайное</string>
     <string name="settings_view_modes_section_title">Отображение</string>
+
+    <string name="settings_ui_date_format_title">Формат даты</string>
 </resources>

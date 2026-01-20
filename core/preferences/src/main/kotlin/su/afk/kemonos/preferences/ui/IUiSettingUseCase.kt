@@ -32,4 +32,7 @@ interface IUiSettingUseCase {
 
     /** Язык, на который переводим ("" = системный) */
     suspend fun setTranslateLanguageTag(value: String)
+
+    /** Формат даты в приложении */
+    suspend fun setDateFormatMode(value: DateFormatMode)
 }

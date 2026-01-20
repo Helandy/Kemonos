@@ -81,6 +81,7 @@ internal fun FavoriteProfilesScreen(viewModel: FavoriteProfilesViewModel) {
                     val dateForCard = creator.uiDateBySort(state.sortedType)
 
                     CreatorListItem(
+                        dateMode = state.uiSettingModel.dateFormatMode,
                         service = creator.service,
                         id = creator.id,
                         name = creator.name,
@@ -102,6 +103,7 @@ internal fun FavoriteProfilesScreen(viewModel: FavoriteProfilesViewModel) {
                     val dateForCard = creator.uiDateBySort(state.sortedType)
 
                     CreatorGridItem(
+                        dateMode = state.uiSettingModel.dateFormatMode,
                         service = creator.service,
                         id = creator.id,
                         name = creator.name,

@@ -5,11 +5,13 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.unit.dp
 import su.afk.kemonos.domain.SelectedSite
+import su.afk.kemonos.preferences.ui.DateFormatMode
 import su.afk.kemonos.profile.R
 import su.afk.kemonos.profile.api.model.Login
 
 @Composable
 internal fun SitePage(
+    dateMode: DateFormatMode,
     title: String,
     isLoggedIn: Boolean,
     login: Login?,
@@ -22,6 +24,7 @@ internal fun SitePage(
 ) {
     Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
         SiteAccountCard(
+            dateMode = dateMode,
             title = title,
             isLoggedIn = isLoggedIn,
             login = login,

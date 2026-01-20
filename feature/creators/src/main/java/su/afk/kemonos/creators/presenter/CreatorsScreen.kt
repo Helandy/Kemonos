@@ -115,6 +115,7 @@ internal fun CreatorsScreen(viewModel: CreatorsViewModel) {
         val viewMode = state.uiSettingModel.creatorsViewMode
 
         CreatorsContentPaging(
+            dateMode = state.uiSettingModel.dateFormatMode,
             viewMode = viewMode,
             pagingItems = pagingItems,
             randomItems = if (state.searchQuery.trim().isEmpty()) state.randomSuggestions else emptyList(),

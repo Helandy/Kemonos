@@ -18,7 +18,7 @@ internal interface IFavoritesRepository {
         forceRefresh: Boolean = false,
     ): List<FavoriteArtist>
 
-    suspend fun getFavoritePosts(site: SelectedSite): List<PostDomain>
+    suspend fun getFavoritePosts(site: SelectedSite, refresh: Boolean): List<PostDomain>
     suspend fun refreshFavoriteArtists(site: SelectedSite): List<FavoriteArtist>
 }
 
@@ -51,8 +51,10 @@ internal class FavoritesRepository @Inject constructor(
         }
     }
 
-    override suspend fun getFavoritePosts(site: SelectedSite): List<PostDomain> {
-        if (postsStore.isCacheFresh(site)) return postsStore.getAll(site)
+    override suspend fun getFavoritePosts(site: SelectedSite, refresh: Boolean): List<PostDomain> {
+        if (!refresh && postsStore.isCacheFresh(site)) {
+            return postsStore.getAll(site)
+        }
 
         return api.getFavoritePosts().call { list ->
             val network = list.map { it.toDomain() }

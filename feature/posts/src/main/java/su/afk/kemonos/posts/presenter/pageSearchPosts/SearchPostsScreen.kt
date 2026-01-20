@@ -106,6 +106,7 @@ internal fun SearchPostsScreen(
     ) {
         /** Контент */
         PostsTabContent(
+            dateMode = state.uiSettingModel.dateFormatMode,
             postsViewMode = state.uiSettingModel.searchPostsViewMode,
             posts = posts,
             currentTag = null,

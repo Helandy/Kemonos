@@ -11,9 +11,11 @@ import su.afk.kemonos.common.presenter.postsScreen.paging.PagingAppendStateItem
 import su.afk.kemonos.common.presenter.postsScreen.postCard.PostCard
 import su.afk.kemonos.domain.models.ErrorItem
 import su.afk.kemonos.domain.models.PostDomain
+import su.afk.kemonos.preferences.ui.DateFormatMode
 
 @Composable
 fun PostsListPaging(
+    dateMode: DateFormatMode,
     posts: LazyPagingItems<PostDomain>,
     onPostClick: (PostDomain) -> Unit,
     showFavCount: Boolean,
@@ -34,6 +36,7 @@ fun PostsListPaging(
                 post = post,
                 onClick = { onPostClick(post) },
                 showFavCount = showFavCount,
+                dateMode = dateMode
             )
         }
 

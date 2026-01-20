@@ -2,6 +2,8 @@ package su.afk.kemonos.profile.presenter.profile
 
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import su.afk.kemonos.auth.ObserveAuthStateUseCase
 import su.afk.kemonos.common.error.IErrorHandlerUseCase
@@ -10,6 +12,7 @@ import su.afk.kemonos.common.presenter.baseViewModel.BaseViewModel
 import su.afk.kemonos.domain.SelectedSite
 import su.afk.kemonos.navigation.NavigationManager
 import su.afk.kemonos.navigation.NavigationStorage
+import su.afk.kemonos.preferences.ui.IUiSettingUseCase
 import su.afk.kemonos.profile.data.FreshFavoriteArtistsUpdates
 import su.afk.kemonos.profile.navigation.AuthDest
 import su.afk.kemonos.profile.presenter.profile.delegate.LogoutDelegate
@@ -22,6 +25,7 @@ internal class ProfileViewModel @Inject constructor(
     private val navigationManager: NavigationManager,
     private val navigationStorage: NavigationStorage,
     private val logoutDelegate: LogoutDelegate,
+    private val uiSetting: IUiSettingUseCase,
     override val errorHandler: IErrorHandlerUseCase,
     override val retryStorage: RetryStorage,
 ) : BaseViewModel<ProfileState>(ProfileState()) {
@@ -31,7 +35,17 @@ internal class ProfileViewModel @Inject constructor(
     }
 
     init {
+        observeUiSetting()
         observeAuth()
+    }
+
+    /** UI настройки */
+    private fun observeUiSetting() {
+        uiSetting.prefs.distinctUntilChanged()
+            .onEach { model ->
+                setState { copy(uiSettingModel = model) }
+            }
+            .launchIn(viewModelScope)
     }
 
     /** Проверка авторизации */

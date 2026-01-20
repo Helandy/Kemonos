@@ -22,9 +22,11 @@ import su.afk.kemonos.common.imageLoader.AsyncImageWithStatus
 import su.afk.kemonos.common.presenter.views.utilUI.formatNumberWithSpaces
 import su.afk.kemonos.common.util.getColorForFavorites
 import su.afk.kemonos.common.util.toUiDateTime
+import su.afk.kemonos.preferences.ui.DateFormatMode
 
 @Composable
 fun CreatorListItem(
+    dateMode: DateFormatMode,
     service: String,
     id: String,
     name: String,
@@ -143,7 +145,7 @@ fun CreatorListItem(
                                 }
 
                                 Text(
-                                    text = updated.toUiDateTime(),
+                                    text = updated.toUiDateTime(dateMode),
                                     style = MaterialTheme.typography.bodySmall,
                                     fontWeight = FontWeight.Bold,
                                     color = accent

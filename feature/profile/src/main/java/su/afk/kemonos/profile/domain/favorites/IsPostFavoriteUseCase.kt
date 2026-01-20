@@ -16,7 +16,7 @@ internal class IsPostFavoriteUseCase @Inject constructor(
         return if (store.isCacheFresh(site)) {
             store.exists(site, service, creatorId, postId)
         } else {
-            getFavoritePostsUseCase(site = selectedSiteUseCase.getSite())
+            getFavoritePostsUseCase(site = selectedSiteUseCase.getSite(), refresh = false)
             store.exists(site, service, creatorId, postId)
         }
     }

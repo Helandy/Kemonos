@@ -117,6 +117,7 @@ internal fun CreatorScreen(
                 if (profile == null) return@StandardTopBar
 
                 CreatorHeader(
+                    dateMode = state.uiSettingModel.dateFormatMode,
                     service = profile.service,
                     creatorId = profile.id,
                     creatorName = profile.name,
@@ -124,7 +125,7 @@ internal fun CreatorScreen(
                     showSearchButton = true,
                     showInfoButton = true,
                     onSearchClick = { viewModel.toggleSearch() },
-                    onClickHeader = null
+                    onClickHeader = null,
                 )
 
                 SearchBar(
@@ -201,6 +202,7 @@ private fun SelectedTab(
 ) {
     when (state.selectedTab) {
         ProfileTab.POSTS -> PostsTabContent(
+            dateMode = state.uiSettingModel.dateFormatMode,
             postsViewMode = state.uiSettingModel.profilePostsViewMode,
             posts = posts,
             gridState = gridState,
@@ -211,12 +213,17 @@ private fun SelectedTab(
         )
 
         ProfileTab.DMS -> DmListScreen(
+            dateMode = state.uiSettingModel.dateFormatMode,
             dms = state.dmList,
         )
 
-        ProfileTab.ANNOUNCEMENTS -> AnnouncementsScreen(state.announcements)
+        ProfileTab.ANNOUNCEMENTS -> AnnouncementsScreen(
+            dateMode = state.uiSettingModel.dateFormatMode,
+            announcements = state.announcements
+        )
 
         ProfileTab.FANCARD -> FanCardGridScreen(
+            dateMode = state.uiSettingModel.dateFormatMode,
             fanCards = state.fanCardsList,
             onCardClick = { imgUrl ->
                 viewModel.navigateToOpenImage(imgUrl)
@@ -231,6 +238,7 @@ private fun SelectedTab(
         )
 
         ProfileTab.LINKS -> ProfileLinksScreen(
+            dateMode = state.uiSettingModel.dateFormatMode,
             links = state.profileLinks,
             onClick = { openProfile ->
                 viewModel.navigateToLinkProfile(openProfile)

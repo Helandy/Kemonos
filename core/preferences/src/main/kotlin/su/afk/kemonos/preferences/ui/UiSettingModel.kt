@@ -1,5 +1,9 @@
 package su.afk.kemonos.preferences.ui
 
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
+import java.util.*
+
 enum class CreatorViewMode { LIST, GRID }
 enum class PostsViewMode { LIST, GRID }
 
@@ -13,6 +17,36 @@ enum class TranslateTarget {
 enum class RandomButtonPlacement {
     SCREEN,     // отдельная кнопка на экране
     SEARCH_BAR  // иконка в строке поиска
+}
+
+enum class DateFormatMode(val pattern: String) {
+    /** 20.01.2026 */
+    DD_MM_YYYY("dd.MM.yyyy"),
+
+    /** 20.01.26 */
+    DD_MM_YY("dd.MM.yy"),
+
+    /** 20/01/2026 */
+    DD_MM_YYYY_SLASH("dd/MM/yyyy"),
+
+    /** 20/01/26 */
+    DD_MM_YY_SLASH("dd/MM/yy"),
+
+    /** Jan 20, 2026 */
+    MMM_D_YYYY("MMM d, yyyy"),
+
+    /** Jan 20, 26 */
+    MMM_D_YY("MMM d, yy"),
+
+    /** 20 Jan 2026 */
+    D_MMM_YYYY("d MMM yyyy"),
+
+    /** 20 Jan 26 */
+    D_MMM_YY("d MMM yy");
+
+    fun example(locale: Locale = Locale.getDefault()): String =
+        LocalDate.of(2026, 1, 20)
+            .format(DateTimeFormatter.ofPattern(pattern, locale))
 }
 
 data class UiSettingModel(
@@ -48,6 +82,9 @@ data class UiSettingModel(
 
     /** Язык, на который переводим ("" = системный) */
     val translateLanguageTag: String = DEFAULT_TRANSLATE_LANGUAGE_TAG,
+
+    /** Формат даты в приложении */
+    val dateFormatMode: DateFormatMode = DEFAULT_DATE_FORMAT_MODE,
 ) {
     companion object {
         val DEFAULT_CREATORS_VIEW_MODE = CreatorViewMode.LIST
@@ -56,5 +93,6 @@ data class UiSettingModel(
         val DEFAULT_TRANSLATE_TARGET = TranslateTarget.APP
         val DEFAULT_RANDOM_BUTTON_PLACEMENT = RandomButtonPlacement.SEARCH_BAR
         const val DEFAULT_TRANSLATE_LANGUAGE_TAG = "" // системный
+        val DEFAULT_DATE_FORMAT_MODE = DateFormatMode.DD_MM_YYYY
     }
 }

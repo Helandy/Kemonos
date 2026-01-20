@@ -16,8 +16,10 @@ import su.afk.kemonos.common.R
 import su.afk.kemonos.common.presenter.views.creator.grid.CreatorGridItem
 import su.afk.kemonos.common.presenter.views.creator.list.CreatorListItem
 import su.afk.kemonos.domain.models.Creators
+import su.afk.kemonos.preferences.ui.DateFormatMode
 
 internal fun LazyListScope.randomCreatorsSection(
+    dateMode: DateFormatMode,
     items: List<Creators>,
     onCreatorClick: (Creators) -> Unit,
 ) {
@@ -43,6 +45,7 @@ internal fun LazyListScope.randomCreatorsSection(
     ) { index ->
         val creator = items[index]
         CreatorListItem(
+            dateMode = dateMode,
             service = creator.service,
             id = creator.id,
             name = creator.name,
@@ -54,6 +57,7 @@ internal fun LazyListScope.randomCreatorsSection(
 }
 
 internal fun LazyGridScope.randomCreatorsSection(
+    dateMode: DateFormatMode,
     items: List<Creators>,
     onCreatorClick: (Creators) -> Unit,
 ) {
@@ -79,6 +83,7 @@ internal fun LazyGridScope.randomCreatorsSection(
     ) { index ->
         val creator = items[index]
         CreatorGridItem(
+            dateMode = dateMode,
             service = creator.service,
             id = creator.id,
             name = creator.name,

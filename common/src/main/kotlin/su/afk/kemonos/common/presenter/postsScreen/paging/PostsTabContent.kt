@@ -13,11 +13,13 @@ import su.afk.kemonos.common.presenter.postsScreen.list.PostsListPaging
 import su.afk.kemonos.domain.models.ErrorItem
 import su.afk.kemonos.domain.models.PostDomain
 import su.afk.kemonos.domain.models.Tag
+import su.afk.kemonos.preferences.ui.DateFormatMode
 import su.afk.kemonos.preferences.ui.PostsViewMode
 
 @Composable
 fun PostsTabContent(
     postsViewMode: PostsViewMode,
+    dateMode: DateFormatMode,
     posts: LazyPagingItems<PostDomain>,
     gridState: LazyGridState,
     currentTag: Tag?,
@@ -29,6 +31,7 @@ fun PostsTabContent(
     when (postsViewMode) {
         PostsViewMode.GRID -> {
             PostsGridPaging(
+                dateMode = dateMode,
                 source = PostsSource.Paging(posts),
                 postClick = onPostClick,
                 showFavCount = showFavCount,
@@ -41,6 +44,7 @@ fun PostsTabContent(
 
         PostsViewMode.LIST -> {
             PostsListPaging(
+                dateMode = dateMode,
                 posts = posts,
                 onPostClick = onPostClick,
                 showFavCount = showFavCount,

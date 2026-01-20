@@ -20,9 +20,11 @@ import su.afk.kemonos.common.presenter.views.creator.grid.CreatorGridItem
 import su.afk.kemonos.common.presenter.views.creator.list.CreatorListItem
 import su.afk.kemonos.domain.models.Creators
 import su.afk.kemonos.preferences.ui.CreatorViewMode
+import su.afk.kemonos.preferences.ui.DateFormatMode
 
 @Composable
 fun CreatorsContentPaging(
+    dateMode: DateFormatMode,
     viewMode: CreatorViewMode,
     pagingItems: LazyPagingItems<Creators>,
     randomItems: List<Creators>,
@@ -36,7 +38,7 @@ fun CreatorsContentPaging(
                 state = listState,
                 contentPadding = PaddingValues(bottom = 8.dp),
             ) {
-                randomCreatorsSection(items = randomItems, onCreatorClick = onCreatorClick)
+                randomCreatorsSection(items = randomItems, onCreatorClick = onCreatorClick, dateMode = dateMode)
 
                 item {
                     Spacer(Modifier.height(16.dp))
@@ -57,6 +59,7 @@ fun CreatorsContentPaging(
                 ) { index ->
                     val creator = pagingItems[index] ?: return@items
                     CreatorListItem(
+                        dateMode = dateMode,
                         service = creator.service,
                         id = creator.id,
                         name = creator.name,
@@ -76,7 +79,7 @@ fun CreatorsContentPaging(
                 horizontalArrangement = Arrangement.spacedBy(6.dp),
                 contentPadding = PaddingValues(bottom = 8.dp),
             ) {
-                randomCreatorsSection(items = randomItems, onCreatorClick = onCreatorClick)
+                randomCreatorsSection(items = randomItems, onCreatorClick = onCreatorClick, dateMode = dateMode)
 
                 item(
                     span = { GridItemSpan(maxLineSpan) }
@@ -99,6 +102,7 @@ fun CreatorsContentPaging(
                 ) { index ->
                     val creator = pagingItems[index] ?: return@items
                     CreatorGridItem(
+                        dateMode = dateMode,
                         service = creator.service,
                         id = creator.id,
                         name = creator.name,

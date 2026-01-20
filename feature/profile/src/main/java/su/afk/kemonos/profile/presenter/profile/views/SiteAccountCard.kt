@@ -13,6 +13,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import su.afk.kemonos.common.util.toUiDateTime
 import su.afk.kemonos.common.utilsUI.KemonoPreviewScreen
+import su.afk.kemonos.preferences.ui.DateFormatMode
 import su.afk.kemonos.profile.R
 import su.afk.kemonos.profile.api.model.Login
 
@@ -21,6 +22,7 @@ import su.afk.kemonos.profile.api.model.Login
  */
 @Composable
 internal fun SiteAccountCard(
+    dateMode: DateFormatMode,
     title: String,
     isLoggedIn: Boolean,
     login: Login?,
@@ -54,7 +56,7 @@ internal fun SiteAccountCard(
                 Text(
                     text = stringResource(
                         R.string.profile_account_logged_in_date,
-                        login.createdAt.toUiDateTime()
+                        login.createdAt.toUiDateTime(dateMode)
                     ),
                     style = MaterialTheme.typography.bodyMedium
                 )
@@ -98,6 +100,7 @@ private fun SiteAccountCardPreview() {
             ),
             onLoginClick = {},
             onLogoutClick = {},
+            dateMode = DateFormatMode.DD_MM_YYYY
         )
     }
 }

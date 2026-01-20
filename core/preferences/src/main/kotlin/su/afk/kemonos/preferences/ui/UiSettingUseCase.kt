@@ -32,6 +32,8 @@ internal class UiSettingUseCase @Inject constructor(
             translateTarget = p.readEnum(TRANSLATE_TARGET, UiSettingModel.DEFAULT_TRANSLATE_TARGET),
             randomButtonPlacement = p.readEnum(RANDOM_BUTTON_PLACEMENT, UiSettingModel.DEFAULT_RANDOM_BUTTON_PLACEMENT),
             translateLanguageTag = p[TRANSLATE_LANGUAGE_TAG] ?: UiSettingModel.DEFAULT_TRANSLATE_LANGUAGE_TAG,
+
+            dateFormatMode = p.readEnum(DATE_FORMAT_MODE, UiSettingModel.DEFAULT_DATE_FORMAT_MODE),
         )
     }
 
@@ -99,6 +101,11 @@ internal class UiSettingUseCase @Inject constructor(
         dataStore.edit { it[TRANSLATE_LANGUAGE_TAG] = value }
     }
 
+    /** Формат даты в приложении */
+    override suspend fun setDateFormatMode(value: DateFormatMode) {
+        dataStore.edit { it[DATE_FORMAT_MODE] = value.name }
+    }
+
     // ---- helpers ----
     private inline fun <reified T : Enum<T>> Preferences.readEnum(
         key: Preferences.Key<String>,
@@ -123,5 +130,7 @@ internal class UiSettingUseCase @Inject constructor(
         val TRANSLATE_TARGET = stringPreferencesKey("TRANSLATE_TARGET")
         val RANDOM_BUTTON_PLACEMENT = stringPreferencesKey("RANDOM_BUTTON_PLACEMENT")
         val TRANSLATE_LANGUAGE_TAG = stringPreferencesKey("TRANSLATE_LANGUAGE")
+
+        val DATE_FORMAT_MODE = stringPreferencesKey("DATE_FORMAT_MODE")
     }
 }

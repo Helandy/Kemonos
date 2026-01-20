@@ -18,10 +18,12 @@ import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
 import su.afk.kemonos.common.R
 import su.afk.kemonos.common.util.toUiDateTime
+import su.afk.kemonos.preferences.ui.DateFormatMode
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun PostTranslateItem(
+    dateMode: DateFormatMode,
     published: String?,
     edited: String?,
     added: String?,
@@ -49,7 +51,7 @@ internal fun PostTranslateItem(
             Column(modifier = Modifier.weight(1f)) {
                 published?.let {
                     Text(
-                        text = "📅 ${it.toUiDateTime()}",
+                        text = "📅 ${it.toUiDateTime(dateMode)}",
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
@@ -59,7 +61,7 @@ internal fun PostTranslateItem(
                     ?.takeIf { it != published }
                     ?.let {
                         Text(
-                            text = "✏️ ${it.toUiDateTime()}",
+                            text = "✏️ ${it.toUiDateTime(dateMode)}",
                             style = MaterialTheme.typography.bodyMedium,
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                         )

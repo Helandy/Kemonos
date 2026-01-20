@@ -20,7 +20,7 @@ internal class SettingState {
         val isSaving: Boolean = false,
         val saveSuccess: Boolean = false,
 
-        val uiSettingModel: UiSettingModel? = null,
+        val uiSettingModel: UiSettingModel = UiSettingModel(),
 
         /** cache */
         val tagsKemonoCache: CacheTimeUi = CacheTimeUi(null, null, false),

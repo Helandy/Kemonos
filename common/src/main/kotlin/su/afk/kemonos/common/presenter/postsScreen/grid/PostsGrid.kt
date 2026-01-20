@@ -8,9 +8,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.unit.dp
 import su.afk.kemonos.common.presenter.postsScreen.postCard.PostCard
 import su.afk.kemonos.domain.models.PostDomain
+import su.afk.kemonos.preferences.ui.DateFormatMode
 
 @Composable
 fun PostsGrid(
+    dateMode: DateFormatMode,
     source: PostsSource<PostDomain>,
     postClick: (PostDomain) -> Unit,
     showFavCount: Boolean = false,
@@ -30,7 +32,12 @@ fun PostsGrid(
                     key = { index -> posts.peek(index)?.id ?: "placeholder_$index" }
                 ) { index ->
                     val post = posts[index] ?: return@items
-                    PostCard(post = post, onClick = { postClick(post) }, showFavCount = showFavCount)
+                    PostCard(
+                        post = post,
+                        onClick = { postClick(post) },
+                        showFavCount = showFavCount,
+                        dateMode = dateMode
+                    )
                 }
             }
 
@@ -41,7 +48,12 @@ fun PostsGrid(
                     key = { index -> list[index].id }
                 ) { index ->
                     val post = list[index]
-                    PostCard(post = post, onClick = { postClick(post) }, showFavCount = showFavCount)
+                    PostCard(
+                        post = post,
+                        onClick = { postClick(post) },
+                        showFavCount = showFavCount,
+                        dateMode = dateMode
+                    )
                 }
             }
         }

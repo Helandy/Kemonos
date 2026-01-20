@@ -9,9 +9,11 @@ import androidx.paging.compose.LazyPagingItems
 import su.afk.kemonos.common.presenter.postsScreen.grid.PostsSource
 import su.afk.kemonos.common.presenter.postsScreen.postCard.PostCard
 import su.afk.kemonos.domain.models.PostDomain
+import su.afk.kemonos.preferences.ui.DateFormatMode
 
 @Composable
 fun PostsList(
+    dateMode: DateFormatMode,
     source: PostsSource<PostDomain>,
     onPostClick: (PostDomain) -> Unit,
     showFavCount: Boolean = false,
@@ -32,6 +34,7 @@ fun PostsList(
                         post = post,
                         onClick = { onPostClick(post) },
                         showFavCount = showFavCount,
+                        dateMode = dateMode
                     )
                 }
             }
@@ -47,6 +50,7 @@ fun PostsList(
                         post = post,
                         onClick = { onPostClick(post) },
                         showFavCount = showFavCount,
+                        dateMode = dateMode
                     )
                 }
             }

@@ -66,10 +66,12 @@ internal class FavoritePostsViewModel @Inject constructor(
     }
 
     /** Получить избранные посты */
-    fun load() = viewModelScope.launch {
+    fun load(refresh: Boolean = false) = viewModelScope.launch {
         setState { copy(loading = true) }
 
-        val posts = getFavoritePostsUseCase(site = currentState.selectSite).sortedByDescending { it.favedSeq }
+        val posts = getFavoritePostsUseCase(site = currentState.selectSite, refresh = refresh)
+            .sortedBy { it.favedSeq != null }
+            .sortedByDescending { it.favedSeq }
 
         setState {
             copy(

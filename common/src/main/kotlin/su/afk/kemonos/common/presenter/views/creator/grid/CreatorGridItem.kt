@@ -24,9 +24,11 @@ import su.afk.kemonos.common.presenter.views.utilUI.formatNumberWithSpaces
 import su.afk.kemonos.common.util.getColorForFavorites
 import su.afk.kemonos.common.util.toUiDateTime
 import su.afk.kemonos.common.utilsUI.KemonoPreviewScreen
+import su.afk.kemonos.preferences.ui.DateFormatMode
 
 @Composable
 fun CreatorGridItem(
+    dateMode: DateFormatMode,
     service: String,
     id: String,
     name: String,
@@ -131,7 +133,7 @@ fun CreatorGridItem(
                                 }
 
                                 Text(
-                                    text = it.toUiDateTime(),
+                                    text = it.toUiDateTime(dateMode),
                                     style = MaterialTheme.typography.labelSmall,
                                     fontWeight = FontWeight.Bold,
                                     color = accent,
@@ -171,6 +173,7 @@ private fun PreviewCreatorGridItem() {
             name = "Sandy Sandy Sandy Sandy Sandy",
             favorited = 123456,
             onClick = {},
+            dateMode = DateFormatMode.DD_MM_YYYY,
         )
     }
 }

@@ -8,10 +8,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import su.afk.kemonos.preferences.ui.CreatorViewMode
-import su.afk.kemonos.preferences.ui.PostsViewMode
-import su.afk.kemonos.preferences.ui.RandomButtonPlacement
-import su.afk.kemonos.preferences.ui.TranslateTarget
+import su.afk.kemonos.preferences.ui.*
 import su.afk.kemonos.profile.BuildConfig
 import su.afk.kemonos.profile.R
 import su.afk.kemonos.profile.presenter.setting.SettingState
@@ -31,6 +28,7 @@ internal fun UISettingBlock(
     onTranslateTarget: (TranslateTarget) -> Unit,
     onRandomPlacement: (RandomButtonPlacement) -> Unit,
     onTranslateLanguageTag: (String) -> Unit,
+    onDateFormatMode: (DateFormatMode) -> Unit,
 ) {
     val ui = state.uiSettingModel ?: return
 
@@ -52,6 +50,8 @@ internal fun UISettingBlock(
             GeneralUiSection(
                 suggestRandomAuthors = ui.suggestRandomAuthors,
                 onSuggestRandomAuthors = onSuggestRandomAuthors,
+                dateFormatMode = ui.dateFormatMode,
+                onDateFormatMode = onDateFormatMode,
             )
 
             Spacer(Modifier.height(12.dp))
@@ -135,12 +135,22 @@ private fun DebugSection(
 private fun GeneralUiSection(
     suggestRandomAuthors: Boolean,
     onSuggestRandomAuthors: (Boolean) -> Unit,
+    dateFormatMode: DateFormatMode,
+    onDateFormatMode: (DateFormatMode) -> Unit,
 ) {
     Spacer(Modifier.height(6.dp))
     SwitchRow(
         title = stringResource(R.string.settings_ui_suggest_random_authors_title),
         checked = suggestRandomAuthors,
         onCheckedChange = onSuggestRandomAuthors,
+    )
+
+    Spacer(Modifier.height(8.dp))
+
+    DateFormatRow(
+        title = stringResource(R.string.settings_ui_date_format_title),
+        value = dateFormatMode,
+        onChange = onDateFormatMode
     )
 }
 

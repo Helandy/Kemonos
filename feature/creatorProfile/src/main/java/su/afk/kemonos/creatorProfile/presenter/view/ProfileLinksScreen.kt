@@ -26,9 +26,11 @@ import su.afk.kemonos.common.imageLoader.AsyncImageWithStatus
 import su.afk.kemonos.common.util.getColorForFavorites
 import su.afk.kemonos.common.util.toUiDateTime
 import su.afk.kemonos.creatorProfile.api.domain.models.profileLinks.ProfileLink
+import su.afk.kemonos.preferences.ui.DateFormatMode
 
 @Composable
 fun ProfileLinksScreen(
+    dateMode: DateFormatMode,
     links: List<ProfileLink>,
     onClick: (ProfileLink) -> Unit,
     modifier: Modifier = Modifier
@@ -42,6 +44,7 @@ fun ProfileLinksScreen(
     ) {
         items(links, key = { it.id }) { link ->
             ProfileLinkItem(
+                dateMode = dateMode,
                 link = link,
                 imgBaseUrl = imgBaseUrl,
                 onClick = onClick
@@ -58,6 +61,7 @@ fun ProfileLinksScreen(
 
 @Composable
 fun ProfileLinkItem(
+    dateMode: DateFormatMode,
     link: ProfileLink,
     imgBaseUrl: String,
     onClick: (ProfileLink) -> Unit
@@ -142,7 +146,7 @@ fun ProfileLinkItem(
                     }
                     link.updated?.let {
                         Text(
-                            text = "📅 ${it.toUiDateTime()}",
+                            text = "📅 ${it.toUiDateTime(dateMode)}",
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.primary,
                             modifier = Modifier

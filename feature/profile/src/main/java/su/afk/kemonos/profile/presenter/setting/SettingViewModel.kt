@@ -189,4 +189,9 @@ internal class SettingViewModel @Inject constructor(
     fun setTranslateLanguageTag(value: String) = viewModelScope.launch {
         uiSetting.setTranslateLanguageTag(value)
     }
+
+    /** Формат даты в приложении */
+    fun onDateFormatMode(value: DateFormatMode) = viewModelScope.launch {
+        uiSetting.setDateFormatMode(value)
+    }
 }

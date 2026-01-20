@@ -117,6 +117,7 @@ internal fun CreatorPostScreen(
                 /** Шапка автора */
                 if (state.showBarCreator && profile != null) {
                     CreatorHeader(
+                        dateMode = state.uiSettingModel.dateFormatMode,
                         service = profile.service,
                         creatorId = profile.id,
                         creatorName = profile.name,
@@ -138,6 +139,7 @@ internal fun CreatorPostScreen(
 
             item(key = "translate") {
                 PostTranslateItem(
+                    dateMode = state.uiSettingModel.dateFormatMode,
                     published = post.published,
                     edited = post.edited,
                     added = post.added,
@@ -205,6 +207,7 @@ internal fun CreatorPostScreen(
             }
 
             postCommentsSection(
+                dateMode = state.uiSettingModel.dateFormatMode,
                 commentDomains = state.commentDomains
             )
 

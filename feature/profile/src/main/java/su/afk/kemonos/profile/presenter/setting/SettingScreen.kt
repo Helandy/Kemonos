@@ -43,6 +43,7 @@ internal fun SettingScreen(viewModel: SettingViewModel) {
             onTranslateTarget = viewModel::setTranslateTarget,
             onRandomPlacement = viewModel::setRandomButtonPlacement,
             onTranslateLanguageTag = viewModel::setTranslateLanguageTag,
+            onDateFormatMode = viewModel::onDateFormatMode
         )
 
         Spacer(Modifier.height(32.dp))
@@ -58,7 +59,7 @@ internal fun SettingScreen(viewModel: SettingViewModel) {
 
         CacheSettingsBlock(
             state = state,
-            formatDateTime = { ms -> ms.toUiDateTime() },
+            formatDateTime = { ms -> ms.toUiDateTime(state.uiSettingModel.dateFormatMode) },
             onClear = viewModel::onClear
         )
 

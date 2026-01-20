@@ -18,9 +18,11 @@ import su.afk.kemonos.common.R
 import su.afk.kemonos.common.di.LocalDomainResolver
 import su.afk.kemonos.common.util.toUiDateTime
 import su.afk.kemonos.domain.models.PostDomain
+import su.afk.kemonos.preferences.ui.DateFormatMode
 
 @Composable
 fun PostCard(
+    dateMode: DateFormatMode,
     post: PostDomain,
     onClick: () -> Unit,
     showFavCount: Boolean = false,
@@ -78,7 +80,7 @@ fun PostCard(
 
         Row {
             Text(
-                text = "📅 ${post.published?.toUiDateTime()} ",
+                text = "📅 ${post.published?.toUiDateTime(dateMode)} ",
                 style = MaterialTheme.typography.bodySmall,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis

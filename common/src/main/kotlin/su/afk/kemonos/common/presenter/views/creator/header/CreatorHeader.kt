@@ -25,9 +25,11 @@ import su.afk.kemonos.common.imageLoader.AsyncImageWithStatus
 import su.afk.kemonos.common.util.getColorForFavorites
 import su.afk.kemonos.common.util.toUiDateTime
 import su.afk.kemonos.common.utilsUI.KemonoPreviewScreen
+import su.afk.kemonos.preferences.ui.DateFormatMode
 
 @Composable
 fun CreatorHeader(
+    dateMode: DateFormatMode,
     service: String,
     creatorId: String,
     creatorName: String,
@@ -154,7 +156,7 @@ fun CreatorHeader(
                         ) {
                             updated?.let { upd ->
                                 DropdownMenuItem(
-                                    text = { Text("📅 ${upd.toUiDateTime()}") },
+                                    text = { Text("📅 ${upd.toUiDateTime(dateMode)}") },
                                     onClick = {}
                                 )
                             }
@@ -171,6 +173,7 @@ fun CreatorHeader(
 private fun PreviewCreatorHeader() {
     KemonoPreviewScreen {
         CreatorHeader(
+            dateMode = DateFormatMode.DD_MM_YYYY,
             service = "creator",
             creatorId = "creator",
             creatorName = "creator",
