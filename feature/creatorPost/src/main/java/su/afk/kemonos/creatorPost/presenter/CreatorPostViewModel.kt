@@ -3,14 +3,14 @@ package su.afk.kemonos.creatorPost.presenter
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.async
-import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import su.afk.kemonos.common.error.IErrorHandlerUseCase
 import su.afk.kemonos.common.error.storage.RetryStorage
 import su.afk.kemonos.common.error.toFavoriteToastBar
-import su.afk.kemonos.common.presenter.baseViewModel.BaseViewModel
+import su.afk.kemonos.common.presenter.baseViewModel.BaseViewModelNew
 import su.afk.kemonos.common.presenter.webView.util.cleanDuplicatedMediaFromContent
 import su.afk.kemonos.common.shared.ShareLinkBuilder
 import su.afk.kemonos.common.shared.ShareTarget
@@ -22,6 +22,7 @@ import su.afk.kemonos.creatorPost.domain.useCase.GetCommentsUseCase
 import su.afk.kemonos.creatorPost.domain.useCase.GetPostUseCase
 import su.afk.kemonos.creatorPost.domain.useCase.GetVideoInfoUseCase
 import su.afk.kemonos.creatorPost.navigation.CreatorPostDest
+import su.afk.kemonos.creatorPost.presenter.CreatorPostState.*
 import su.afk.kemonos.creatorPost.presenter.delegates.LikeDelegate
 import su.afk.kemonos.creatorPost.presenter.delegates.NavigateDelegates
 import su.afk.kemonos.creatorProfile.api.IGetProfileUseCase
@@ -44,15 +45,14 @@ internal class CreatorPostViewModel @AssistedInject constructor(
     private val uiSetting: IUiSettingUseCase,
     override val errorHandler: IErrorHandlerUseCase,
     override val retryStorage: RetryStorage,
-) : BaseViewModel<CreatorPostState>(CreatorPostState()) {
-
-    private val _effect = Channel<CreatorPostEffect>(Channel.BUFFERED)
-    val effect = _effect.receiveAsFlow()
+) : BaseViewModelNew<State, Event, Effect>() {
 
     @AssistedFactory
     interface Factory {
         fun create(dest: CreatorPostDest.CreatorPost): CreatorPostViewModel
     }
+
+    override fun createInitialState(): State = State()
 
     override fun onRetry() {
         loadingPost()
@@ -79,6 +79,27 @@ internal class CreatorPostViewModel @AssistedInject constructor(
         }
 
         loadingPost()
+    }
+
+    override fun onEvent(event: Event) {
+        when (event) {
+            Event.Retry -> loadingPost()
+
+            Event.CopyPostLinkClicked -> copyPostLink()
+            Event.FavoriteClicked -> onFavoriteClick()
+
+            Event.CreatorHeaderClicked -> navigateToCreatorProfile()
+
+            is Event.ToggleTranslate -> onToggleTranslate(event.rawHtml)
+
+            is Event.OpenImage -> navigateOpenImage(event.originalUrl)
+
+            is Event.Download -> download(event.url, event.fileName)
+
+            is Event.OpenExternalUrl -> setEffect(Effect.OpenUrl(event.url))
+
+            is Event.VideoInfoRequested -> requestVideoInfo(event.url, event.name)
+        }
     }
 
     fun loadingPost() = viewModelScope.launch {
@@ -145,6 +166,31 @@ internal class CreatorPostViewModel @AssistedInject constructor(
         }
     }
 
+    private val videoJobs = mutableMapOf<String, Job>()
+    private fun requestVideoInfo(url: String, name: String) {
+        // уже есть успешное/ошибка — решай сам: можно не перезапрашивать
+        val existing = currentState.videoInfo[url]
+        if (existing is VideoInfoState.Success) return
+
+        // если уже грузим — не стартуем второй раз
+        if (videoJobs[url]?.isActive == true) return
+
+        // если хотим показать loading сразу
+        setState {
+            copy(videoInfo = videoInfo + (url to VideoInfoState.Loading))
+        }
+
+        videoJobs[url] = viewModelScope.launch {
+            runCatching { getVideoInfo(url, name) }
+                .onSuccess { info ->
+                    setState { copy(videoInfo = videoInfo + (url to VideoInfoState.Success(info))) }
+                }
+                .onFailure { e ->
+                    setState { copy(videoInfo = videoInfo + (url to VideoInfoState.Error(e))) }
+                }
+        }
+    }
+
     /** Избранное */
     fun onFavoriteClick() = viewModelScope.launch {
         if (currentState.favoriteActionLoading) return@launch
@@ -166,7 +212,7 @@ internal class CreatorPostViewModel @AssistedInject constructor(
             }
             .onFailure { t ->
                 val errorMessage = errorHandler.parse(t).toFavoriteToastBar()
-                _effect.trySend(CreatorPostEffect.ShowToast(errorMessage))
+                setEffect(Effect.ShowToast(errorMessage))
             }
         setState { copy(favoriteActionLoading = false) }
     }
@@ -204,7 +250,7 @@ internal class CreatorPostViewModel @AssistedInject constructor(
                 postId = currentState.postId
             )
         )
-        _effect.trySend(CreatorPostEffect.CopyPostLink(url))
+        setEffect(Effect.CopyPostLink(url))
     }
 
     fun download(url: String, fileName: String?) {
@@ -228,8 +274,8 @@ internal class CreatorPostViewModel @AssistedInject constructor(
                 val plainText = rawHtml.preprocessForTranslation()
                 if (plainText.isBlank()) return
 
-                _effect.trySend(
-                    CreatorPostEffect.OpenGoogleTranslate(
+                setEffect(
+                    Effect.OpenGoogleTranslate(
                         text = plainText,
                         targetLangTag = currentState.uiSettingModel.translateLanguageTag
                     )

@@ -9,12 +9,13 @@ import androidx.navigation3.runtime.EntryProviderScope
 import androidx.navigation3.runtime.NavKey
 import dagger.hilt.android.EntryPointAccessors
 import jakarta.inject.Inject
+import su.afk.kemonos.common.presenter.baseScreen.ScreenNavigator
 import su.afk.kemonos.creatorPost.di.CreatorPostVmFactoryEntryPoint
 import su.afk.kemonos.creatorPost.navigation.CreatorPostDest
 import su.afk.kemonos.navigation.NavRegistrar
 import su.afk.kemonos.navigation.NavigationManager
 
-class CreatorPostRegister @Inject constructor() : NavRegistrar {
+class CreatorPostNavigatorRegister @Inject constructor() : NavRegistrar {
     override fun register(builder: EntryProviderScope<NavKey>, nav: NavigationManager) = with(builder) {
         entry<CreatorPostDest.CreatorPost> { dest ->
             CreatorPostEntry(dest)
@@ -32,7 +33,7 @@ private fun CreatorPostEntry(dest: CreatorPostDest.CreatorPost) {
     )
     val assistedFactory = entryPoint.creatorPostVmFactory()
 
-    val vm: CreatorPostViewModel = viewModel(
+    val viewModel: CreatorPostViewModel = viewModel(
         key = "CreatorPost:${dest}",
         factory = object : ViewModelProvider.Factory {
             @Suppress("UNCHECKED_CAST")
@@ -42,5 +43,11 @@ private fun CreatorPostEntry(dest: CreatorPostDest.CreatorPost) {
         }
     )
 
-    CreatorPostScreen(viewModel = vm)
+    ScreenNavigator(viewModel) { state, effect, event ->
+        CreatorPostScreen(
+            state = state,
+            onEvent = event,
+            effect = effect,
+        )
+    }
 }

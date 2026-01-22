@@ -13,9 +13,11 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.core.net.toUri
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.emptyFlow
 import su.afk.kemonos.common.R
 import su.afk.kemonos.common.di.LocalDomainResolver
 import su.afk.kemonos.common.presenter.baseScreen.BaseScreen
@@ -24,6 +26,9 @@ import su.afk.kemonos.common.presenter.views.elements.FavoriteActionButton
 import su.afk.kemonos.common.shared.ShareActions
 import su.afk.kemonos.common.shared.view.SharedActionButton
 import su.afk.kemonos.common.util.toast
+import su.afk.kemonos.common.utilsUI.KemonoPreviewScreen
+import su.afk.kemonos.creatorPost.presenter.CreatorPostState.*
+import su.afk.kemonos.creatorPost.presenter.CreatorPostState.State
 import su.afk.kemonos.creatorPost.presenter.util.IntStateMapSaver
 import su.afk.kemonos.creatorPost.presenter.util.openGoogleTranslate
 import su.afk.kemonos.creatorPost.presenter.view.PostAttachmentsSection
@@ -37,10 +42,7 @@ import su.afk.kemonos.creatorPost.presenter.view.video.postVideosSection
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-internal fun CreatorPostScreen(
-    viewModel: CreatorPostViewModel
-) {
-    val state by viewModel.state.collectAsStateWithLifecycle()
+internal fun CreatorPostScreen(state: State, onEvent: (Event) -> Unit, effect: Flow<Effect>) {
     val context = LocalContext.current
     val resolver = LocalDomainResolver.current
 
@@ -48,13 +50,19 @@ internal fun CreatorPostScreen(
         mutableMapOf<String, MutableIntState>()
     }
 
-    LaunchedEffect(viewModel) {
-        viewModel.effect.collect { effect ->
+    LaunchedEffect(effect) {
+        effect.collect { effect ->
             when (effect) {
-                is CreatorPostEffect.ShowToast -> context.toast(effect.message)
-                is CreatorPostEffect.CopyPostLink -> ShareActions.copyToClipboard(context, "Post link", effect.message)
-                is CreatorPostEffect.OpenGoogleTranslate -> {
+                is Effect.ShowToast -> context.toast(effect.message)
+                is Effect.CopyPostLink -> ShareActions.copyToClipboard(context, "Post link", effect.message)
+                is Effect.OpenGoogleTranslate -> {
                     openGoogleTranslate(context, effect.text, effect.targetLangTag)
+                }
+
+                is Effect.OpenUrl -> {
+                    Intent(Intent.ACTION_VIEW, effect.url.toUri())
+                        .apply { flags = Intent.FLAG_ACTIVITY_NEW_TASK }
+                        .also(context::startActivity)
                 }
             }
         }
@@ -67,7 +75,7 @@ internal fun CreatorPostScreen(
         floatingActionButtonStart = {
             if (!state.loading) {
                 SharedActionButton(
-                    onClick = { viewModel.copyPostLink() }
+                    onClick = { onEvent(Event.CopyPostLinkClicked) }
                 )
             }
         },
@@ -76,13 +84,13 @@ internal fun CreatorPostScreen(
                 FavoriteActionButton(
                     enabled = !state.favoriteActionLoading,
                     isFavorite = state.isFavorite,
-                    onFavoriteClick = { viewModel.onFavoriteClick() }
+                    onFavoriteClick = { onEvent(Event.FavoriteClicked) }
                 )
             }
         },
         isLoading = state.loading,
         isEmpty = state.post == null && !state.loading,
-        onRetry = { viewModel.loadingPost() }
+        onRetry = { onEvent(Event.Retry) }
     ) {
         val post = state.post?.post ?: return@BaseScreen
 
@@ -125,7 +133,7 @@ internal fun CreatorPostScreen(
                         showSearchButton = false,
                         showInfoButton = false,
                         onSearchClick = {},
-                        onClickHeader = viewModel::navigateToCreatorProfile
+                        onClickHeader = { onEvent(Event.CreatorHeaderClicked) }
                     )
                 }
             }
@@ -150,7 +158,7 @@ internal fun CreatorPostScreen(
                     translated = state.translateText,
                     error = state.translateError,
 
-                    onToggleTranslate = { viewModel.onToggleTranslate(post.content.orEmpty()) }
+                    onToggleTranslate = { onEvent(Event.ToggleTranslate(post.content.orEmpty())) }
                 )
             }
 
@@ -164,7 +172,7 @@ internal fun CreatorPostScreen(
                 PostContentBlock(
                     service = post.service,
                     body = state.postContentClean,
-                    onOpenImage = viewModel::navigateOpenImage,
+                    onOpenImage = { url -> onEvent(Event.OpenImage(url)) },
                     maxHeightPxState = heightState,
                 )
             }
@@ -172,23 +180,22 @@ internal fun CreatorPostScreen(
             postPreviewsSection(
                 previews = uniquePreviews,
                 imgBaseUrl = imgBaseUrl,
-                onOpenImage = viewModel::navigateOpenImage,
-                onOpenUrl = { url ->
-                    Intent(Intent.ACTION_VIEW, url.toUri())
-                        .apply { flags = Intent.FLAG_ACTIVITY_NEW_TASK }
-                        .also(context::startActivity)
-                },
+                onOpenImage = { url -> onEvent(Event.OpenImage(url)) },
+                onOpenUrl = { url -> onEvent(Event.OpenExternalUrl(url)) },
                 downloadStarted = downloadStarted,
                 downloadStartedNamed = downloadStartedNamed,
                 download = { fullUrl, fileName ->
-                    viewModel.download(fullUrl, fileName)
+                    onEvent(Event.Download(fullUrl, fileName))
                 },
                 toast = { msg -> context.toast(msg) }
             )
 
             postVideosSection(
-                videos = state.post?.videos.orEmpty(),
-                observeVideoInfo = viewModel::observeVideoInfo,
+                videos = state.post.videos,
+                videoInfo = state.videoInfo,
+                onVideoInfoRequested = { url, name ->
+                    onEvent(Event.VideoInfoRequested(url, name))
+                }
             )
 
             item(key = "tags") {
@@ -197,7 +204,7 @@ internal fun CreatorPostScreen(
 
             item(key = "attachments") {
                 PostAttachmentsSection(
-                    attachments = state.post?.attachments.orEmpty(),
+                    attachments = state.post.attachments,
                     onAttachmentClick = { url ->
                         Intent(Intent.ACTION_VIEW, url.toUri())
                             .apply { flags = Intent.FLAG_ACTIVITY_NEW_TASK }
@@ -215,5 +222,17 @@ internal fun CreatorPostScreen(
                 Spacer(Modifier.height(56.dp))
             }
         }
+    }
+}
+
+@Preview("PreviewCreatorPostScreen")
+@Composable
+private fun PreviewCreatorPostScreen() {
+    KemonoPreviewScreen {
+        CreatorPostScreen(
+            state = State().copy(loading = false),
+            onEvent = {},
+            effect = emptyFlow()
+        )
     }
 }

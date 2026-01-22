@@ -14,8 +14,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import kotlinx.coroutines.flow.StateFlow
 import su.afk.kemonos.common.R
 import su.afk.kemonos.common.util.openVideoExternally
 import su.afk.kemonos.creatorPost.domain.model.video.VideoInfoState
@@ -31,11 +29,15 @@ import kotlin.math.roundToInt
 @Composable
 internal fun VideoInfoPreview(
     video: VideoDomain,
-    observeVideoInfo: (String, String) -> StateFlow<VideoInfoState>,
+    infoState: VideoInfoState?,
+    requestInfo: (url: String, name: String) -> Unit,
 ) {
     val url = remember(video) { "${video.server}/data${video.path}" }
-    val infoFlow = remember(url, video.name) { observeVideoInfo(url, video.name) }
-    val infoState by infoFlow.collectAsStateWithLifecycle()
+
+    LaunchedEffect(url, video.name) {
+        // как только элемент появился в LazyColumn — просим инфо по видео
+        requestInfo(url, video.name)
+    }
     val context = LocalContext.current
 
     var thumbLoading by remember(url) { mutableStateOf(true) }
@@ -108,7 +110,7 @@ internal fun VideoInfoPreview(
 
         /** Инфа о видео */
         if (infoState is VideoInfoState.Success) {
-            val data = (infoState as VideoInfoState.Success).data
+            val data = infoState.data
             val dur = "%d:%02d".format(
                 data.durationMs / 60000,
                 (data.durationMs / 1000) % 60

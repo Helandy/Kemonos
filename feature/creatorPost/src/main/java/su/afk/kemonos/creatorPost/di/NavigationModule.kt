@@ -7,7 +7,7 @@ import dagger.hilt.components.SingletonComponent
 import dagger.multibindings.IntoSet
 import su.afk.kemonos.creatorPost.api.ICreatorPostNavigator
 import su.afk.kemonos.creatorPost.navigation.CreatorPostDestNavigator
-import su.afk.kemonos.creatorPost.presenter.CreatorPostRegister
+import su.afk.kemonos.creatorPost.presenter.CreatorPostNavigatorRegister
 import su.afk.kemonos.navigation.NavRegistrar
 import javax.inject.Singleton
 
@@ -17,7 +17,7 @@ interface NavigationModule {
 
     @Binds
     @IntoSet
-    fun bindCreatorPostNavigator(impl: CreatorPostRegister): NavRegistrar
+    fun bindCreatorPostNavigator(impl: CreatorPostNavigatorRegister): NavRegistrar
 
     @Binds
     @Singleton

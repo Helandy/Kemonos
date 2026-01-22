@@ -7,7 +7,6 @@ import androidx.compose.material3.Text
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import kotlinx.coroutines.flow.StateFlow
 import su.afk.kemonos.common.R
 import su.afk.kemonos.creatorPost.domain.model.video.VideoInfoState
 import su.afk.kemonos.creatorPost.presenter.view.VideoInfoPreview
@@ -15,7 +14,8 @@ import su.afk.kemonos.domain.models.VideoDomain
 
 internal fun LazyListScope.postVideosSection(
     videos: List<VideoDomain>,
-    observeVideoInfo: (String, String) -> StateFlow<VideoInfoState>,
+    videoInfo: Map<String, VideoInfoState>,
+    onVideoInfoRequested: (url: String, name: String) -> Unit,
 ) {
     if (videos.isEmpty()) return
 
@@ -34,9 +34,11 @@ internal fun LazyListScope.postVideosSection(
             "video:${v.server}:${v.name}:${v.path}"
         }
     ) { index ->
+        val video = videos[index]
         VideoInfoPreview(
-            video = videos[index],
-            observeVideoInfo = observeVideoInfo
+            video = video,
+            infoState = videoInfo["${video.server}/data${video.path}"],
+            requestInfo = onVideoInfoRequested
         )
     }
 }
