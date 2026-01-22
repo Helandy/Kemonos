@@ -25,15 +25,18 @@ import su.afk.kemonos.common.presenter.views.creator.header.CreatorHeader
 import su.afk.kemonos.common.presenter.views.elements.FavoriteActionButton
 import su.afk.kemonos.common.shared.ShareActions
 import su.afk.kemonos.common.shared.view.SharedActionButton
+import su.afk.kemonos.common.util.buildDataUrl
+import su.afk.kemonos.common.util.openAudioExternally
 import su.afk.kemonos.common.util.toast
 import su.afk.kemonos.common.utilsUI.KemonoPreviewScreen
 import su.afk.kemonos.creatorPost.presenter.CreatorPostState.*
 import su.afk.kemonos.creatorPost.presenter.CreatorPostState.State
 import su.afk.kemonos.creatorPost.presenter.util.IntStateMapSaver
 import su.afk.kemonos.creatorPost.presenter.util.openGoogleTranslate
-import su.afk.kemonos.creatorPost.presenter.view.PostAttachmentsSection
 import su.afk.kemonos.creatorPost.presenter.view.PostTitleBlock
 import su.afk.kemonos.creatorPost.presenter.view.TagsRow
+import su.afk.kemonos.creatorPost.presenter.view.attachment.PostAttachmentsSection
+import su.afk.kemonos.creatorPost.presenter.view.audio.postAudioSection
 import su.afk.kemonos.creatorPost.presenter.view.content.PostContentBlock
 import su.afk.kemonos.creatorPost.presenter.view.postCommentsSection
 import su.afk.kemonos.creatorPost.presenter.view.preview.postPreviewsSection
@@ -64,6 +67,7 @@ internal fun CreatorPostScreen(state: State, onEvent: (Event) -> Unit, effect: F
                         .apply { flags = Intent.FLAG_ACTIVITY_NEW_TASK }
                         .also(context::startActivity)
                 }
+                is Effect.OpenAudio -> openAudioExternally(context, effect.url, effect.name, effect.mime)
             }
         }
     }
@@ -95,12 +99,12 @@ internal fun CreatorPostScreen(state: State, onEvent: (Event) -> Unit, effect: F
         val post = state.post?.post ?: return@BaseScreen
 
         val profile = state.profile
-        val previews = state.post?.previews
+        val previews = state.post.previews
 
         val imgBaseUrl = remember(post.service) { resolver.imageBaseUrlByService(post.service) }
 
         val uniquePreviews = remember(previews) {
-            previews.orEmpty().distinctBy { p ->
+            previews.distinctBy { p ->
                 when (p.type) {
                     "thumbnail" -> "t:${p.path}"
                     "embed" -> "e:${p.url}"
@@ -195,6 +199,18 @@ internal fun CreatorPostScreen(state: State, onEvent: (Event) -> Unit, effect: F
                 videoInfo = state.videoInfo,
                 onVideoInfoRequested = { url, name ->
                     onEvent(Event.VideoInfoRequested(url, name))
+                }
+            )
+
+            postAudioSection(
+                attachments = state.post.attachments,
+                onPlay = { att ->
+                    val url = att.buildDataUrl()
+                    onEvent(Event.PlayAudio(url, att.name))
+                },
+                onDownload = { att ->
+                    val url = att.buildDataUrl()
+                    onEvent(Event.Download(url, att.name))
                 }
             )
 

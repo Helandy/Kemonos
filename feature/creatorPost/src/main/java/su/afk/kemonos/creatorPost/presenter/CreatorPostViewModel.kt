@@ -16,6 +16,7 @@ import su.afk.kemonos.common.shared.ShareLinkBuilder
 import su.afk.kemonos.common.shared.ShareTarget
 import su.afk.kemonos.common.translate.TextTranslator
 import su.afk.kemonos.common.translate.preprocessForTranslation
+import su.afk.kemonos.common.util.audioMimeType
 import su.afk.kemonos.creatorPost.api.domain.model.PostContentDomain
 import su.afk.kemonos.creatorPost.domain.model.video.VideoInfoState
 import su.afk.kemonos.creatorPost.domain.useCase.GetCommentsUseCase
@@ -99,6 +100,12 @@ internal class CreatorPostViewModel @AssistedInject constructor(
             is Event.OpenExternalUrl -> setEffect(Effect.OpenUrl(event.url))
 
             is Event.VideoInfoRequested -> requestVideoInfo(event.url, event.name)
+
+            is Event.PlayAudio -> {
+                val safeName = event.name?.takeIf { it.isNotBlank() } ?: event.url.substringAfterLast('/')
+                val mime = audioMimeType(event.url)
+                setEffect(Effect.OpenAudio(event.url, safeName, mime))
+            }
         }
     }
 

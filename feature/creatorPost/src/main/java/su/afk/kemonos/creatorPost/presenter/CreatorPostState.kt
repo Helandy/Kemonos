@@ -55,6 +55,8 @@ internal class CreatorPostState {
         data class Download(val url: String, val fileName: String?) : Event
 
         data class VideoInfoRequested(val url: String, val name: String) : Event
+
+        data class PlayAudio(val url: String, val name: String?) : Event
     }
 
     sealed interface Effect : UiEffect {
@@ -67,5 +69,7 @@ internal class CreatorPostState {
         ) : Effect
 
         data class OpenUrl(val url: String) : Effect
+
+        data class OpenAudio(val url: String, val name: String?, val mime: String) : Effect
     }
 }

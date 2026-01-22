@@ -70,14 +70,17 @@ internal class FavoritePostsViewModel @Inject constructor(
         setState { copy(loading = true) }
 
         val posts = getFavoritePostsUseCase(site = currentState.selectSite, refresh = refresh)
-            .sortedBy { it.favedSeq != null }
-            .sortedByDescending { it.favedSeq }
+
+        val sorted = posts.sortedWith(
+            compareBy<PostDomain> { it.favedSeq != null }
+                .thenByDescending { it.favedSeq ?: Long.MIN_VALUE }
+        )
 
         setState {
             copy(
                 loading = false,
-                allFavoritePosts = posts,
-                favoritePosts = posts,
+                allFavoritePosts = sorted,
+                favoritePosts = sorted,
             )
         }
     }

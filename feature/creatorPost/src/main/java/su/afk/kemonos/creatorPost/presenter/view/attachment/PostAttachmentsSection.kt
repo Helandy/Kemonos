@@ -1,4 +1,4 @@
-package su.afk.kemonos.creatorPost.presenter.view
+package su.afk.kemonos.creatorPost.presenter.view.attachment
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
@@ -16,8 +16,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import su.afk.kemonos.common.R
+import su.afk.kemonos.common.util.buildDataUrl
 import su.afk.kemonos.domain.models.AttachmentDomain
-import java.net.URLEncoder
 
 @Composable
 fun PostAttachmentsSection(
@@ -35,8 +35,8 @@ fun PostAttachmentsSection(
 
     Column {
         attachments.forEach { att ->
-            val url = "${att.server}/data${att.path}?f=" +
-                    URLEncoder.encode(att.name.orEmpty(), "UTF-8")
+            val url = att.buildDataUrl()
+
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier

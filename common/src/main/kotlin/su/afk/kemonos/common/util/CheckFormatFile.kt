@@ -1,10 +1,39 @@
 package su.afk.kemonos.common.util
 
+import android.content.Context
+import android.content.Intent
+import androidx.core.net.toUri
 import su.afk.kemonos.domain.models.PostDomain
 
+private val AUDIO_EXTENSIONS = setOf(
+    "mp3", "m4a", "aac", "wav", "ogg", "flac", "opus", "wma"
+)
+
 fun isAudioFile(path: String?): Boolean {
-    if (path == null) return false
-    return path.endsWith(".mp3", ignoreCase = true)
+    if (path.isNullOrBlank()) return false
+    val ext = path.substringAfterLast('.', "")
+    return ext.lowercase() in AUDIO_EXTENSIONS
+}
+
+fun audioMimeType(path: String?): String = when (path?.substringAfterLast('.', "")?.lowercase()) {
+    "mp3" -> "audio/mpeg"
+    "m4a" -> "audio/mp4"
+    "aac" -> "audio/aac"
+    "wav" -> "audio/wav"
+    "ogg" -> "audio/ogg"
+    "flac" -> "audio/flac"
+    "opus" -> "audio/opus"
+    else -> "audio/*"
+}
+
+fun openAudioExternally(context: Context, url: String, fileName: String? = null, mime: String = "audio/*") {
+    val intent = Intent(Intent.ACTION_VIEW).apply {
+        setDataAndType(url.toUri(), mime)
+        addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+        addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+        putExtra(Intent.EXTRA_TITLE, fileName)
+    }
+    context.startActivity(intent)
 }
 
 fun isBinFile(path: String?): Boolean {
