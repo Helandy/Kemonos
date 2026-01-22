@@ -10,10 +10,11 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import su.afk.kemonos.common.error.IErrorHandlerUseCase
 import su.afk.kemonos.common.error.storage.RetryStorage
-import su.afk.kemonos.common.presenter.changeSite.SiteAwareBaseViewModel
+import su.afk.kemonos.common.presenter.changeSite.SiteAwareBaseViewModelNew
 import su.afk.kemonos.creatorProfile.api.ICreatorProfileNavigator
 import su.afk.kemonos.creators.domain.GetCreatorsPagedUseCase
 import su.afk.kemonos.creators.domain.RandomCreatorUseCase
+import su.afk.kemonos.creators.presenter.CreatorsState.*
 import su.afk.kemonos.domain.SelectedSite
 import su.afk.kemonos.domain.models.Creators
 import su.afk.kemonos.domain.models.CreatorsSort
@@ -32,14 +33,14 @@ internal class CreatorsViewModel @Inject constructor(
     override val selectedSiteUseCase: ISelectedSiteUseCase,
     override val errorHandler: IErrorHandlerUseCase,
     override val retryStorage: RetryStorage,
-) : SiteAwareBaseViewModel<CreatorsState>(
-    initialState = CreatorsState(),
-) {
+) : SiteAwareBaseViewModelNew<State, Event, Effect>() {
+
+    override fun createInitialState(): State = State()
 
     override fun onRetry() {
         viewModelScope.launch {
             ensureFreshAndReloadServices()
-            rebuildPaging()
+            rebuildPaging(scrollToTop = true)
         }
     }
 
@@ -54,13 +55,25 @@ internal class CreatorsViewModel @Inject constructor(
             )
         }
 
-        rebuildPaging()
+        rebuildPaging(scrollToTop = true)
         ensureFreshAndReloadServices()
     }
 
     init {
         observeUiSetting()
         initSiteAware()
+    }
+
+    override fun onEvent(event: Event) {
+        when (event) {
+            is Event.QueryChanged -> updateSearch(event.value)
+            is Event.ServiceSelected -> setService(event.value)
+            is Event.SortSelected -> setSortType(event.value)
+            Event.ToggleSortOrder -> toggleSortOrder()
+            is Event.CreatorClicked -> onCreatorClick(event.creator)
+            Event.RandomClicked -> randomCreator()
+            Event.SwitchSiteClicked -> switchSite()
+        }
     }
 
     /** UI настройки */
@@ -74,20 +87,20 @@ internal class CreatorsViewModel @Inject constructor(
 
     fun setService(service: String) {
         setState { copy(selectedService = service) }
-        rebuildPaging()
+        rebuildPaging(scrollToTop = true)
     }
 
     fun setSortType(type: CreatorsSort) {
         setState { copy(sortedType = type) }
-        rebuildPaging()
+        rebuildPaging(scrollToTop = true)
     }
 
     fun toggleSortOrder() {
         setState { copy(sortAscending = !state.value.sortAscending) }
-        rebuildPaging()
+        rebuildPaging(scrollToTop = true)
     }
 
-    private fun rebuildPaging() {
+    private fun rebuildPaging(scrollToTop: Boolean) {
         val s = state.value.selectedService
         val qRaw = state.value.searchQuery
         val q = qRaw.trim()
@@ -95,28 +108,22 @@ internal class CreatorsViewModel @Inject constructor(
         val asc = state.value.sortAscending
 
         val flow = getCreatorsPagedUseCase
-            .paging(service = s, query = qRaw, sort = sort, ascending = asc) // или q — как у тебя принято
+            .paging(service = s, query = qRaw, sort = sort, ascending = asc)
             .cachedIn(viewModelScope)
 
         setState { copy(creatorsPaged = flow) }
 
-        /** Рандомные авторы */
+        if (scrollToTop) setEffect(Effect.ScrollToTop)
+
+        /** random suggestions */
         viewModelScope.launch {
             val suggest = state.value.uiSettingModel.suggestRandomAuthors
-
-            // не показываем в режиме поиска
             val shouldShow = suggest && q.isEmpty()
-
             if (!shouldShow) {
                 setState { copy(randomSuggestions = emptyList()) }
                 return@launch
             }
-
-            val list = getCreatorsPagedUseCase.randomSuggestions(
-                service = s,
-                query = "",
-                limit = 50
-            )
+            val list = getCreatorsPagedUseCase.randomSuggestions(service = s, query = "", limit = 50)
             setState { copy(randomSuggestions = list) }
         }
     }
@@ -126,7 +133,7 @@ internal class CreatorsViewModel @Inject constructor(
         val updated = ensureFresh()
         if (updated) {
             loadServicesOnce()
-            rebuildPaging()
+            rebuildPaging(scrollToTop = true)
         }
     }
 
@@ -160,7 +167,7 @@ internal class CreatorsViewModel @Inject constructor(
         val trimmed = query.trim()
 
         if (trimmed.isEmpty()) {
-            rebuildPaging()
+            rebuildPaging(scrollToTop = true)
             return
         }
         if (trimmed.length < 2) return
@@ -169,7 +176,7 @@ internal class CreatorsViewModel @Inject constructor(
             delay(SEARCH_DEBOUNCE_MS)
             val latest = state.value.searchQuery.trim()
             if (latest != trimmed) return@launch
-            rebuildPaging()
+            rebuildPaging(scrollToTop = true)
         }
     }
 

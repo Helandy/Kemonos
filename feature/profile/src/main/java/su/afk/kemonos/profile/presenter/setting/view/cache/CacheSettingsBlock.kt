@@ -3,7 +3,6 @@ package su.afk.kemonos.profile.presenter.setting.view.cache
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -25,7 +24,7 @@ internal fun CacheSettingsBlock(
     dateFormatMode: DateFormatMode,
     onEvent: (Event) -> Unit
 ) {
-    Column(Modifier.padding(start = 16.dp, end = 16.dp, top = 16.dp)) {
+    Column {
         Text(
             text = stringResource(R.string.settings_cache_title),
             style = MaterialTheme.typography.titleLarge

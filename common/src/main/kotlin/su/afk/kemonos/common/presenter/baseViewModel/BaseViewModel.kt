@@ -1,6 +1,7 @@
 package su.afk.kemonos.common.presenter.baseViewModel
 
 import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.launch
 import su.afk.kemonos.common.error.IErrorHandlerUseCase
 import su.afk.kemonos.common.error.storage.RetryStorage
 
@@ -24,7 +25,7 @@ abstract class BaseViewModelNew<S : UiState, E : UiEvent, F : UiEffect> : Corout
     val effect: SharedFlow<F> = _effect.asSharedFlow()
 
     protected fun setEffect(effect: F) {
-        _effect.tryEmit(effect)
+        viewModelScope.launch { _effect.emit(effect) }
     }
 
     fun setEvent(event: E) = onEvent(event)

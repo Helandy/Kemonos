@@ -2,6 +2,7 @@ package su.afk.kemonos.profile.presenter.setting
 
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -24,12 +25,13 @@ internal fun SettingScreen(state: State, onEvent: (Event) -> Unit) {
     val uriHandler = LocalUriHandler.current
 
     BaseScreen(
+        contentModifier = Modifier.padding(horizontal = 8.dp),
         isScroll = true,
         isLoading = state.loading,
     ) {
         UISettingBlock(state = state, onEvent = onEvent)
 
-        Spacer(Modifier.height(32.dp))
+        Spacer(Modifier.height(16.dp))
 
         ApiSettingsBlock(
             state = state,
@@ -38,7 +40,7 @@ internal fun SettingScreen(state: State, onEvent: (Event) -> Unit) {
             onSave = { onEvent(Event.ApiSetting.SaveUrls) }
         )
 
-        Spacer(Modifier.height(32.dp))
+        Spacer(Modifier.height(16.dp))
 
         CacheSettingsBlock(
             state = state,
@@ -46,11 +48,11 @@ internal fun SettingScreen(state: State, onEvent: (Event) -> Unit) {
             onEvent = onEvent
         )
 
-        Spacer(Modifier.height(32.dp))
+        Spacer(Modifier.height(16.dp))
 
         FaqBlock()
 
-        Spacer(Modifier.height(32.dp))
+        Spacer(Modifier.height(16.dp))
 
         BottomLinksBlock(
             kemonoUrl = state.kemonoUrl,

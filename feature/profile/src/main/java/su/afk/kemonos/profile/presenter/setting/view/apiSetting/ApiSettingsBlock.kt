@@ -21,11 +21,7 @@ internal fun ApiSettingsBlock(
     onCoomerChanged: (String) -> Unit,
     onSave: () -> Unit,
 ) {
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(16.dp),
-    ) {
+    Column {
         Text(
             text = stringResource(R.string.main_api_current_urls_title),
             style = MaterialTheme.typography.titleLarge

@@ -13,7 +13,7 @@ class SettingNavigatorRegister @Inject constructor() : NavRegistrar {
     override fun register(builder: EntryProviderScope<NavKey>, nav: NavigationManager) = with(builder) {
         entry<AuthDest.Setting> {
             val viewModel = hiltViewModel<SettingViewModel>()
-            ScreenNavigator(viewModel) { state, event ->
+            ScreenNavigator(viewModel) { state, effect, event ->
                 SettingScreen(
                     state = state,
                     onEvent = event,
