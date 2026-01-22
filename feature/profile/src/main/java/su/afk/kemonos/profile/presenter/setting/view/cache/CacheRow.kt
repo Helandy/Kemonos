@@ -1,4 +1,4 @@
-package su.afk.kemonos.profile.presenter.setting.view
+package su.afk.kemonos.profile.presenter.setting.view.cache
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
@@ -6,15 +6,19 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import su.afk.kemonos.common.util.toUiDateTime
+import su.afk.kemonos.common.utilsUI.KemonoPreviewScreen
 import su.afk.kemonos.preferences.model.CacheTimeUi
+import su.afk.kemonos.preferences.ui.DateFormatMode
 import su.afk.kemonos.profile.R
 
 @Composable
 internal fun CacheRow(
+    dateFormatMode: DateFormatMode,
     title: String,
     time: CacheTimeUi,
-    formatDateTime: (Long) -> String,
     onClear: () -> Unit,
     busy: Boolean,
     showDivider: Boolean = true,
@@ -28,8 +32,8 @@ internal fun CacheRow(
             Column(Modifier.weight(1f)) {
                 Text(title, style = MaterialTheme.typography.titleMedium)
 
-                val last = time.lastMs?.let(formatDateTime)
-                val next = time.nextMs?.let(formatDateTime)
+                val last = time.lastMs?.toUiDateTime(dateFormatMode)
+                val next = time.nextMs?.toUiDateTime(dateFormatMode)
 
                 if (last != null) {
                     Text(
@@ -64,5 +68,23 @@ internal fun CacheRow(
             HorizontalDivider()
             Spacer(Modifier.height(8.dp))
         }
+    }
+}
+
+@Preview("PreviewCacheRow")
+@Composable
+private fun PreviewCacheRow() {
+    KemonoPreviewScreen {
+        CacheRow(
+            dateFormatMode = DateFormatMode.DD_MM_YYYY,
+            title = "Title",
+            time = CacheTimeUi(
+                lastMs = 1000.toLong(),
+                nextMs = 1000.toLong(),
+                isFresh = true,
+            ),
+            onClear = {},
+            busy = false
+        )
     }
 }

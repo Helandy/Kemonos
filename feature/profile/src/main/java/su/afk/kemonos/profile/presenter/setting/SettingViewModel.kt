@@ -4,22 +4,24 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.launch
 import su.afk.kemonos.common.error.IErrorHandlerUseCase
 import su.afk.kemonos.common.error.storage.RetryStorage
-import su.afk.kemonos.common.presenter.baseViewModel.BaseViewModel
+import su.afk.kemonos.common.presenter.baseViewModel.BaseViewModelNew
+import su.afk.kemonos.common.presenter.baseViewModel.UiEffect
 import su.afk.kemonos.preferences.GetCoomerRootUrlUseCase
 import su.afk.kemonos.preferences.GetKemonoRootUrlUseCase
 import su.afk.kemonos.preferences.siteUrl.ISetBaseUrlsUseCase
-import su.afk.kemonos.preferences.ui.*
+import su.afk.kemonos.preferences.ui.IUiSettingUseCase
 import su.afk.kemonos.preferences.useCase.CacheKeys
 import su.afk.kemonos.preferences.useCase.CacheTimes
 import su.afk.kemonos.preferences.useCase.ICacheTimestampUseCase
 import su.afk.kemonos.profile.BuildConfig
-import su.afk.kemonos.profile.presenter.setting.delegates.SettingClearCacheDelegate
-import su.afk.kemonos.utils.buildBaseUrl
+import su.afk.kemonos.profile.presenter.setting.SettingState.Event
+import su.afk.kemonos.profile.presenter.setting.SettingState.State
+import su.afk.kemonos.profile.presenter.setting.delegates.SettingApiDelegate
+import su.afk.kemonos.profile.presenter.setting.delegates.SettingCacheDelegate
+import su.afk.kemonos.profile.presenter.setting.delegates.SettingUiPreferencesDelegate
 import su.afk.kemonos.utils.normalizeDomain
-import su.afk.kemonos.utils.toRootUrl
 import javax.inject.Inject
 
 @HiltViewModel
@@ -28,11 +30,43 @@ internal class SettingViewModel @Inject constructor(
     private val getKemonoRootUrlUseCase: GetKemonoRootUrlUseCase,
     private val cacheTimestamps: ICacheTimestampUseCase,
     private val setBaseUrlsUseCase: ISetBaseUrlsUseCase,
-    private val clearCacheDelegate: SettingClearCacheDelegate,
     private val uiSetting: IUiSettingUseCase,
+    private val uiPrefsDelegate: SettingUiPreferencesDelegate,
+    private val apiDelegate: SettingApiDelegate,
+    private val cacheDelegate: SettingCacheDelegate,
     override val errorHandler: IErrorHandlerUseCase,
     override val retryStorage: RetryStorage
-) : BaseViewModel<SettingState.State>(SettingState.State()) {
+) : BaseViewModelNew<State, Event, UiEffect>() {
+
+    override fun createInitialState(): State = State()
+
+    override fun onEvent(event: Event) {
+        when (event) {
+            is Event.ChangeViewSetting ->
+                uiPrefsDelegate.handle(event, viewModelScope)
+
+            is Event.ApiSetting ->
+                apiDelegate.handle(
+                    event = event,
+                    scope = viewModelScope,
+                    getState = { state.value },
+                    setState = ::setState,
+                )
+
+            is Event.CacheClearAction ->
+                cacheDelegate.handle(
+                    event = event,
+                    scope = viewModelScope,
+                    setState = ::setState,
+                    onAfterSuccess = ::observeCacheTimes,
+                )
+
+            Event.GitHubClick -> {
+                // setEffect(SettingEffect.OpenUrl("https://github.com/Helandy/Kemonos"))
+            }
+        }
+    }
+
 
     init {
         observeUrls()
@@ -41,37 +75,6 @@ internal class SettingViewModel @Inject constructor(
         setState { copy(loading = false) }
 
         observeUiSetting()
-    }
-
-    fun onInputKemonoDomainChanged(value: String) {
-        setState { copy(inputKemonoDomain = normalizeDomain(value)) }
-    }
-
-    fun onInputCoomerDomainChanged(value: String) {
-        setState { copy(inputCoomerDomain = normalizeDomain(value)) }
-    }
-
-    fun onSaveUrls() = viewModelScope.launch {
-        setState { copy(isSaving = true, saveSuccess = false) }
-
-        val kemono = buildBaseUrl(state.value.inputKemonoDomain)
-        val coomer = buildBaseUrl(state.value.inputCoomerDomain)
-
-        runCatching {
-            setBaseUrlsUseCase(kemonoUrl = kemono, coomerUrl = coomer)
-        }.onSuccess {
-            setState {
-                copy(
-                    isSaving = false,
-                    saveSuccess = true,
-                    kemonoUrl = kemono.toRootUrl(),
-                    coomerUrl = coomer.toRootUrl()
-                )
-            }
-        }.onFailure { e ->
-            setState { copy(isSaving = false, saveSuccess = false) }
-            errorHandler.parse(e)
-        }
     }
 
     /** Получение версии */
@@ -107,20 +110,6 @@ internal class SettingViewModel @Inject constructor(
         }
     }
 
-    fun onClear(action: CacheClearAction) = viewModelScope.launch {
-        setState { copy(clearInProgress = true, clearSuccess = null) }
-
-        runCatching {
-            clearCacheDelegate.clear(action)
-        }.onSuccess {
-            observeCacheTimes()
-            setState { copy(clearInProgress = false, clearSuccess = true) }
-        }.onFailure { e ->
-            setState { copy(clearInProgress = false, clearSuccess = false) }
-            errorHandler.parse(e)
-        }
-    }
-
     /** UI настройки */
     private fun observeUiSetting() {
         uiSetting.prefs.distinctUntilChanged()
@@ -128,70 +117,5 @@ internal class SettingViewModel @Inject constructor(
                 setState { copy(uiSettingModel = model) }
             }
             .launchIn(viewModelScope)
-    }
-
-    /** Debug: пропустить проверку API при входе */
-    fun setSkipApiCheckOnLogin(value: Boolean) = viewModelScope.launch {
-        uiSetting.setSkipApiCheckOnLogin(value)
-    }
-
-    /** Вид отображения авторов  */
-    fun setCreatorsViewMode(value: CreatorViewMode) = viewModelScope.launch {
-        uiSetting.setCreatorsViewMode(value)
-    }
-
-    /** Вид отображения авторов избранное */
-    fun setCreatorsFavoriteViewMode(value: CreatorViewMode) = viewModelScope.launch {
-        uiSetting.setCreatorsFavoriteViewMode(value)
-    }
-
-    /** Посты: профиль */
-    fun setProfilePostsViewMode(value: PostsViewMode) = viewModelScope.launch {
-        uiSetting.setProfilePostsViewMode(value)
-    }
-
-    /** Посты: избранное */
-    fun setFavoritePostsViewMode(value: PostsViewMode) = viewModelScope.launch {
-        uiSetting.setFavoritePostsViewMode(value)
-    }
-
-    /** Посты: популярное */
-    fun setPopularPostsViewMode(value: PostsViewMode) = viewModelScope.launch {
-        uiSetting.setPopularPostsViewMode(value)
-    }
-
-    /** Посты: теги */
-    fun setTagsPostsViewMode(value: PostsViewMode) = viewModelScope.launch {
-        uiSetting.setTagsPostsViewMode(value)
-    }
-
-    /** Посты: поиск */
-    fun setSearchPostsViewMode(value: PostsViewMode) = viewModelScope.launch {
-        uiSetting.setSearchPostsViewMode(value)
-    }
-
-    /** Предлагать рандомных авторов */
-    fun setSuggestRandomAuthors(value: Boolean) = viewModelScope.launch {
-        uiSetting.setSuggestRandomAuthors(value)
-    }
-
-    /** Способ перевода */
-    fun setTranslateTarget(value: TranslateTarget) = viewModelScope.launch {
-        uiSetting.setTranslateTarget(value)
-    }
-
-    /** Где показывать кнопку "рандом" */
-    fun setRandomButtonPlacement(value: RandomButtonPlacement) = viewModelScope.launch {
-        uiSetting.setRandomButtonPlacement(value)
-    }
-
-    /** Язык, на который переводим */
-    fun setTranslateLanguageTag(value: String) = viewModelScope.launch {
-        uiSetting.setTranslateLanguageTag(value)
-    }
-
-    /** Формат даты в приложении */
-    fun onDateFormatMode(value: DateFormatMode) = viewModelScope.launch {
-        uiSetting.setDateFormatMode(value)
     }
 }

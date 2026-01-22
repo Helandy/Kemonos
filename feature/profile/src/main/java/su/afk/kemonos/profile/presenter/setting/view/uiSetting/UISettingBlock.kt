@@ -1,94 +1,84 @@
 package su.afk.kemonos.profile.presenter.setting.view.uiSetting
 
-import androidx.compose.foundation.layout.*
-import androidx.compose.material3.ElevatedCard
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import su.afk.kemonos.common.utilsUI.KemonoPreviewScreen
 import su.afk.kemonos.preferences.ui.*
 import su.afk.kemonos.profile.BuildConfig
 import su.afk.kemonos.profile.R
-import su.afk.kemonos.profile.presenter.setting.SettingState
+import su.afk.kemonos.profile.presenter.setting.SettingState.Event
+import su.afk.kemonos.profile.presenter.setting.SettingState.State
 
 @Composable
 internal fun UISettingBlock(
-    state: SettingState.State,
-    onSkipApiCheckOnLogin: (Boolean) -> Unit,
-    onSuggestRandomAuthors: (Boolean) -> Unit,
-    onCreatorsViewMode: (CreatorViewMode) -> Unit,
-    onCreatorsFavoriteViewMode: (CreatorViewMode) -> Unit,
-    onProfilePostsViewMode: (PostsViewMode) -> Unit,
-    onFavoritePostsViewMode: (PostsViewMode) -> Unit,
-    onPopularPostsViewMode: (PostsViewMode) -> Unit,
-    onTagsPostsViewMode: (PostsViewMode) -> Unit,
-    onSearchPostsViewMode: (PostsViewMode) -> Unit,
-    onTranslateTarget: (TranslateTarget) -> Unit,
-    onRandomPlacement: (RandomButtonPlacement) -> Unit,
-    onTranslateLanguageTag: (String) -> Unit,
-    onDateFormatMode: (DateFormatMode) -> Unit,
+    state: State,
+    onEvent: (Event) -> Unit
 ) {
-    val ui = state.uiSettingModel ?: return
+    val ui = state.uiSettingModel
+    Column(Modifier.padding(horizontal = 16.dp, vertical = 16.dp)) {
+        SettingsHeader()
 
-    ElevatedCard(Modifier.fillMaxWidth()) {
-        Column(Modifier.padding(horizontal = 16.dp, vertical = 16.dp)) {
-            SettingsHeader()
-
-            if (BuildConfig.DEBUG) {
-                Spacer(Modifier.height(12.dp))
-                SettingsSectionTitle(text = stringResource(R.string.settings_debug_title))
-                DebugSection(
-                    skipApiCheckOnLogin = ui.skipApiCheckOnLogin,
-                    onSkipApiCheckOnLogin = onSkipApiCheckOnLogin,
-                )
-            }
-
+        if (BuildConfig.DEBUG) {
             Spacer(Modifier.height(12.dp))
-            SettingsSectionTitle(text = stringResource(R.string.settings_ui_general_title))
-            GeneralUiSection(
-                suggestRandomAuthors = ui.suggestRandomAuthors,
-                onSuggestRandomAuthors = onSuggestRandomAuthors,
-                dateFormatMode = ui.dateFormatMode,
-                onDateFormatMode = onDateFormatMode,
-            )
-
-            Spacer(Modifier.height(12.dp))
-            SettingsSectionTitle(text = stringResource(R.string.settings_translate_section_title))
-            TranslateSection(
-                translateTarget = ui.translateTarget,
-                translateLanguageTag = ui.translateLanguageTag,
-                onTranslateTarget = onTranslateTarget,
-                onTranslateLanguageTag = onTranslateLanguageTag,
-            )
-
-            Spacer(Modifier.height(12.dp))
-            SettingsSectionTitle(text = stringResource(R.string.settings_random_section_title))
-            RandomSection(
-                randomButtonPlacement = ui.randomButtonPlacement,
-                onRandomPlacement = onRandomPlacement,
-            )
-
-            Spacer(Modifier.height(12.dp))
-            SettingsSectionTitle(text = stringResource(R.string.settings_view_modes_section_title))
-            ViewModesSection(
-                creatorsViewMode = ui.creatorsViewMode,
-                creatorsFavoriteViewMode = ui.creatorsFavoriteViewMode,
-                profilePostsViewMode = ui.profilePostsViewMode,
-                favoritePostsViewMode = ui.favoritePostsViewMode,
-                popularPostsViewMode = ui.popularPostsViewMode,
-                tagsPostsViewMode = ui.tagsPostsViewMode,
-                searchPostsViewMode = ui.searchPostsViewMode,
-                onCreatorsViewMode = onCreatorsViewMode,
-                onCreatorsFavoriteViewMode = onCreatorsFavoriteViewMode,
-                onProfilePostsViewMode = onProfilePostsViewMode,
-                onFavoritePostsViewMode = onFavoritePostsViewMode,
-                onPopularPostsViewMode = onPopularPostsViewMode,
-                onTagsPostsViewMode = onTagsPostsViewMode,
-                onSearchPostsViewMode = onSearchPostsViewMode,
+            SettingsSectionTitle(text = stringResource(R.string.settings_debug_title))
+            DebugSection(
+                skipApiCheckOnLogin = ui.skipApiCheckOnLogin,
+                onSkipApiCheckOnLogin = { onEvent(Event.ChangeViewSetting.SkipApiCheckOnLogin(it)) },
             )
         }
+
+        Spacer(Modifier.height(12.dp))
+        SettingsSectionTitle(text = stringResource(R.string.settings_ui_general_title))
+        GeneralUiSection(
+            suggestRandomAuthors = ui.suggestRandomAuthors,
+            onSuggestRandomAuthors = { onEvent(Event.ChangeViewSetting.SuggestRandomAuthors(it)) },
+            dateFormatMode = ui.dateFormatMode,
+            onDateFormatMode = { onEvent(Event.ChangeViewSetting.EventDateFormatMode(it)) },
+        )
+
+        Spacer(Modifier.height(12.dp))
+        SettingsSectionTitle(text = stringResource(R.string.settings_translate_section_title))
+        TranslateSection(
+            translateTarget = ui.translateTarget,
+            translateLanguageTag = ui.translateLanguageTag,
+            onTranslateTarget = { onEvent(Event.ChangeViewSetting.EventTranslateTarget(it)) },
+            onTranslateLanguageTag = { onEvent(Event.ChangeViewSetting.TranslateLanguageTag(it)) },
+        )
+
+        Spacer(Modifier.height(12.dp))
+        SettingsSectionTitle(text = stringResource(R.string.settings_random_section_title))
+        RandomSection(
+            randomButtonPlacement = ui.randomButtonPlacement,
+            onRandomPlacement = { onEvent(Event.ChangeViewSetting.EventRandomButtonPlacement(it)) },
+        )
+
+        Spacer(Modifier.height(12.dp))
+        SettingsSectionTitle(text = stringResource(R.string.settings_view_modes_section_title))
+        ViewModesSection(
+            creatorsViewMode = ui.creatorsViewMode,
+            creatorsFavoriteViewMode = ui.creatorsFavoriteViewMode,
+            profilePostsViewMode = ui.profilePostsViewMode,
+            favoritePostsViewMode = ui.favoritePostsViewMode,
+            popularPostsViewMode = ui.popularPostsViewMode,
+            tagsPostsViewMode = ui.tagsPostsViewMode,
+            searchPostsViewMode = ui.searchPostsViewMode,
+            onCreatorsViewMode = { onEvent(Event.ChangeViewSetting.CreatorsViewMode(it)) },
+            onCreatorsFavoriteViewMode = { onEvent(Event.ChangeViewSetting.CreatorsFavoriteViewMode(it)) },
+            onProfilePostsViewMode = { onEvent(Event.ChangeViewSetting.ProfilePostsViewMode(it)) },
+            onFavoritePostsViewMode = { onEvent(Event.ChangeViewSetting.FavoritePostsViewMode(it)) },
+            onPopularPostsViewMode = { onEvent(Event.ChangeViewSetting.PopularPostsViewMode(it)) },
+            onTagsPostsViewMode = { onEvent(Event.ChangeViewSetting.TagsPostsViewMode(it)) },
+            onSearchPostsViewMode = { onEvent(Event.ChangeViewSetting.SearchPostsViewMode(it)) },
+        )
     }
 }
 
@@ -247,4 +237,15 @@ private fun ViewModesSection(
         value = searchPostsViewMode,
         onChange = onSearchPostsViewMode
     )
+}
+
+@Preview("PreviewUISettingBlock")
+@Composable
+private fun PreviewUISettingBlock() {
+    KemonoPreviewScreen {
+        UISettingBlock(
+            state = State(),
+            onEvent = {},
+        )
+    }
 }

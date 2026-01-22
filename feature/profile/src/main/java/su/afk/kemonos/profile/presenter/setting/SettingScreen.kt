@@ -2,65 +2,48 @@ package su.afk.kemonos.profile.presenter.setting
 
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalUriHandler
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import su.afk.kemonos.common.presenter.baseScreen.BaseScreen
-import su.afk.kemonos.common.util.toUiDateTime
-import su.afk.kemonos.profile.presenter.setting.view.ApiSettingsBlock
-import su.afk.kemonos.profile.presenter.setting.view.BottomLinksBlock
-import su.afk.kemonos.profile.presenter.setting.view.CacheSettingsBlock
-import su.afk.kemonos.profile.presenter.setting.view.FaqBlock
+import su.afk.kemonos.common.utilsUI.KemonoPreviewScreen
+import su.afk.kemonos.profile.presenter.setting.SettingState.Event
+import su.afk.kemonos.profile.presenter.setting.SettingState.State
+import su.afk.kemonos.profile.presenter.setting.view.apiSetting.ApiSettingsBlock
+import su.afk.kemonos.profile.presenter.setting.view.bottomLink.BottomLinksBlock
+import su.afk.kemonos.profile.presenter.setting.view.cache.CacheSettingsBlock
+import su.afk.kemonos.profile.presenter.setting.view.faq.FaqBlock
 import su.afk.kemonos.profile.presenter.setting.view.uiSetting.UISettingBlock
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-internal fun SettingScreen(viewModel: SettingViewModel) {
-    val state by viewModel.state.collectAsStateWithLifecycle()
+internal fun SettingScreen(state: State, onEvent: (Event) -> Unit) {
     val uriHandler = LocalUriHandler.current
 
     BaseScreen(
-        contentModifier = Modifier.padding(horizontal = 8.dp),
         isScroll = true,
         isLoading = state.loading,
     ) {
-        UISettingBlock(
-            state = state,
-            onSkipApiCheckOnLogin = viewModel::setSkipApiCheckOnLogin,
-            onSuggestRandomAuthors = viewModel::setSuggestRandomAuthors,
-            onCreatorsViewMode = viewModel::setCreatorsViewMode,
-            onCreatorsFavoriteViewMode = viewModel::setCreatorsFavoriteViewMode,
-            onProfilePostsViewMode = viewModel::setProfilePostsViewMode,
-            onFavoritePostsViewMode = viewModel::setFavoritePostsViewMode,
-            onPopularPostsViewMode = viewModel::setPopularPostsViewMode,
-            onTagsPostsViewMode = viewModel::setTagsPostsViewMode,
-            onSearchPostsViewMode = viewModel::setSearchPostsViewMode,
-            onTranslateTarget = viewModel::setTranslateTarget,
-            onRandomPlacement = viewModel::setRandomButtonPlacement,
-            onTranslateLanguageTag = viewModel::setTranslateLanguageTag,
-            onDateFormatMode = viewModel::onDateFormatMode
-        )
+        UISettingBlock(state = state, onEvent = onEvent)
 
         Spacer(Modifier.height(32.dp))
 
         ApiSettingsBlock(
             state = state,
-            onKemonoChanged = viewModel::onInputKemonoDomainChanged,
-            onCoomerChanged = viewModel::onInputCoomerDomainChanged,
-            onSave = viewModel::onSaveUrls
+            onKemonoChanged = { onEvent(Event.ApiSetting.InputKemonoDomainChanged(it)) },
+            onCoomerChanged = { onEvent(Event.ApiSetting.InputCoomerDomainChanged(it)) },
+            onSave = { onEvent(Event.ApiSetting.SaveUrls) }
         )
 
         Spacer(Modifier.height(32.dp))
 
         CacheSettingsBlock(
             state = state,
-            formatDateTime = { ms -> ms.toUiDateTime(state.uiSettingModel.dateFormatMode) },
-            onClear = viewModel::onClear
+            dateFormatMode = state.uiSettingModel.dateFormatMode,
+            onEvent = onEvent
         )
 
         Spacer(Modifier.height(32.dp))
@@ -76,6 +59,17 @@ internal fun SettingScreen(viewModel: SettingViewModel) {
             onGitHubClick = {
                 uriHandler.openUri("https://github.com/Helandy/Kemonos")
             }
+        )
+    }
+}
+
+@Preview("PreviewSettingScreen")
+@Composable
+private fun PreviewSettingScreen() {
+    KemonoPreviewScreen {
+        SettingScreen(
+            state = State().copy(loading = false),
+            onEvent = {},
         )
     }
 }

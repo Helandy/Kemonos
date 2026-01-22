@@ -1,4 +1,4 @@
-package su.afk.kemonos.profile.presenter.setting.view
+package su.afk.kemonos.profile.presenter.setting.view.faq
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.clickable
@@ -14,17 +14,19 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import su.afk.kemonos.common.R
+import su.afk.kemonos.common.utilsUI.KemonoPreviewScreen
 
 @Composable
 internal fun FaqBlock(
-    modifier: Modifier = Modifier,
+    expanded: Boolean = false,
 ) {
-    var expanded by remember { mutableStateOf(false) }
+    var expanded by remember { mutableStateOf(expanded) }
 
     Surface(
-        modifier = modifier.fillMaxWidth(),
+        modifier = Modifier.fillMaxWidth(),
         shape = MaterialTheme.shapes.medium,
         tonalElevation = 1.dp,
     ) {
@@ -69,5 +71,21 @@ internal fun FaqBlock(
                 }
             }
         }
+    }
+}
+
+@Preview("PreviewFaqBlock")
+@Composable
+private fun PreviewFaqBlock() {
+    KemonoPreviewScreen {
+        FaqBlock()
+    }
+}
+
+@Preview("PreviewFaqBlockExpanded")
+@Composable
+private fun PreviewFaqBlockExpanded() {
+    KemonoPreviewScreen {
+        FaqBlock(true)
     }
 }
