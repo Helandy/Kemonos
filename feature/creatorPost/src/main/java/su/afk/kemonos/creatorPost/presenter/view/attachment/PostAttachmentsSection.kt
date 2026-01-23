@@ -52,8 +52,7 @@ fun PostAttachmentsSection(
                 )
                 Text(
                     att.name.orEmpty(),
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onBackground
+                    style = MaterialTheme.typography.bodyLarge,
                 )
             }
         }

@@ -13,6 +13,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import su.afk.kemonos.common.R
 import su.afk.kemonos.common.util.openVideoExternally
@@ -42,9 +43,7 @@ internal fun VideoInfoPreview(
 
     var thumbLoading by remember(url) { mutableStateOf(true) }
 
-    Column(Modifier.padding(vertical = 12.dp)) {
-        Text(video.name, style = MaterialTheme.typography.titleSmall)
-
+    Column(Modifier.padding(vertical = 4.dp)) {
         Box(
             Modifier
                 .fillMaxWidth()
@@ -109,20 +108,31 @@ internal fun VideoInfoPreview(
         }
 
         /** Инфа о видео */
-        if (infoState is MediaInfoState.Success) {
-            val data = infoState.data
-            val dur = "%d:%02d".format(
-                data.durationMs / 60000,
-                (data.durationMs / 1000) % 60
-            )
-            val sizeMb = if (data.sizeBytes >= 0) (data.sizeBytes / 1024f / 1024f) else -1f
-            val sizeStr = if (sizeMb >= 0) "${sizeMb.roundToInt()} MB" else "?"
-
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(4.dp)
+        ) {
             Text(
-                text = "⏱ $dur   📦 $sizeStr",
-                style = MaterialTheme.typography.bodyMedium,
-                modifier = Modifier.padding(top = 6.dp, start = 4.dp),
+                video.name,
+                maxLines = 2,
+                overflow = TextOverflow.Ellipsis,
+                style = MaterialTheme.typography.bodyLarge
             )
+            if (infoState is MediaInfoState.Success) {
+                val data = infoState.data
+                val dur = "%d:%02d".format(
+                    data.durationMs / 60000,
+                    (data.durationMs / 1000) % 60
+                )
+                val sizeMb = if (data.sizeBytes >= 0) (data.sizeBytes / 1024f / 1024f) else -1f
+                val sizeStr = if (sizeMb >= 0) "${sizeMb.roundToInt()} MB" else "?"
+
+                Text(
+                    text = "⏱ $dur   📦 $sizeStr",
+                    style = MaterialTheme.typography.bodyMedium,
+                )
+            }
         }
     }
 }
