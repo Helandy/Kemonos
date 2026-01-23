@@ -60,11 +60,37 @@ internal fun FaqBlock(
                         text = stringResource(R.string.settings_faq_q1_title),
                         style = MaterialTheme.typography.bodyMedium
                     )
-
                     Spacer(Modifier.height(6.dp))
-
                     Text(
                         text = stringResource(R.string.settings_faq_q1_body),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+
+                    Spacer(Modifier.height(16.dp))
+
+                    // Q2
+                    Text(
+                        text = stringResource(R.string.settings_faq_q2_title),
+                        style = MaterialTheme.typography.bodyMedium
+                    )
+                    Spacer(Modifier.height(6.dp))
+                    Text(
+                        text = stringResource(R.string.settings_faq_q2_body),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+
+                    Spacer(Modifier.height(16.dp))
+
+                    // Q3
+                    Text(
+                        text = stringResource(R.string.settings_faq_q3_title),
+                        style = MaterialTheme.typography.bodyMedium
+                    )
+                    Spacer(Modifier.height(6.dp))
+                    Text(
+                        text = stringResource(R.string.settings_faq_q3_body),
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )

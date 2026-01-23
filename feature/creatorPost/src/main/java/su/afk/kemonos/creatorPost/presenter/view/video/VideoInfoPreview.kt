@@ -1,4 +1,4 @@
-package su.afk.kemonos.creatorPost.presenter.view
+package su.afk.kemonos.creatorPost.presenter.view.video
 
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -16,7 +16,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import su.afk.kemonos.common.R
 import su.afk.kemonos.common.util.openVideoExternally
-import su.afk.kemonos.creatorPost.domain.model.video.VideoInfoState
+import su.afk.kemonos.creatorPost.domain.model.media.MediaInfoState
 import su.afk.kemonos.creatorPost.presenter.util.VideoThumbnail
 import su.afk.kemonos.domain.models.VideoDomain
 import kotlin.math.roundToInt
@@ -29,14 +29,14 @@ import kotlin.math.roundToInt
 @Composable
 internal fun VideoInfoPreview(
     video: VideoDomain,
-    infoState: VideoInfoState?,
-    requestInfo: (url: String, name: String) -> Unit,
+    infoState: MediaInfoState?,
+    requestInfo: (url: String) -> Unit,
 ) {
     val url = remember(video) { "${video.server}/data${video.path}" }
 
     LaunchedEffect(url, video.name) {
         // как только элемент появился в LazyColumn — просим инфо по видео
-        requestInfo(url, video.name)
+        requestInfo(url)
     }
     val context = LocalContext.current
 
@@ -109,7 +109,7 @@ internal fun VideoInfoPreview(
         }
 
         /** Инфа о видео */
-        if (infoState is VideoInfoState.Success) {
+        if (infoState is MediaInfoState.Success) {
             val data = infoState.data
             val dur = "%d:%02d".format(
                 data.durationMs / 60000,

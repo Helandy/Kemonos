@@ -10,7 +10,7 @@ ksp = "2.2.20-2.0.4"
 
 # --- App versioning
 appVersionName = "1.5"
-appVersionCode = "17"
+appVersionCode = "18"
 
 # --- AndroidX
 androidxCore = "1.17.0"

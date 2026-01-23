@@ -14,10 +14,11 @@ internal fun LazyListScope.postPreviewsSection(
     download: (url: String, fileName: String) -> Unit,
     toast: (String) -> Unit,
 ) {
+    val uniquePreviews = previews.distinctBy { it.previewKey() }
     if (previews.isEmpty()) return
 
     items(
-        items = previews,
+        items = uniquePreviews,
         key = { p -> p.previewKey() }
     ) { preview ->
         when (preview.type) {

@@ -16,7 +16,7 @@ import su.afk.kemonos.storage.api.post.IStoragePostUseCase
 import su.afk.kemonos.storage.api.postsSearch.IPostsSearchCacheUseCase
 import su.afk.kemonos.storage.api.profilePosts.IStorageCreatorPostsCacheUseCase
 import su.afk.kemonos.storage.api.tags.IStoreTagsUseCase
-import su.afk.kemonos.storage.api.video.IVideoInfoUseCase
+import su.afk.kemonos.storage.api.video.IMediaInfoUseCase
 import su.afk.kemonos.storage.repository.video.IStoreVideoInfoRepository
 import su.afk.kemonos.storage.repository.video.StoreVideoInfoRepository
 import su.afk.kemonos.storage.useCases.StoreCommentsUseCase
@@ -31,7 +31,7 @@ import su.afk.kemonos.storage.useCases.post.StoragePostUseCase
 import su.afk.kemonos.storage.useCases.postsSearch.PostsSearchCacheUseCase
 import su.afk.kemonos.storage.useCases.profilePosts.StorageCreatorPostsCacheUseCase
 import su.afk.kemonos.storage.useCases.tags.StoreTagsUseCase
-import su.afk.kemonos.storage.useCases.video.VideoInfoUseCase
+import su.afk.kemonos.storage.useCases.video.MediaInfoUseCase
 import javax.inject.Singleton
 
 @Module
@@ -72,7 +72,7 @@ internal interface UseCaseModule {
 
     @Singleton
     @Binds
-    fun bindVideoInfoUseCase(impl: VideoInfoUseCase): IVideoInfoUseCase
+    fun bindVideoInfoUseCase(impl: MediaInfoUseCase): IMediaInfoUseCase
 
     @Singleton
     @Binds

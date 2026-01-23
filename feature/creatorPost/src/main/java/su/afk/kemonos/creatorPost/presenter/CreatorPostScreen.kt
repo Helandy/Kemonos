@@ -197,13 +197,15 @@ internal fun CreatorPostScreen(state: State, onEvent: (Event) -> Unit, effect: F
             postVideosSection(
                 videos = state.post.videos,
                 videoInfo = state.videoInfo,
-                onVideoInfoRequested = { url, name ->
-                    onEvent(Event.VideoInfoRequested(url, name))
+                onVideoInfoRequested = { url ->
+                    onEvent(Event.VideoInfoRequested(url))
                 }
             )
 
             postAudioSection(
                 attachments = state.post.attachments,
+                audioInfo = state.audioInfo,
+                onInfoRequested = { url -> onEvent(Event.AudioInfoRequested(url)) },
                 onPlay = { att ->
                     val url = att.buildDataUrl()
                     onEvent(Event.PlayAudio(url, att.name))

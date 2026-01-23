@@ -30,7 +30,7 @@ fun PostAttachmentsSection(
         stringResource(R.string.attachment_section),
         style = MaterialTheme.typography.titleMedium,
         color = MaterialTheme.colorScheme.onBackground,
-        modifier = Modifier.padding(vertical = 8.dp)
+        modifier = Modifier.padding(start = 4.dp, top = 8.dp, end = 16.dp)
     )
 
     Column {

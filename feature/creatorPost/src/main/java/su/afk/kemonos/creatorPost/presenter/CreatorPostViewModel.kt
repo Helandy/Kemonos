@@ -5,7 +5,9 @@ import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.async
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import su.afk.kemonos.common.error.IErrorHandlerUseCase
 import su.afk.kemonos.common.error.storage.RetryStorage
@@ -18,10 +20,10 @@ import su.afk.kemonos.common.translate.TextTranslator
 import su.afk.kemonos.common.translate.preprocessForTranslation
 import su.afk.kemonos.common.util.audioMimeType
 import su.afk.kemonos.creatorPost.api.domain.model.PostContentDomain
-import su.afk.kemonos.creatorPost.domain.model.video.VideoInfoState
+import su.afk.kemonos.creatorPost.domain.model.media.MediaInfoState
 import su.afk.kemonos.creatorPost.domain.useCase.GetCommentsUseCase
+import su.afk.kemonos.creatorPost.domain.useCase.GetMediaInfoUseCase
 import su.afk.kemonos.creatorPost.domain.useCase.GetPostUseCase
-import su.afk.kemonos.creatorPost.domain.useCase.GetVideoInfoUseCase
 import su.afk.kemonos.creatorPost.navigation.CreatorPostDest
 import su.afk.kemonos.creatorPost.presenter.CreatorPostState.*
 import su.afk.kemonos.creatorPost.presenter.delegates.LikeDelegate
@@ -38,7 +40,7 @@ internal class CreatorPostViewModel @AssistedInject constructor(
     private val getPostUseCase: GetPostUseCase,
     private val getProfileUseCase: IGetProfileUseCase,
     private val getCurrentSiteRootUrlUseCase: IGetCurrentSiteRootUrlUseCase,
-    private val getVideoInfo: GetVideoInfoUseCase,
+    private val getVideoInfo: GetMediaInfoUseCase,
     private val likeDelegate: LikeDelegate,
     private val navigateDelegates: NavigateDelegates,
     private val downloadUtil: IDownloadUtil,
@@ -99,7 +101,8 @@ internal class CreatorPostViewModel @AssistedInject constructor(
 
             is Event.OpenExternalUrl -> setEffect(Effect.OpenUrl(event.url))
 
-            is Event.VideoInfoRequested -> requestVideoInfo(event.url, event.name)
+            is Event.VideoInfoRequested -> requestVideoInfo(event.url)
+            is Event.AudioInfoRequested -> requestAudioInfo(event.url)
 
             is Event.PlayAudio -> {
                 val safeName = event.name?.takeIf { it.isNotBlank() } ?: event.url.substringAfterLast('/')
@@ -154,46 +157,46 @@ internal class CreatorPostViewModel @AssistedInject constructor(
     }
 
     /** Получить/создать flow для конкретного видео и стартануть загрузку при необходимости */
-    private val videoInfoFlows = mutableMapOf<String, StateFlow<VideoInfoState>>()
-
-    fun observeVideoInfo(url: String, name: String): StateFlow<VideoInfoState> {
-        val key = url
-        return videoInfoFlows.getOrPut(key) {
-            flow {
-                emit(VideoInfoState.Loading)
-                val info = getVideoInfo(url, name)
-                emit(VideoInfoState.Success(info))
-            }.catch { e ->
-                emit(VideoInfoState.Error(e))
-            }.stateIn(
-                scope = viewModelScope,
-                started = SharingStarted.WhileSubscribed(stopTimeoutMillis = 5_000),
-                initialValue = VideoInfoState.Loading
-            )
-        }
-    }
-
     private val videoJobs = mutableMapOf<String, Job>()
-    private fun requestVideoInfo(url: String, name: String) {
+    private fun requestVideoInfo(url: String) {
         // уже есть успешное/ошибка — решай сам: можно не перезапрашивать
         val existing = currentState.videoInfo[url]
-        if (existing is VideoInfoState.Success) return
+        if (existing is MediaInfoState.Success) return
 
         // если уже грузим — не стартуем второй раз
         if (videoJobs[url]?.isActive == true) return
 
         // если хотим показать loading сразу
         setState {
-            copy(videoInfo = videoInfo + (url to VideoInfoState.Loading))
+            copy(videoInfo = videoInfo + (url to MediaInfoState.Loading))
         }
 
         videoJobs[url] = viewModelScope.launch {
-            runCatching { getVideoInfo(url, name) }
+            runCatching { getVideoInfo(url) }
                 .onSuccess { info ->
-                    setState { copy(videoInfo = videoInfo + (url to VideoInfoState.Success(info))) }
+                    setState { copy(videoInfo = videoInfo + (url to MediaInfoState.Success(info))) }
                 }
                 .onFailure { e ->
-                    setState { copy(videoInfo = videoInfo + (url to VideoInfoState.Error(e))) }
+                    setState { copy(videoInfo = videoInfo + (url to MediaInfoState.Error(e))) }
+                }
+        }
+    }
+
+    private val audioJobs = mutableMapOf<String, Job>()
+    private fun requestAudioInfo(url: String) {
+        val existing = currentState.audioInfo[url]
+        if (existing is MediaInfoState.Success) return
+        if (audioJobs[url]?.isActive == true) return
+
+        setState { copy(audioInfo = audioInfo + (url to MediaInfoState.Loading)) }
+
+        audioJobs[url] = viewModelScope.launch {
+            runCatching { getVideoInfo(url) }
+                .onSuccess { info ->
+                    setState { copy(audioInfo = audioInfo + (url to MediaInfoState.Success(info))) }
+                }
+                .onFailure { e ->
+                    setState { copy(audioInfo = audioInfo + (url to MediaInfoState.Error(e))) }
                 }
         }
     }
