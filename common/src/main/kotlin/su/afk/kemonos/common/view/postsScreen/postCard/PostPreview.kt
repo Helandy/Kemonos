@@ -1,5 +1,6 @@
 package su.afk.kemonos.common.view.postsScreen.postCard
 
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
@@ -12,6 +13,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import su.afk.kemonos.common.R
 import su.afk.kemonos.common.imageLoader.AsyncImageWithStatus
+import su.afk.kemonos.common.presenter.webView.util.clearHtml
 import su.afk.kemonos.common.view.postsScreen.postCard.model.PreviewState
 import su.afk.kemonos.common.view.postsScreen.postCard.placeHolder.PreviewPlaceholder
 
@@ -20,21 +22,27 @@ internal fun PostPreview(
     preview: PreviewState,
     imgBaseUrl: String,
     title: String?,
-    modifier: Modifier = Modifier
+    textPreview: String?,
 ) {
     when (preview) {
         is PreviewState.Image -> {
             AsyncImageWithStatus(
                 model = "$imgBaseUrl/thumbnail/data${preview.path}",
                 contentDescription = title,
-                modifier = modifier,
+                modifier = Modifier.fillMaxSize(),
                 contentScale = ContentScale.Crop
             )
         }
 
         PreviewState.Video -> PreviewPlaceholder(text = stringResource(R.string.video_file))
         PreviewState.Audio -> PreviewPlaceholder(text = stringResource(R.string.audio_file))
-        PreviewState.Empty -> PreviewPlaceholder(text = "")
+        PreviewState.Empty -> {
+            if (textPreview.isNullOrBlank()) {
+                PreviewPlaceholder(text = "")
+            } else {
+                PreviewPlaceholder(textPreview.clearHtml())
+            }
+        }
     }
 }
 

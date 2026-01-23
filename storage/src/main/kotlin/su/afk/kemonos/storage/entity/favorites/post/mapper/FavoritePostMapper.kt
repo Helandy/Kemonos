@@ -28,6 +28,7 @@ internal class FavoritePostMapper @Inject constructor(
 
             title = domain.title,
             content = domain.content,
+            substring = domain.substring,
             added = domain.added,
             published = domain.published,
             edited = domain.edited,
@@ -53,6 +54,7 @@ internal class FavoritePostMapper @Inject constructor(
 
             title = entity.title,
             content = entity.content,
+            substring = entity.substring,
             added = entity.added,
             published = entity.published,
             edited = entity.edited,

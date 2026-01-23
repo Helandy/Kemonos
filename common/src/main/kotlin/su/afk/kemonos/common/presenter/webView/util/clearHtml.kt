@@ -2,7 +2,7 @@ package su.afk.kemonos.common.presenter.webView.util
 
 import androidx.core.text.HtmlCompat
 
-fun String.stripHtml(): String {
+fun String.clearHtml(): String {
     if (isBlank()) return this
     val spanned = HtmlCompat.fromHtml(this, HtmlCompat.FROM_HTML_MODE_LEGACY)
     return spanned.toString()

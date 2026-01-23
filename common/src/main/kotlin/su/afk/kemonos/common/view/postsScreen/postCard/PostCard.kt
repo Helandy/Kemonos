@@ -13,10 +13,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import su.afk.kemonos.common.R
 import su.afk.kemonos.common.di.LocalDomainResolver
 import su.afk.kemonos.common.util.toUiDateTime
+import su.afk.kemonos.common.utilsUI.KemonoPreviewScreen
 import su.afk.kemonos.domain.models.PostDomain
 import su.afk.kemonos.preferences.ui.DateFormatMode
 
@@ -43,7 +45,7 @@ fun PostCard(
                 preview = meta.preview,
                 imgBaseUrl = imgBaseUrl,
                 title = post.title,
-                modifier = Modifier.fillMaxSize()
+                textPreview = post.substring,
             )
 
             if (showFavCount && meta.favCount > 0) {
@@ -94,5 +96,18 @@ fun PostCard(
                 )
             }
         }
+    }
+}
+
+@Preview("PreviewPostCard")
+@Composable
+private fun PreviewPostCard() {
+    KemonoPreviewScreen {
+        PostCard(
+            dateMode = DateFormatMode.DD_MM_YYYY,
+            post = PostDomain.default(),
+            onClick = {},
+            showFavCount = false,
+        )
     }
 }

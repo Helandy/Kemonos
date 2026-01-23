@@ -21,6 +21,7 @@ data class PostsSearchCacheEntity(
     val userId: String,
     val service: String,
     val title: String?,
+    val substring: String?,
     val published: String?,
     val added: String?,
     val edited: String?,

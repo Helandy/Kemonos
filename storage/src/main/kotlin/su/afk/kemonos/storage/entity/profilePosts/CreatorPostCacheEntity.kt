@@ -23,6 +23,7 @@ data class CreatorPostCacheEntity(
     val service: String,
     val title: String?,
     val published: String?,
+    val substring: String?,
     val added: String?,
     val edited: String?,
 
