@@ -21,8 +21,8 @@ import su.afk.kemonos.common.presenter.baseScreen.BaseScreen
 import su.afk.kemonos.common.presenter.baseScreen.StandardTopBar
 import su.afk.kemonos.common.presenter.baseScreen.TopBarScroll
 import su.afk.kemonos.common.presenter.changeSite.SiteToggleFab
-import su.afk.kemonos.common.presenter.postsScreen.paging.PostsTabContent
-import su.afk.kemonos.common.presenter.views.RandomFab
+import su.afk.kemonos.common.view.button.RandomFab
+import su.afk.kemonos.common.view.postsScreen.paging.PostsTabContent
 import su.afk.kemonos.preferences.ui.RandomButtonPlacement
 
 @OptIn(ExperimentalMaterial3Api::class)

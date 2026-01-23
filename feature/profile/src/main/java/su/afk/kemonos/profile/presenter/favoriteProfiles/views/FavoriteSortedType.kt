@@ -2,7 +2,7 @@ package su.afk.kemonos.profile.presenter.favoriteProfiles.views
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.stringResource
-import su.afk.kemonos.common.presenter.views.searchBar.SortOption
+import su.afk.kemonos.common.view.searchBar.SortOption
 import su.afk.kemonos.profile.R
 import su.afk.kemonos.profile.api.model.FavoriteArtist
 

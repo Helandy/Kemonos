@@ -23,8 +23,8 @@ import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.text.HtmlCompat
 import coil3.ImageLoader
 import su.afk.kemonos.common.R
-import su.afk.kemonos.common.presenter.views.announcemnt.CoilImageGetter
 import su.afk.kemonos.common.util.toUiDateTime
+import su.afk.kemonos.common.view.announcemnt.CoilImageGetter
 import su.afk.kemonos.creatorProfile.api.domain.models.profileAnnouncements.ProfileAnnouncement
 import su.afk.kemonos.preferences.ui.DateFormatMode
 import java.time.LocalDateTime

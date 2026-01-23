@@ -16,8 +16,8 @@ import androidx.compose.ui.unit.dp
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.itemKey
 import su.afk.kemonos.common.R
-import su.afk.kemonos.common.presenter.views.creator.grid.CreatorGridItem
-import su.afk.kemonos.common.presenter.views.creator.list.CreatorListItem
+import su.afk.kemonos.common.view.creator.grid.CreatorGridItem
+import su.afk.kemonos.common.view.creator.list.CreatorListItem
 import su.afk.kemonos.domain.models.Creators
 import su.afk.kemonos.preferences.ui.CreatorViewMode
 import su.afk.kemonos.preferences.ui.DateFormatMode

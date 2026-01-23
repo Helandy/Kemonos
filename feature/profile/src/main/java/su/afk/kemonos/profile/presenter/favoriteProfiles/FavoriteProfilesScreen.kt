@@ -12,10 +12,10 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import su.afk.kemonos.common.presenter.baseScreen.BaseScreen
 import su.afk.kemonos.common.presenter.baseScreen.StandardTopBar
 import su.afk.kemonos.common.presenter.baseScreen.TopBarScroll
-import su.afk.kemonos.common.presenter.views.creator.AdaptiveCreatorsStatic
-import su.afk.kemonos.common.presenter.views.creator.grid.CreatorGridItem
-import su.afk.kemonos.common.presenter.views.creator.list.CreatorListItem
-import su.afk.kemonos.common.presenter.views.searchBar.SearchBarNew
+import su.afk.kemonos.common.view.creator.AdaptiveCreatorsStatic
+import su.afk.kemonos.common.view.creator.grid.CreatorGridItem
+import su.afk.kemonos.common.view.creator.list.CreatorListItem
+import su.afk.kemonos.common.view.searchBar.SearchBarNew
 import su.afk.kemonos.profile.data.FreshFavoriteArtistKey
 import su.afk.kemonos.profile.data.FreshFavoriteArtistsUpdates
 import su.afk.kemonos.profile.presenter.favoriteProfiles.views.favoriteProfilesSortOptions

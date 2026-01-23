@@ -21,14 +21,14 @@ import kotlinx.coroutines.flow.emptyFlow
 import su.afk.kemonos.common.R
 import su.afk.kemonos.common.di.LocalDomainResolver
 import su.afk.kemonos.common.presenter.baseScreen.BaseScreen
-import su.afk.kemonos.common.presenter.views.creator.header.CreatorHeader
-import su.afk.kemonos.common.presenter.views.elements.FavoriteActionButton
 import su.afk.kemonos.common.shared.ShareActions
 import su.afk.kemonos.common.shared.view.SharedActionButton
 import su.afk.kemonos.common.util.buildDataUrl
 import su.afk.kemonos.common.util.openAudioExternally
 import su.afk.kemonos.common.util.toast
 import su.afk.kemonos.common.utilsUI.KemonoPreviewScreen
+import su.afk.kemonos.common.view.button.FavoriteActionButton
+import su.afk.kemonos.common.view.creator.header.CreatorHeader
 import su.afk.kemonos.creatorPost.presenter.CreatorPostState.*
 import su.afk.kemonos.creatorPost.presenter.CreatorPostState.State
 import su.afk.kemonos.creatorPost.presenter.util.IntStateMapSaver

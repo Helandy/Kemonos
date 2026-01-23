@@ -19,12 +19,12 @@ import androidx.paging.compose.collectAsLazyPagingItems
 import su.afk.kemonos.common.presenter.baseScreen.BaseScreen
 import su.afk.kemonos.common.presenter.baseScreen.StandardTopBar
 import su.afk.kemonos.common.presenter.baseScreen.TopBarScroll
-import su.afk.kemonos.common.presenter.postsScreen.paging.PostsTabContent
-import su.afk.kemonos.common.presenter.views.creator.header.CreatorHeader
-import su.afk.kemonos.common.presenter.views.elements.FavoriteActionButton
 import su.afk.kemonos.common.shared.ShareActions
 import su.afk.kemonos.common.shared.view.SharedActionButton
 import su.afk.kemonos.common.util.toast
+import su.afk.kemonos.common.view.button.FavoriteActionButton
+import su.afk.kemonos.common.view.creator.header.CreatorHeader
+import su.afk.kemonos.common.view.postsScreen.paging.PostsTabContent
 import su.afk.kemonos.creatorProfile.presenter.model.ProfileTab
 import su.afk.kemonos.creatorProfile.presenter.view.*
 import su.afk.kemonos.creatorProfile.presenter.view.discordProfile.DiscordProfilePlaceholder

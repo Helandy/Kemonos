@@ -13,8 +13,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import su.afk.kemonos.common.R
-import su.afk.kemonos.common.presenter.views.creator.grid.CreatorGridItem
-import su.afk.kemonos.common.presenter.views.creator.list.CreatorListItem
+import su.afk.kemonos.common.view.creator.grid.CreatorGridItem
+import su.afk.kemonos.common.view.creator.list.CreatorListItem
 import su.afk.kemonos.domain.models.Creators
 import su.afk.kemonos.preferences.ui.DateFormatMode
 
