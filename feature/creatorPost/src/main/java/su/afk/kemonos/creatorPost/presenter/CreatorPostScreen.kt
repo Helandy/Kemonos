@@ -52,6 +52,7 @@ internal fun CreatorPostScreen(state: State, onEvent: (Event) -> Unit, effect: F
     val webViewHeights = rememberSaveable(saver = IntStateMapSaver) {
         mutableMapOf<String, MutableIntState>()
     }
+    var showPreviewFileNames by rememberSaveable(state.postId) { mutableStateOf(false) }
 
     LaunchedEffect(effect) {
         effect.collect { effect ->
@@ -184,6 +185,8 @@ internal fun CreatorPostScreen(state: State, onEvent: (Event) -> Unit, effect: F
             postPreviewsSection(
                 previews = uniquePreviews,
                 imgBaseUrl = imgBaseUrl,
+                showNames = showPreviewFileNames,
+                onTogglePreviewNames = { showPreviewFileNames = !showPreviewFileNames },
                 onOpenImage = { url -> onEvent(Event.OpenImage(url)) },
                 onOpenUrl = { url -> onEvent(Event.OpenExternalUrl(url)) },
                 downloadStarted = downloadStarted,
