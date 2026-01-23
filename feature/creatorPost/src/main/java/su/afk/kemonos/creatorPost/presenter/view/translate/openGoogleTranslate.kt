@@ -1,4 +1,4 @@
-package su.afk.kemonos.creatorPost.presenter.util
+package su.afk.kemonos.creatorPost.presenter.view.translate
 
 import android.content.Context
 import android.content.Intent

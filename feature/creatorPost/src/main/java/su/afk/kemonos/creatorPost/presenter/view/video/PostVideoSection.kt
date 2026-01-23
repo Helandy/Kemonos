@@ -9,12 +9,15 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import su.afk.kemonos.common.R
 import su.afk.kemonos.creatorPost.domain.model.media.MediaInfoState
+import su.afk.kemonos.creatorPost.domain.model.video.VideoThumbState
 import su.afk.kemonos.domain.models.VideoDomain
 
 internal fun LazyListScope.postVideosSection(
     videos: List<VideoDomain>,
     videoInfo: Map<String, MediaInfoState>,
     onVideoInfoRequested: (url: String) -> Unit,
+    videoThumbs: Map<String, VideoThumbState>,
+    onThumbRequested: (url: String) -> Unit,
     onDownload: (url: String, fileName: String) -> Unit,
 ) {
     val uniqueVideos = videos.distinctBy { v ->
@@ -32,16 +35,17 @@ internal fun LazyListScope.postVideosSection(
 
     items(
         count = uniqueVideos.size,
-        key = { index ->
-            val v = uniqueVideos[index]
-            "video:${v.server}:${v.path}"
-        }
+        key = { index -> "video:${uniqueVideos[index].server}:${uniqueVideos[index].path}" }
     ) { index ->
         val video = uniqueVideos[index]
-        VideoInfoPreview(
+        val url = "${video.server}/data${video.path}"
+
+        VideoPreviewItem(
             video = video,
-            infoState = videoInfo["${video.server}/data${video.path}"],
+            infoState = videoInfo[url],
             requestInfo = onVideoInfoRequested,
+            thumbState = videoThumbs[url] ?: VideoThumbState.Idle,
+            requestThumb = onThumbRequested,
             onDownloadClick = onDownload
         )
     }

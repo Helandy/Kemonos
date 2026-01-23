@@ -2,6 +2,7 @@ package su.afk.kemonos.creatorPost.presenter.view.video
 
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -9,17 +10,22 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Download
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import su.afk.kemonos.common.R
+import su.afk.kemonos.common.imageLoader.AsyncImageWithStatus
 import su.afk.kemonos.common.util.openVideoExternally
 import su.afk.kemonos.creatorPost.domain.model.media.MediaInfoState
-import su.afk.kemonos.creatorPost.presenter.util.VideoThumbnail
+import su.afk.kemonos.creatorPost.domain.model.video.VideoThumbState
 import su.afk.kemonos.domain.models.VideoDomain
 import kotlin.math.roundToInt
 
@@ -29,32 +35,56 @@ import kotlin.math.roundToInt
  * кэшом управляет сама библиотека.
  */
 @Composable
-internal fun VideoInfoPreview(
+internal fun VideoPreviewItem(
     video: VideoDomain,
     infoState: MediaInfoState?,
     requestInfo: (url: String) -> Unit,
+    thumbState: VideoThumbState,
+    requestThumb: (url: String) -> Unit,
     onDownloadClick: (url: String, fileName: String) -> Unit,
 ) {
     val url = remember(video) { "${video.server}/data${video.path}" }
 
-    LaunchedEffect(url, video.name) {
-        // как только элемент появился в LazyColumn — просим инфо по видео
+    LaunchedEffect(url) {
         requestInfo(url)
+        requestThumb(url)
     }
-    val context = LocalContext.current
 
-    var thumbLoading by remember(url) { mutableStateOf(true) }
+    val context = LocalContext.current
+    val thumbLoading = thumbState is VideoThumbState.Loading || thumbState is VideoThumbState.Idle
 
     Column(Modifier.padding(vertical = 4.dp)) {
         Box(
             Modifier.fillMaxWidth()
                 .aspectRatio(16f / 9f)
         ) {
-            VideoThumbnail(
-                url = url,
-                modifier = Modifier.matchParentSize(),
-                onLoadingChange = { thumbLoading = it }
-            )
+            when (thumbState) {
+                is VideoThumbState.Success -> {
+                    AsyncImageWithStatus(
+                        model = thumbState.bitmap,
+                        contentDescription = video.name,
+                        modifier = Modifier.matchParentSize().clip(RoundedCornerShape(8.dp)),
+                        contentScale = ContentScale.Crop,
+                    )
+                }
+
+                is VideoThumbState.Error -> {
+                    Box(
+                        Modifier.matchParentSize()
+                            .clip(RoundedCornerShape(8.dp))
+                            .background(MaterialTheme.colorScheme.surfaceVariant),
+                    )
+                }
+
+                VideoThumbState.Idle,
+                VideoThumbState.Loading -> {
+                    Box(
+                        Modifier.matchParentSize()
+                            .clip(RoundedCornerShape(8.dp))
+                            .background(MaterialTheme.colorScheme.surfaceVariant),
+                    )
+                }
+            }
 
             androidx.compose.animation.AnimatedVisibility(
                 visible = thumbLoading,
@@ -107,7 +137,7 @@ internal fun VideoInfoPreview(
                 )
             }
 
-            /** ⬇️ Download (как у картинок) */
+            /** ⬇️ Download */
             FilledIconButton(
                 onClick = { onDownloadClick(url, video.name) },
                 modifier = Modifier

@@ -6,7 +6,7 @@ import kotlinx.coroutines.withContext
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import su.afk.kemonos.creatorPost.api.domain.model.media.MediaInfo
-import su.afk.kemonos.storage.api.video.IMediaInfoUseCase
+import su.afk.kemonos.storage.api.media.IMediaInfoUseCase
 import javax.inject.Inject
 import javax.inject.Named
 

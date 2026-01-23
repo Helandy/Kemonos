@@ -1,14 +1,13 @@
 package su.afk.kemonos.creatorPost.presenter
 
+import android.media.MediaMetadataRetriever
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.async
+import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.launch
 import su.afk.kemonos.common.error.IErrorHandlerUseCase
 import su.afk.kemonos.common.error.storage.RetryStorage
 import su.afk.kemonos.common.error.toFavoriteToastBar
@@ -21,6 +20,7 @@ import su.afk.kemonos.common.translate.preprocessForTranslation
 import su.afk.kemonos.common.util.audioMimeType
 import su.afk.kemonos.creatorPost.api.domain.model.PostContentDomain
 import su.afk.kemonos.creatorPost.domain.model.media.MediaInfoState
+import su.afk.kemonos.creatorPost.domain.model.video.VideoThumbState
 import su.afk.kemonos.creatorPost.domain.useCase.GetCommentsUseCase
 import su.afk.kemonos.creatorPost.domain.useCase.GetMediaInfoUseCase
 import su.afk.kemonos.creatorPost.domain.useCase.GetPostUseCase
@@ -33,6 +33,7 @@ import su.afk.kemonos.download.api.IDownloadUtil
 import su.afk.kemonos.preferences.IGetCurrentSiteRootUrlUseCase
 import su.afk.kemonos.preferences.ui.IUiSettingUseCase
 import su.afk.kemonos.preferences.ui.TranslateTarget
+import su.afk.kemonos.storage.api.video.IVideoFrameCache
 
 internal class CreatorPostViewModel @AssistedInject constructor(
     @Assisted private val dest: CreatorPostDest.CreatorPost,
@@ -40,6 +41,7 @@ internal class CreatorPostViewModel @AssistedInject constructor(
     private val getPostUseCase: GetPostUseCase,
     private val getProfileUseCase: IGetProfileUseCase,
     private val getCurrentSiteRootUrlUseCase: IGetCurrentSiteRootUrlUseCase,
+    private val videoFrameCache: IVideoFrameCache,
     private val getVideoInfo: GetMediaInfoUseCase,
     private val likeDelegate: LikeDelegate,
     private val navigateDelegates: NavigateDelegates,
@@ -101,6 +103,7 @@ internal class CreatorPostViewModel @AssistedInject constructor(
 
             is Event.OpenExternalUrl -> setEffect(Effect.OpenUrl(event.url))
 
+            is Event.VideoThumbRequested -> requestVideoThumb(event.url)
             is Event.VideoInfoRequested -> requestVideoInfo(event.url)
             is Event.AudioInfoRequested -> requestAudioInfo(event.url)
 
@@ -159,11 +162,9 @@ internal class CreatorPostViewModel @AssistedInject constructor(
     /** Получить/создать flow для конкретного видео и стартануть загрузку при необходимости */
     private val videoJobs = mutableMapOf<String, Job>()
     private fun requestVideoInfo(url: String) {
-        // уже есть успешное/ошибка — решай сам: можно не перезапрашивать
         val existing = currentState.videoInfo[url]
         if (existing is MediaInfoState.Success) return
 
-        // если уже грузим — не стартуем второй раз
         if (videoJobs[url]?.isActive == true) return
 
         // если хотим показать loading сразу
@@ -198,6 +199,54 @@ internal class CreatorPostViewModel @AssistedInject constructor(
                 .onFailure { e ->
                     setState { copy(audioInfo = audioInfo + (url to MediaInfoState.Error(e))) }
                 }
+        }
+    }
+
+    private val videoThumbJobs = mutableMapOf<String, Job>()
+    private fun requestVideoThumb(url: String) {
+        when (currentState.videoThumbs[url]) {
+            is VideoThumbState.Success,
+            is VideoThumbState.Loading -> return
+
+            else -> Unit
+        }
+        if (videoThumbJobs[url]?.isActive == true) return
+
+        setState { copy(videoThumbs = videoThumbs + (url to VideoThumbState.Loading)) }
+
+        videoThumbJobs[url] = viewModelScope.launch {
+            try {
+                val bmp = withTimeout(15_000L) {
+                    videoFrameCache.getOrLoad(
+                        url = url,
+                        timeUs = IVideoFrameCache.DEFAULT_TIME_US,
+                    ) {
+                        withTimeout(15_000L) {
+                            MediaMetadataRetriever().use { retriever ->
+                                retriever.setDataSource(url)
+                                retriever.getFrameAtTime(
+                                    IVideoFrameCache.DEFAULT_TIME_US,
+                                    MediaMetadataRetriever.OPTION_CLOSEST_SYNC
+                                )
+                            }
+                        }
+                    }
+                }
+
+                setState {
+                    copy(
+                        videoThumbs = videoThumbs + (
+                                url to (if (bmp != null) VideoThumbState.Success(bmp) else VideoThumbState.Error(null))
+                                )
+                    )
+                }
+            } catch (t: TimeoutCancellationException) {
+                setState { copy(videoThumbs = videoThumbs + (url to VideoThumbState.Error(t))) }
+            } catch (t: Throwable) {
+                setState { copy(videoThumbs = videoThumbs + (url to VideoThumbState.Error(t))) }
+            } finally {
+                videoThumbJobs.remove(url)
+            }
         }
     }
 

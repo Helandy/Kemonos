@@ -1,4 +1,4 @@
-package su.afk.kemonos.storage.api.video
+package su.afk.kemonos.storage.api.media
 
 import su.afk.kemonos.creatorPost.api.domain.model.media.MediaInfo
 

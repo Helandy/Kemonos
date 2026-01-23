@@ -31,16 +31,16 @@ import su.afk.kemonos.common.view.button.FavoriteActionButton
 import su.afk.kemonos.common.view.creator.header.CreatorHeader
 import su.afk.kemonos.creatorPost.presenter.CreatorPostState.*
 import su.afk.kemonos.creatorPost.presenter.CreatorPostState.State
-import su.afk.kemonos.creatorPost.presenter.util.IntStateMapSaver
-import su.afk.kemonos.creatorPost.presenter.util.openGoogleTranslate
 import su.afk.kemonos.creatorPost.presenter.view.PostTitleBlock
 import su.afk.kemonos.creatorPost.presenter.view.TagsRow
 import su.afk.kemonos.creatorPost.presenter.view.attachment.PostAttachmentsSection
 import su.afk.kemonos.creatorPost.presenter.view.audio.postAudioSection
+import su.afk.kemonos.creatorPost.presenter.view.content.IntStateMapSaver
 import su.afk.kemonos.creatorPost.presenter.view.content.PostContentBlock
 import su.afk.kemonos.creatorPost.presenter.view.postCommentsSection
 import su.afk.kemonos.creatorPost.presenter.view.preview.postPreviewsSection
 import su.afk.kemonos.creatorPost.presenter.view.translate.PostTranslateItem
+import su.afk.kemonos.creatorPost.presenter.view.translate.openGoogleTranslate
 import su.afk.kemonos.creatorPost.presenter.view.video.postVideosSection
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -207,6 +207,8 @@ internal fun CreatorPostScreen(state: State, onEvent: (Event) -> Unit, effect: F
 
             postVideosSection(
                 videos = state.post.videos,
+                videoThumbs = state.videoThumbs,
+                onThumbRequested = { onEvent(Event.VideoThumbRequested(it)) },
                 videoInfo = state.videoInfo,
                 onVideoInfoRequested = { url ->
                     onEvent(Event.VideoInfoRequested(url))

@@ -11,12 +11,13 @@ import su.afk.kemonos.storage.api.clear.IClearCacheStorageUseCase
 import su.afk.kemonos.storage.api.creatorProfileCache.IStoreCreatorProfileCacheUseCase
 import su.afk.kemonos.storage.api.favorites.IStoreFavoriteArtistsUseCase
 import su.afk.kemonos.storage.api.favorites.IStoreFavoritePostsUseCase
+import su.afk.kemonos.storage.api.media.IMediaInfoUseCase
 import su.afk.kemonos.storage.api.popular.IStoragePopularPostsCacheUseCase
 import su.afk.kemonos.storage.api.post.IStoragePostUseCase
 import su.afk.kemonos.storage.api.postsSearch.IPostsSearchCacheUseCase
 import su.afk.kemonos.storage.api.profilePosts.IStorageCreatorPostsCacheUseCase
 import su.afk.kemonos.storage.api.tags.IStoreTagsUseCase
-import su.afk.kemonos.storage.api.video.IMediaInfoUseCase
+import su.afk.kemonos.storage.api.video.IVideoFrameCache
 import su.afk.kemonos.storage.repository.video.IStoreVideoInfoRepository
 import su.afk.kemonos.storage.repository.video.StoreVideoInfoRepository
 import su.afk.kemonos.storage.useCases.StoreCommentsUseCase
@@ -26,12 +27,13 @@ import su.afk.kemonos.storage.useCases.clear.ClearCacheStorageUseCase
 import su.afk.kemonos.storage.useCases.creatorProfileCache.StoreCreatorProfileCacheUseCase
 import su.afk.kemonos.storage.useCases.favorites.StoreFavoriteArtistsUseCase
 import su.afk.kemonos.storage.useCases.favorites.StoreFavoritePostsUseCase
+import su.afk.kemonos.storage.useCases.media.MediaInfoUseCase
 import su.afk.kemonos.storage.useCases.popular.StoragePopularPostsCacheUseCase
 import su.afk.kemonos.storage.useCases.post.StoragePostUseCase
 import su.afk.kemonos.storage.useCases.postsSearch.PostsSearchCacheUseCase
 import su.afk.kemonos.storage.useCases.profilePosts.StorageCreatorPostsCacheUseCase
 import su.afk.kemonos.storage.useCases.tags.StoreTagsUseCase
-import su.afk.kemonos.storage.useCases.video.MediaInfoUseCase
+import su.afk.kemonos.storage.useCases.video.VideoFrameCacheImpl
 import javax.inject.Singleton
 
 @Module
@@ -94,4 +96,7 @@ internal interface UseCaseModule {
     @Binds
     fun bindStoreCreatorProfileCacheUseCase(impl: StoreCreatorProfileCacheUseCase): IStoreCreatorProfileCacheUseCase
 
+    @Singleton
+    @Binds
+    fun bindVideoFrameCache(impl: VideoFrameCacheImpl): IVideoFrameCache
 }

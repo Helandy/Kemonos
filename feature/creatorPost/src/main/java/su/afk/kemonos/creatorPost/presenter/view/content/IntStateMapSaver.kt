@@ -1,4 +1,4 @@
-package su.afk.kemonos.creatorPost.presenter.util
+package su.afk.kemonos.creatorPost.presenter.view.content
 
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.saveable.mapSaver

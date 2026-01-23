@@ -6,6 +6,7 @@ import su.afk.kemonos.common.presenter.baseViewModel.UiState
 import su.afk.kemonos.creatorPost.api.domain.model.CommentDomain
 import su.afk.kemonos.creatorPost.api.domain.model.PostContentDomain
 import su.afk.kemonos.creatorPost.domain.model.media.MediaInfoState
+import su.afk.kemonos.creatorPost.domain.model.video.VideoThumbState
 import su.afk.kemonos.domain.models.Profile
 import su.afk.kemonos.preferences.ui.UiSettingModel
 
@@ -36,6 +37,7 @@ internal class CreatorPostState {
 
         val uiSettingModel: UiSettingModel = UiSettingModel(),
 
+        val videoThumbs: Map<String, VideoThumbState> = emptyMap(),
         val videoInfo: Map<String, MediaInfoState> = emptyMap(),
         val audioInfo: Map<String, MediaInfoState> = emptyMap(),
     ) : UiState
@@ -55,6 +57,7 @@ internal class CreatorPostState {
 
         data class Download(val url: String, val fileName: String?) : Event
 
+        data class VideoThumbRequested(val url: String) : Event
         data class VideoInfoRequested(val url: String) : Event
         data class AudioInfoRequested(val url: String) : Event
 
