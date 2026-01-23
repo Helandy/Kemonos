@@ -12,7 +12,6 @@ import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.core.net.toUri
@@ -24,6 +23,7 @@ import su.afk.kemonos.common.presenter.baseScreen.BaseScreen
 import su.afk.kemonos.common.shared.ShareActions
 import su.afk.kemonos.common.shared.view.SharedActionButton
 import su.afk.kemonos.common.util.buildDataUrl
+import su.afk.kemonos.common.util.limitForToast
 import su.afk.kemonos.common.util.openAudioExternally
 import su.afk.kemonos.common.util.toast
 import su.afk.kemonos.common.utilsUI.KemonoPreviewScreen
@@ -69,6 +69,20 @@ internal fun CreatorPostScreen(state: State, onEvent: (Event) -> Unit, effect: F
                         .also(context::startActivity)
                 }
                 is Effect.OpenAudio -> openAudioExternally(context, effect.url, effect.name, effect.mime)
+                is Effect.DownloadToast -> {
+                    val safeName = effect.fileName.trim().takeIf { it.isNotBlank() }?.limitForToast()
+
+                    val message = if (safeName != null) {
+                        context.getString(
+                            R.string.download_started_named,
+                            safeName
+                        )
+                    } else {
+                        context.getString(R.string.download_started)
+                    }
+
+                    context.toast(message)
+                }
             }
         }
     }
@@ -113,9 +127,6 @@ internal fun CreatorPostScreen(state: State, onEvent: (Event) -> Unit, effect: F
                 }
             }
         }
-
-        val downloadStarted = stringResource(R.string.download_started)
-        val downloadStartedNamed = stringResource(R.string.download_started_named)
 
         val listState = rememberSaveable(
             state.postId,
@@ -169,7 +180,7 @@ internal fun CreatorPostScreen(state: State, onEvent: (Event) -> Unit, effect: F
 
             item(key = "contentBlock") {
                 /** Контент поста */
-                val post = state.post?.post ?: return@item
+                val post = state.post.post
 
                 val contentKey = "${post.service}:${state.id}:${state.postId}"
                 val heightState = webViewHeights.getOrPut(contentKey) { mutableIntStateOf(0) }
@@ -189,12 +200,9 @@ internal fun CreatorPostScreen(state: State, onEvent: (Event) -> Unit, effect: F
                 onTogglePreviewNames = { showPreviewFileNames = !showPreviewFileNames },
                 onOpenImage = { url -> onEvent(Event.OpenImage(url)) },
                 onOpenUrl = { url -> onEvent(Event.OpenExternalUrl(url)) },
-                downloadStarted = downloadStarted,
-                downloadStartedNamed = downloadStartedNamed,
                 download = { fullUrl, fileName ->
                     onEvent(Event.Download(fullUrl, fileName))
                 },
-                toast = { msg -> context.toast(msg) }
             )
 
             postVideosSection(
@@ -202,6 +210,9 @@ internal fun CreatorPostScreen(state: State, onEvent: (Event) -> Unit, effect: F
                 videoInfo = state.videoInfo,
                 onVideoInfoRequested = { url ->
                     onEvent(Event.VideoInfoRequested(url))
+                },
+                onDownload = { url, fileName ->
+                    onEvent(Event.Download(url, fileName))
                 }
             )
 

@@ -15,6 +15,7 @@ internal fun LazyListScope.postVideosSection(
     videos: List<VideoDomain>,
     videoInfo: Map<String, MediaInfoState>,
     onVideoInfoRequested: (url: String) -> Unit,
+    onDownload: (url: String, fileName: String) -> Unit,
 ) {
     val uniqueVideos = videos.distinctBy { v ->
         "video:${v.server}:${v.path}"
@@ -40,7 +41,8 @@ internal fun LazyListScope.postVideosSection(
         VideoInfoPreview(
             video = video,
             infoState = videoInfo["${video.server}/data${video.path}"],
-            requestInfo = onVideoInfoRequested
+            requestInfo = onVideoInfoRequested,
+            onDownloadClick = onDownload
         )
     }
 }

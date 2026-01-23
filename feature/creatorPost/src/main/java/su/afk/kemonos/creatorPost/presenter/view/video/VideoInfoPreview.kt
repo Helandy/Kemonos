@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Download
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -32,6 +33,7 @@ internal fun VideoInfoPreview(
     video: VideoDomain,
     infoState: MediaInfoState?,
     requestInfo: (url: String) -> Unit,
+    onDownloadClick: (url: String, fileName: String) -> Unit,
 ) {
     val url = remember(video) { "${video.server}/data${video.path}" }
 
@@ -45,8 +47,7 @@ internal fun VideoInfoPreview(
 
     Column(Modifier.padding(vertical = 4.dp)) {
         Box(
-            Modifier
-                .fillMaxWidth()
+            Modifier.fillMaxWidth()
                 .aspectRatio(16f / 9f)
         ) {
             VideoThumbnail(
@@ -103,6 +104,25 @@ internal fun VideoInfoPreview(
                     Icons.Filled.PlayArrow,
                     contentDescription = null,
                     modifier = Modifier.size(36.dp)
+                )
+            }
+
+            /** ⬇️ Download (как у картинок) */
+            FilledIconButton(
+                onClick = { onDownloadClick(url, video.name) },
+                modifier = Modifier
+                    .align(Alignment.BottomEnd)
+                    .padding(8.dp)
+                    .size(42.dp),
+                colors = IconButtonDefaults.filledIconButtonColors(
+                    containerColor = MaterialTheme.colorScheme.primaryContainer,
+                    contentColor = MaterialTheme.colorScheme.onPrimaryContainer
+                )
+            ) {
+                Icon(
+                    imageVector = Icons.Filled.Download,
+                    contentDescription = stringResource(R.string.download),
+                    modifier = Modifier.size(20.dp)
                 )
             }
         }

@@ -269,6 +269,9 @@ internal class CreatorPostViewModel @AssistedInject constructor(
             fileName = fileName,
             mimeType = null
         )
+        setEffect(
+            Effect.DownloadToast(fileName.orEmpty())
+        )
     }
 
     fun onToggleTranslate(rawHtml: String) {

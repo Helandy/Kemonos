@@ -24,10 +24,7 @@ internal fun LazyListScope.postPreviewsSection(
     onTogglePreviewNames: () -> Unit,
     onOpenImage: (String) -> Unit,
     onOpenUrl: (String) -> Unit,
-    downloadStarted: String,
-    downloadStartedNamed: String,
     download: (url: String, fileName: String) -> Unit,
-    toast: (String) -> Unit,
 ) {
     val uniquePreviews = previews.distinctBy { it.previewKey() }
     if (previews.isEmpty()) return
@@ -63,14 +60,7 @@ internal fun LazyListScope.postPreviewsSection(
                 imgBaseUrl = imgBaseUrl,
                 showFileName = showNames,
                 onPreviewClick = onOpenImage,
-                onDownloadClick = { fullUrl, fileName ->
-                    download(fullUrl, fileName)
-
-                    val msg = if (fileName.isBlank()) downloadStarted
-                    else String.format(downloadStartedNamed, fileName)
-
-                    toast(msg)
-                }
+                onDownloadClick = download
             )
 
             "embed" -> EmbedPreviewItem(

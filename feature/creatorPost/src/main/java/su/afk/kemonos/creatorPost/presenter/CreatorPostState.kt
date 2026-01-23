@@ -70,6 +70,8 @@ internal class CreatorPostState {
             val targetLangTag: String,
         ) : Effect
 
+        data class DownloadToast(val fileName: String) : Effect
+
         data class OpenUrl(val url: String) : Effect
 
         data class OpenAudio(val url: String, val name: String?, val mime: String) : Effect

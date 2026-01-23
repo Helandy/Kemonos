@@ -117,7 +117,7 @@ internal fun AudioInfoItem(
                 modifier = Modifier.size(38.dp)
             ) {
                 Icon(
-                    imageVector = Icons.Filled.Download,
+                    imageVector = Icons.Default.Download,
                     contentDescription = stringResource(R.string.download),
                     tint = MaterialTheme.colorScheme.primary,
                     modifier = Modifier.size(24.dp)

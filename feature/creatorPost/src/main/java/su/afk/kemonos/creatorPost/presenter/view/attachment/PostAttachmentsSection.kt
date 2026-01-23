@@ -52,7 +52,7 @@ fun PostAttachmentsSection(
                 )
                 Text(
                     att.name.orEmpty(),
-                    style = MaterialTheme.typography.bodyLarge,
+                    style = MaterialTheme.typography.bodyMedium,
                 )
             }
         }

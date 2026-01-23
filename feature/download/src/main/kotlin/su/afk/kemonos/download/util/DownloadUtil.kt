@@ -8,6 +8,8 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import su.afk.kemonos.download.api.IDownloadUtil
 import javax.inject.Inject
 
+private const val APP_DOWNLOAD_DIR = "kemonos"
+
 /**
  * Скачивает файл через системный DownloadManager.
  */
@@ -37,7 +39,10 @@ internal class DownloadUtil @Inject constructor(
             .sanitizeFileName()
             .ifBlank { "download" }
 
-        request.setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, safeName)
+        request.setDestinationInExternalPublicDir(
+            Environment.DIRECTORY_DOWNLOADS,
+            "$APP_DOWNLOAD_DIR/$safeName"
+        )
 
         return dm.enqueue(request)
     }
