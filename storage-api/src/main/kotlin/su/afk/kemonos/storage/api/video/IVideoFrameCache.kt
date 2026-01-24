@@ -19,6 +19,9 @@ interface IVideoFrameCache {
         loader: suspend () -> Bitmap?
     ): Bitmap?
 
+    suspend fun getByPath(path: String, timeUs: Long = DEFAULT_TIME_US): Bitmap? =
+        get(makeKey(path, timeUs))
+
     suspend fun clear()
 
     companion object {

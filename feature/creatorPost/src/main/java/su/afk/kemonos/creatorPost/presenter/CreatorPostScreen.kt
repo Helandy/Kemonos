@@ -208,10 +208,12 @@ internal fun CreatorPostScreen(state: State, onEvent: (Event) -> Unit, effect: F
             postVideosSection(
                 videos = state.post.videos,
                 videoThumbs = state.videoThumbs,
-                onThumbRequested = { onEvent(Event.VideoThumbRequested(it)) },
+                requestThumb = { server, path ->
+                    onEvent(Event.VideoThumbRequested(server = server, path = path))
+                },
                 videoInfo = state.videoInfo,
-                onVideoInfoRequested = { url ->
-                    onEvent(Event.VideoInfoRequested(url))
+                onVideoInfoRequested = { server, path ->
+                    onEvent(Event.VideoInfoRequested(server = server, path = path))
                 },
                 onDownload = { url, fileName ->
                     onEvent(Event.Download(url, fileName))

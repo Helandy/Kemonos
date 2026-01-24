@@ -38,16 +38,16 @@ import kotlin.math.roundToInt
 internal fun VideoPreviewItem(
     video: VideoDomain,
     infoState: MediaInfoState?,
-    requestInfo: (url: String) -> Unit,
+    requestInfo: (server: String, path: String) -> Unit,
     thumbState: VideoThumbState,
-    requestThumb: (url: String) -> Unit,
+    requestThumb: (server: String, path: String) -> Unit,
     onDownloadClick: (url: String, fileName: String) -> Unit,
 ) {
     val url = remember(video) { "${video.server}/data${video.path}" }
 
     LaunchedEffect(url) {
-        requestInfo(url)
-        requestThumb(url)
+        requestInfo(video.server, video.path)
+        requestThumb(video.server, video.path)
     }
 
     val context = LocalContext.current

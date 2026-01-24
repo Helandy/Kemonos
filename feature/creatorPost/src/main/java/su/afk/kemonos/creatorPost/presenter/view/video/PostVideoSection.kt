@@ -15,9 +15,9 @@ import su.afk.kemonos.domain.models.VideoDomain
 internal fun LazyListScope.postVideosSection(
     videos: List<VideoDomain>,
     videoInfo: Map<String, MediaInfoState>,
-    onVideoInfoRequested: (url: String) -> Unit,
+    onVideoInfoRequested: (server: String, path: String) -> Unit,
     videoThumbs: Map<String, VideoThumbState>,
-    onThumbRequested: (url: String) -> Unit,
+    requestThumb: (server: String, path: String) -> Unit,
     onDownload: (url: String, fileName: String) -> Unit,
 ) {
     val uniqueVideos = videos.distinctBy { v ->
@@ -45,7 +45,7 @@ internal fun LazyListScope.postVideosSection(
             infoState = videoInfo[url],
             requestInfo = onVideoInfoRequested,
             thumbState = videoThumbs[url] ?: VideoThumbState.Idle,
-            requestThumb = onThumbRequested,
+            requestThumb = requestThumb,
             onDownloadClick = onDownload
         )
     }

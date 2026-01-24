@@ -57,8 +57,8 @@ internal class CreatorPostState {
 
         data class Download(val url: String, val fileName: String?) : Event
 
-        data class VideoThumbRequested(val url: String) : Event
-        data class VideoInfoRequested(val url: String) : Event
+        data class VideoThumbRequested(val server: String, val path: String) : Event
+        data class VideoInfoRequested(val server: String, val path: String) : Event
         data class AudioInfoRequested(val url: String) : Event
 
         data class PlayAudio(val url: String, val name: String?) : Event

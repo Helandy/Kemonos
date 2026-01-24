@@ -31,12 +31,13 @@ class GetMediaMetaUseCase @Inject constructor(
 
     suspend operator fun invoke(
         url: String,
+        path: String,
         loadFrame: Boolean,
         frameTimeUs: Long = IVideoFrameCache.DEFAULT_TIME_US,
     ): VideoMeta = coroutineScope {
         val safeTimeUs = frameTimeUs.coerceAtLeast(0L)
 
-        val key = "meta|u=$url|frame=$loadFrame|t=$safeTimeUs"
+        val key = "meta|p=$path|frame=$loadFrame|t=$safeTimeUs"
 
         val deferred = inFlight.computeIfAbsent(key) {
             async(Dispatchers.IO) {
@@ -45,7 +46,7 @@ class GetMediaMetaUseCase @Inject constructor(
 
                     // --- FRAME ---
                     val frame: Bitmap? = if (loadFrame) {
-                        frameCache.getOrLoad(url, safeTimeUs) {
+                        frameCache.getOrLoad(path, safeTimeUs) {
                             MediaMetadataRetriever().use { r ->
                                 r.setDataSource(url, HashMap())
                                 r.safeFrame(safeTimeUs)

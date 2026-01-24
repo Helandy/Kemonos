@@ -18,6 +18,7 @@ import su.afk.kemonos.common.shared.ShareTarget
 import su.afk.kemonos.common.translate.TextTranslator
 import su.afk.kemonos.common.translate.preprocessForTranslation
 import su.afk.kemonos.common.util.audioMimeType
+import su.afk.kemonos.common.util.buildFileUrl
 import su.afk.kemonos.creatorPost.api.domain.model.PostContentDomain
 import su.afk.kemonos.creatorPost.domain.model.media.MediaInfoState
 import su.afk.kemonos.creatorPost.domain.model.video.VideoThumbState
@@ -102,8 +103,8 @@ internal class CreatorPostViewModel @AssistedInject constructor(
 
             is Event.OpenExternalUrl -> setEffect(Effect.OpenUrl(event.url))
 
-            is Event.VideoThumbRequested -> requestVideoMeta(event.url)
-            is Event.VideoInfoRequested -> requestVideoMeta(event.url)
+            is Event.VideoThumbRequested -> requestVideoMeta(event.server, event.path)
+            is Event.VideoInfoRequested -> requestVideoMeta(event.server, event.path)
             is Event.AudioInfoRequested -> requestAudioMeta(event.url)
 
             is Event.PlayAudio -> {
@@ -164,7 +165,8 @@ internal class CreatorPostViewModel @AssistedInject constructor(
         timeoutMs = 15_000L
     )
 
-    private fun requestVideoMeta(url: String) {
+    private fun requestVideoMeta(server: String, path: String) {
+        val url = buildFileUrl(server, path)
         val needInfo = currentState.videoInfo[url] !is MediaInfoState.Success
         val needThumb = currentState.videoThumbs[url] !is VideoThumbState.Success
         if (!needInfo && !needThumb) return
@@ -179,6 +181,7 @@ internal class CreatorPostViewModel @AssistedInject constructor(
 
         mediaMetaDelegate.requestVideo(
             url = url,
+            path = path,
             onSuccess = { meta ->
                 setState {
                     copy(

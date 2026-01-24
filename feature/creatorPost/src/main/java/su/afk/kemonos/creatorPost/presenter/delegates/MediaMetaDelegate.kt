@@ -27,6 +27,7 @@ internal class MediaMetaDelegate(
 
     fun requestVideo(
         url: String,
+        path: String,
         onSuccess: (VideoMeta) -> Unit,
         onError: (Throwable) -> Unit,
     ) {
@@ -34,6 +35,7 @@ internal class MediaMetaDelegate(
             runCatching {
                 getMediaMeta(
                     url = url,
+                    path = path,
                     loadFrame = true,
                 )
             }.onSuccess(onSuccess)
@@ -50,6 +52,7 @@ internal class MediaMetaDelegate(
             runCatching {
                 getMediaMeta(
                     url = url,
+                    path = url,
                     loadFrame = false,
                 )
             }.onSuccess(onSuccess)

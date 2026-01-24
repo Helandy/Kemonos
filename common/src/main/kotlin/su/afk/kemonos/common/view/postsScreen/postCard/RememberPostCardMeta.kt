@@ -2,10 +2,7 @@ package su.afk.kemonos.common.view.postsScreen.postCard
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
-import su.afk.kemonos.common.util.countVideoFiles
-import su.afk.kemonos.common.util.findFirstImagePath
-import su.afk.kemonos.common.util.isAudioFile
-import su.afk.kemonos.common.util.isVideoFile
+import su.afk.kemonos.common.util.*
 import su.afk.kemonos.common.view.postsScreen.postCard.model.PostCardMeta
 import su.afk.kemonos.common.view.postsScreen.postCard.model.PreviewState
 import su.afk.kemonos.domain.models.PostDomain
@@ -24,7 +21,7 @@ internal fun rememberPostCardMeta(post: PostDomain): PostCardMeta {
             imagePath != null -> PreviewState.Image(imagePath)
 
             isVideoFile(post.file?.path) || post.attachments.any { isVideoFile(it.path) } ->
-                PreviewState.Video
+                PreviewState.Video(url = findFirstVideoPath(post))
 
             isAudioFile(post.file?.path) || post.attachments.any { isAudioFile(it.path) } ->
                 PreviewState.Audio

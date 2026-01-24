@@ -2,7 +2,7 @@ package su.afk.kemonos.common.view.postsScreen.postCard.model
 
 internal sealed interface PreviewState {
     data class Image(val path: String) : PreviewState
-    data object Video : PreviewState
+    data class Video(val url: String? = null) : PreviewState
     data object Audio : PreviewState
     data object Empty : PreviewState
 }

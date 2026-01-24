@@ -87,3 +87,16 @@ fun findFirstImagePath(post: PostDomain): String? {
         .map { it.path }
         .firstOrNull { isImageFile(it) && !isBinFile(it) }
 }
+
+fun findFirstVideoPath(post: PostDomain): String? {
+    val filePath = post.file?.path
+    if (isVideoFile(filePath)) return filePath
+
+    return post.attachments
+        .asSequence()
+        .map { it.path }
+        .firstOrNull { isVideoFile(it) }
+}
+
+/** Сборка URL под backend */
+fun buildFileUrl(baseUrl: String, path: String): String = "$baseUrl/data$path"
