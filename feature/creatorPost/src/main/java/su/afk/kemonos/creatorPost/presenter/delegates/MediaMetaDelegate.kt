@@ -6,7 +6,6 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withTimeout
 import su.afk.kemonos.creatorPost.domain.model.media.VideoMeta
 import su.afk.kemonos.creatorPost.domain.useCase.GetMediaMetaUseCase
-import su.afk.kemonos.storage.api.video.IVideoFrameCache
 
 internal class MediaMetaDelegate(
     private val scope: CoroutineScope,
@@ -36,8 +35,6 @@ internal class MediaMetaDelegate(
                 getMediaMeta(
                     url = url,
                     loadFrame = true,
-                    frameTimeUs = IVideoFrameCache.DEFAULT_TIME_US,
-                    loadSize = true,
                 )
             }.onSuccess(onSuccess)
                 .onFailure(onError)
@@ -54,7 +51,6 @@ internal class MediaMetaDelegate(
                 getMediaMeta(
                     url = url,
                     loadFrame = false,
-                    loadSize = true,
                 )
             }.onSuccess(onSuccess)
                 .onFailure(onError)

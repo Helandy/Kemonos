@@ -33,20 +33,28 @@ class GetMediaMetaUseCase @Inject constructor(
         url: String,
         loadFrame: Boolean,
         frameTimeUs: Long = IVideoFrameCache.DEFAULT_TIME_US,
-        loadSize: Boolean = true,
     ): VideoMeta = coroutineScope {
-        val deferred = inFlight.computeIfAbsent(url) {
+        val safeTimeUs = frameTimeUs.coerceAtLeast(0L)
+
+        val key = "meta|u=$url|frame=$loadFrame|t=$safeTimeUs"
+
+        val deferred = inFlight.computeIfAbsent(key) {
             async(Dispatchers.IO) {
                 try {
                     val cachedInfo = infoCache.get(url)
-                    val frame: Bitmap? = if (loadFrame) frameCache.getOrLoad(url, frameTimeUs) {
-                        MediaMetadataRetriever().use { r ->
-                            r.setDataSource(url, HashMap())
-                            r.getFrameAtTime(frameTimeUs, MediaMetadataRetriever.OPTION_CLOSEST_SYNC)
+
+                    // --- FRAME ---
+                    val frame: Bitmap? = if (loadFrame) {
+                        frameCache.getOrLoad(url, safeTimeUs) {
+                            MediaMetadataRetriever().use { r ->
+                                r.setDataSource(url, HashMap())
+                                r.safeFrame(safeTimeUs)
+                            }
                         }
                     } else null
 
-                    val durationMs = cachedInfo?.durationMs ?: runCatching {
+                    // --- DURATION ---
+                    val durationMs = cachedInfo?.durationMs?.takeIf { it >= 0 } ?: runCatching {
                         MediaMetadataRetriever().use { r ->
                             r.setDataSource(url, HashMap())
                             r.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION)
@@ -54,28 +62,50 @@ class GetMediaMetaUseCase @Inject constructor(
                         }
                     }.getOrDefault(-1L)
 
-                    val sizeBytes = if (loadSize) {
-                        cachedInfo?.sizeBytes ?: runCatching {
-                            val head = Request.Builder().url(url).head().build()
-                            http.newCall(head).execute().use { resp ->
-                                if (!resp.isSuccessful) -1L
-                                else resp.header("Content-Length")?.toLongOrNull() ?: -1L
-                            }
-                        }.getOrDefault(-1L)
-                    } else {
-                        cachedInfo?.sizeBytes ?: -1L
-                    }
+                    // --- SIZE ---
+                    val sizeBytes = cachedInfo?.sizeBytes?.takeIf { it >= 0 } ?: getSizeBytesByRange(http, url)
 
                     val info = MediaInfo(durationMs = durationMs, sizeBytes = sizeBytes)
                     infoCache.upsert(url, info)
 
                     VideoMeta(info = info, frame = frame)
                 } finally {
-                    inFlight.remove(url)
+                    inFlight.remove(key)
                 }
             }
         }
 
         deferred.await()
     }
+}
+
+private fun getSizeBytesByRange(http: OkHttpClient, url: String): Long {
+    val req = Request.Builder()
+        .url(url)
+        .get()
+        .header("Range", "bytes=0-0")
+        .build()
+
+    return runCatching {
+        http.newCall(req).execute().use { resp ->
+            val cr = resp.header("Content-Range") // bytes 0-0/1234567
+            cr?.substringAfterLast('/')?.toLongOrNull()
+                ?: resp.header("Content-Length")?.toLongOrNull()
+                ?: -1L
+        }
+    }.getOrDefault(-1L)
+}
+
+inline fun <T> MediaMetadataRetriever.use(block: (MediaMetadataRetriever) -> T): T {
+    try {
+        return block(this)
+    } finally {
+        runCatching { release() }
+    }
+}
+
+fun MediaMetadataRetriever.safeFrame(timeUs: Long): Bitmap? {
+    getFrameAtTime(timeUs, MediaMetadataRetriever.OPTION_CLOSEST_SYNC)?.let { return it }
+    getFrameAtTime(timeUs, MediaMetadataRetriever.OPTION_CLOSEST)?.let { return it }
+    return getFrameAtTime(0L, MediaMetadataRetriever.OPTION_CLOSEST_SYNC)
 }

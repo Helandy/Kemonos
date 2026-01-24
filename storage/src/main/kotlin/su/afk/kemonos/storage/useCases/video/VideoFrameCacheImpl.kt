@@ -28,7 +28,6 @@ class VideoFrameCacheImpl @Inject constructor(
     private val maxH: Int = 720
 
     private val webpQuality: Int = 90
-    private val jpegQuality: Int = 90
     private val webpLossless: Boolean = false
     private val EXT = "webp"
 
@@ -43,7 +42,7 @@ class VideoFrameCacheImpl @Inject constructor(
     } else null
 
     override fun makeKey(url: String, timeUs: Long): String {
-        val raw = "$url|t=$timeUs|max=${maxW}x$maxH|q=$jpegQuality|fmt=$EXT"
+        val raw = "$url|t=$timeUs|max=${maxW}x$maxH|q=$webpQuality|lossless=$webpLossless|fmt=$EXT"
         return raw.sha256()
     }
 
@@ -102,15 +101,8 @@ class VideoFrameCacheImpl @Inject constructor(
 
         runCatching {
             file.outputStream().use { out ->
-                val ok = if (Build.VERSION.SDK_INT >= 30) {
-                    val format =
-                        if (webpLossless) Bitmap.CompressFormat.WEBP_LOSSLESS else Bitmap.CompressFormat.WEBP_LOSSY
-                    scaled.compress(format, webpQuality, out)
-                } else {
-                    @Suppress("DEPRECATION")
-                    scaled.compress(Bitmap.CompressFormat.WEBP, webpQuality, out)
-                }
-
+                val format = chooseWebpFormat(webpLossless)
+                val ok = scaled.compress(format, webpQuality, out)
                 if (!ok) throw IllegalStateException("Bitmap.compress() returned false")
             }
             file.setLastModified(System.currentTimeMillis())
@@ -171,4 +163,19 @@ private fun Bitmap.scaleDownToFit(maxW: Int, maxH: Int): Bitmap {
     val nh = (h * scale).roundToInt().coerceAtLeast(1)
 
     return Bitmap.createScaledBitmap(this, nw, nh, true)
+}
+
+private fun chooseWebpFormat(webpLossless: Boolean): Bitmap.CompressFormat {
+    return when {
+        Build.VERSION.SDK_INT >= 31 -> {
+            if (webpLossless) Bitmap.CompressFormat.WEBP_LOSSLESS
+            else Bitmap.CompressFormat.WEBP_LOSSY
+        }
+
+        else -> {
+            // API 30 и ниже: используем старый WEBP
+            @Suppress("DEPRECATION")
+            Bitmap.CompressFormat.WEBP
+        }
+    }
 }
