@@ -9,6 +9,8 @@ class App : Application() {
     override fun onCreate() {
         super.onCreate()
 
+//        CrashLogger.install(this)
+
         WebViewPool.prewarm(
             context = this,
             bgColor = android.graphics.Color.TRANSPARENT
