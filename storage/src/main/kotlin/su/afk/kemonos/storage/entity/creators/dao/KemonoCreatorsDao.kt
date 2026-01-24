@@ -112,4 +112,16 @@ internal interface KemonoCreatorsDao {
         """
     )
     suspend fun searchNameDesc(service: String, q: String, limit: Int, offset: Int): List<CreatorsEntity>
+
+
+    @Query(
+        """
+    SELECT * FROM creators
+    WHERE (:service = 'Services' OR service = :service)
+      AND (:q = '' OR name LIKE '%' || :q || '%')
+    ORDER BY RANDOM()
+    LIMIT :limit
+    """
+    )
+    suspend fun randomCreators(service: String, q: String, limit: Int): List<CreatorsEntity>
 }

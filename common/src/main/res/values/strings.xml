@@ -208,4 +208,21 @@
         large delays.
         You can still download content manually from each post if needed.
     </string>
+    <string name="settings_faq_q2_title">
+        Do you have a built-in video player?
+    </string>
+    <string name="settings_faq_q2_body">
+        Unfortunately, I don’t have time to implement a built-in player at the moment.
+        I recommend using dedicated applications for video playback, such as VLC.
+    </string>
+
+    <string name="settings_faq_q3_title">
+        How can I play audio?
+    </string>
+    <string name="settings_faq_q3_body">
+        To play audio files, you will need a separate audio player.
+        You can use any app that supports the required audio format.
+    </string>
+    <string name="random_creators_title">Random creators</string>
+    <string name="creators_title">Creators</string>
 </resources>

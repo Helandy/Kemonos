@@ -12,46 +12,72 @@ import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.core.net.toUri
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.emptyFlow
 import su.afk.kemonos.common.R
 import su.afk.kemonos.common.di.LocalDomainResolver
 import su.afk.kemonos.common.presenter.baseScreen.BaseScreen
-import su.afk.kemonos.common.presenter.views.creator.CreatorHeader
-import su.afk.kemonos.common.presenter.views.elements.FavoriteActionButton
 import su.afk.kemonos.common.shared.ShareActions
 import su.afk.kemonos.common.shared.view.SharedActionButton
+import su.afk.kemonos.common.util.buildDataUrl
+import su.afk.kemonos.common.util.limitForToast
+import su.afk.kemonos.common.util.openAudioExternally
 import su.afk.kemonos.common.util.toast
-import su.afk.kemonos.creatorPost.presenter.util.IntStateMapSaver
-import su.afk.kemonos.creatorPost.presenter.view.PostAttachmentsSection
+import su.afk.kemonos.common.utilsUI.KemonoPreviewScreen
+import su.afk.kemonos.common.view.button.FavoriteActionButton
+import su.afk.kemonos.common.view.creator.header.CreatorHeader
+import su.afk.kemonos.creatorPost.presenter.CreatorPostState.*
+import su.afk.kemonos.creatorPost.presenter.CreatorPostState.State
 import su.afk.kemonos.creatorPost.presenter.view.PostTitleBlock
 import su.afk.kemonos.creatorPost.presenter.view.TagsRow
+import su.afk.kemonos.creatorPost.presenter.view.attachment.PostAttachmentsSection
+import su.afk.kemonos.creatorPost.presenter.view.audio.postAudioSection
 import su.afk.kemonos.creatorPost.presenter.view.content.PostContentBlock
 import su.afk.kemonos.creatorPost.presenter.view.postCommentsSection
 import su.afk.kemonos.creatorPost.presenter.view.preview.postPreviewsSection
 import su.afk.kemonos.creatorPost.presenter.view.translate.PostTranslateItem
+import su.afk.kemonos.creatorPost.presenter.view.translate.openGoogleTranslate
 import su.afk.kemonos.creatorPost.presenter.view.video.postVideosSection
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-internal fun CreatorPostScreen(
-    viewModel: CreatorPostViewModel
-) {
-    val state by viewModel.state.collectAsStateWithLifecycle()
+internal fun CreatorPostScreen(state: State, onEvent: (Event) -> Unit, effect: Flow<Effect>) {
     val context = LocalContext.current
     val resolver = LocalDomainResolver.current
+    var showPreviewFileNames by rememberSaveable(state.postId) { mutableStateOf(false) }
 
-    val webViewHeights = rememberSaveable(saver = IntStateMapSaver) {
-        mutableMapOf<String, MutableIntState>()
-    }
-
-    LaunchedEffect(viewModel) {
-        viewModel.effect.collect { effect ->
+    LaunchedEffect(effect) {
+        effect.collect { effect ->
             when (effect) {
-                is CreatorPostEffect.ShowToast -> context.toast(effect.message)
-                is CreatorPostEffect.CopyPostLink -> ShareActions.copyToClipboard(context, "Post link", effect.message)
+                is Effect.ShowToast -> context.toast(effect.message)
+                is Effect.CopyPostLink -> ShareActions.copyToClipboard(context, "Post link", effect.message)
+                is Effect.OpenGoogleTranslate -> {
+                    openGoogleTranslate(context, effect.text, effect.targetLangTag)
+                }
+
+                is Effect.OpenUrl -> {
+                    Intent(Intent.ACTION_VIEW, effect.url.toUri())
+                        .apply { flags = Intent.FLAG_ACTIVITY_NEW_TASK }
+                        .also(context::startActivity)
+                }
+                is Effect.OpenAudio -> openAudioExternally(context, effect.url, effect.name, effect.mime)
+                is Effect.DownloadToast -> {
+                    val safeName = effect.fileName.trim().takeIf { it.isNotBlank() }?.limitForToast()
+
+                    val message = if (safeName != null) {
+                        context.getString(
+                            R.string.download_started_named,
+                            safeName
+                        )
+                    } else {
+                        context.getString(R.string.download_started)
+                    }
+
+                    context.toast(message)
+                }
             }
         }
     }
@@ -63,32 +89,32 @@ internal fun CreatorPostScreen(
         floatingActionButtonStart = {
             if (!state.loading) {
                 SharedActionButton(
-                    onClick = { viewModel.copyPostLink() }
+                    onClick = { onEvent(Event.CopyPostLinkClicked) }
                 )
             }
         },
-        floatingActionButton = {
+        floatingActionButtonEnd = {
             if (state.isFavoriteShowButton && state.loading.not()) {
                 FavoriteActionButton(
                     enabled = !state.favoriteActionLoading,
                     isFavorite = state.isFavorite,
-                    onFavoriteClick = { viewModel.onFavoriteClick() }
+                    onFavoriteClick = { onEvent(Event.FavoriteClicked) }
                 )
             }
         },
         isLoading = state.loading,
         isEmpty = state.post == null && !state.loading,
-        onRetry = { viewModel.loadingPost() }
+        onRetry = { onEvent(Event.Retry) }
     ) {
         val post = state.post?.post ?: return@BaseScreen
 
         val profile = state.profile
-        val previews = state.post?.previews
+        val previews = state.post.previews
 
         val imgBaseUrl = remember(post.service) { resolver.imageBaseUrlByService(post.service) }
 
         val uniquePreviews = remember(previews) {
-            previews.orEmpty().distinctBy { p ->
+            previews.distinctBy { p ->
                 when (p.type) {
                     "thumbnail" -> "t:${p.path}"
                     "embed" -> "e:${p.url}"
@@ -96,9 +122,6 @@ internal fun CreatorPostScreen(
                 }
             }
         }
-
-        val downloadStarted = stringResource(R.string.download_started)
-        val downloadStartedNamed = stringResource(R.string.download_started_named)
 
         val listState = rememberSaveable(
             state.postId,
@@ -113,6 +136,7 @@ internal fun CreatorPostScreen(
                 /** Шапка автора */
                 if (state.showBarCreator && profile != null) {
                     CreatorHeader(
+                        dateMode = state.uiSettingModel.dateFormatMode,
                         service = profile.service,
                         creatorId = profile.id,
                         creatorName = profile.name,
@@ -120,7 +144,7 @@ internal fun CreatorPostScreen(
                         showSearchButton = false,
                         showInfoButton = false,
                         onSearchClick = {},
-                        onClickHeader = viewModel::navigateToCreatorProfile
+                        onClickHeader = { onEvent(Event.CreatorHeaderClicked) }
                     )
                 }
             }
@@ -128,12 +152,13 @@ internal fun CreatorPostScreen(
             item(key = "TitleBlock") {
                 /** Заголовок поста */
                 PostTitleBlock(
-                    title = post.title.orEmpty(),
+                    title = post.title,
                 )
             }
 
             item(key = "translate") {
                 PostTranslateItem(
+                    dateMode = state.uiSettingModel.dateFormatMode,
                     published = post.published,
                     edited = post.edited,
                     added = post.added,
@@ -144,45 +169,58 @@ internal fun CreatorPostScreen(
                     translated = state.translateText,
                     error = state.translateError,
 
-                    onToggleTranslate = { viewModel.onToggleTranslate(post.content.orEmpty()) }
+                    onToggleTranslate = { onEvent(Event.ToggleTranslate(post.content.orEmpty())) }
                 )
             }
 
             item(key = "contentBlock") {
                 /** Контент поста */
-                val post = state.post?.post ?: return@item
-
-                val contentKey = "${post.service}:${state.id}:${state.postId}"
-                val heightState = webViewHeights.getOrPut(contentKey) { mutableIntStateOf(0) }
-
                 PostContentBlock(
-                    service = post.service,
-                    body = state.postContentClean,
-                    onOpenImage = viewModel::navigateOpenImage,
-                    maxHeightPxState = heightState,
+                    blocks = state.contentBlocks,
+                    loading = state.contentBlocksLoading,
+                    onOpenImage = { url -> onEvent(Event.OpenImage(url)) }
                 )
             }
 
             postPreviewsSection(
                 previews = uniquePreviews,
                 imgBaseUrl = imgBaseUrl,
-                onOpenImage = viewModel::navigateOpenImage,
-                onOpenUrl = { url ->
-                    Intent(Intent.ACTION_VIEW, url.toUri())
-                        .apply { flags = Intent.FLAG_ACTIVITY_NEW_TASK }
-                        .also(context::startActivity)
-                },
-                downloadStarted = downloadStarted,
-                downloadStartedNamed = downloadStartedNamed,
+                showNames = showPreviewFileNames,
+                onTogglePreviewNames = { showPreviewFileNames = !showPreviewFileNames },
+                onOpenImage = { url -> onEvent(Event.OpenImage(url)) },
+                onOpenUrl = { url -> onEvent(Event.OpenExternalUrl(url)) },
                 download = { fullUrl, fileName ->
-                    viewModel.download(fullUrl, fileName)
+                    onEvent(Event.Download(fullUrl, fileName))
                 },
-                toast = { msg -> context.toast(msg) }
             )
 
             postVideosSection(
-                videos = state.post?.videos.orEmpty(),
-                observeVideoInfo = viewModel::observeVideoInfo,
+                videos = state.post.videos,
+                videoThumbs = state.videoThumbs,
+                requestThumb = { server, path ->
+                    onEvent(Event.VideoThumbRequested(server = server, path = path))
+                },
+                videoInfo = state.videoInfo,
+                onVideoInfoRequested = { server, path ->
+                    onEvent(Event.VideoInfoRequested(server = server, path = path))
+                },
+                onDownload = { url, fileName ->
+                    onEvent(Event.Download(url, fileName))
+                }
+            )
+
+            postAudioSection(
+                attachments = state.post.attachments,
+                audioInfo = state.audioInfo,
+                onInfoRequested = { url -> onEvent(Event.AudioInfoRequested(url)) },
+                onPlay = { att ->
+                    val url = att.buildDataUrl()
+                    onEvent(Event.PlayAudio(url, att.name))
+                },
+                onDownload = { att ->
+                    val url = att.buildDataUrl()
+                    onEvent(Event.Download(url, att.name))
+                }
             )
 
             item(key = "tags") {
@@ -191,7 +229,7 @@ internal fun CreatorPostScreen(
 
             item(key = "attachments") {
                 PostAttachmentsSection(
-                    attachments = state.post?.attachments.orEmpty(),
+                    attachments = state.post.attachments,
                     onAttachmentClick = { url ->
                         Intent(Intent.ACTION_VIEW, url.toUri())
                             .apply { flags = Intent.FLAG_ACTIVITY_NEW_TASK }
@@ -201,6 +239,7 @@ internal fun CreatorPostScreen(
             }
 
             postCommentsSection(
+                dateMode = state.uiSettingModel.dateFormatMode,
                 commentDomains = state.commentDomains
             )
 
@@ -208,5 +247,17 @@ internal fun CreatorPostScreen(
                 Spacer(Modifier.height(56.dp))
             }
         }
+    }
+}
+
+@Preview("PreviewCreatorPostScreen")
+@Composable
+private fun PreviewCreatorPostScreen() {
+    KemonoPreviewScreen {
+        CreatorPostScreen(
+            state = State().copy(loading = false),
+            onEvent = {},
+            effect = emptyFlow()
+        )
     }
 }

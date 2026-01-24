@@ -9,8 +9,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import su.afk.kemonos.common.util.toUiDateTime
+import su.afk.kemonos.common.utilsUI.KemonoPreviewScreen
+import su.afk.kemonos.preferences.ui.DateFormatMode
 import su.afk.kemonos.profile.R
 import su.afk.kemonos.profile.api.model.Login
 
@@ -19,6 +22,7 @@ import su.afk.kemonos.profile.api.model.Login
  */
 @Composable
 internal fun SiteAccountCard(
+    dateMode: DateFormatMode,
     title: String,
     isLoggedIn: Boolean,
     login: Login?,
@@ -44,9 +48,15 @@ internal fun SiteAccountCard(
             if (isLoggedIn && login != null) {
                 Text(
                     text = stringResource(
-                        R.string.profile_account_logged_in_summary,
+                        R.string.profile_account_logged_in_name,
                         login.username,
-                        login.createdAt.toUiDateTime()
+                    ),
+                    style = MaterialTheme.typography.bodyMedium
+                )
+                Text(
+                    text = stringResource(
+                        R.string.profile_account_logged_in_date,
+                        login.createdAt.toUiDateTime(dateMode)
                     ),
                     style = MaterialTheme.typography.bodyMedium
                 )
@@ -72,5 +82,25 @@ internal fun SiteAccountCard(
                 }
             }
         }
+    }
+}
+
+@Preview("SiteAccountCardPreview")
+@Composable
+private fun SiteAccountCardPreview() {
+    KemonoPreviewScreen {
+        SiteAccountCard(
+            title = "Site Account",
+            isLoggedIn = true,
+            login = Login(
+                id = 1,
+                username = "Sandy",
+                createdAt = "11.11.2020",
+                role = "user"
+            ),
+            onLoginClick = {},
+            onLogoutClick = {},
+            dateMode = DateFormatMode.DD_MM_YYYY
+        )
     }
 }

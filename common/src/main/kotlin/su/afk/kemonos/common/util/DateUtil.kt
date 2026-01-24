@@ -1,5 +1,6 @@
 package su.afk.kemonos.common.util
 
+import su.afk.kemonos.preferences.ui.DateFormatMode
 import java.time.Instant
 import java.time.LocalDateTime
 import java.time.ZoneId
@@ -17,26 +18,29 @@ private val inputFormats = listOf(
     "yyyy-MM-dd HH:mm:ss"
 )
 
-private val outputFormatter = DateTimeFormatter.ofPattern("dd.MM.yyyy")
+private fun outputFormatter(mode: DateFormatMode): DateTimeFormatter = DateTimeFormatter.ofPattern(mode.pattern)
 
-fun String.toUiDateTime(): String {
+fun String.toUiDateTime(mode: DateFormatMode): String {
+    val out = outputFormatter(mode)
     for (pattern in inputFormats) {
         try {
             val formatter = DateTimeFormatter.ofPattern(pattern)
             val dateTime = LocalDateTime.parse(this, formatter)
-            return dateTime.format(outputFormatter)
+            return dateTime.format(out)
         } catch (_: Exception) {
         }
     }
     return this
 }
 
-fun LocalDateTime.toUiDateTime(): String {
-    return this.format(outputFormatter)
-}
+fun LocalDateTime.toUiDateTime(mode: DateFormatMode): String =
+    this.format(outputFormatter(mode))
 
 /** epoch millis -> dd.MM.yyyy */
-fun Long.toUiDateTime(zoneId: ZoneId = ZoneId.systemDefault()): String {
+fun Long.toUiDateTime(
+    mode: DateFormatMode,
+    zoneId: ZoneId = ZoneId.systemDefault()
+): String {
     val dt = LocalDateTime.ofInstant(Instant.ofEpochMilli(this), zoneId)
-    return dt.format(outputFormatter)
+    return dt.format(outputFormatter(mode))
 }

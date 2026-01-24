@@ -9,8 +9,10 @@ data class PostDomain(
     val userId: String,
     val service: String,
     val title: String?,
-    /** может быть null пока не открывали пост */
+    /** будет null пока не открывали пост */
     val content: String?,
+    /** будет null если открыли пост */
+    val substring: String?,
     val added: String?,
     val published: String?,
     val edited: String?,
@@ -19,11 +21,32 @@ data class PostDomain(
     val tags: List<String>,
     val nextId: String?,
     val prevId: String?,
-    /** может быть null если не было “избранного” */
+    /** будет null если не было в “избранном” */
     val favedSeq: Int?,
     /** может быть null если не было “поиска” */
     val favCount: Int?,
-)
+) {
+    companion object {
+        fun default() = PostDomain(
+            id = "1",
+            userId = "1",
+            service = "onlyfans",
+            title = "Super Mega Title",
+            content = "Content Content Content Content ContentContentContent",
+            substring = "Content Content Content Content ContentContentContent",
+            added = "22.01.2026",
+            published = "22.01.2026",
+            edited = "22.01.2026",
+            file = null,
+            attachments = emptyList(),
+            tags = emptyList(),
+            nextId = null,
+            prevId = null,
+            favedSeq = null,
+            favCount = null,
+        )
+    }
+}
 
 @Serializable
 data class FileDomain(

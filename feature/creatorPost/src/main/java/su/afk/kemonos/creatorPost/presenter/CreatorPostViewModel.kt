@@ -3,32 +3,41 @@ package su.afk.kemonos.creatorPost.presenter
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
-import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.catch
-import kotlinx.coroutines.flow.receiveAsFlow
-import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import su.afk.kemonos.common.error.IErrorHandlerUseCase
 import su.afk.kemonos.common.error.storage.RetryStorage
 import su.afk.kemonos.common.error.toFavoriteToastBar
-import su.afk.kemonos.common.presenter.baseViewModel.BaseViewModel
-import su.afk.kemonos.common.presenter.webView.util.cleanDuplicatedMediaFromContent
+import su.afk.kemonos.common.presenter.androidView.cleanDuplicatedMediaFromContent
+import su.afk.kemonos.common.presenter.androidView.htmlToBlocks
+import su.afk.kemonos.common.presenter.baseViewModel.BaseViewModelNew
 import su.afk.kemonos.common.shared.ShareLinkBuilder
 import su.afk.kemonos.common.shared.ShareTarget
 import su.afk.kemonos.common.translate.TextTranslator
+import su.afk.kemonos.common.translate.preprocessForTranslation
+import su.afk.kemonos.common.util.audioMimeType
+import su.afk.kemonos.common.util.buildFileUrl
 import su.afk.kemonos.creatorPost.api.domain.model.PostContentDomain
-import su.afk.kemonos.creatorPost.domain.model.video.VideoInfoState
+import su.afk.kemonos.creatorPost.domain.model.media.MediaInfoState
+import su.afk.kemonos.creatorPost.domain.model.video.VideoThumbState
 import su.afk.kemonos.creatorPost.domain.useCase.GetCommentsUseCase
+import su.afk.kemonos.creatorPost.domain.useCase.GetMediaMetaUseCase
 import su.afk.kemonos.creatorPost.domain.useCase.GetPostUseCase
-import su.afk.kemonos.creatorPost.domain.useCase.GetVideoInfoUseCase
 import su.afk.kemonos.creatorPost.navigation.CreatorPostDest
+import su.afk.kemonos.creatorPost.presenter.CreatorPostState.*
 import su.afk.kemonos.creatorPost.presenter.delegates.LikeDelegate
+import su.afk.kemonos.creatorPost.presenter.delegates.MediaMetaDelegate
 import su.afk.kemonos.creatorPost.presenter.delegates.NavigateDelegates
 import su.afk.kemonos.creatorProfile.api.IGetProfileUseCase
 import su.afk.kemonos.download.api.IDownloadUtil
 import su.afk.kemonos.preferences.IGetCurrentSiteRootUrlUseCase
+import su.afk.kemonos.preferences.ui.IUiSettingUseCase
+import su.afk.kemonos.preferences.ui.TranslateTarget
 
 internal class CreatorPostViewModel @AssistedInject constructor(
     @Assisted private val dest: CreatorPostDest.CreatorPost,
@@ -36,28 +45,38 @@ internal class CreatorPostViewModel @AssistedInject constructor(
     private val getPostUseCase: GetPostUseCase,
     private val getProfileUseCase: IGetProfileUseCase,
     private val getCurrentSiteRootUrlUseCase: IGetCurrentSiteRootUrlUseCase,
-    private val getVideoInfo: GetVideoInfoUseCase,
+    private val getMediaMetaUseCase: GetMediaMetaUseCase,
     private val likeDelegate: LikeDelegate,
     private val navigateDelegates: NavigateDelegates,
     private val downloadUtil: IDownloadUtil,
     private val translator: TextTranslator,
+    private val uiSetting: IUiSettingUseCase,
     override val errorHandler: IErrorHandlerUseCase,
     override val retryStorage: RetryStorage,
-) : BaseViewModel<CreatorPostState>(CreatorPostState()) {
-
-    private val _effect = Channel<CreatorPostEffect>(Channel.BUFFERED)
-    val effect = _effect.receiveAsFlow()
+) : BaseViewModelNew<State, Event, Effect>() {
 
     @AssistedFactory
     interface Factory {
         fun create(dest: CreatorPostDest.CreatorPost): CreatorPostViewModel
     }
 
+    override fun createInitialState(): State = State()
+
     override fun onRetry() {
         loadingPost()
     }
 
+    /** UI настройки */
+    private fun observeUiSetting() {
+        uiSetting.prefs.distinctUntilChanged()
+            .onEach { model ->
+                setState { copy(uiSettingModel = model) }
+            }
+            .launchIn(viewModelScope)
+    }
+
     init {
+        observeUiSetting()
         setState {
             copy(
                 service = dest.service,
@@ -68,6 +87,35 @@ internal class CreatorPostViewModel @AssistedInject constructor(
         }
 
         loadingPost()
+    }
+
+    override fun onEvent(event: Event) {
+        when (event) {
+            Event.Retry -> loadingPost()
+
+            Event.CopyPostLinkClicked -> copyPostLink()
+            Event.FavoriteClicked -> onFavoriteClick()
+
+            Event.CreatorHeaderClicked -> navigateToCreatorProfile()
+
+            is Event.ToggleTranslate -> onToggleTranslate(event.rawHtml)
+
+            is Event.OpenImage -> navigateOpenImage(event.originalUrl)
+
+            is Event.Download -> download(event.url, event.fileName)
+
+            is Event.OpenExternalUrl -> setEffect(Effect.OpenUrl(event.url))
+
+            is Event.VideoThumbRequested -> requestVideoMeta(event.server, event.path)
+            is Event.VideoInfoRequested -> requestVideoMeta(event.server, event.path)
+            is Event.AudioInfoRequested -> requestAudioMeta(event.url)
+
+            is Event.PlayAudio -> {
+                val safeName = event.name?.takeIf { it.isNotBlank() } ?: event.url.substringAfterLast('/')
+                val mime = audioMimeType(event.url)
+                setEffect(Effect.OpenAudio(event.url, safeName, mime))
+            }
+        }
     }
 
     fun loadingPost() = viewModelScope.launch {
@@ -95,11 +143,19 @@ internal class CreatorPostViewModel @AssistedInject constructor(
             attachmentPaths = mediaRefs.orEmpty(),
         )
 
+        val siteBaseUrl = getCurrentSiteRootUrlUseCase()
+        val blocks = withContext(Dispatchers.Default) {
+            htmlToBlocks(cleanContent, siteBaseUrl)
+        }
+
         setState {
             copy(
                 loading = false,
                 post = post,
                 postContentClean = cleanContent,
+
+                contentBlocksLoading = false,
+                contentBlocks = blocks,
 
                 commentDomains = comments,
                 profile = profile,
@@ -114,24 +170,64 @@ internal class CreatorPostViewModel @AssistedInject constructor(
         isPostFavorite()
     }
 
-    /** Получить/создать flow для конкретного видео и стартануть загрузку при необходимости */
-    private val videoInfoFlows = mutableMapOf<String, StateFlow<VideoInfoState>>()
+    private val mediaMetaDelegate = MediaMetaDelegate(
+        scope = viewModelScope,
+        getMediaMeta = getMediaMetaUseCase,
+        timeoutMs = 15_000L
+    )
 
-    fun observeVideoInfo(url: String, name: String): StateFlow<VideoInfoState> {
-        val key = url
-        return videoInfoFlows.getOrPut(key) {
-            kotlinx.coroutines.flow.flow {
-                emit(VideoInfoState.Loading)
-                val info = getVideoInfo(url, name)
-                emit(VideoInfoState.Success(info))
-            }.catch { e ->
-                emit(VideoInfoState.Error(e))
-            }.stateIn(
-                scope = viewModelScope,
-                started = kotlinx.coroutines.flow.SharingStarted.WhileSubscribed(stopTimeoutMillis = 5_000),
-                initialValue = VideoInfoState.Loading
+    private fun requestVideoMeta(server: String, path: String) {
+        val url = buildFileUrl(server, path)
+        val needInfo = currentState.videoInfo[url] !is MediaInfoState.Success
+        val needThumb = currentState.videoThumbs[url] !is VideoThumbState.Success
+        if (!needInfo && !needThumb) return
+
+        // loading
+        setState {
+            copy(
+                videoInfo = if (needInfo) videoInfo + (url to MediaInfoState.Loading) else videoInfo,
+                videoThumbs = if (needThumb) videoThumbs + (url to VideoThumbState.Loading) else videoThumbs,
             )
         }
+
+        mediaMetaDelegate.requestVideo(
+            url = url,
+            path = path,
+            onSuccess = { meta ->
+                setState {
+                    copy(
+                        videoInfo = videoInfo + (url to MediaInfoState.Success(meta.info)),
+                        videoThumbs = videoThumbs + (url to (meta.frame?.let { VideoThumbState.Success(it) }
+                            ?: VideoThumbState.Error(null)))
+                    )
+                }
+            },
+            onError = { t ->
+                setState {
+                    copy(
+                        videoInfo = if (needInfo) videoInfo + (url to MediaInfoState.Error(t)) else videoInfo,
+                        videoThumbs = if (needThumb) videoThumbs + (url to VideoThumbState.Error(t)) else videoThumbs,
+                    )
+                }
+            }
+        )
+    }
+
+    private fun requestAudioMeta(url: String) {
+        val needInfo = currentState.audioInfo[url] !is MediaInfoState.Success
+        if (!needInfo) return
+
+        setState { copy(audioInfo = audioInfo + (url to MediaInfoState.Loading)) }
+
+        mediaMetaDelegate.requestAudio(
+            url = url,
+            onSuccess = { meta ->
+                setState { copy(audioInfo = audioInfo + (url to MediaInfoState.Success(meta.info))) }
+            },
+            onError = { t ->
+                setState { copy(audioInfo = audioInfo + (url to MediaInfoState.Error(t))) }
+            }
+        )
     }
 
     /** Избранное */
@@ -155,7 +251,7 @@ internal class CreatorPostViewModel @AssistedInject constructor(
             }
             .onFailure { t ->
                 val errorMessage = errorHandler.parse(t).toFavoriteToastBar()
-                _effect.trySend(CreatorPostEffect.ShowToast(errorMessage))
+                setEffect(Effect.ShowToast(errorMessage))
             }
         setState { copy(favoriteActionLoading = false) }
     }
@@ -193,7 +289,7 @@ internal class CreatorPostViewModel @AssistedInject constructor(
                 postId = currentState.postId
             )
         )
-        _effect.trySend(CreatorPostEffect.CopyPostLink(url))
+        setEffect(Effect.CopyPostLink(url))
     }
 
     fun download(url: String, fileName: String?) {
@@ -201,6 +297,9 @@ internal class CreatorPostViewModel @AssistedInject constructor(
             url = url,
             fileName = fileName,
             mimeType = null
+        )
+        setEffect(
+            Effect.DownloadToast(fileName.orEmpty())
         )
     }
 
@@ -210,24 +309,46 @@ internal class CreatorPostViewModel @AssistedInject constructor(
 
         if (!nextExpanded) return
 
+        when (currentState.uiSettingModel.translateTarget) {
+            TranslateTarget.GOOGLE -> {
+                setState { copy(translateExpanded = false) }
+
+                val plainText = rawHtml.preprocessForTranslation()
+                if (plainText.isBlank()) return
+
+                setEffect(
+                    Effect.OpenGoogleTranslate(
+                        text = plainText,
+                        targetLangTag = currentState.uiSettingModel.translateLanguageTag
+                    )
+                )
+                return
+            }
+
+            TranslateTarget.APP -> Unit
+        }
+
         if (currentState.translateText != null && currentState.translateError == null) return
         if (currentState.translateLoading) return
 
         viewModelScope.launch {
             setState { copy(translateLoading = true, translateError = null) }
 
-            runCatching { translator.translateAuto(rawHtml) }
-                .onSuccess { text ->
-                    setState { copy(translateText = text, translateLoading = false) }
+            runCatching {
+                translator.translateAuto(
+                    text = rawHtml,
+                    targetLangTag = currentState.uiSettingModel.translateLanguageTag
+                )
+            }.onSuccess { text ->
+                setState { copy(translateText = text, translateLoading = false) }
+            }.onFailure { e ->
+                setState {
+                    copy(
+                        translateLoading = false,
+                        translateError = e.message ?: "Translation error"
+                    )
                 }
-                .onFailure { e ->
-                    setState {
-                        copy(
-                            translateLoading = false,
-                            translateError = e.message ?: "Translation error"
-                        )
-                    }
-                }
+            }
         }
     }
 

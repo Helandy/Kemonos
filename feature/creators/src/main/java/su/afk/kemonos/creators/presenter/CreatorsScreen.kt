@@ -1,34 +1,44 @@
 package su.afk.kemonos.creators.presenter
 
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.material3.DividerDefaults
+import androidx.compose.foundation.lazy.LazyListState
+import androidx.compose.foundation.lazy.grid.LazyGridState
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberUpdatedState
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.paging.LoadState
 import androidx.paging.compose.collectAsLazyPagingItems
-import androidx.paging.compose.itemKey
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.emptyFlow
 import su.afk.kemonos.common.presenter.baseScreen.BaseScreen
 import su.afk.kemonos.common.presenter.baseScreen.StandardTopBar
 import su.afk.kemonos.common.presenter.baseScreen.TopBarScroll
 import su.afk.kemonos.common.presenter.changeSite.SiteToggleFab
-import su.afk.kemonos.common.presenter.views.creator.CreatorItem
-import su.afk.kemonos.common.presenter.views.searchBar.SearchBarNew
-import su.afk.kemonos.creators.presenter.views.creatorsSortOptions
+import su.afk.kemonos.common.view.button.RandomFab
+import su.afk.kemonos.common.view.searchBar.SearchBarNew
+import su.afk.kemonos.creators.presenter.CreatorsState.*
+import su.afk.kemonos.creators.presenter.model.creatorsSortOptions
+import su.afk.kemonos.creators.presenter.views.CreatorsContentPaging
+import su.afk.kemonos.domain.SelectedSite
+import su.afk.kemonos.preferences.ui.CreatorViewMode
+import su.afk.kemonos.preferences.ui.RandomButtonPlacement
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-internal fun CreatorsScreen(viewModel: CreatorsViewModel) {
-    val state by viewModel.state.collectAsStateWithLifecycle()
+internal fun CreatorsScreen(
+    state: State,
+    onEvent: (Event) -> Unit,
+    effect: Flow<Effect>,
+    site: SelectedSite,
+    siteSwitching: Boolean,
+) {
     val sortOptions = creatorsSortOptions()
-
-    val site by viewModel.site.collectAsStateWithLifecycle()
-    val siteSwitching by viewModel.siteSwitching.collectAsStateWithLifecycle()
 
     val pagingItems = state.creatorsPaged.collectAsLazyPagingItems()
     val isBusy = state.refreshing || siteSwitching
@@ -40,6 +50,26 @@ internal fun CreatorsScreen(viewModel: CreatorsViewModel) {
     val showEmpty = state.searchQuery.trim().length >= 2 &&
             pagingItems.loadState.refresh is LoadState.NotLoading &&
             pagingItems.itemCount == 0
+
+    val listState = rememberSaveable(saver = LazyListState.Saver) { LazyListState() }
+    val gridState = rememberSaveable(saver = LazyGridState.Saver) { LazyGridState() }
+
+    val viewModeState by rememberUpdatedState(state.uiSettingModel.creatorsViewMode)
+    LaunchedEffect(effect) {
+        effect.collect { e ->
+            when (e) {
+                Effect.ScrollToTop -> {
+                    when (viewModeState) {
+                        CreatorViewMode.LIST -> listState.scrollToItem(0)
+                        CreatorViewMode.GRID -> gridState.scrollToItem(0)
+                    }
+                }
+            }
+        }
+    }
+
+    val showRandomInSearch = state.uiSettingModel.randomButtonPlacement == RandomButtonPlacement.SEARCH_BAR
+    val showRandomFab = state.uiSettingModel.randomButtonPlacement == RandomButtonPlacement.SCREEN
 
     BaseScreen(
         isScroll = false,
@@ -53,17 +83,17 @@ internal fun CreatorsScreen(viewModel: CreatorsViewModel) {
             ) {
                 SearchBarNew(
                     query = state.searchQuery,
-                    onQueryChange = viewModel::updateSearch,
+                    onQueryChange = { onEvent(Event.QueryChanged(it)) },
                     services = state.services,
                     selectedService = state.selectedService,
-                    onServiceSelect = viewModel::setService,
+                    onServiceSelect = { onEvent(Event.ServiceSelected(it)) },
                     selectedSort = state.sortedType,
                     sortOptions = sortOptions,
-                    onSortMethodSelect = viewModel::setSortType,
+                    onSortMethodSelect = { onEvent(Event.SortSelected(it)) },
                     isAscending = state.sortAscending,
-                    onToggleAscending = viewModel::toggleSortOrder,
-                    showRandom = true,
-                    onRandomClick = viewModel::randomCreator,
+                    onToggleAscending = { onEvent(Event.ToggleSortOrder) },
+                    showRandom = showRandomInSearch && !isBusy,
+                    onRandomClick = { onEvent(Event.RandomClicked) },
                 )
             }
         },
@@ -71,35 +101,41 @@ internal fun CreatorsScreen(viewModel: CreatorsViewModel) {
             SiteToggleFab(
                 enable = !isBusy,
                 selectedSite = site,
-                onToggleSite = viewModel::switchSite,
+                onToggleSite = { onEvent(Event.SwitchSiteClicked) },
             )
+        },
+
+        floatingActionButtonEnd = {
+            if (showRandomFab) {
+                RandomFab(
+                    enabled = !isBusy,
+                    onClick = { onEvent(Event.RandomClicked) },
+                )
+            }
         },
         isLoading = isBusy || isFirstPageLoading || state.loading,
         isEmpty = showEmpty
     ) {
-        LazyColumn {
-            item {
-                HorizontalDivider(
-                    Modifier.padding(top = 4.dp),
-                    DividerDefaults.Thickness,
-                    DividerDefaults.color
-                )
-            }
-
-            items(
-                count = pagingItems.itemCount,
-                key = pagingItems.itemKey { "${it.service}:${it.id}:${it.indexed}" }
-            ) { index ->
-                val creator = pagingItems[index] ?: return@items
-                CreatorItem(
-                    service = creator.service,
-                    id = creator.id,
-                    name = creator.name,
-                    favorited = creator.favorited,
-                    onClick = { viewModel.onCreatorClick(creator) }
-                )
-                HorizontalDivider()
-            }
-        }
+        CreatorsContentPaging(
+            dateMode = state.uiSettingModel.dateFormatMode,
+            viewMode = state.uiSettingModel.creatorsViewMode,
+            pagingItems = pagingItems,
+            randomItems = if (state.searchQuery.trim().isEmpty()) state.randomSuggestions else emptyList(),
+            onCreatorClick = { onEvent(Event.CreatorClicked(it)) },
+            listState = listState,
+            gridState = gridState,
+        )
     }
+}
+
+@Preview("PreviewCreatorsScreen")
+@Composable
+private fun PreviewCreatorsScreen() {
+    CreatorsScreen(
+        state = State(),
+        onEvent = {},
+        effect = emptyFlow(),
+        site = SelectedSite.K,
+        siteSwitching = false,
+    )
 }

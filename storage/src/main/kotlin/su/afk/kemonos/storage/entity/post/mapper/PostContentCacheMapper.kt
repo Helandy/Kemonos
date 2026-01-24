@@ -34,6 +34,7 @@ internal class PostContentCacheMapper @Inject constructor(
 
             title = p.title,
             content = p.content,
+            substring = p.substring,
             published = p.published,
             added = p.added,
             edited = p.edited,
@@ -61,6 +62,7 @@ internal class PostContentCacheMapper @Inject constructor(
 
             title = entity.title,
             content = entity.content,
+            substring = entity.substring,
             added = entity.added,
             published = entity.published,
             edited = entity.edited,

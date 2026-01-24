@@ -39,7 +39,6 @@ fun SearchBar(
             trailingIcon = {
                 IconButton(onClick = {
                     onClose()
-                    onSearchTextChange("")
                 }) {
                     Icon(Icons.Default.Close, contentDescription = stringResource(R.string.close))
                 }

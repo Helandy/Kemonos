@@ -8,7 +8,7 @@ import javax.inject.Inject
 internal class GetFavoritePostsUseCase @Inject constructor(
     private val repository: IFavoritesRepository
 ) {
-    suspend operator fun invoke(site: SelectedSite): List<PostDomain> {
-        return repository.getFavoritePosts(site = site)
+    suspend operator fun invoke(site: SelectedSite, refresh: Boolean): List<PostDomain> {
+        return repository.getFavoritePosts(site = site, refresh = refresh)
     }
 }

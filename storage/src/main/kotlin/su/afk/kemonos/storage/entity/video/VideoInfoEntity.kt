@@ -3,7 +3,7 @@ package su.afk.kemonos.storage.entity.video
 import androidx.room.Entity
 import androidx.room.Index
 import androidx.room.PrimaryKey
-import su.afk.kemonos.creatorPost.api.domain.model.VideoInfo
+import su.afk.kemonos.creatorPost.api.domain.model.media.MediaInfo
 
 @Entity(
     tableName = "video_info",
@@ -17,13 +17,13 @@ data class VideoInfoEntity(
 ) {
     companion object {
 
-        fun VideoInfoEntity.toDomain(): VideoInfo =
-            VideoInfo(
+        fun VideoInfoEntity.toDomain(): MediaInfo =
+            MediaInfo(
                 durationMs = durationMs,
                 sizeBytes = sizeBytes
             )
 
-        fun VideoInfo.toEntity(name: String): VideoInfoEntity =
+        fun MediaInfo.toEntity(name: String): VideoInfoEntity =
             VideoInfoEntity(
                 name = name,
                 durationMs = durationMs,

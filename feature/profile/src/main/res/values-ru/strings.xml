@@ -67,7 +67,8 @@
     <string name="profile_kemono_account_title">Аккаунт Kemono</string>
     <string name="profile_coomer_account_title">Аккаунт Coomer</string>
 
-    <string name="profile_account_logged_in_summary">Вы вошли как %1$s • Присоединился: %2$s</string>
+    <string name="profile_account_logged_in_name">Вы вошли как %1$s</string>
+    <string name="profile_account_logged_in_date">Присоединился: %1$s</string>
     <string name="profile_logout_button">Выйти</string>
 
     <!--  LogoutDialog  -->
@@ -110,4 +111,55 @@
     <string name="settings_cache_profiles">Профили авторов</string>
     <string name="settings_github_ideas">Ошибки/идеи/предложения — оставляйте на GitHub</string>
 
+    <!--    setting ui -->
+    <string name="settings_ui_title">Интерфейс</string>
+    <string name="settings_ui_hint">Настройки отображения и поведения приложения.</string>
+    <!-- UI настройки -->
+    <string name="settings_ui_creators_view_mode">Вид авторов</string>
+    <string name="settings_ui_creators_favorite_view_mode">Вид авторов в избранном</string>
+
+    <!-- Режим отображения авторов -->
+    <string name="settings_ui_view_mode_list">Список</string>
+    <string name="settings_ui_view_mode_grid">Сетка</string>
+
+    <string name="settings_debug_skip_api_check_title">Пропустить проверку API при входе</string>
+    <string name="settings_debug_skip_api_check_hint">Только для Debug</string>
+
+    <string name="settings_ui_posts_view_mode">Отображение постов</string>
+
+    <string name="settings_ui_posts_view_mode_profile">Вид постов в профиле</string>
+    <string name="settings_ui_posts_view_mode_favorite">Вид постов в избранном</string>
+    <string name="settings_ui_posts_view_mode_popular">Вид постов в популярном</string>
+    <string name="settings_ui_posts_view_mode_tags">Вид постов в тегах</string>
+    <string name="settings_ui_posts_view_mode_search">Вид постов в поиске</string>
+
+    <string name="settings_ui_suggest_random_authors_title">
+        Предлагать случайных авторов
+    </string>
+
+    <string name="settings_translate_title">Перевод</string>
+    <string name="settings_translate_app">В приложении</string>
+    <string name="settings_translate_google">Google</string>
+
+    <string name="settings_random_button_title">Кнопка “Случайный”</string>
+    <string name="settings_random_button_screen">На экране</string>
+    <string name="settings_random_button_search">В поиске</string>
+
+    <string name="settings_translate_language_title">Язык перевода</string>
+    <string name="settings_translate_language_system">Системный</string>
+    <string name="settings_translate_language_choose">Выбрать</string>
+    <string name="settings_translate_language_system_hint">
+        Используется язык устройства: %1$s
+    </string>
+    <string name="settings_translate_language_current">
+        Выбран: %1$s
+    </string>
+
+    <string name="settings_debug_title">Debug</string>
+    <string name="settings_ui_general_title">Общие</string>
+    <string name="settings_translate_section_title">Перевод</string>
+    <string name="settings_random_section_title">Случайное</string>
+    <string name="settings_view_modes_section_title">Отображение</string>
+
+    <string name="settings_ui_date_format_title">Формат даты</string>
 </resources>

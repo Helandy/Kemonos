@@ -11,7 +11,7 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.paging.compose.collectAsLazyPagingItems
 import su.afk.kemonos.common.presenter.baseScreen.BaseScreen
-import su.afk.kemonos.common.presenter.screens.postsScreen.paging.PostsTabContent
+import su.afk.kemonos.common.view.postsScreen.paging.PostsTabContent
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -30,6 +30,8 @@ internal fun TagsPostsScreen(
     ) {
         /** Контент */
         PostsTabContent(
+            dateMode = state.uiSettingModel.dateFormatMode,
+            postsViewMode = state.uiSettingModel.tagsPostsViewMode,
             posts = posts,
             gridState = gridState,
             currentTag = null,

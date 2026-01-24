@@ -7,6 +7,7 @@ import su.afk.kemonos.domain.models.PostDomain
 import su.afk.kemonos.posts.api.popular.PopularInfo
 import su.afk.kemonos.posts.api.popular.PopularProps
 import su.afk.kemonos.posts.domain.model.popular.Period
+import su.afk.kemonos.preferences.ui.UiSettingModel
 
 internal data class PopularPostsState(
     /** Популярные посты */
@@ -17,4 +18,6 @@ internal data class PopularPostsState(
 
     val popularPeriod: Period = Period.RECENT,
     val popularDateForPopular: String? = null,
+
+    val uiSettingModel: UiSettingModel = UiSettingModel(),
 )

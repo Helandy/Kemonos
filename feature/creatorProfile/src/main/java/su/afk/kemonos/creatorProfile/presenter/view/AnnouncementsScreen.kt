@@ -23,13 +23,15 @@ import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.text.HtmlCompat
 import coil3.ImageLoader
 import su.afk.kemonos.common.R
-import su.afk.kemonos.common.presenter.views.announcemnt.CoilImageGetter
 import su.afk.kemonos.common.util.toUiDateTime
+import su.afk.kemonos.common.view.announcemnt.CoilImageGetter
 import su.afk.kemonos.creatorProfile.api.domain.models.profileAnnouncements.ProfileAnnouncement
+import su.afk.kemonos.preferences.ui.DateFormatMode
 import java.time.LocalDateTime
 
 @Composable
 fun AnnouncementsScreen(
+    dateMode: DateFormatMode,
     announcements: List<ProfileAnnouncement>,
     modifier: Modifier = Modifier
 ) {
@@ -62,6 +64,7 @@ fun AnnouncementsScreen(
                 key = { it.hash }
             ) { announcement ->
                 AnnouncementCard(
+                    dateMode = dateMode,
                     announcement = announcement,
                     imageLoader = imageLoader,
                     isScrolling = { isScrolling.value }
@@ -73,6 +76,7 @@ fun AnnouncementsScreen(
 
 @Composable
 fun AnnouncementCard(
+    dateMode: DateFormatMode,
     announcement: ProfileAnnouncement,
     imageLoader: ImageLoader,
     isScrolling: () -> Boolean,
@@ -129,7 +133,7 @@ fun AnnouncementCard(
             ) {
                 Spacer(modifier = Modifier.weight(1f))
                 Text(
-                    text = stringResource(R.string.dm_added, announcement.added.toUiDateTime()),
+                    text = stringResource(R.string.dm_added, announcement.added.toUiDateTime(dateMode)),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )

@@ -15,6 +15,7 @@ data class PostContentCacheEntity(
 
     val title: String?,
     val content: String?,
+    val substring: String?,
     val published: String?,
     val added: String?,
     val edited: String?,

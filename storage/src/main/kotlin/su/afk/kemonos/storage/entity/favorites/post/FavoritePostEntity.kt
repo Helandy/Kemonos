@@ -21,6 +21,7 @@ data class FavoritePostEntity(
 
     val title: String?,
     val content: String?,
+    val substring: String?,
     val added: String?,
     val published: String?,
     val edited: String?,

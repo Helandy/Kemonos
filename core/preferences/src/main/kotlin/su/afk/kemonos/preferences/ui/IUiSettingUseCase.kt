@@ -1,0 +1,38 @@
+package su.afk.kemonos.preferences.ui
+
+import kotlinx.coroutines.flow.Flow
+
+interface IUiSettingUseCase {
+    val prefs: Flow<UiSettingModel>
+
+    /** Debug: пропустить проверку API при входе */
+    suspend fun setSkipApiCheckOnLogin(value: Boolean)
+
+    /** Вид отображения авторов  */
+    suspend fun setCreatorsViewMode(value: CreatorViewMode)
+
+    /** Вид отображения авторов избранное */
+    suspend fun setCreatorsFavoriteViewMode(value: CreatorViewMode)
+
+    /** Вид отображения постов */
+    suspend fun setProfilePostsViewMode(value: PostsViewMode)
+    suspend fun setFavoritePostsViewMode(value: PostsViewMode)
+    suspend fun setPopularPostsViewMode(value: PostsViewMode)
+    suspend fun setTagsPostsViewMode(value: PostsViewMode)
+    suspend fun setSearchPostsViewMode(value: PostsViewMode)
+
+    /** Предлагать рандомных авторов */
+    suspend fun setSuggestRandomAuthors(value: Boolean)
+
+    /** Способ перевода */
+    suspend fun setTranslateTarget(value: TranslateTarget)
+
+    /** Где показывать кнопку "рандом" */
+    suspend fun setRandomButtonPlacement(value: RandomButtonPlacement)
+
+    /** Язык, на который переводим ("" = системный) */
+    suspend fun setTranslateLanguageTag(value: String)
+
+    /** Формат даты в приложении */
+    suspend fun setDateFormatMode(value: DateFormatMode)
+}

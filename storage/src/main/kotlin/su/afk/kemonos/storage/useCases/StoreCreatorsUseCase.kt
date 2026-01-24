@@ -56,4 +56,13 @@ internal class StoreCreatorsUseCase @Inject constructor(
             offset = offset
         ).map { it.toDomain() }
     }
+
+    override suspend fun randomCreators(service: String, query: String, limit: Int): List<Creators> {
+        return creatorsRepository.randomCreators(
+            site = selectedSite.getSite(),
+            service = service,
+            query = query,
+            limit = limit
+        ).map { it.toDomain() }
+    }
 }

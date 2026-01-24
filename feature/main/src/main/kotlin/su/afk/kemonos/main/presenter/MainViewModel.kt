@@ -3,6 +3,7 @@ package su.afk.kemonos.main.presenter
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import su.afk.kemonos.app.update.api.model.AppUpdateInfo
 import su.afk.kemonos.common.error.IErrorHandlerUseCase
@@ -15,6 +16,7 @@ import su.afk.kemonos.main.presenter.delegates.AppUpdateGateDelegate
 import su.afk.kemonos.main.presenter.delegates.BaseUrlsObserveDelegate
 import su.afk.kemonos.navigation.NavigationManager
 import su.afk.kemonos.preferences.siteUrl.ISetBaseUrlsUseCase
+import su.afk.kemonos.preferences.ui.IUiSettingUseCase
 import su.afk.kemonos.storage.api.clear.IClearCacheStorageUseCase
 import su.afk.kemonos.utils.buildBaseUrl
 import su.afk.kemonos.utils.normalizeDomain
@@ -29,6 +31,7 @@ internal class MainViewModel @Inject constructor(
     private val apiCheckDelegate: ApiCheckDelegate,
     private val updateGateDelegate: AppUpdateGateDelegate,
     private val baseUrlsObserveDelegate: BaseUrlsObserveDelegate,
+    private val uiSetting: IUiSettingUseCase,
     override val errorHandler: IErrorHandlerUseCase,
     override val retryStorage: RetryStorage,
 ) : BaseViewModel<MainState.State>(MainState.State()) {
@@ -41,8 +44,15 @@ internal class MainViewModel @Inject constructor(
 
     init {
         viewModelScope.launch {
-            gateUpdateThenInit()
-            clearCacheStorageUseCase.clear()
+            val uiSettings = uiSetting.prefs.first()
+
+            if (uiSettings.skipApiCheckOnLogin.not()) {
+                gateUpdateThenInit()
+                clearCacheStorageUseCase.clear()
+            } else {
+                setState { copy(isLoading = false, apiSuccess = true) }
+                navManager.enterTabs()
+            }
         }
     }
 

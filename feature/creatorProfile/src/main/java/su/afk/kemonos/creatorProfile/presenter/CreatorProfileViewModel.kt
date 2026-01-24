@@ -6,6 +6,9 @@ import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.receiveAsFlow
 import su.afk.kemonos.common.error.IErrorHandlerUseCase
 import su.afk.kemonos.common.error.storage.RetryStorage
@@ -27,6 +30,7 @@ import su.afk.kemonos.domain.models.Tag
 import su.afk.kemonos.navigation.NavigationManager
 import su.afk.kemonos.preferences.GetKemonoRootUrlUseCase
 import su.afk.kemonos.preferences.IGetCurrentSiteRootUrlUseCase
+import su.afk.kemonos.preferences.ui.IUiSettingUseCase
 import su.afk.kemonos.storage.api.profilePosts.IStorageCreatorPostsCacheUseCase
 
 internal class CreatorProfileViewModel @AssistedInject constructor(
@@ -40,6 +44,7 @@ internal class CreatorProfileViewModel @AssistedInject constructor(
     private val getProfilePostsPagingUseCase: GetProfilePostsPagingUseCase,
     private val navManager: NavigationManager,
     private val postsCache: IStorageCreatorPostsCacheUseCase,
+    private val uiSetting: IUiSettingUseCase,
     override val errorHandler: IErrorHandlerUseCase,
     override val retryStorage: RetryStorage,
 ) : BaseViewModel<CreatorProfileState>(CreatorProfileState()) {
@@ -62,7 +67,17 @@ internal class CreatorProfileViewModel @AssistedInject constructor(
         loadProfileAndPosts()
     }
 
+    /** UI настройки */
+    private fun observeUiSetting() {
+        uiSetting.prefs.distinctUntilChanged()
+            .onEach { model ->
+                setState { copy(uiSettingModel = model) }
+            }
+            .launchIn(viewModelScope)
+    }
+
     init {
+        observeUiSetting()
         setState {
             copy(
                 service = dest.service,
@@ -214,27 +229,23 @@ internal class CreatorProfileViewModel @AssistedInject constructor(
 
     /** Поиск по тексту */
     fun setSearchText(text: String) {
+        if (text == currentState.searchText) return
         setState { copy(searchText = text) }
 
         searchJob?.cancel()
         searchJob = viewModelScope.launch {
             delay(2_000)
-            setState {
-                copy(
-                    selectedTab = ProfileTab.POSTS,
-                    profilePosts = getProfilePostsPagingUseCase(
-                        service = currentState.service,
-                        id = currentState.id,
-                        tag = null,
-                        search = text
-                    ).cachedIn(viewModelScope),
-                )
-            }
+            loadProfileAndPosts()
         }
     }
 
     /** скрыть поиск */
-    fun setSearchVisible(visible: Boolean) = setState { copy(isSearchVisible = visible) }
+    fun closeSearch() {
+        searchJob?.cancel()
+        setState { copy(isSearchVisible = false, searchText = "") }
+
+        loadProfileAndPosts()
+    }
 
     /** показать-скрыть поиск */
     fun toggleSearch() = setState { copy(isSearchVisible = !currentState.isSearchVisible) }

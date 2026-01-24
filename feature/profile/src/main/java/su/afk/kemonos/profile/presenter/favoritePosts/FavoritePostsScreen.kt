@@ -20,8 +20,10 @@ import su.afk.kemonos.common.R
 import su.afk.kemonos.common.presenter.baseScreen.BaseScreen
 import su.afk.kemonos.common.presenter.baseScreen.StandardTopBar
 import su.afk.kemonos.common.presenter.baseScreen.TopBarScroll
-import su.afk.kemonos.common.presenter.screens.postsScreen.PostsSource
-import su.afk.kemonos.common.presenter.screens.postsScreen.ProfilePostsGrid
+import su.afk.kemonos.common.view.postsScreen.grid.PostsGrid
+import su.afk.kemonos.common.view.postsScreen.grid.PostsSource
+import su.afk.kemonos.common.view.postsScreen.list.PostsList
+import su.afk.kemonos.preferences.ui.PostsViewMode
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -66,15 +68,26 @@ internal fun FavoritePostsScreen(viewModel: FavoritePostsViewModel) {
         PullToRefreshBox(
             state = pullState,
             isRefreshing = refreshing,
-            onRefresh = { viewModel.load() }
+            onRefresh = { viewModel.load(refresh = true) },
         ) {
-            ProfilePostsGrid(
-                source = PostsSource.Static(state.favoritePosts),
-                postClick = { post ->
-                    viewModel.navigateToPost(post)
-                },
-                gridState = gridState,
-            )
+            when (state.uiSettingModel.favoritePostsViewMode) {
+                PostsViewMode.GRID -> {
+                    PostsGrid(
+                        dateMode = state.uiSettingModel.dateFormatMode,
+                        source = PostsSource.Static(state.favoritePosts),
+                        postClick = { viewModel.navigateToPost(it) },
+                        gridState = gridState,
+                    )
+                }
+
+                PostsViewMode.LIST -> {
+                    PostsList(
+                        dateMode = state.uiSettingModel.dateFormatMode,
+                        source = PostsSource.Static(state.favoritePosts),
+                        onPostClick = { viewModel.navigateToPost(it) },
+                    )
+                }
+            }
         }
     }
 }

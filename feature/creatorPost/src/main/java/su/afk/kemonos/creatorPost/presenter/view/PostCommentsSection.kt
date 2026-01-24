@@ -15,11 +15,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import su.afk.kemonos.common.R
-import su.afk.kemonos.common.presenter.webView.util.stripHtml
+import su.afk.kemonos.common.presenter.androidView.clearHtml
 import su.afk.kemonos.common.util.toUiDateTime
 import su.afk.kemonos.creatorPost.api.domain.model.CommentDomain
+import su.afk.kemonos.preferences.ui.DateFormatMode
 
 internal fun LazyListScope.postCommentsSection(
+    dateMode: DateFormatMode,
     commentDomains: List<CommentDomain>,
 ) {
     if (commentDomains.isEmpty()) return
@@ -42,7 +44,10 @@ internal fun LazyListScope.postCommentsSection(
             "comment:$idPart:$pubPart"
         }
     ) { comment ->
-        CommentItem(comment = comment)
+        CommentItem(
+            dateMode = dateMode,
+            comment = comment
+        )
 
         Spacer(Modifier.height(10.dp))
         HorizontalDivider()
@@ -52,6 +57,7 @@ internal fun LazyListScope.postCommentsSection(
 
 @Composable
 internal fun CommentItem(
+    dateMode: DateFormatMode,
     comment: CommentDomain,
 ) {
     val author = remember(comment.commenter_name, comment.commenter) {
@@ -59,7 +65,7 @@ internal fun CommentItem(
     }
 
     val content = remember(comment.content) {
-        comment.content.stripHtml()
+        comment.content.clearHtml()
     }
 
     Column(modifier = Modifier.padding(vertical = 2.dp, horizontal = 4.dp)) {
@@ -76,7 +82,7 @@ internal fun CommentItem(
             modifier = Modifier.padding(top = 2.dp)
         )
 
-        val published = comment.published?.toUiDateTime().orEmpty()
+        val published = comment.published.toUiDateTime(dateMode)
         if (published.isNotBlank()) {
             Text(
                 text = "🕒 $published",

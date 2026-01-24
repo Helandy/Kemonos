@@ -17,6 +17,9 @@ data class PostUnifiedDto(
     @SerializedName("title")
     val title: String?,
 
+    /** будет null в полном посте */
+    @SerializedName("substring")
+    val substring: String?,
     /** будет null в list/search */
     @SerializedName("content")
     val content: String?,
@@ -51,6 +54,7 @@ data class PostUnifiedDto(
             service = service,
             title = title,
             content = content,
+            substring = substring,
             added = added,
             published = published,
             edited = edited,

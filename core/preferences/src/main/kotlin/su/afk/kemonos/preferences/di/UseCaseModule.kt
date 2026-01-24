@@ -12,6 +12,8 @@ import su.afk.kemonos.preferences.siteUrl.GetFlowBaseUrlPrefsUseCase
 import su.afk.kemonos.preferences.siteUrl.IGetBaseUrlsUseCase
 import su.afk.kemonos.preferences.siteUrl.ISetBaseUrlsUseCase
 import su.afk.kemonos.preferences.siteUrl.SetBaseUrlsUseCase
+import su.afk.kemonos.preferences.ui.IUiSettingUseCase
+import su.afk.kemonos.preferences.ui.UiSettingUseCase
 import su.afk.kemonos.preferences.useCase.CacheTimestampUseCaseImpl
 import su.afk.kemonos.preferences.useCase.ICacheTimestampUseCase
 import javax.inject.Singleton
@@ -36,4 +38,8 @@ internal interface UseCaseModule {
 
     @Binds
     fun bindGetCurrentSiteRootUrlUseCase(impl: GetCurrentSiteRootUrlUseCase): IGetCurrentSiteRootUrlUseCase
+
+    @Binds
+    @Singleton
+    fun bindUiPrefsUseCase(impl: UiSettingUseCase): IUiSettingUseCase
 }

@@ -7,7 +7,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import su.afk.kemonos.app.update.api.model.AppUpdateInfo
-import su.afk.kemonos.common.presenter.updateBanner.UpdateBanner
+import su.afk.kemonos.common.view.updateBanner.UpdateBanner
 
 @Composable
 internal fun MainUpdateBanner(

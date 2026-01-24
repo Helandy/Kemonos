@@ -75,6 +75,7 @@ internal fun ProfileScreen(
             ) { page ->
                 when (page) {
                     0 -> SitePage(
+                        dateMode = state.uiSettingModel.dateFormatMode,
                         title = stringResource(R.string.profile_coomer_account_title),
                         isLoggedIn = state.isLoginCoomer,
                         login = state.coomerLogin,
@@ -91,6 +92,7 @@ internal fun ProfileScreen(
                     )
 
                     1 -> SitePage(
+                        dateMode = state.uiSettingModel.dateFormatMode,
                         title = stringResource(R.string.profile_kemono_account_title),
                         isLoggedIn = state.isLoginKemono,
                         login = state.kemonoLogin,

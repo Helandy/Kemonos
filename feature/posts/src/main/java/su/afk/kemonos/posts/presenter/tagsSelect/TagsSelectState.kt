@@ -4,6 +4,7 @@ import androidx.paging.PagingData
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
 import su.afk.kemonos.domain.models.PostDomain
+import su.afk.kemonos.preferences.ui.UiSettingModel
 
 internal data class TagsSelectState(
     val loading: Boolean = false,
@@ -13,4 +14,6 @@ internal data class TagsSelectState(
 
     /** Посты с тегом */
     val posts: Flow<PagingData<PostDomain>> = emptyFlow(),
+
+    val uiSettingModel: UiSettingModel = UiSettingModel(),
 )

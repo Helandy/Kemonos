@@ -14,7 +14,7 @@ import su.afk.kemonos.common.presenter.baseScreen.BaseScreen
 import su.afk.kemonos.common.presenter.baseScreen.StandardTopBar
 import su.afk.kemonos.common.presenter.baseScreen.TopBarScroll
 import su.afk.kemonos.common.presenter.changeSite.SiteToggleFab
-import su.afk.kemonos.common.presenter.screens.postsScreen.paging.PostsTabContent
+import su.afk.kemonos.common.view.postsScreen.paging.PostsTabContent
 import su.afk.kemonos.posts.presenter.pagePopularPosts.views.PopularPeriodsPanel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -65,6 +65,8 @@ internal fun PopularPostsScreen(
         isLoading = isPageLoading,
     ) {
         PostsTabContent(
+            dateMode = state.uiSettingModel.dateFormatMode,
+            postsViewMode = state.uiSettingModel.popularPostsViewMode,
             posts = posts,
             gridState = gridState,
             currentTag = null,

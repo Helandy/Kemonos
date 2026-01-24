@@ -67,7 +67,8 @@
     <string name="profile_kemono_account_title">Kemono account</string>
     <string name="profile_coomer_account_title">Coomer account</string>
 
-    <string name="profile_account_logged_in_summary">Logged in as %1$s • Joined: %2$s</string>
+    <string name="profile_account_logged_in_name">Logged in as %1$s</string>
+    <string name="profile_account_logged_in_date">Joined: %1$s</string>
     <string name="profile_logout_button">Logout</string>
 
     <!-- LogoutDialog -->
@@ -110,4 +111,56 @@
     <string name="settings_cache_profiles">Creator profiles</string>
     <string name="settings_github_ideas">Bugs/ideas/suggestions — please leave them on GitHub</string>
 
+    <!--    setting ui -->
+    <string name="settings_ui_title">Interface</string>
+    <string name="settings_ui_hint">Display and behavior settings.</string>
+    <!-- UI settings -->
+    <string name="settings_ui_creators_view_mode">Creators view</string>
+    <string name="settings_ui_creators_favorite_view_mode">Creators favorites view</string>
+
+    <!-- Creator view mode -->
+    <string name="settings_ui_view_mode_list">List</string>
+    <string name="settings_ui_view_mode_grid">Grid</string>
+
+    <string name="settings_debug_skip_api_check_title">Skip API check on login</string>
+    <string name="settings_debug_skip_api_check_hint">Debug only</string>
+
+    <string name="settings_ui_posts_view_mode">Posts layout</string>
+    <string name="settings_ui_posts_view_mode_profile">Profile posts layout</string>
+    <string name="settings_ui_posts_view_mode_favorite">Favorites posts layout</string>
+    <string name="settings_ui_posts_view_mode_popular">Popular posts layout</string>
+    <string name="settings_ui_posts_view_mode_tags">Tags posts layout</string>
+    <string name="settings_ui_posts_view_mode_search">Search posts layout</string>
+
+    <string name="settings_ui_suggest_random_authors_title">
+        Suggest random creators
+    </string>
+
+    <string name="settings_translate_title">Translation</string>
+    <string name="settings_translate_app">In-app</string>
+    <string name="settings_translate_google">Google</string>
+
+    <string name="settings_random_button_title">“Random” button</string>
+    <string name="settings_random_button_screen">On screen</string>
+    <string name="settings_random_button_search">In search</string>
+
+    <string name="settings_translate_language_title">Translation language</string>
+    <string name="settings_translate_language_system">System</string>
+    <string name="settings_translate_language_choose">Choose</string>
+    <string name="settings_translate_language_system_hint">
+        Device language will be used: %1$s
+    </string>
+    <string name="settings_translate_language_current">
+        Selected: %1$s
+    </string>
+
+    <!-- UI Settings sections -->
+    <string name="settings_debug_title">Debug</string>
+    <string name="settings_ui_general_title">General</string>
+    <string name="settings_translate_section_title">Translation</string>
+    <string name="settings_random_section_title">Random</string>
+    <string name="settings_view_modes_section_title">View modes</string>
+
+
+    <string name="settings_ui_date_format_title">Date format</string>
 </resources>

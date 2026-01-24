@@ -7,36 +7,46 @@ import androidx.compose.material3.Text
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import kotlinx.coroutines.flow.StateFlow
 import su.afk.kemonos.common.R
-import su.afk.kemonos.creatorPost.domain.model.video.VideoInfoState
-import su.afk.kemonos.creatorPost.presenter.view.VideoInfoPreview
+import su.afk.kemonos.creatorPost.domain.model.media.MediaInfoState
+import su.afk.kemonos.creatorPost.domain.model.video.VideoThumbState
 import su.afk.kemonos.domain.models.VideoDomain
 
 internal fun LazyListScope.postVideosSection(
     videos: List<VideoDomain>,
-    observeVideoInfo: (String, String) -> StateFlow<VideoInfoState>,
+    videoInfo: Map<String, MediaInfoState>,
+    onVideoInfoRequested: (server: String, path: String) -> Unit,
+    videoThumbs: Map<String, VideoThumbState>,
+    requestThumb: (server: String, path: String) -> Unit,
+    onDownload: (url: String, fileName: String) -> Unit,
 ) {
-    if (videos.isEmpty()) return
+    val uniqueVideos = videos.distinctBy { v ->
+        "video:${v.server}:${v.path}"
+    }
+    if (uniqueVideos.isEmpty()) return
 
     item(key = "videos_header") {
         Text(
             text = stringResource(R.string.video_section),
             style = MaterialTheme.typography.titleMedium,
-            modifier = Modifier.padding(top = 16.dp)
+            modifier = Modifier.padding(start = 4.dp, top = 8.dp)
         )
     }
 
     items(
-        count = videos.size,
-        key = { index ->
-            val v = videos[index]
-            "video:${v.server}:${v.name}:${v.path}"
-        }
+        count = uniqueVideos.size,
+        key = { index -> "video:${uniqueVideos[index].server}:${uniqueVideos[index].path}" }
     ) { index ->
-        VideoInfoPreview(
-            video = videos[index],
-            observeVideoInfo = observeVideoInfo
+        val video = uniqueVideos[index]
+        val url = "${video.server}/data${video.path}"
+
+        VideoPreviewItem(
+            video = video,
+            infoState = videoInfo[url],
+            requestInfo = onVideoInfoRequested,
+            thumbState = videoThumbs[url] ?: VideoThumbState.Idle,
+            requestThumb = requestThumb,
+            onDownloadClick = onDownload
         )
     }
 }

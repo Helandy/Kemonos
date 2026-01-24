@@ -18,13 +18,15 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import su.afk.kemonos.common.R
-import su.afk.kemonos.common.presenter.views.imageLoader.AsyncImageWithStatus
+import su.afk.kemonos.common.imageLoader.AsyncImageWithStatus
 import su.afk.kemonos.common.util.toUiDateTime
 import su.afk.kemonos.creatorProfile.api.domain.models.profileFanCards.ProfileFanCard
+import su.afk.kemonos.preferences.ui.DateFormatMode
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun FanCardGridScreen(
+    dateMode: DateFormatMode,
     fanCards: List<ProfileFanCard>,
     onCardClick: (String) -> Unit,
     modifier: Modifier = Modifier
@@ -48,6 +50,7 @@ fun FanCardGridScreen(
         ) {
             items(fanCards) { fanCard ->
                 FanCardItem(
+                    dateMode = dateMode,
                     fanCard = fanCard,
                     onClick = {
                         onCardClick(
@@ -62,6 +65,7 @@ fun FanCardGridScreen(
 
 @Composable
 fun FanCardItem(
+    dateMode: DateFormatMode,
     fanCard: ProfileFanCard,
     onClick: () -> Unit
 ) {
@@ -88,7 +92,7 @@ fun FanCardItem(
             modifier = Modifier.padding(top = 4.dp)
         )
         Text(
-            text = stringResource(R.string.fancard_added, fanCard.added.toUiDateTime()),
+            text = stringResource(R.string.fancard_added, fanCard.added.toUiDateTime(dateMode)),
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             maxLines = 1,

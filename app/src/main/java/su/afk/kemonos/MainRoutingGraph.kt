@@ -10,13 +10,15 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Modifier
 import coil3.ImageLoader
 import su.afk.kemonos.common.di.LocalDomainResolver
+import su.afk.kemonos.common.imageLoader.LocalAppImageLoader
 import su.afk.kemonos.common.presenter.baseScreen.LocalAppScaffoldPadding
-import su.afk.kemonos.common.presenter.views.imageLoader.LocalAppImageLoader
+import su.afk.kemonos.common.video.LocalVideoFrameCache
 import su.afk.kemonos.navigation.AppNavHost
 import su.afk.kemonos.navigation.NavRegistrar
 import su.afk.kemonos.navigation.NavigationManager
 import su.afk.kemonos.preferences.IDomainResolver
 import su.afk.kemonos.presenter.bottomBar.BottomNavigationBar
+import su.afk.kemonos.storage.api.video.IVideoFrameCache
 import su.afk.kemonos.ui.theme.KemonosTheme
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -25,6 +27,7 @@ import javax.inject.Singleton
 class MainRoutingGraph @Inject constructor(
     private val domainResolver: IDomainResolver,
     private val imageLoader: ImageLoader,
+    private val videoFrameCache: IVideoFrameCache,
     private val navManager: NavigationManager,
     private val registrars: Set<@JvmSuppressWildcards NavRegistrar>
 ) {
@@ -52,6 +55,7 @@ class MainRoutingGraph @Inject constructor(
                     LocalAppScaffoldPadding provides innerPadding,
                     LocalDomainResolver provides domainResolver,
                     LocalAppImageLoader provides imageLoader,
+                    LocalVideoFrameCache provides videoFrameCache
                 ) {
                     AppNavHost(
                         navManager = navManager,

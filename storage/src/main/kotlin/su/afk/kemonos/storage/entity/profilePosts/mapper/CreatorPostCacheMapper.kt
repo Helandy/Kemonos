@@ -34,6 +34,7 @@ internal class CreatorPostCacheMapper @Inject constructor(
             published = domain.published,
             added = domain.added,
             edited = domain.edited,
+            substring = domain.substring,
 
             fileName = domain.file?.name,
             filePath = domain.file?.path,
@@ -51,6 +52,7 @@ internal class CreatorPostCacheMapper @Inject constructor(
             service = entity.service,
             title = entity.title,
             content = null,
+            substring = entity.substring,
             added = entity.added,
             published = entity.published,
             edited = entity.edited,

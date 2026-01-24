@@ -21,7 +21,9 @@ import su.afk.kemonos.common.presenter.baseScreen.BaseScreen
 import su.afk.kemonos.common.presenter.baseScreen.StandardTopBar
 import su.afk.kemonos.common.presenter.baseScreen.TopBarScroll
 import su.afk.kemonos.common.presenter.changeSite.SiteToggleFab
-import su.afk.kemonos.common.presenter.screens.postsScreen.paging.PostsTabContent
+import su.afk.kemonos.common.view.button.RandomFab
+import su.afk.kemonos.common.view.postsScreen.paging.PostsTabContent
+import su.afk.kemonos.preferences.ui.RandomButtonPlacement
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -42,6 +44,10 @@ internal fun SearchPostsScreen(
     }
     val focusManager = LocalFocusManager.current
 
+    val placement = state.uiSettingModel.randomButtonPlacement
+    val showRandomInSearchBar = placement == RandomButtonPlacement.SEARCH_BAR
+    val showRandomFab = placement == RandomButtonPlacement.SCREEN
+
     BaseScreen(
         contentPadding = PaddingValues(horizontal = 8.dp),
         isScroll = false,
@@ -59,14 +65,17 @@ internal fun SearchPostsScreen(
                     singleLine = true,
                     modifier = Modifier.fillMaxWidth().padding(bottom = 6.dp),
                     trailingIcon = {
-                        IconButton(
-                            onClick = { viewModel.randomPost() }
-                        ) {
-                            Icon(
-                                imageVector = Icons.Filled.Casino,
-                                contentDescription = stringResource(R.string.random),
-                                tint = MaterialTheme.colorScheme.primary
-                            )
+                        if (showRandomInSearchBar) {
+                            IconButton(
+                                onClick = { viewModel.randomPost() },
+                                enabled = !isBusy,
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Filled.Casino,
+                                    contentDescription = stringResource(R.string.random),
+                                    tint = MaterialTheme.colorScheme.primary
+                                )
+                            }
                         }
                     },
                     keyboardActions = KeyboardActions(
@@ -84,11 +93,21 @@ internal fun SearchPostsScreen(
                 onToggleSite = viewModel::switchSite,
             )
         },
+        floatingActionButtonEnd = {
+            if (showRandomFab) {
+                RandomFab(
+                    enabled = !isBusy,
+                    onClick = { viewModel.randomPost() }
+                )
+            }
+        },
         fabApplyScaffoldPadding = false,
         floatingActionButtonBottomPadding = 12.dp,
     ) {
         /** Контент */
         PostsTabContent(
+            dateMode = state.uiSettingModel.dateFormatMode,
+            postsViewMode = state.uiSettingModel.searchPostsViewMode,
             posts = posts,
             currentTag = null,
             onPostClick = viewModel::navigateToPost,

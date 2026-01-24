@@ -2,6 +2,9 @@ package su.afk.kemonos.posts.presenter.tagsSelect
 
 import androidx.paging.cachedIn
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import su.afk.kemonos.common.error.IErrorHandlerUseCase
 import su.afk.kemonos.common.error.storage.RetryStorage
@@ -12,6 +15,7 @@ import su.afk.kemonos.posts.domain.pagingSearch.GetSearchPostsPagingUseCase
 import su.afk.kemonos.posts.presenter.common.NavigateToPostDelegate
 import su.afk.kemonos.posts.presenter.util.Const.KEY_SELECTED_TAG
 import su.afk.kemonos.preferences.site.ISelectedSiteUseCase
+import su.afk.kemonos.preferences.ui.IUiSettingUseCase
 import javax.inject.Inject
 
 @HiltViewModel
@@ -20,6 +24,7 @@ internal class TagsSelectViewModel @Inject constructor(
     private val getSearchPostsPagingUseCase: GetSearchPostsPagingUseCase,
     private val navigateToPostDelegate: NavigateToPostDelegate,
     private val navigationStorage: NavigationStorage,
+    private val uiSetting: IUiSettingUseCase,
     override val errorHandler: IErrorHandlerUseCase,
     override val retryStorage: RetryStorage,
 ) : BaseViewModel<TagsSelectState>(TagsSelectState()) {
@@ -28,7 +33,17 @@ internal class TagsSelectViewModel @Inject constructor(
         requestPage()
     }
 
+    /** UI настройки */
+    private fun observeUiSetting() {
+        uiSetting.prefs.distinctUntilChanged()
+            .onEach { model ->
+                setState { copy(uiSettingModel = model) }
+            }
+            .launchIn(viewModelScope)
+    }
+
     init {
+        observeUiSetting()
         val selectTag = navigationStorage.consume<String>(KEY_SELECTED_TAG)
         setState { copy(selectTag = selectTag) }
 

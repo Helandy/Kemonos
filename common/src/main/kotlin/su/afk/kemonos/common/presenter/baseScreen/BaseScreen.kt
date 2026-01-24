@@ -46,7 +46,7 @@ fun BaseScreen(
     emptyContent: (@Composable () -> Unit)? = null,
 
     /** floating */
-    floatingActionButton: (@Composable () -> Unit)? = null,
+    floatingActionButtonEnd: (@Composable () -> Unit)? = null,
     floatingActionButtonStart: (@Composable () -> Unit)? = null,
     floatingActionButtonBottomPadding: Dp = 0.dp,
     fabApplyScaffoldPadding: Boolean = true,
@@ -109,7 +109,7 @@ fun BaseScreen(
                 }
             }
 
-            if (floatingActionButtonStart != null || floatingActionButton != null) {
+            if (floatingActionButtonStart != null || floatingActionButtonEnd != null) {
                 Row(
                     modifier = Modifier
                         .align(Alignment.BottomCenter)
@@ -122,7 +122,7 @@ fun BaseScreen(
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
                     Box { floatingActionButtonStart?.invoke() }
-                    Box { floatingActionButton?.invoke() }
+                    Box { floatingActionButtonEnd?.invoke() }
                 }
             }
         }

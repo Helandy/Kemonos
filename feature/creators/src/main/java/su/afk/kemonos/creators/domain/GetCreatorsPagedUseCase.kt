@@ -44,4 +44,8 @@ internal class GetCreatorsPagedUseCase @Inject constructor(
     }
 
     suspend fun ensureFresh(): Boolean = repository.refreshCreatorsIfNeeded()
+
+    suspend fun randomSuggestions(service: String, query: String, limit: Int): List<Creators> {
+        return store.randomCreators(service, query, limit)
+    }
 }

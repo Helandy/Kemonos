@@ -11,10 +11,6 @@ interface IStoreCreatorsUseCase {
 
     suspend fun getDistinctServices(): List<String>
 
-    /**
-     * Просто получить результаты (для маленьких списков).
-     * Для больших списков paging делаем в feature-модуле, где есть AndroidX Paging.
-     */
     suspend fun searchCreators(
         service: String,
         query: String,
@@ -22,5 +18,11 @@ interface IStoreCreatorsUseCase {
         ascending: Boolean,
         limit: Int,
         offset: Int,
+    ): List<Creators>
+
+    suspend fun randomCreators(
+        service: String,
+        query: String,
+        limit: Int,
     ): List<Creators>
 }
