@@ -41,6 +41,7 @@ dependencies {
 
     implementation(libs.bundles.coil)
     implementation(libs.bundles.translate)
+    implementation("org.jsoup:jsoup:1.17.2")
 
     debugImplementation(libs.bundles.compose.debug)
 

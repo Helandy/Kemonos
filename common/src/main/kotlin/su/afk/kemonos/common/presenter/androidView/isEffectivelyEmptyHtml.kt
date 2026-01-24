@@ -1,4 +1,4 @@
-package su.afk.kemonos.common.presenter.webView.util
+package su.afk.kemonos.common.presenter.androidView
 
 private val MEDIA_TAG = Regex("""<(img|video|iframe|audio|source)\b""", RegexOption.IGNORE_CASE)
 private val STRIP_TAGS = Regex("<[^>]*>")

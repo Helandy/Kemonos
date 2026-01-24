@@ -11,8 +11,8 @@ import kotlinx.coroutines.launch
 import su.afk.kemonos.common.error.IErrorHandlerUseCase
 import su.afk.kemonos.common.error.storage.RetryStorage
 import su.afk.kemonos.common.error.toFavoriteToastBar
+import su.afk.kemonos.common.presenter.androidView.cleanDuplicatedMediaFromContent
 import su.afk.kemonos.common.presenter.baseViewModel.BaseViewModelNew
-import su.afk.kemonos.common.presenter.webView.util.cleanDuplicatedMediaFromContent
 import su.afk.kemonos.common.shared.ShareLinkBuilder
 import su.afk.kemonos.common.shared.ShareTarget
 import su.afk.kemonos.common.translate.TextTranslator

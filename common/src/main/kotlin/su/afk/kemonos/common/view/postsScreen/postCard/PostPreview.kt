@@ -20,7 +20,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import su.afk.kemonos.common.R
 import su.afk.kemonos.common.imageLoader.AsyncImageWithStatus
-import su.afk.kemonos.common.presenter.webView.util.clearHtml
+import su.afk.kemonos.common.presenter.androidView.clearHtml
 import su.afk.kemonos.common.video.LocalVideoFrameCache
 import su.afk.kemonos.common.view.postsScreen.postCard.model.PreviewState
 import su.afk.kemonos.common.view.postsScreen.postCard.placeHolder.PreviewPlaceholder

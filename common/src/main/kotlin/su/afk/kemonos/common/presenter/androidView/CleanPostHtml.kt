@@ -1,4 +1,4 @@
-package su.afk.kemonos.common.presenter.webView.util
+package su.afk.kemonos.common.presenter.androidView
 
 
 /**

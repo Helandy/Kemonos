@@ -35,7 +35,6 @@ import su.afk.kemonos.creatorPost.presenter.view.PostTitleBlock
 import su.afk.kemonos.creatorPost.presenter.view.TagsRow
 import su.afk.kemonos.creatorPost.presenter.view.attachment.PostAttachmentsSection
 import su.afk.kemonos.creatorPost.presenter.view.audio.postAudioSection
-import su.afk.kemonos.creatorPost.presenter.view.content.IntStateMapSaver
 import su.afk.kemonos.creatorPost.presenter.view.content.PostContentBlock
 import su.afk.kemonos.creatorPost.presenter.view.postCommentsSection
 import su.afk.kemonos.creatorPost.presenter.view.preview.postPreviewsSection
@@ -48,10 +47,6 @@ import su.afk.kemonos.creatorPost.presenter.view.video.postVideosSection
 internal fun CreatorPostScreen(state: State, onEvent: (Event) -> Unit, effect: Flow<Effect>) {
     val context = LocalContext.current
     val resolver = LocalDomainResolver.current
-
-    val webViewHeights = rememberSaveable(saver = IntStateMapSaver) {
-        mutableMapOf<String, MutableIntState>()
-    }
     var showPreviewFileNames by rememberSaveable(state.postId) { mutableStateOf(false) }
 
     LaunchedEffect(effect) {
@@ -181,15 +176,10 @@ internal fun CreatorPostScreen(state: State, onEvent: (Event) -> Unit, effect: F
             item(key = "contentBlock") {
                 /** Контент поста */
                 val post = state.post.post
-
-                val contentKey = "${post.service}:${state.id}:${state.postId}"
-                val heightState = webViewHeights.getOrPut(contentKey) { mutableIntStateOf(0) }
-
                 PostContentBlock(
                     service = post.service,
                     body = state.postContentClean,
                     onOpenImage = { url -> onEvent(Event.OpenImage(url)) },
-                    maxHeightPxState = heightState,
                 )
             }
 

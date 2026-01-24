@@ -1,126 +1,109 @@
 package su.afk.kemonos.creatorPost.presenter.view.content
 
 import android.content.Intent
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.heightIn
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
-import androidx.compose.runtime.*
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.produceState
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.net.toUri
+import coil3.compose.AsyncImage
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import su.afk.kemonos.common.R
 import su.afk.kemonos.common.di.LocalDomainResolver
-import su.afk.kemonos.common.presenter.webView.WebViewPool
-import su.afk.kemonos.common.presenter.webView.rememberPooledWebView
-import su.afk.kemonos.common.presenter.webView.util.isEffectivelyEmptyHtml
-import su.afk.kemonos.common.presenter.webView.util.normalizeHtml
-import su.afk.kemonos.common.presenter.webView.util.wrapHtml
+import su.afk.kemonos.common.presenter.androidView.HtmlTextBlock
+import su.afk.kemonos.common.presenter.androidView.htmlToBlocks
+import su.afk.kemonos.common.presenter.androidView.isEffectivelyEmptyHtml
+import su.afk.kemonos.common.presenter.androidView.model.PostBlock
 
 @Composable
 internal fun PostContentBlock(
     service: String,
     body: String,
     onOpenImage: (String) -> Unit,
-    maxHeightPxState: MutableIntState,
 ) {
     if (body.isBlank()) return
-    val isEffectivelyEmpty = remember(body) { isEffectivelyEmptyHtml(body) }
-    if (isEffectivelyEmpty) return
-
-    val density = LocalDensity.current
-    val minHeightDp = with(density) { maxHeightPxState.intValue.toDp() }
+    if (remember(body) { isEffectivelyEmptyHtml(body) }) return
 
     val context = LocalContext.current
     val resolver = LocalDomainResolver.current
     val siteBaseUrl = remember(service) { resolver.baseUrlByService(service) }
 
-    val textColor = MaterialTheme.colorScheme.onBackground.toArgb()
-    val linkColor = MaterialTheme.colorScheme.primary.toArgb()
-    val bgColor = MaterialTheme.colorScheme.background.toArgb()
-
-    val htmlState by produceState<String?>(initialValue = null, body, siteBaseUrl, textColor, linkColor, bgColor) {
+    val blocks by produceState<List<PostBlock>>(initialValue = emptyList(), body, siteBaseUrl) {
         value = withContext(Dispatchers.Default) {
-            val normalized = normalizeHtml(
-                body = body,
-            )
-
-            val withImgClickHook = normalized + IMAGE_CLICK_HOOK_JS
-
-            wrapHtml(
-                body = withImgClickHook,
-                textColor = textColor,
-                linkColor = linkColor,
-                backgroundColor = bgColor,
-                fontSizeSp = 16f
-            )
+            htmlToBlocks(body, siteBaseUrl)
         }
     }
 
-    if (htmlState == null) {
-        /** лёгкий плейсхолдер, чтобы экран не “висел” */
-        Text(
-            text = stringResource(R.string.loading),
-            style = MaterialTheme.typography.bodySmall,
-            color = MaterialTheme.colorScheme.onSurfaceVariant
-        )
-        return
-    }
-
-    val webView = rememberPooledWebView(
-        context = context,
-        bgColor = bgColor,
-        onOpenUrl = { url ->
-            val uri = url.toUri()
-
-            /** Клик по картинке  */
-            if (uri.scheme == "kemonos" && uri.host == "open_image") {
-                val original = uri.getQueryParameter("url") ?: return@rememberPooledWebView
-                onOpenImage(original)
-                return@rememberPooledWebView
-            }
-
-            /** Прочие клики наружу */
-            runCatching {
-                context.startActivity(
-                    Intent(Intent.ACTION_VIEW, uri).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                )
-            }
-        }
-    ).apply {
-        /** не блокировать долгий тап, иначе выделение/копирование не появится */
-        /** false -> отдать обработку WebView (выделение текста, контекстное меню) */
-        isLongClickable = true
-        isHapticFeedbackEnabled = true
-        setOnLongClickListener { false }
-    }
-
-    AndroidView(
-        modifier = Modifier.padding(4.dp)
+    Column(
+        modifier = Modifier
             .fillMaxWidth()
-            .heightIn(min = minHeightDp.coerceAtLeast(1.dp)),
-        factory = { webView },
-        update = { view ->
-            val html = htmlState!!
-            val last = view.tag as? String
-            if (last != html) {
-                view.tag = html
+            .padding(4.dp)
+    ) {
+        blocks.forEach { block ->
+            when (block) {
+                is PostBlock.Html -> {
+                    HtmlTextBlock(
+                        html = block.html,
+                        modifier = Modifier.fillMaxWidth(),
+                        onOpenUrl = { url ->
+                            val uri = url.toUri()
 
-                view.stopLoading()
-                view.loadUrl("about:blank")
-                view.post {
-                    view.loadDataWithBaseURL(siteBaseUrl, html, "text/html", "utf-8", null)
+                            // тут можешь распознавать “файлы/видео/аудио” и открывать внутри
+                            runCatching {
+                                context.startActivity(
+                                    Intent(Intent.ACTION_VIEW, uri).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                                )
+                            }
+                        }
+                    )
+                }
+
+                is PostBlock.Image -> {
+                    AsyncImage(
+                        model = block.url,
+                        contentDescription = null,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 6.dp)
+                            .clickable { onOpenImage(block.url) }
+                    )
+                }
+
+                is PostBlock.Video -> {
+                    // минимум: кликабельный постер (или любой плейсхолдер)
+                    val poster = block.poster
+                    if (!poster.isNullOrBlank()) {
+                        AsyncImage(
+                            model = poster,
+                            contentDescription = null,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(vertical = 6.dp)
+                                .clickable {
+                                    context.startActivity(
+                                        Intent(
+                                            Intent.ACTION_VIEW,
+                                            block.url.toUri()
+                                        ).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                                    )
+                                }
+                        )
+                    } else {
+                        // если постера нет — можно рисовать простую карточку “Play”
+                        Spacer(Modifier.height(8.dp))
+                    }
+                }
+
+                is PostBlock.Audio -> {
+                    // аналогично — строка/карточка аудио
+                    Spacer(Modifier.height(8.dp))
                 }
             }
-        },
-        onRelease = { view -> WebViewPool.release(view) }
-    )
+        }
+    }
 }

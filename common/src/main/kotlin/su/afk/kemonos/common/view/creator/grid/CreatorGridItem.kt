@@ -68,7 +68,7 @@ fun CreatorGridItem(
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(10.dp)
+                .padding(8.dp)
         ) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -85,7 +85,7 @@ fun CreatorGridItem(
                         .background(MaterialTheme.colorScheme.surface.copy(alpha = 0.20f))
                 )
 
-                Spacer(Modifier.width(8.dp))
+                Spacer(Modifier.width(6.dp))
 
                 Column(
                     modifier = Modifier

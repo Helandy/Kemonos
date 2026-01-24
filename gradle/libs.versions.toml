@@ -4,13 +4,13 @@ compileSdk = "36"
 minSdk = "29"
 jvmVersion = "21"
 
+# --- App versioning
+appVersionName = "1.5"
+appVersionCode = "19"
+
 agp = "8.12.3"
 kotlin = "2.2.21"
 ksp = "2.2.20-2.0.4"
-
-# --- App versioning
-appVersionName = "1.5"
-appVersionCode = "18"
 
 # --- AndroidX
 androidxCore = "1.17.0"
