@@ -3,6 +3,7 @@ package su.afk.kemonos.storage.useCases.video
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.os.Build
 import android.util.LruCache
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
@@ -25,12 +26,14 @@ class VideoFrameCacheImpl @Inject constructor(
     private val maxMemoryBytes: Int = 48 * 1024 * 1024 // 48MB
     private val maxW: Int = 1280
     private val maxH: Int = 720
-    private val webpQuality: Int = 75
-    private val jpegQuality: Int = 80
+
+    private val webpQuality: Int = 90
+    private val jpegQuality: Int = 90
+    private val webpLossless: Boolean = false
+    private val EXT = "webp"
 
     private val cacheDir: File = File(appContext.cacheDir, "video_frames").apply { mkdirs() }
 
-    /** mutex per key — защита от гонок записи одного и того же файла */
     private val mutexByKey = ConcurrentHashMap<String, Mutex>()
 
     private val memory: LruCache<String, Bitmap>? = if (useMemory) {
@@ -40,31 +43,28 @@ class VideoFrameCacheImpl @Inject constructor(
     } else null
 
     override fun makeKey(url: String, timeUs: Long): String {
-        val raw = "$url|t=$timeUs|max=${maxW}x$maxH|q=$webpQuality"
+        val raw = "$url|t=$timeUs|max=${maxW}x$maxH|q=$jpegQuality|fmt=$EXT"
         return raw.sha256()
     }
 
     override suspend fun get(key: String): Bitmap? = withContext(Dispatchers.IO) {
-        // 1) memory
         memory?.get(key)?.let { return@withContext it }
 
-        // 2) disk
-        val file = File(cacheDir, "$key.webp")
+        val file = File(cacheDir, "$key.$EXT")
         if (!file.exists()) return@withContext null
 
-        // touch для LRU
         file.setLastModified(System.currentTimeMillis())
 
-        val bmp = BitmapFactory.decodeFile(file.absolutePath)
+        val opts = BitmapFactory.Options().apply { inPreferredConfig = Bitmap.Config.ARGB_8888 }
+        val bmp = BitmapFactory.decodeFile(file.absolutePath, opts)
+
         if (bmp != null) memory?.put(key, bmp)
         bmp
     }
 
     override suspend fun put(key: String, bitmap: Bitmap) = withContext(Dispatchers.IO) {
         val mutex = mutexByKey.getOrPut(key) { Mutex() }
-        mutex.withLock {
-            putNoLock(key, bitmap)
-        }
+        mutex.withLock { putNoLock(key, bitmap) }
     }
 
     override suspend fun getOrLoad(
@@ -81,10 +81,7 @@ class VideoFrameCacheImpl @Inject constructor(
             get(key)?.let { return@withLock it }
 
             val bmp = loader() ?: return@withLock null
-
-            // ВАЖНО: без повторного lock
             putNoLock(key, bmp)
-
             get(key)
         }
     }
@@ -92,29 +89,40 @@ class VideoFrameCacheImpl @Inject constructor(
     private fun putNoLock(key: String, bitmap: Bitmap) {
         memory?.get(key)?.let { return }
 
-        val file = File(cacheDir, "$key.jpg")
+        val file = File(cacheDir, "$key.$EXT")
         if (file.exists()) {
             file.setLastModified(System.currentTimeMillis())
             BitmapFactory.decodeFile(file.absolutePath)?.let { memory?.put(key, it) }
             return
         }
 
-        val scaled = bitmap
-            .ensureArgb8888()          // важно для “зелени”/битых каналов
-            .scaleDownToFit(maxW, maxH)
+        // Нормализация реально помогает от "зелени/полос"
+        val normalized = bitmap.normalizeForSaving()
+        val scaled = normalized.scaleDownToFit(maxW, maxH)
 
         runCatching {
             file.outputStream().use { out ->
-                scaled.compress(Bitmap.CompressFormat.JPEG, jpegQuality, out)
+                val ok = if (Build.VERSION.SDK_INT >= 30) {
+                    val format =
+                        if (webpLossless) Bitmap.CompressFormat.WEBP_LOSSLESS else Bitmap.CompressFormat.WEBP_LOSSY
+                    scaled.compress(format, webpQuality, out)
+                } else {
+                    @Suppress("DEPRECATION")
+                    scaled.compress(Bitmap.CompressFormat.WEBP, webpQuality, out)
+                }
+
+                if (!ok) throw IllegalStateException("Bitmap.compress() returned false")
             }
             file.setLastModified(System.currentTimeMillis())
         }
 
-        // если сделали промежуточные bitmap — освободим
-        if (scaled !== bitmap) runCatching { scaled.recycle() }
+        if (scaled !== normalized) runCatching { scaled.recycle() }
+        runCatching { normalized.recycle() }
 
         trimToSize(maxDiskBytes)
-        BitmapFactory.decodeFile(file.absolutePath)?.let { memory?.put(key, it) }
+
+        val opts = BitmapFactory.Options().apply { inPreferredConfig = Bitmap.Config.ARGB_8888 }
+        BitmapFactory.decodeFile(file.absolutePath, opts)?.let { memory?.put(key, it) }
     }
 
     override suspend fun clear() = withContext(Dispatchers.IO) {
@@ -125,11 +133,9 @@ class VideoFrameCacheImpl @Inject constructor(
 
     private fun trimToSize(maxBytes: Long) {
         val files = cacheDir.listFiles()?.filter { it.isFile } ?: return
-
         var total = files.sumOf { it.length() }
         if (total <= maxBytes) return
 
-        // удаляем старые первыми
         val sorted = files.sortedBy { it.lastModified() }
         for (f in sorted) {
             if (total <= maxBytes) break
@@ -139,20 +145,20 @@ class VideoFrameCacheImpl @Inject constructor(
     }
 }
 
-/** Привести bitmap к ARGB_8888 (часто лечит странные цвета после decode/encode) */
-private fun Bitmap.ensureArgb8888(): Bitmap {
-    if (config == Bitmap.Config.ARGB_8888) return this
-    return copy(Bitmap.Config.ARGB_8888, false)
+/** Нормализация: рисуем в “чистый” ARGB_8888 буфер */
+private fun Bitmap.normalizeForSaving(): Bitmap {
+    val out = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
+    val canvas = android.graphics.Canvas(out)
+    canvas.drawBitmap(this, 0f, 0f, null)
+    return out
 }
 
-/** SHA-256 для ключей */
 private fun String.sha256(): String {
     val md = MessageDigest.getInstance("SHA-256")
     val bytes = md.digest(toByteArray(Charsets.UTF_8))
     return bytes.joinToString("") { "%02x".format(it) }
 }
 
-/** Ресайзим, чтобы влезло в maxW x maxH, сохраняя пропорции */
 private fun Bitmap.scaleDownToFit(maxW: Int, maxH: Int): Bitmap {
     val w = width
     val h = height

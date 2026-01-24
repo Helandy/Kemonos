@@ -1,13 +1,13 @@
 package su.afk.kemonos.creatorPost.presenter
 
-import android.media.MediaMetadataRetriever
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
-import kotlinx.coroutines.*
+import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.launch
 import su.afk.kemonos.common.error.IErrorHandlerUseCase
 import su.afk.kemonos.common.error.storage.RetryStorage
 import su.afk.kemonos.common.error.toFavoriteToastBar
@@ -22,18 +22,18 @@ import su.afk.kemonos.creatorPost.api.domain.model.PostContentDomain
 import su.afk.kemonos.creatorPost.domain.model.media.MediaInfoState
 import su.afk.kemonos.creatorPost.domain.model.video.VideoThumbState
 import su.afk.kemonos.creatorPost.domain.useCase.GetCommentsUseCase
-import su.afk.kemonos.creatorPost.domain.useCase.GetMediaInfoUseCase
+import su.afk.kemonos.creatorPost.domain.useCase.GetMediaMetaUseCase
 import su.afk.kemonos.creatorPost.domain.useCase.GetPostUseCase
 import su.afk.kemonos.creatorPost.navigation.CreatorPostDest
 import su.afk.kemonos.creatorPost.presenter.CreatorPostState.*
 import su.afk.kemonos.creatorPost.presenter.delegates.LikeDelegate
+import su.afk.kemonos.creatorPost.presenter.delegates.MediaMetaDelegate
 import su.afk.kemonos.creatorPost.presenter.delegates.NavigateDelegates
 import su.afk.kemonos.creatorProfile.api.IGetProfileUseCase
 import su.afk.kemonos.download.api.IDownloadUtil
 import su.afk.kemonos.preferences.IGetCurrentSiteRootUrlUseCase
 import su.afk.kemonos.preferences.ui.IUiSettingUseCase
 import su.afk.kemonos.preferences.ui.TranslateTarget
-import su.afk.kemonos.storage.api.video.IVideoFrameCache
 
 internal class CreatorPostViewModel @AssistedInject constructor(
     @Assisted private val dest: CreatorPostDest.CreatorPost,
@@ -41,8 +41,7 @@ internal class CreatorPostViewModel @AssistedInject constructor(
     private val getPostUseCase: GetPostUseCase,
     private val getProfileUseCase: IGetProfileUseCase,
     private val getCurrentSiteRootUrlUseCase: IGetCurrentSiteRootUrlUseCase,
-    private val videoFrameCache: IVideoFrameCache,
-    private val getVideoInfo: GetMediaInfoUseCase,
+    private val getMediaMetaUseCase: GetMediaMetaUseCase,
     private val likeDelegate: LikeDelegate,
     private val navigateDelegates: NavigateDelegates,
     private val downloadUtil: IDownloadUtil,
@@ -103,9 +102,9 @@ internal class CreatorPostViewModel @AssistedInject constructor(
 
             is Event.OpenExternalUrl -> setEffect(Effect.OpenUrl(event.url))
 
-            is Event.VideoThumbRequested -> requestVideoThumb(event.url)
-            is Event.VideoInfoRequested -> requestVideoInfo(event.url)
-            is Event.AudioInfoRequested -> requestAudioInfo(event.url)
+            is Event.VideoThumbRequested -> requestVideoMeta(event.url)
+            is Event.VideoInfoRequested -> requestVideoMeta(event.url)
+            is Event.AudioInfoRequested -> requestAudioMeta(event.url)
 
             is Event.PlayAudio -> {
                 val safeName = event.name?.takeIf { it.isNotBlank() } ?: event.url.substringAfterLast('/')
@@ -159,95 +158,62 @@ internal class CreatorPostViewModel @AssistedInject constructor(
         isPostFavorite()
     }
 
-    /** Получить/создать flow для конкретного видео и стартануть загрузку при необходимости */
-    private val videoJobs = mutableMapOf<String, Job>()
-    private fun requestVideoInfo(url: String) {
-        val existing = currentState.videoInfo[url]
-        if (existing is MediaInfoState.Success) return
+    private val mediaMetaDelegate = MediaMetaDelegate(
+        scope = viewModelScope,
+        getMediaMeta = getMediaMetaUseCase,
+        timeoutMs = 15_000L
+    )
 
-        if (videoJobs[url]?.isActive == true) return
+    private fun requestVideoMeta(url: String) {
+        val needInfo = currentState.videoInfo[url] !is MediaInfoState.Success
+        val needThumb = currentState.videoThumbs[url] !is VideoThumbState.Success
+        if (!needInfo && !needThumb) return
 
-        // если хотим показать loading сразу
+        // loading
         setState {
-            copy(videoInfo = videoInfo + (url to MediaInfoState.Loading))
+            copy(
+                videoInfo = if (needInfo) videoInfo + (url to MediaInfoState.Loading) else videoInfo,
+                videoThumbs = if (needThumb) videoThumbs + (url to VideoThumbState.Loading) else videoThumbs,
+            )
         }
 
-        videoJobs[url] = viewModelScope.launch {
-            runCatching { getVideoInfo(url) }
-                .onSuccess { info ->
-                    setState { copy(videoInfo = videoInfo + (url to MediaInfoState.Success(info))) }
+        mediaMetaDelegate.requestVideo(
+            url = url,
+            onSuccess = { meta ->
+                setState {
+                    copy(
+                        videoInfo = videoInfo + (url to MediaInfoState.Success(meta.info)),
+                        videoThumbs = videoThumbs + (url to (meta.frame?.let { VideoThumbState.Success(it) }
+                            ?: VideoThumbState.Error(null)))
+                    )
                 }
-                .onFailure { e ->
-                    setState { copy(videoInfo = videoInfo + (url to MediaInfoState.Error(e))) }
+            },
+            onError = { t ->
+                setState {
+                    copy(
+                        videoInfo = if (needInfo) videoInfo + (url to MediaInfoState.Error(t)) else videoInfo,
+                        videoThumbs = if (needThumb) videoThumbs + (url to VideoThumbState.Error(t)) else videoThumbs,
+                    )
                 }
-        }
+            }
+        )
     }
 
-    private val audioJobs = mutableMapOf<String, Job>()
-    private fun requestAudioInfo(url: String) {
-        val existing = currentState.audioInfo[url]
-        if (existing is MediaInfoState.Success) return
-        if (audioJobs[url]?.isActive == true) return
+    private fun requestAudioMeta(url: String) {
+        val needInfo = currentState.audioInfo[url] !is MediaInfoState.Success
+        if (!needInfo) return
 
         setState { copy(audioInfo = audioInfo + (url to MediaInfoState.Loading)) }
 
-        audioJobs[url] = viewModelScope.launch {
-            runCatching { getVideoInfo(url) }
-                .onSuccess { info ->
-                    setState { copy(audioInfo = audioInfo + (url to MediaInfoState.Success(info))) }
-                }
-                .onFailure { e ->
-                    setState { copy(audioInfo = audioInfo + (url to MediaInfoState.Error(e))) }
-                }
-        }
-    }
-
-    private val videoThumbJobs = mutableMapOf<String, Job>()
-    private fun requestVideoThumb(url: String) {
-        when (currentState.videoThumbs[url]) {
-            is VideoThumbState.Success,
-            is VideoThumbState.Loading -> return
-
-            else -> Unit
-        }
-        if (videoThumbJobs[url]?.isActive == true) return
-
-        setState { copy(videoThumbs = videoThumbs + (url to VideoThumbState.Loading)) }
-
-        videoThumbJobs[url] = viewModelScope.launch {
-            try {
-                val bmp = withTimeout(15_000L) {
-                    videoFrameCache.getOrLoad(
-                        url = url,
-                        timeUs = IVideoFrameCache.DEFAULT_TIME_US,
-                    ) {
-                        withTimeout(15_000L) {
-                            MediaMetadataRetriever().use { retriever ->
-                                retriever.setDataSource(url)
-                                retriever.getFrameAtTime(
-                                    IVideoFrameCache.DEFAULT_TIME_US,
-                                    MediaMetadataRetriever.OPTION_CLOSEST_SYNC
-                                )
-                            }
-                        }
-                    }
-                }
-
-                setState {
-                    copy(
-                        videoThumbs = videoThumbs + (
-                                url to (if (bmp != null) VideoThumbState.Success(bmp) else VideoThumbState.Error(null))
-                                )
-                    )
-                }
-            } catch (t: TimeoutCancellationException) {
-                setState { copy(videoThumbs = videoThumbs + (url to VideoThumbState.Error(t))) }
-            } catch (t: Throwable) {
-                setState { copy(videoThumbs = videoThumbs + (url to VideoThumbState.Error(t))) }
-            } finally {
-                videoThumbJobs.remove(url)
+        mediaMetaDelegate.requestAudio(
+            url = url,
+            onSuccess = { meta ->
+                setState { copy(audioInfo = audioInfo + (url to MediaInfoState.Success(meta.info))) }
+            },
+            onError = { t ->
+                setState { copy(audioInfo = audioInfo + (url to MediaInfoState.Error(t))) }
             }
-        }
+        )
     }
 
     /** Избранное */
