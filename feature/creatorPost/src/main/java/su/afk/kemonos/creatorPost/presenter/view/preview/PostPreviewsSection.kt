@@ -1,10 +1,7 @@
 package su.afk.kemonos.creatorPost.presenter.view.preview
 
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
@@ -44,6 +41,7 @@ internal fun LazyListScope.postPreviewsSection(
                 contentDescription = null,
                 tint = MaterialTheme.colorScheme.primary,
                 modifier = Modifier
+                    .padding(end = 4.dp)
                     .size(26.dp)
                     .clickable { onTogglePreviewNames() }
             )

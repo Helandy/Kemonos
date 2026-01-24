@@ -1,5 +1,6 @@
 package su.afk.kemonos.creatorPost.presenter
 
+import su.afk.kemonos.common.presenter.androidView.model.PostBlock
 import su.afk.kemonos.common.presenter.baseViewModel.UiEffect
 import su.afk.kemonos.common.presenter.baseViewModel.UiEvent
 import su.afk.kemonos.common.presenter.baseViewModel.UiState
@@ -19,6 +20,8 @@ internal class CreatorPostState {
         val postId: String = "",
 
         val post: PostContentDomain? = null,
+        val contentBlocks: List<PostBlock>? = null,
+        val contentBlocksLoading: Boolean = true,
         val postContentClean: String = "",
         val commentDomains: List<CommentDomain> = emptyList(),
 

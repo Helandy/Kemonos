@@ -3,15 +3,18 @@ package su.afk.kemonos.creatorPost.presenter
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import su.afk.kemonos.common.error.IErrorHandlerUseCase
 import su.afk.kemonos.common.error.storage.RetryStorage
 import su.afk.kemonos.common.error.toFavoriteToastBar
 import su.afk.kemonos.common.presenter.androidView.cleanDuplicatedMediaFromContent
+import su.afk.kemonos.common.presenter.androidView.htmlToBlocks
 import su.afk.kemonos.common.presenter.baseViewModel.BaseViewModelNew
 import su.afk.kemonos.common.shared.ShareLinkBuilder
 import su.afk.kemonos.common.shared.ShareTarget
@@ -140,11 +143,19 @@ internal class CreatorPostViewModel @AssistedInject constructor(
             attachmentPaths = mediaRefs.orEmpty(),
         )
 
+        val siteBaseUrl = getCurrentSiteRootUrlUseCase()
+        val blocks = withContext(Dispatchers.Default) {
+            htmlToBlocks(cleanContent, siteBaseUrl)
+        }
+
         setState {
             copy(
                 loading = false,
                 post = post,
                 postContentClean = cleanContent,
+
+                contentBlocksLoading = false,
+                contentBlocks = blocks,
 
                 commentDomains = comments,
                 profile = profile,

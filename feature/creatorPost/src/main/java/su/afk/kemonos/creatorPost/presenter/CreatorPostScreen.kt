@@ -175,11 +175,10 @@ internal fun CreatorPostScreen(state: State, onEvent: (Event) -> Unit, effect: F
 
             item(key = "contentBlock") {
                 /** Контент поста */
-                val post = state.post.post
                 PostContentBlock(
-                    service = post.service,
-                    body = state.postContentClean,
-                    onOpenImage = { url -> onEvent(Event.OpenImage(url)) },
+                    blocks = state.contentBlocks,
+                    loading = state.contentBlocksLoading,
+                    onOpenImage = { url -> onEvent(Event.OpenImage(url)) }
                 )
             }
 
