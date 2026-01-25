@@ -17,7 +17,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
 import su.afk.kemonos.common.R
-import su.afk.kemonos.common.presenter.androidView.clearHtml
 import su.afk.kemonos.common.util.toUiDateTime
 import su.afk.kemonos.preferences.ui.DateFormatMode
 
@@ -28,6 +27,7 @@ internal fun PostTranslateItem(
     published: String?,
     edited: String?,
     added: String?,
+    showButtonTranslate: Boolean,
     body: String,
 
     expanded: Boolean,
@@ -69,7 +69,7 @@ internal fun PostTranslateItem(
                     }
             }
 
-            if (body.clearHtml().isNotBlank()) {
+            if (showButtonTranslate) {
                 TextButton(
                     enabled = !loading,
                     onClick = onToggleTranslate
@@ -86,7 +86,6 @@ internal fun PostTranslateItem(
                 Spacer(Modifier.width(4.dp))
 
                 IconButton(
-                    enabled = body.isNotBlank(),
                     onClick = {
                         scope.launch {
                             val clip = ClipData.newPlainText("post", body)

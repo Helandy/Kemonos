@@ -14,7 +14,6 @@ import su.afk.kemonos.common.presenter.androidView.model.PostBlock
 @Composable
 internal fun PostContentBlock(
     blocks: List<PostBlock>?,
-    loading: Boolean,
     onOpenImage: (String) -> Unit,
 ) {
     val context = LocalContext.current

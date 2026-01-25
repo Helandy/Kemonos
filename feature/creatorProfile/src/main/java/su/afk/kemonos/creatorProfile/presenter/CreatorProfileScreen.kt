@@ -1,6 +1,5 @@
 package su.afk.kemonos.creatorProfile.presenter
 
-import android.content.Intent
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.grid.LazyGridState
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -11,7 +10,6 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
-import androidx.core.net.toUri
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.paging.LoadState
 import androidx.paging.compose.LazyPagingItems
@@ -28,6 +26,7 @@ import su.afk.kemonos.common.view.postsScreen.paging.PostsTabContent
 import su.afk.kemonos.creatorProfile.presenter.model.ProfileTab
 import su.afk.kemonos.creatorProfile.presenter.view.*
 import su.afk.kemonos.creatorProfile.presenter.view.discordProfile.DiscordProfilePlaceholder
+import su.afk.kemonos.deepLink.utils.openUrlPreferChrome
 import su.afk.kemonos.domain.models.PostDomain
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -48,30 +47,7 @@ internal fun CreatorScreen(
     LaunchedEffect(viewModel) {
         viewModel.effect.collect { effect ->
             when (effect) {
-                is CreatorProfileEffect.OpenUrl -> {
-                    val uri = effect.url.toUri()
-
-                    val browserIntent = Intent(Intent.ACTION_VIEW, uri).apply {
-                        addCategory(Intent.CATEGORY_BROWSABLE)
-                        // Chrome
-                        setPackage("com.android.chrome")
-                        flags = Intent.FLAG_ACTIVITY_NEW_TASK
-                    }
-
-                    runCatching {
-                        context.startActivity(browserIntent)
-                    }.getOrElse {
-                        // если Chrome нет — покажем chooser
-                        val chooser = Intent.createChooser(
-                            Intent(Intent.ACTION_VIEW, uri).apply {
-                                addCategory(Intent.CATEGORY_BROWSABLE)
-                                flags = Intent.FLAG_ACTIVITY_NEW_TASK
-                            },
-                            "Open in browser"
-                        )
-                        context.startActivity(chooser)
-                    }
-                }
+                is CreatorProfileEffect.OpenUrl -> openUrlPreferChrome(context, effect.url)
                 is CreatorProfileEffect.ShowToast -> context.toast(effect.message)
                 is CreatorProfileEffect.CopyPostLink -> ShareActions.copyToClipboard(
                     context,
