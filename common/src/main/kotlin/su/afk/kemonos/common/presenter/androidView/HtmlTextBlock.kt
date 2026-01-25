@@ -1,6 +1,7 @@
 package su.afk.kemonos.common.presenter.androidView
 
 import android.text.SpannableString
+import android.text.SpannableStringBuilder
 import android.text.Spanned
 import android.text.method.LinkMovementMethod
 import android.text.style.URLSpan
@@ -32,7 +33,16 @@ fun HtmlTextBlock(
     val fontSizeSp = MaterialTheme.typography.bodyLarge.fontSize.value
 
     val spanned = remember(html) {
-        HtmlCompat.fromHtml(html, HtmlCompat.FROM_HTML_MODE_LEGACY)
+        val sp = HtmlCompat.fromHtml(html, HtmlCompat.FROM_HTML_MODE_LEGACY)
+
+        // Editable-версия, можно править
+        val sb = SpannableStringBuilder(sp)
+
+        // Убираем хвостовые пробелы и переводы строк
+        while (sb.isNotEmpty() && (sb[sb.length - 1] == '\n' || sb[sb.length - 1] == ' ')) {
+            sb.delete(sb.length - 1, sb.length)
+        }
+        sb
     }
 
     AndroidView(

@@ -169,7 +169,8 @@ internal fun CreatorPostScreen(state: State, onEvent: (Event) -> Unit, effect: F
                     translated = state.translateText,
                     error = state.translateError,
 
-                    onToggleTranslate = { onEvent(Event.ToggleTranslate(post.content.orEmpty())) }
+                    showButtonTranslate = state.showButtonTranslate,
+                    onToggleTranslate = { onEvent(Event.ToggleTranslate) }
                 )
             }
 
@@ -177,7 +178,6 @@ internal fun CreatorPostScreen(state: State, onEvent: (Event) -> Unit, effect: F
                 /** Контент поста */
                 PostContentBlock(
                     blocks = state.contentBlocks,
-                    loading = state.contentBlocksLoading,
                     onOpenImage = { url -> onEvent(Event.OpenImage(url)) }
                 )
             }

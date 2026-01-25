@@ -14,6 +14,7 @@ import su.afk.kemonos.common.error.IErrorHandlerUseCase
 import su.afk.kemonos.common.error.storage.RetryStorage
 import su.afk.kemonos.common.error.toFavoriteToastBar
 import su.afk.kemonos.common.presenter.androidView.cleanDuplicatedMediaFromContent
+import su.afk.kemonos.common.presenter.androidView.clearHtml
 import su.afk.kemonos.common.presenter.androidView.htmlToBlocks
 import su.afk.kemonos.common.presenter.baseViewModel.BaseViewModelNew
 import su.afk.kemonos.common.shared.ShareLinkBuilder
@@ -98,7 +99,7 @@ internal class CreatorPostViewModel @AssistedInject constructor(
 
             Event.CreatorHeaderClicked -> navigateToCreatorProfile()
 
-            is Event.ToggleTranslate -> onToggleTranslate(event.rawHtml)
+            is Event.ToggleTranslate -> onToggleTranslate()
 
             is Event.OpenImage -> navigateOpenImage(event.originalUrl)
 
@@ -147,14 +148,13 @@ internal class CreatorPostViewModel @AssistedInject constructor(
         val blocks = withContext(Dispatchers.Default) {
             htmlToBlocks(cleanContent, siteBaseUrl)
         }
+        val showButtonTranslate = post?.post?.content?.clearHtml()?.isNotBlank() ?: false
 
         setState {
             copy(
                 loading = false,
                 post = post,
-                postContentClean = cleanContent,
-
-                contentBlocksLoading = false,
+                showButtonTranslate = showButtonTranslate,
                 contentBlocks = blocks,
 
                 commentDomains = comments,
@@ -303,7 +303,10 @@ internal class CreatorPostViewModel @AssistedInject constructor(
         )
     }
 
-    fun onToggleTranslate(rawHtml: String) {
+    fun onToggleTranslate() {
+        val plainText = currentState.post?.post?.content?.preprocessForTranslation()
+        if (plainText.isNullOrEmpty()) return
+
         val nextExpanded = !currentState.translateExpanded
         setState { copy(translateExpanded = nextExpanded) }
 
@@ -312,9 +315,6 @@ internal class CreatorPostViewModel @AssistedInject constructor(
         when (currentState.uiSettingModel.translateTarget) {
             TranslateTarget.GOOGLE -> {
                 setState { copy(translateExpanded = false) }
-
-                val plainText = rawHtml.preprocessForTranslation()
-                if (plainText.isBlank()) return
 
                 setEffect(
                     Effect.OpenGoogleTranslate(
@@ -336,7 +336,7 @@ internal class CreatorPostViewModel @AssistedInject constructor(
 
             runCatching {
                 translator.translateAuto(
-                    text = rawHtml,
+                    text = plainText,
                     targetLangTag = currentState.uiSettingModel.translateLanguageTag
                 )
             }.onSuccess { text ->

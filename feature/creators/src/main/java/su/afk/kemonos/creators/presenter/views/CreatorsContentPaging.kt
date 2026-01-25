@@ -1,17 +1,14 @@
 package su.afk.kemonos.creators.presenter.views
 
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.itemKey
@@ -40,17 +37,14 @@ fun CreatorsContentPaging(
             ) {
                 randomCreatorsSection(items = randomItems, onCreatorClick = onCreatorClick, dateMode = dateMode)
 
-                item {
-                    Spacer(Modifier.height(16.dp))
-                    Text(
-                        text = stringResource(R.string.creators_title),
-                        style = MaterialTheme.typography.titleMedium,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(vertical = 8.dp),
-                        textAlign = TextAlign.Center
-                    )
-                    HorizontalDivider()
+                item(key = "all_title") {
+                    if (randomItems.isNotEmpty()) {
+                        CreatorsSectionHeader(
+                            title = stringResource(R.string.creators_title),
+                            showTopDivider = false,
+                            showBottomDivider = true
+                        )
+                    }
                 }
 
                 items(
@@ -74,7 +68,7 @@ fun CreatorsContentPaging(
         CreatorViewMode.GRID -> {
             LazyVerticalGrid(
                 state = gridState,
-                columns = GridCells.Adaptive(minSize = 150.dp),
+                columns = GridCells.Adaptive(minSize = 160.dp),
                 verticalArrangement = Arrangement.spacedBy(6.dp),
                 horizontalArrangement = Arrangement.spacedBy(6.dp),
                 contentPadding = PaddingValues(bottom = 8.dp),
@@ -82,18 +76,16 @@ fun CreatorsContentPaging(
                 randomCreatorsSection(items = randomItems, onCreatorClick = onCreatorClick, dateMode = dateMode)
 
                 item(
+                    key = "all_title",
                     span = { GridItemSpan(maxLineSpan) }
                 ) {
-                    Spacer(Modifier.height(16.dp))
-                    Text(
-                        text = stringResource(R.string.creators_title),
-                        style = MaterialTheme.typography.titleMedium,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(vertical = 8.dp),
-                        textAlign = TextAlign.Center
-                    )
-                    HorizontalDivider()
+                    if (randomItems.isNotEmpty()) {
+                        CreatorsSectionHeader(
+                            title = stringResource(R.string.creators_title),
+                            showTopDivider = false,
+                            showBottomDivider = true
+                        )
+                    }
                 }
 
                 items(

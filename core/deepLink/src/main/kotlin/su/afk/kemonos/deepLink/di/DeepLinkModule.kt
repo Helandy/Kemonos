@@ -6,6 +6,8 @@ import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import su.afk.kemonos.deepLink.handler.DeepLinkHandler
 import su.afk.kemonos.deepLink.handler.DeepLinkHandlerImpl
+import su.afk.kemonos.deepLink.passingIntent.DeepLinkPassingIntent
+import su.afk.kemonos.deepLink.passingIntent.DeepLinkPassingIntentImpl
 import su.afk.kemonos.deepLink.resolver.DeepLinkResolver
 import su.afk.kemonos.deepLink.resolver.KemonosDeepLinkResolver
 import javax.inject.Singleton
@@ -21,4 +23,8 @@ internal interface DeepLinkModule {
     @Binds
     @Singleton
     fun bindDeepLinkHandler(impl: DeepLinkHandlerImpl): DeepLinkHandler
+
+    @Binds
+    @Singleton
+    fun bindDeepLinkInterceptor(impl: DeepLinkPassingIntentImpl): DeepLinkPassingIntent
 }

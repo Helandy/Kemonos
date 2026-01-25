@@ -26,7 +26,7 @@ fun <T : Any> AdaptiveCreatorsStatic(
     showTopDivider: Boolean = true,
     listItem: @Composable (T) -> Unit,
     // grid
-    minCellSize: Dp = 150.dp,
+    minCellSize: Dp = 160.dp,
     gridSpacing: Dp = 6.dp,
     gridContentPadding: PaddingValues = PaddingValues(top = 6.dp, bottom = 12.dp),
     gridItem: @Composable (T) -> Unit,

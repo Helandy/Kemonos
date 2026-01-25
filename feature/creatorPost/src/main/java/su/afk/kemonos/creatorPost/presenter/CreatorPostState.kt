@@ -20,9 +20,8 @@ internal class CreatorPostState {
         val postId: String = "",
 
         val post: PostContentDomain? = null,
+        val showButtonTranslate: Boolean = false,
         val contentBlocks: List<PostBlock>? = null,
-        val contentBlocksLoading: Boolean = true,
-        val postContentClean: String = "",
         val commentDomains: List<CommentDomain> = emptyList(),
 
         val profile: Profile? = null,
@@ -53,7 +52,7 @@ internal class CreatorPostState {
 
         data object CreatorHeaderClicked : Event
 
-        data class ToggleTranslate(val rawHtml: String) : Event
+        data object ToggleTranslate : Event
 
         data class OpenImage(val originalUrl: String) : Event
         data class OpenExternalUrl(val url: String) : Event

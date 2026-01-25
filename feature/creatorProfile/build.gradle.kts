@@ -47,6 +47,7 @@ dependencies {
     implementation(project(":core:auth"))
     implementation(project(":core:network"))
     implementation(project(":core:preferences"))
+    implementation(project(":core:deepLink"))
 
     implementation(project(":feature:creatorProfile-api"))
     implementation(project(":storage-api"))
