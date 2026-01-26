@@ -112,7 +112,6 @@ internal fun SearchPostsScreen(
             currentTag = null,
             onPostClick = viewModel::navigateToPost,
             onRetry = { posts.retry() },
-            parseError = viewModel::parseError,
             gridState = gridState
         )
     }

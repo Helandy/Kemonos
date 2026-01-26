@@ -5,21 +5,20 @@ import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import kotlinx.coroutines.*
-import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.flow.receiveAsFlow
 import su.afk.kemonos.common.error.IErrorHandlerUseCase
 import su.afk.kemonos.common.error.storage.RetryStorage
 import su.afk.kemonos.common.error.toFavoriteToastBar
-import su.afk.kemonos.common.presenter.baseViewModel.BaseViewModel
+import su.afk.kemonos.common.presenter.baseViewModel.BaseViewModelNew
 import su.afk.kemonos.common.shared.ShareLinkBuilder
 import su.afk.kemonos.common.shared.ShareTarget
 import su.afk.kemonos.creatorProfile.api.IGetProfileUseCase
 import su.afk.kemonos.creatorProfile.api.domain.models.profileLinks.ProfileLink
 import su.afk.kemonos.creatorProfile.domain.paging.GetProfilePostsPagingUseCase
 import su.afk.kemonos.creatorProfile.navigation.CreatorDest
+import su.afk.kemonos.creatorProfile.presenter.CreatorProfileState.*
 import su.afk.kemonos.creatorProfile.presenter.delegates.LikeDelegate
 import su.afk.kemonos.creatorProfile.presenter.delegates.LoadingTabsContent
 import su.afk.kemonos.creatorProfile.presenter.delegates.NavigationDelegate
@@ -47,11 +46,35 @@ internal class CreatorProfileViewModel @AssistedInject constructor(
     private val uiSetting: IUiSettingUseCase,
     override val errorHandler: IErrorHandlerUseCase,
     override val retryStorage: RetryStorage,
-) : BaseViewModel<CreatorProfileState>(CreatorProfileState()) {
-    private val _effect = Channel<CreatorProfileEffect>(Channel.BUFFERED)
-    val effect = _effect.receiveAsFlow()
+) : BaseViewModelNew<State, Event, Effect>() {
 
     private var searchJob: Job? = null
+
+    override fun createInitialState(): State = State()
+
+    override fun onEvent(event: Event) {
+        when (event) {
+            Event.Retry -> onRetry()
+            Event.PullRefresh -> onPullRefresh()
+
+            Event.Back -> navManager.back()
+            Event.CopyProfileLink -> copyProfileLink()
+
+            is Event.OpenImage -> navigationDelegate.navigateToOpenImage(event.url)
+            is Event.OpenLinkProfile -> navigationDelegate.navigateToLinkProfile(event.link)
+            is Event.OpenPost -> navigationDelegate.navigateToPost(event.post)
+
+            is Event.TabChanged -> setState { copy(selectedTab = event.tab) }
+            is Event.TagClicked -> clickTag(event.tag)
+            Event.ClearTag -> clearTag()
+
+            Event.ToggleSearch -> setState { copy(isSearchVisible = !currentState.isSearchVisible) }
+            Event.CloseSearch -> closeSearch()
+            is Event.SearchTextChanged -> setSearchText(event.text)
+
+            Event.FavoriteClick -> onFavoriteClick()
+        }
+    }
 
     @AssistedFactory
     interface Factory {
@@ -59,12 +82,7 @@ internal class CreatorProfileViewModel @AssistedInject constructor(
     }
 
     override fun onRetry() {
-        setState { copy(loading = true) }
-        getProfileInfo()
-        setTabsToProfile()
-        isCreatorFavorite()
-        /** Загрузка постов на странице */
-        loadProfileAndPosts()
+        loadAll()
     }
 
     /** UI настройки */
@@ -78,6 +96,7 @@ internal class CreatorProfileViewModel @AssistedInject constructor(
 
     init {
         observeUiSetting()
+
         setState {
             copy(
                 service = dest.service,
@@ -87,11 +106,18 @@ internal class CreatorProfileViewModel @AssistedInject constructor(
         }
 
         if (!isDiscordProfile(dest.service)) {
+            loadAll()
+        }
+    }
+
+    private fun loadAll() {
+        viewModelScope.launch {
+            setState { copy(loading = true) }
             getProfileInfo()
             setTabsToProfile()
             isCreatorFavorite()
-            /** Загрузка постов на странице */
             loadProfileAndPosts()
+            setState { copy(loading = false) }
         }
     }
 
@@ -105,7 +131,7 @@ internal class CreatorProfileViewModel @AssistedInject constructor(
         if (currentState.discordUrlOpened) return true
 
         setState { copy(isDiscordProfile = true, loading = false, discordUrlOpened = true) }
-        _effect.trySend(CreatorProfileEffect.OpenUrl(url))
+        setEffect(Effect.OpenUrl(url))
 
         return true
     }
@@ -137,10 +163,6 @@ internal class CreatorProfileViewModel @AssistedInject constructor(
             )
         }
     }
-
-
-    /** Смена вкладки */
-    fun onTabChanged(tab: ProfileTab) = setState { copy(selectedTab = tab) }
 
     /** Какие вкладки отображать */
     fun setTabsToProfile() = viewModelScope.launch {
@@ -268,7 +290,7 @@ internal class CreatorProfileViewModel @AssistedInject constructor(
             }
             .onFailure { t ->
                 val errorMessage = errorHandler.parse(t).toFavoriteToastBar()
-                _effect.trySend(CreatorProfileEffect.ShowToast(errorMessage))
+                setEffect(Effect.ShowToast(errorMessage))
             }
         setState { copy(favoriteActionLoading = false) }
     }
@@ -297,10 +319,6 @@ internal class CreatorProfileViewModel @AssistedInject constructor(
 
     fun parseError(t: Throwable) = errorHandler.parse(t)
 
-    fun back() {
-        navManager.back()
-    }
-
     fun onPullRefresh() = viewModelScope.launch {
         val qk = queryKey(
             service = currentState.service,
@@ -310,12 +328,7 @@ internal class CreatorProfileViewModel @AssistedInject constructor(
         )
         postsCache.clearQuery(qk)
 
-        setState { copy(loading = true) }
-        getProfileInfo()
-        setTabsToProfile()
-        isCreatorFavorite()
-
-        loadProfileAndPosts()
+        loadAll()
     }
 
     /** Копирование в буфер */
@@ -327,7 +340,7 @@ internal class CreatorProfileViewModel @AssistedInject constructor(
                 userId = currentState.id
             )
         )
-        _effect.trySend(CreatorProfileEffect.CopyPostLink(url))
+        setEffect(Effect.CopyPostLink(url))
     }
 }
 

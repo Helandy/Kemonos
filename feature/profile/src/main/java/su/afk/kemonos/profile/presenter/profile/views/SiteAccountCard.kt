@@ -12,7 +12,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import su.afk.kemonos.common.util.toUiDateTime
-import su.afk.kemonos.common.utilsUI.KemonoPreviewScreen
+import su.afk.kemonos.common.utilsUI.KemonosPreviewScreen
 import su.afk.kemonos.preferences.ui.DateFormatMode
 import su.afk.kemonos.profile.R
 import su.afk.kemonos.profile.api.model.Login
@@ -88,7 +88,7 @@ internal fun SiteAccountCard(
 @Preview("SiteAccountCardPreview")
 @Composable
 private fun SiteAccountCardPreview() {
-    KemonoPreviewScreen {
+    KemonosPreviewScreen {
         SiteAccountCard(
             title = "Site Account",
             isLoggedIn = true,

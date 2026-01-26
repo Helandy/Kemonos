@@ -9,20 +9,25 @@ import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.paging.LoadState
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flowOf
 import su.afk.kemonos.common.presenter.baseScreen.BaseScreen
 import su.afk.kemonos.common.presenter.baseScreen.StandardTopBar
 import su.afk.kemonos.common.presenter.baseScreen.TopBarScroll
 import su.afk.kemonos.common.shared.ShareActions
 import su.afk.kemonos.common.shared.view.SharedActionButton
 import su.afk.kemonos.common.util.toast
+import su.afk.kemonos.common.utilsUI.KemonosPreviewScreen
 import su.afk.kemonos.common.view.button.FavoriteActionButton
 import su.afk.kemonos.common.view.creator.header.CreatorHeader
 import su.afk.kemonos.common.view.postsScreen.paging.PostsTabContent
+import su.afk.kemonos.creatorProfile.presenter.CreatorProfileState.*
+import su.afk.kemonos.creatorProfile.presenter.CreatorProfileState.State
 import su.afk.kemonos.creatorProfile.presenter.model.ProfileTab
 import su.afk.kemonos.creatorProfile.presenter.view.*
 import su.afk.kemonos.creatorProfile.presenter.view.discordProfile.DiscordProfilePlaceholder
@@ -31,10 +36,7 @@ import su.afk.kemonos.domain.models.PostDomain
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-internal fun CreatorScreen(
-    viewModel: CreatorProfileViewModel,
-) {
-    val state by viewModel.state.collectAsStateWithLifecycle()
+internal fun CreatorScreen(state: State, onEvent: (Event) -> Unit, effect: Flow<Effect>) {
     val profile = state.profile
     val context = LocalContext.current
     val posts = state.profilePosts.collectAsLazyPagingItems()
@@ -44,20 +46,19 @@ internal fun CreatorScreen(
         LazyGridState()
     }
 
-    LaunchedEffect(viewModel) {
-        viewModel.effect.collect { effect ->
-            when (effect) {
-                is CreatorProfileEffect.OpenUrl -> openUrlPreferChrome(context, effect.url)
-                is CreatorProfileEffect.ShowToast -> context.toast(effect.message)
-                is CreatorProfileEffect.CopyPostLink -> ShareActions.copyToClipboard(
-                    context,
-                    "Profile link",
-                    effect.message
-                )
-            }
+    LaunchedEffect(effect) {
+        when (effect) {
+            is Effect.OpenUrl -> openUrlPreferChrome(context, effect.url)
+            is Effect.ShowToast -> context.toast(effect.message)
+            is Effect.CopyPostLink -> ShareActions.copyToClipboard(
+                context,
+                "Profile link",
+                effect.message
+            )
         }
     }
 
+    // todo вспомнить зачем оно тут
     var lastIndex by remember { mutableIntStateOf(0) }
     var lastOffset by remember { mutableIntStateOf(0) }
     var headerVisible by remember { mutableStateOf(true) }
@@ -100,25 +101,29 @@ internal fun CreatorScreen(
                     updated = profile.updated,
                     showSearchButton = true,
                     showInfoButton = true,
-                    onSearchClick = { viewModel.toggleSearch() },
+                    onSearchClick = { onEvent(Event.ToggleSearch) },
                     onClickHeader = null,
                 )
 
                 SearchBar(
                     searchText = state.searchText,
-                    onSearchTextChange = viewModel::setSearchText,
+                    onSearchTextChange = {
+                        onEvent(Event.SearchTextChanged(it))
+                    },
                     visible = state.isSearchVisible,
-                    onClose = { viewModel.closeSearch() }
+                    onClose = {
+                        onEvent(Event.CloseSearch)
+                    }
                 )
 
                 ProfileTabsBar(
                     tabs = state.showTabs,
                     selectedTab = state.selectedTab,
                     onTabSelected = { tab ->
-                        viewModel.onTabChanged(tab)
+                        onEvent(Event.TabChanged(tab))
                     },
                     currentTag = state.currentTag,
-                    onTagClear = { viewModel.clearTag() }
+                    onTagClear = { onEvent(Event.ClearTag) }
                 )
             }
         },
@@ -126,7 +131,7 @@ internal fun CreatorScreen(
         floatingActionButtonStart = {
             if (!state.loading) {
                 SharedActionButton(
-                    onClick = { viewModel.copyProfileLink() }
+                    onClick = { onEvent(Event.CopyProfileLink) }
                 )
             }
         },
@@ -136,17 +141,21 @@ internal fun CreatorScreen(
                 FavoriteActionButton(
                     enabled = !state.favoriteActionLoading,
                     isFavorite = state.isFavorite,
-                    onFavoriteClick = { viewModel.onFavoriteClick() }
+                    onFavoriteClick = {
+                        onEvent(Event.FavoriteClick)
+                    }
                 )
             }
         },
         isLoading = (state.loading || postsRefreshing) && !state.isDiscordProfile,
         isEmpty = state.profile == null && !state.loading && !postsRefreshing,
-        onRetry = { viewModel.getProfileInfo() }
+        onRetry = {
+            onEvent(Event.Retry)
+        }
     ) {
         if (state.isDiscordProfile) {
             DiscordProfilePlaceholder(
-                onBack = { viewModel.back() }
+                onBack = { onEvent(Event.Back) },
             )
             return@BaseScreen
         }
@@ -156,11 +165,11 @@ internal fun CreatorScreen(
         PullToRefreshBox(
             state = pullState,
             isRefreshing = refreshing,
-            onRefresh = { viewModel.onPullRefresh() }
+            onRefresh = { onEvent(Event.PullRefresh) }
         ) {
             SelectedTab(
                 state = state,
-                viewModel = viewModel,
+                onEvent = onEvent,
                 posts = posts,
                 gridState = gridState,
             )
@@ -171,8 +180,8 @@ internal fun CreatorScreen(
 /** Контент выбранной вкладки */
 @Composable
 private fun SelectedTab(
-    state: CreatorProfileState,
-    viewModel: CreatorProfileViewModel,
+    state: State,
+    onEvent: (Event) -> Unit,
     posts: LazyPagingItems<PostDomain>,
     gridState: LazyGridState,
 ) {
@@ -183,9 +192,10 @@ private fun SelectedTab(
             posts = posts,
             gridState = gridState,
             currentTag = state.currentTag,
-            onPostClick = viewModel::navigateToPost,
+            onPostClick = {
+                onEvent(Event.OpenPost(it))
+            },
             onRetry = { posts.retry() },
-            parseError = viewModel::parseError,
         )
 
         ProfileTab.DMS -> DmListScreen(
@@ -202,14 +212,14 @@ private fun SelectedTab(
             dateMode = state.uiSettingModel.dateFormatMode,
             fanCards = state.fanCardsList,
             onCardClick = { imgUrl ->
-                viewModel.navigateToOpenImage(imgUrl)
+                onEvent(Event.OpenImage(imgUrl))
             }
         )
 
         ProfileTab.TAGS -> TagsScreen(
             tags = state.profileTags,
             onTagClick = { tag ->
-                viewModel.clickTag(tag)
+                onEvent(Event.TagClicked(tag))
             }
         )
 
@@ -217,10 +227,20 @@ private fun SelectedTab(
             dateMode = state.uiSettingModel.dateFormatMode,
             links = state.profileLinks,
             onClick = { openProfile ->
-                viewModel.navigateToLinkProfile(openProfile)
+                onEvent(Event.OpenLinkProfile(openProfile))
             }
         )
     }
 }
 
-
+@Preview("PreviewCreatorScreen")
+@Composable
+private fun PreviewCreatorScreen() {
+    KemonosPreviewScreen {
+        CreatorScreen(
+            state = State(),
+            onEvent = {},
+            effect = flowOf()
+        )
+    }
+}

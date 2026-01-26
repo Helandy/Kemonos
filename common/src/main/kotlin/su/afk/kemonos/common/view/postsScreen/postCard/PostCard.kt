@@ -18,7 +18,7 @@ import androidx.compose.ui.unit.dp
 import su.afk.kemonos.common.R
 import su.afk.kemonos.common.di.LocalDomainResolver
 import su.afk.kemonos.common.util.toUiDateTime
-import su.afk.kemonos.common.utilsUI.KemonoPreviewScreen
+import su.afk.kemonos.common.utilsUI.KemonosPreviewScreen
 import su.afk.kemonos.domain.models.PostDomain
 import su.afk.kemonos.preferences.ui.DateFormatMode
 
@@ -102,7 +102,7 @@ fun PostCard(
 @Preview("PreviewPostCard")
 @Composable
 private fun PreviewPostCard() {
-    KemonoPreviewScreen {
+    KemonosPreviewScreen {
         PostCard(
             dateMode = DateFormatMode.DD_MM_YYYY,
             post = PostDomain.default(),

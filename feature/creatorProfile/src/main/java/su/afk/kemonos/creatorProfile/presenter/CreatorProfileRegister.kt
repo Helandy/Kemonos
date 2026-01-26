@@ -8,6 +8,7 @@ import androidx.navigation3.runtime.EntryProviderScope
 import androidx.navigation3.runtime.NavKey
 import dagger.hilt.android.EntryPointAccessors
 import jakarta.inject.Inject
+import su.afk.kemonos.common.presenter.baseScreen.ScreenNavigator
 import su.afk.kemonos.creatorProfile.di.CreatorProfileVmFactoryEntryPoint
 import su.afk.kemonos.creatorProfile.navigation.CreatorDest
 import su.afk.kemonos.navigation.NavRegistrar
@@ -31,8 +32,8 @@ private fun CreatorProfileEntry(dest: CreatorDest.CreatorProfile) {
     )
     val assistedFactory = entryPoint.creatorProfileVmFactory()
 
-    val vm: CreatorProfileViewModel = viewModel(
-        key = "CreatorProfile:${dest}",
+    val viewModel: CreatorProfileViewModel = viewModel(
+        key = "CreatorProfile:$dest",
         factory = object : ViewModelProvider.Factory {
             @Suppress("UNCHECKED_CAST")
             override fun <T : androidx.lifecycle.ViewModel> create(modelClass: Class<T>): T {
@@ -41,5 +42,11 @@ private fun CreatorProfileEntry(dest: CreatorDest.CreatorProfile) {
         }
     )
 
-    CreatorScreen(viewModel = vm)
+    ScreenNavigator(viewModel) { state, effect, event ->
+        CreatorScreen(
+            state = state,
+            onEvent = event,
+            effect = effect,
+        )
+    }
 }

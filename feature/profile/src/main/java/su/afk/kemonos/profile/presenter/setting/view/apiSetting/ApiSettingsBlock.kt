@@ -10,7 +10,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import su.afk.kemonos.common.R
-import su.afk.kemonos.common.utilsUI.KemonoPreviewScreen
+import su.afk.kemonos.common.utilsUI.KemonosPreviewScreen
 import su.afk.kemonos.common.view.input.BaseUrlDomainField
 import su.afk.kemonos.profile.presenter.setting.SettingState.State
 
@@ -116,7 +116,7 @@ internal fun ApiSettingsBlock(
 @Preview("PreviewApiSettingsBlock")
 @Composable
 private fun PreviewApiSettingsBlock() {
-    KemonoPreviewScreen {
+    KemonosPreviewScreen {
         ApiSettingsBlock(
             state = State(),
             onKemonoChanged = {},

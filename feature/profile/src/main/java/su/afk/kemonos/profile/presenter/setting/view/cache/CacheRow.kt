@@ -9,7 +9,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import su.afk.kemonos.common.util.toUiDateTime
-import su.afk.kemonos.common.utilsUI.KemonoPreviewScreen
+import su.afk.kemonos.common.utilsUI.KemonosPreviewScreen
 import su.afk.kemonos.preferences.model.CacheTimeUi
 import su.afk.kemonos.preferences.ui.DateFormatMode
 import su.afk.kemonos.profile.R
@@ -74,7 +74,7 @@ internal fun CacheRow(
 @Preview("PreviewCacheRow")
 @Composable
 private fun PreviewCacheRow() {
-    KemonoPreviewScreen {
+    KemonosPreviewScreen {
         CacheRow(
             dateFormatMode = DateFormatMode.DD_MM_YYYY,
             title = "Title",

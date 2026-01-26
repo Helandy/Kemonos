@@ -17,7 +17,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import su.afk.kemonos.common.R
-import su.afk.kemonos.common.utilsUI.KemonoPreviewScreen
+import su.afk.kemonos.common.utilsUI.KemonosPreviewScreen
 
 @Composable
 internal fun FaqBlock(
@@ -103,7 +103,7 @@ internal fun FaqBlock(
 @Preview("PreviewFaqBlock")
 @Composable
 private fun PreviewFaqBlock() {
-    KemonoPreviewScreen {
+    KemonosPreviewScreen {
         FaqBlock()
     }
 }
@@ -111,7 +111,7 @@ private fun PreviewFaqBlock() {
 @Preview("PreviewFaqBlockExpanded")
 @Composable
 private fun PreviewFaqBlockExpanded() {
-    KemonoPreviewScreen {
+    KemonosPreviewScreen {
         FaqBlock(true)
     }
 }

@@ -24,7 +24,7 @@ import su.afk.kemonos.common.di.LocalDomainResolver
 import su.afk.kemonos.common.imageLoader.AsyncImageWithStatus
 import su.afk.kemonos.common.util.getColorForFavorites
 import su.afk.kemonos.common.util.toUiDateTime
-import su.afk.kemonos.common.utilsUI.KemonoPreviewScreen
+import su.afk.kemonos.common.utilsUI.KemonosPreviewScreen
 import su.afk.kemonos.preferences.ui.DateFormatMode
 
 @Composable
@@ -171,7 +171,7 @@ fun CreatorHeader(
 @Preview("PreviewCreatorHeader")
 @Composable
 private fun PreviewCreatorHeader() {
-    KemonoPreviewScreen {
+    KemonosPreviewScreen {
         CreatorHeader(
             dateMode = DateFormatMode.DD_MM_YYYY,
             service = "creator",

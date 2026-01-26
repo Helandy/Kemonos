@@ -1,7 +1,7 @@
 package su.afk.kemonos.creatorProfile.presenter.delegates
 
 import su.afk.kemonos.creatorProfile.domain.useCase.*
-import su.afk.kemonos.creatorProfile.presenter.CreatorProfileState
+import su.afk.kemonos.creatorProfile.presenter.CreatorProfileState.State
 import su.afk.kemonos.creatorProfile.presenter.model.ProfileTab
 import javax.inject.Inject
 
@@ -15,7 +15,7 @@ internal class LoadingTabsContent @Inject constructor(
 
     /** Получение Линков */
     suspend fun checkLinks(
-        setState: (CreatorProfileState.() -> CreatorProfileState) -> Unit,
+        setState: (State.() -> State) -> Unit,
         service: String,
         id: String,
     ) {
@@ -35,7 +35,7 @@ internal class LoadingTabsContent @Inject constructor(
 
     /** Получение Тэгов */
     suspend fun checkTags(
-        setState: (CreatorProfileState.() -> CreatorProfileState) -> Unit,
+        setState: (State.() -> State) -> Unit,
         service: String,
         id: String
     ) {
@@ -56,7 +56,7 @@ internal class LoadingTabsContent @Inject constructor(
 
     /** Получение Анонсов */
     suspend fun checkAnnouncements(
-        setState: (CreatorProfileState.() -> CreatorProfileState) -> Unit,
+        setState: (State.() -> State) -> Unit,
         service: String,
         id: String
     ) {
@@ -77,7 +77,7 @@ internal class LoadingTabsContent @Inject constructor(
 
     /** Получение Фанкарт */
     suspend fun checkFanCard(
-        setState: (CreatorProfileState.() -> CreatorProfileState) -> Unit,
+        setState: (State.() -> State) -> Unit,
         service: String,
         id: String
     ) {
@@ -99,7 +99,7 @@ internal class LoadingTabsContent @Inject constructor(
     /** Получение сообщение ЛС */
     suspend fun checkDms(
         countDm: Int?,
-        setState: (CreatorProfileState.() -> CreatorProfileState) -> Unit,
+        setState: (State.() -> State) -> Unit,
         service: String,
         id: String
     ) {

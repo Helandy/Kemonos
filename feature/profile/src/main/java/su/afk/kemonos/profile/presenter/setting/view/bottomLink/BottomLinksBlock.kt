@@ -13,7 +13,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import su.afk.kemonos.common.utilsUI.KemonoPreviewScreen
+import su.afk.kemonos.common.utilsUI.KemonosPreviewScreen
 import su.afk.kemonos.deepLink.utils.openUrlPreferChrome
 import su.afk.kemonos.profile.BuildConfig
 import su.afk.kemonos.profile.R
@@ -89,7 +89,7 @@ internal fun BottomLinksBlock(
 @Preview("PreviewBottomLinksBlock")
 @Composable
 private fun PreviewBottomLinksBlock() {
-    KemonoPreviewScreen {
+    KemonosPreviewScreen {
         BottomLinksBlock(
             kemonoUrl = "",
             coomerUrl = "",

@@ -10,6 +10,9 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Modifier
 import coil3.ImageLoader
 import su.afk.kemonos.common.di.LocalDomainResolver
+import su.afk.kemonos.common.error.ErrorMapper
+import su.afk.kemonos.common.error.IErrorHandlerUseCase
+import su.afk.kemonos.common.error.LocalErrorMapper
 import su.afk.kemonos.common.imageLoader.LocalAppImageLoader
 import su.afk.kemonos.common.presenter.baseScreen.LocalAppScaffoldPadding
 import su.afk.kemonos.common.video.LocalVideoFrameCache
@@ -28,6 +31,7 @@ class MainRoutingGraph @Inject constructor(
     private val domainResolver: IDomainResolver,
     private val imageLoader: ImageLoader,
     private val videoFrameCache: IVideoFrameCache,
+    private val errorHandler: IErrorHandlerUseCase,
     private val navManager: NavigationManager,
     private val registrars: Set<@JvmSuppressWildcards NavRegistrar>
 ) {
@@ -55,7 +59,8 @@ class MainRoutingGraph @Inject constructor(
                     LocalAppScaffoldPadding provides innerPadding,
                     LocalDomainResolver provides domainResolver,
                     LocalAppImageLoader provides imageLoader,
-                    LocalVideoFrameCache provides videoFrameCache
+                    LocalVideoFrameCache provides videoFrameCache,
+                    LocalErrorMapper provides ErrorMapper { t -> errorHandler.parse(t) },
                 ) {
                     AppNavHost(
                         navManager = navManager,

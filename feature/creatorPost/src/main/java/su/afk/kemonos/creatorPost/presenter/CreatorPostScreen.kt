@@ -26,7 +26,7 @@ import su.afk.kemonos.common.util.buildDataUrl
 import su.afk.kemonos.common.util.limitForToast
 import su.afk.kemonos.common.util.openAudioExternally
 import su.afk.kemonos.common.util.toast
-import su.afk.kemonos.common.utilsUI.KemonoPreviewScreen
+import su.afk.kemonos.common.utilsUI.KemonosPreviewScreen
 import su.afk.kemonos.common.view.button.FavoriteActionButton
 import su.afk.kemonos.common.view.creator.header.CreatorHeader
 import su.afk.kemonos.creatorPost.presenter.CreatorPostState.*
@@ -253,7 +253,7 @@ internal fun CreatorPostScreen(state: State, onEvent: (Event) -> Unit, effect: F
 @Preview("PreviewCreatorPostScreen")
 @Composable
 private fun PreviewCreatorPostScreen() {
-    KemonoPreviewScreen {
+    KemonosPreviewScreen {
         CreatorPostScreen(
             state = State().copy(loading = false),
             onEvent = {},
