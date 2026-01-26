@@ -20,7 +20,6 @@ import su.afk.kemonos.domain.models.ErrorItem
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun BaseScreen(
-    modifier: Modifier = Modifier,
     /** content */
     contentAlignment: Alignment = Alignment.TopStart,
     contentModifier: Modifier = Modifier,
@@ -31,8 +30,9 @@ fun BaseScreen(
     contentPadding: PaddingValues = PaddingValues(0.dp),
 
     /** top */
-    topBar: (@Composable (TopAppBarScrollBehavior?) -> Unit)? = null,
+    topBar: (@Composable ColumnScope.() -> Unit)? = null,
     topBarScroll: TopBarScroll = TopBarScroll.None,
+    topBarWindowInsets: WindowInsets = TopAppBarDefaults.windowInsets,
 
     /** state */
     error: ErrorItem? = null,
@@ -49,80 +49,91 @@ fun BaseScreen(
     floatingActionButtonEnd: (@Composable () -> Unit)? = null,
     floatingActionButtonStart: (@Composable () -> Unit)? = null,
     floatingActionButtonBottomPadding: Dp = 0.dp,
-    fabApplyScaffoldPadding: Boolean = true,
 
-    applyScaffoldPadding: Boolean = true,
+    contentWindowInsets: WindowInsets = WindowInsets.safeDrawing,
     content: @Composable ColumnScope.() -> Unit,
 ) {
-    val scaffoldPadding = LocalAppScaffoldPadding.current
-    val bottomInset = if (fabApplyScaffoldPadding) scaffoldPadding.calculateBottomPadding() else 0.dp
+    val topAppBarState = rememberTopAppBarState()
 
-    val sb = when (topBarScroll) {
+    val scrollBehavior = when (topBarScroll) {
         TopBarScroll.None -> null
-        TopBarScroll.EnterAlways -> TopAppBarDefaults.enterAlwaysScrollBehavior()
-        TopBarScroll.ExitUntilCollapsed -> TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
-        TopBarScroll.Pinned -> TopAppBarDefaults.pinnedScrollBehavior()
+        TopBarScroll.EnterAlways ->
+            TopAppBarDefaults.enterAlwaysScrollBehavior(topAppBarState)
+
+        TopBarScroll.ExitUntilCollapsed ->
+            TopAppBarDefaults.exitUntilCollapsedScrollBehavior(topAppBarState)
+
+        TopBarScroll.Pinned ->
+            TopAppBarDefaults.pinnedScrollBehavior(topAppBarState)
     }
 
-    Surface(
-        modifier = modifier
+    Scaffold(
+        contentWindowInsets = contentWindowInsets,
+        modifier = Modifier
             .fillMaxSize()
-            .let { if (sb != null) it.nestedScroll(sb.nestedScrollConnection) else it },
-        color = containerColor
-    ) {
-        Box(Modifier.fillMaxSize()) {
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .then(if (applyScaffoldPadding) Modifier.padding(scaffoldPadding) else Modifier)
-            ) {
-                if (topBar != null) topBar(sb)
-
-                val base = contentModifier
-                    .fillMaxSize()
-                    .padding(contentPadding)
-
-                val bodyModifier =
-                    if (isScroll) base.verticalScroll(rememberScrollState()) else base
-
-                when {
-                    error != null -> (errorContent ?: { e, retry ->
-                        DefaultErrorContent(
-                            errorItem = e,
-                            onRetry = retry,
-                            onBack = onBack,
-                        )
-                    })(error, onRetry)
-                    isLoading -> (loadingContent ?: { DefaultLoadingContent() })()
-                    isEmpty -> (emptyContent ?: { DefaultEmptyContent() })()
-                    else -> {
-                        Box(
-                            modifier = bodyModifier,
-                            contentAlignment = contentAlignment
-                        ) {
-                            Column(
-                                modifier = Modifier.fillMaxWidth(),
-                                content = content
-                            )
-                        }
-                    }
-                }
+            .let {
+                if (scrollBehavior != null)
+                    it.nestedScroll(scrollBehavior.nestedScrollConnection)
+                else it
+            },
+        topBar = {
+            topBar?.let { slot ->
+                StandardTopBar(
+                    content = { slot() },
+                    scrollBehavior = scrollBehavior,
+                    topBarWindowInsets = topBarWindowInsets
+                )
             }
+        },
 
+        floatingActionButton = {
             if (floatingActionButtonStart != null || floatingActionButtonEnd != null) {
                 Row(
                     modifier = Modifier
-                        .align(Alignment.BottomCenter)
                         .fillMaxWidth()
                         .padding(
                             start = 4.dp,
                             end = 4.dp,
-                            bottom = bottomInset + floatingActionButtonBottomPadding
+                            bottom = floatingActionButtonBottomPadding
                         ),
-                    horizontalArrangement = Arrangement.SpaceBetween
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.Bottom
                 ) {
                     Box { floatingActionButtonStart?.invoke() }
                     Box { floatingActionButtonEnd?.invoke() }
+                }
+            }
+        },
+        floatingActionButtonPosition = FabPosition.Center,
+    ) { innerPadding ->
+        val base = contentModifier
+            .fillMaxSize()
+            .padding(innerPadding)
+            .padding(contentPadding)
+
+        val bodyModifier = if (isScroll) base.verticalScroll(rememberScrollState()) else base
+
+        when {
+            error != null -> (errorContent ?: { e, retry ->
+                DefaultErrorContent(
+                    errorItem = e,
+                    onRetry = retry,
+                    onBack = onBack,
+                )
+            })(error, onRetry)
+
+            isLoading -> (loadingContent ?: { DefaultLoadingContent() })()
+            isEmpty -> (emptyContent ?: { DefaultEmptyContent() })()
+
+            else -> {
+                Box(
+                    modifier = bodyModifier,
+                    contentAlignment = contentAlignment
+                ) {
+                    Column(
+                        modifier = Modifier.fillMaxSize(),
+                        content = content
+                    )
                 }
             }
         }

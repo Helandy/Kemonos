@@ -1,6 +1,6 @@
 package su.afk.kemonos.profile.presenter.favoriteProfiles
 
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
@@ -10,7 +10,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import su.afk.kemonos.common.presenter.baseScreen.BaseScreen
-import su.afk.kemonos.common.presenter.baseScreen.StandardTopBar
 import su.afk.kemonos.common.presenter.baseScreen.TopBarScroll
 import su.afk.kemonos.common.view.creator.AdaptiveCreatorsStatic
 import su.afk.kemonos.common.view.creator.grid.CreatorGridItem
@@ -35,24 +34,19 @@ internal fun FavoriteProfilesScreen(viewModel: FavoriteProfilesViewModel) {
         isScroll = false,
         floatingActionButtonBottomPadding = 12.dp,
         topBarScroll = TopBarScroll.EnterAlways,
-        topBar = { scrollBehavior ->
-            StandardTopBar(
-                scrollBehavior = scrollBehavior,
-                windowInsets = WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)
-            ) {
-                SearchBarNew(
-                    query = state.searchQuery,
-                    onQueryChange = viewModel::updateSearch,
-                    services = viewModel.getServices(),
-                    selectedService = state.selectedService,
-                    onServiceSelect = viewModel::setService,
-                    sortOptions = sortOptions,
-                    selectedSort = state.sortedType,
-                    onSortMethodSelect = viewModel::setSortType,
-                    isAscending = state.sortAscending,
-                    onToggleAscending = viewModel::toggleSortOrder,
-                )
-            }
+        topBar = {
+            SearchBarNew(
+                query = state.searchQuery,
+                onQueryChange = viewModel::updateSearch,
+                services = viewModel.getServices(),
+                selectedService = state.selectedService,
+                onServiceSelect = viewModel::setService,
+                sortOptions = sortOptions,
+                selectedSort = state.sortedType,
+                onSortMethodSelect = viewModel::setSortType,
+                isAscending = state.sortAscending,
+                onToggleAscending = viewModel::toggleSortOrder,
+            )
         },
         isLoading = state.loading,
         isEmpty = state.searchCreators.isEmpty() && state.searchQuery.length >= 2,

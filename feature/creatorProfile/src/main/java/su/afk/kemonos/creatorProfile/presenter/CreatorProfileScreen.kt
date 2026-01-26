@@ -1,6 +1,6 @@
 package su.afk.kemonos.creatorProfile.presenter
 
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.LazyGridState
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
@@ -17,7 +17,6 @@ import androidx.paging.compose.collectAsLazyPagingItems
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
 import su.afk.kemonos.common.presenter.baseScreen.BaseScreen
-import su.afk.kemonos.common.presenter.baseScreen.StandardTopBar
 import su.afk.kemonos.common.presenter.baseScreen.TopBarScroll
 import su.afk.kemonos.common.shared.ShareActions
 import su.afk.kemonos.common.shared.view.SharedActionButton
@@ -86,13 +85,8 @@ internal fun CreatorScreen(state: State, onEvent: (Event) -> Unit, effect: Flow<
     BaseScreen(
         isScroll = false,
         topBarScroll = TopBarScroll.EnterAlways,
-        topBar = { scrollBehavior ->
-            StandardTopBar(
-                scrollBehavior = scrollBehavior,
-                windowInsets = WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)
-            ) {
-                if (profile == null) return@StandardTopBar
-
+        topBar = {
+            if (profile == null) return@BaseScreen
                 CreatorHeader(
                     dateMode = state.uiSettingModel.dateFormatMode,
                     service = profile.service,
@@ -125,7 +119,6 @@ internal fun CreatorScreen(state: State, onEvent: (Event) -> Unit, effect: Flow<
                     currentTag = state.currentTag,
                     onTagClear = { onEvent(Event.ClearTag) }
                 )
-            }
         },
         contentModifier = Modifier.padding(horizontal = 8.dp),
         floatingActionButtonStart = {

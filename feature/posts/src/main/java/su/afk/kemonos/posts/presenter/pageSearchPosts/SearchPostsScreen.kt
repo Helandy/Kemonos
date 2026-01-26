@@ -1,6 +1,9 @@
 package su.afk.kemonos.posts.presenter.pageSearchPosts
 
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.LazyGridState
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.material.icons.Icons
@@ -18,7 +21,6 @@ import androidx.paging.LoadState
 import androidx.paging.compose.collectAsLazyPagingItems
 import su.afk.kemonos.common.R
 import su.afk.kemonos.common.presenter.baseScreen.BaseScreen
-import su.afk.kemonos.common.presenter.baseScreen.StandardTopBar
 import su.afk.kemonos.common.presenter.baseScreen.TopBarScroll
 import su.afk.kemonos.common.presenter.changeSite.SiteToggleFab
 import su.afk.kemonos.common.view.button.RandomFab
@@ -49,42 +51,38 @@ internal fun SearchPostsScreen(
     val showRandomFab = placement == RandomButtonPlacement.SCREEN
 
     BaseScreen(
+        topBarWindowInsets = WindowInsets(0),
+        contentWindowInsets = WindowInsets(0),
+        topBarScroll = TopBarScroll.EnterAlways,
         contentPadding = PaddingValues(horizontal = 8.dp),
         isScroll = false,
-        applyScaffoldPadding = false,
-        topBarScroll = TopBarScroll.EnterAlways,
-        topBar = { scrollBehavior ->
-            StandardTopBar(
-                scrollBehavior = scrollBehavior,
-                windowInsets = WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal),
-            ) {
-                OutlinedTextField(
-                    value = state.searchQuery,
-                    onValueChange = viewModel::onSearchQueryChanged,
-                    label = { Text(stringResource(R.string.search)) },
-                    singleLine = true,
-                    modifier = Modifier.fillMaxWidth().padding(bottom = 6.dp),
-                    trailingIcon = {
-                        if (showRandomInSearchBar) {
-                            IconButton(
-                                onClick = { viewModel.randomPost() },
-                                enabled = !isBusy,
-                            ) {
-                                Icon(
-                                    imageVector = Icons.Filled.Casino,
-                                    contentDescription = stringResource(R.string.random),
-                                    tint = MaterialTheme.colorScheme.primary
-                                )
-                            }
+        topBar = {
+            OutlinedTextField(
+                value = state.searchQuery,
+                onValueChange = viewModel::onSearchQueryChanged,
+                label = { Text(stringResource(R.string.search)) },
+                singleLine = true,
+                modifier = Modifier.fillMaxWidth().padding(bottom = 6.dp),
+                trailingIcon = {
+                    if (showRandomInSearchBar) {
+                        IconButton(
+                            onClick = { viewModel.randomPost() },
+                            enabled = !isBusy,
+                        ) {
+                            Icon(
+                                imageVector = Icons.Filled.Casino,
+                                contentDescription = stringResource(R.string.random),
+                                tint = MaterialTheme.colorScheme.primary
+                            )
                         }
-                    },
-                    keyboardActions = KeyboardActions(
-                        onSearch = {
-                            focusManager.clearFocus()
-                        }
-                    )
+                    }
+                },
+                keyboardActions = KeyboardActions(
+                    onSearch = {
+                        focusManager.clearFocus()
+                    }
                 )
-            }
+            )
         },
         floatingActionButtonStart = {
             SiteToggleFab(
@@ -101,7 +99,6 @@ internal fun SearchPostsScreen(
                 )
             }
         },
-        fabApplyScaffoldPadding = false,
         floatingActionButtonBottomPadding = 12.dp,
     ) {
         /** Контент */

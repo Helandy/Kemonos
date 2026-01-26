@@ -1,8 +1,6 @@
 package su.afk.kemonos
 
-import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
@@ -14,7 +12,6 @@ import su.afk.kemonos.common.error.ErrorMapper
 import su.afk.kemonos.common.error.IErrorHandlerUseCase
 import su.afk.kemonos.common.error.LocalErrorMapper
 import su.afk.kemonos.common.imageLoader.LocalAppImageLoader
-import su.afk.kemonos.common.presenter.baseScreen.LocalAppScaffoldPadding
 import su.afk.kemonos.common.video.LocalVideoFrameCache
 import su.afk.kemonos.navigation.AppNavHost
 import su.afk.kemonos.navigation.NavRegistrar
@@ -39,12 +36,10 @@ class MainRoutingGraph @Inject constructor(
     @Composable
     fun MainGraph() {
         KemonosTheme {
-            val background = MaterialTheme.colorScheme.background
-
             Scaffold(
-                modifier = Modifier.fillMaxSize(),
-                containerColor = background,
-                contentWindowInsets = WindowInsets.safeDrawing,
+//                modifier = Modifier.fillMaxSize(),
+//                contentWindowInsets = WindowInsets.safeDrawing,
+                containerColor = MaterialTheme.colorScheme.background,
                 bottomBar = {
                     val inTabs = navManager.startAppBackStack.isEmpty()
                     if (inTabs) {
@@ -54,9 +49,8 @@ class MainRoutingGraph @Inject constructor(
                         )
                     }
                 }
-            ) { innerPadding ->
+            ) {
                 CompositionLocalProvider(
-                    LocalAppScaffoldPadding provides innerPadding,
                     LocalDomainResolver provides domainResolver,
                     LocalAppImageLoader provides imageLoader,
                     LocalVideoFrameCache provides videoFrameCache,

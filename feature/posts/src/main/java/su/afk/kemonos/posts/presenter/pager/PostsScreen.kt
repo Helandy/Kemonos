@@ -1,6 +1,6 @@
 package su.afk.kemonos.posts.presenter.pager
 
-import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -13,6 +13,7 @@ import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kotlinx.coroutines.flow.distinctUntilChanged
 import su.afk.kemonos.common.presenter.baseScreen.BaseScreen
+import su.afk.kemonos.common.presenter.baseScreen.TopBarScroll
 import su.afk.kemonos.posts.presenter.pagePopularPosts.PopularPostsNavigation
 import su.afk.kemonos.posts.presenter.pageSearchPosts.SearchPostsNavigation
 import su.afk.kemonos.posts.presenter.pageTags.TagsPageNavigation
@@ -51,7 +52,10 @@ internal fun PostsScreen(viewModel: PostsPagerViewModel) {
 
     val saveableStateHolder = rememberSaveableStateHolder()
 
-    BaseScreen(isScroll = false) {
+    BaseScreen(
+        isScroll = false,
+        topBarScroll = TopBarScroll.None,
+    ) {
         PagerTabs(
             currentPage = state.currentPage,
             onTabSelected = { page ->
@@ -61,7 +65,7 @@ internal fun PostsScreen(viewModel: PostsPagerViewModel) {
 
         HorizontalPager(
             state = pagerState,
-            modifier = Modifier.fillMaxSize()
+            modifier = Modifier.fillMaxWidth().weight(1f)
         ) { pageIndex ->
             val page = pages.getOrNull(pageIndex) ?: PostsPage.Popular
 

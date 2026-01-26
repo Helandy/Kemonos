@@ -1,6 +1,6 @@
 package su.afk.kemonos.creators.presenter
 
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.grid.LazyGridState
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -17,7 +17,6 @@ import androidx.paging.compose.collectAsLazyPagingItems
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
 import su.afk.kemonos.common.presenter.baseScreen.BaseScreen
-import su.afk.kemonos.common.presenter.baseScreen.StandardTopBar
 import su.afk.kemonos.common.presenter.baseScreen.TopBarScroll
 import su.afk.kemonos.common.presenter.changeSite.SiteToggleFab
 import su.afk.kemonos.common.view.button.RandomFab
@@ -76,11 +75,7 @@ internal fun CreatorsScreen(
         contentModifier = Modifier.padding(horizontal = 8.dp),
         floatingActionButtonBottomPadding = 12.dp,
         topBarScroll = TopBarScroll.EnterAlways,
-        topBar = { scrollBehavior ->
-            StandardTopBar(
-                scrollBehavior = scrollBehavior,
-                windowInsets = WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)
-            ) {
+        topBar = {
                 SearchBarNew(
                     query = state.searchQuery,
                     onQueryChange = { onEvent(Event.QueryChanged(it)) },
@@ -95,7 +90,6 @@ internal fun CreatorsScreen(
                     showRandom = showRandomInSearch && !isBusy,
                     onRandomClick = { onEvent(Event.RandomClicked) },
                 )
-            }
         },
         floatingActionButtonStart = {
             SiteToggleFab(
