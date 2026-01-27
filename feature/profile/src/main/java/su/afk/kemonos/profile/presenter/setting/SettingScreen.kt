@@ -10,7 +10,7 @@ import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import su.afk.kemonos.common.presenter.baseScreen.BaseScreen
-import su.afk.kemonos.common.utilsUI.KemonoPreviewScreen
+import su.afk.kemonos.common.utilsUI.KemonosPreviewScreen
 import su.afk.kemonos.profile.presenter.setting.SettingState.Event
 import su.afk.kemonos.profile.presenter.setting.SettingState.State
 import su.afk.kemonos.profile.presenter.setting.view.apiSetting.ApiSettingsBlock
@@ -68,7 +68,7 @@ internal fun SettingScreen(state: State, onEvent: (Event) -> Unit) {
 @Preview("PreviewSettingScreen")
 @Composable
 private fun PreviewSettingScreen() {
-    KemonoPreviewScreen {
+    KemonosPreviewScreen {
         SettingScreen(
             state = State().copy(loading = false),
             onEvent = {},

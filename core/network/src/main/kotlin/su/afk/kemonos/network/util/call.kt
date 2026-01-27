@@ -21,3 +21,12 @@ inline fun <T, R> Response<T>.callOrNull(mapper: (T) -> R): R? =
     }
 
 fun Response<Unit>.successOrFalse(): Boolean = isSuccessful
+
+suspend inline fun <T, R> safeCallOrNull(
+    crossinline api: suspend () -> Response<T>,
+    crossinline mapper: (T) -> R
+): R? = try {
+    api().call(mapper)
+} catch (_: Exception) {
+    null
+}

@@ -13,6 +13,7 @@ android {
 
     defaultConfig {
         applicationId = "su.afk.kemonos"
+        testApplicationId = "su.afk.kemonos.test"
 
         minSdk = libs.versions.minSdk.get().toInt()
         targetSdk = libs.versions.compileSdk.get().toInt()

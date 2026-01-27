@@ -23,7 +23,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import su.afk.kemonos.common.R
 import su.afk.kemonos.common.presenter.baseScreen.BaseScreen
-import su.afk.kemonos.common.presenter.baseScreen.StandardTopBar
+import su.afk.kemonos.common.presenter.baseScreen.TopBarScroll
 import su.afk.kemonos.common.presenter.changeSite.SiteToggleFab
 import su.afk.kemonos.posts.api.tags.Tags
 
@@ -46,27 +46,24 @@ internal fun TagsPageScreen(
     val focusManager = LocalFocusManager.current
 
     BaseScreen(
+        topBarWindowInsets = WindowInsets(0),
+        contentWindowInsets = WindowInsets(0),
+        topBarScroll = TopBarScroll.EnterAlways,
         contentPadding = PaddingValues(horizontal = 8.dp),
-        applyScaffoldPadding = false,
         isScroll = false,
-        topBar = { scrollBehavior ->
-            StandardTopBar(
-                scrollBehavior = scrollBehavior,
-                windowInsets = WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal),
-            ) {
-                OutlinedTextField(
-                    value = state.searchQuery,
-                    onValueChange = viewModel::onSearchQueryChanged,
-                    label = { Text(stringResource(R.string.search)) },
-                    singleLine = true,
-                    modifier = Modifier.fillMaxWidth().padding(bottom = 6.dp),
-                    keyboardActions = KeyboardActions(
-                        onSearch = {
-                            focusManager.clearFocus()
-                        }
-                    )
+        topBar = {
+            OutlinedTextField(
+                value = state.searchQuery,
+                onValueChange = viewModel::onSearchQueryChanged,
+                label = { Text(stringResource(R.string.search)) },
+                singleLine = true,
+                modifier = Modifier.fillMaxWidth().padding(bottom = 6.dp),
+                keyboardActions = KeyboardActions(
+                    onSearch = {
+                        focusManager.clearFocus()
+                    }
                 )
-            }
+            )
         },
         floatingActionButtonStart = {
             SiteToggleFab(
@@ -75,7 +72,6 @@ internal fun TagsPageScreen(
                 onToggleSite = viewModel::switchSite,
             )
         },
-        fabApplyScaffoldPadding = false,
         floatingActionButtonBottomPadding = 12.dp,
         isLoading = isBusy,
     ) {

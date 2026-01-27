@@ -1,6 +1,7 @@
 package su.afk.kemonos.posts.presenter.pagePopularPosts
 
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.lazy.grid.LazyGridState
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable
@@ -11,7 +12,6 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.paging.LoadState
 import androidx.paging.compose.collectAsLazyPagingItems
 import su.afk.kemonos.common.presenter.baseScreen.BaseScreen
-import su.afk.kemonos.common.presenter.baseScreen.StandardTopBar
 import su.afk.kemonos.common.presenter.baseScreen.TopBarScroll
 import su.afk.kemonos.common.presenter.changeSite.SiteToggleFab
 import su.afk.kemonos.common.view.postsScreen.paging.PostsTabContent
@@ -36,22 +36,18 @@ internal fun PopularPostsScreen(
     }
 
     BaseScreen(
-        contentPadding = PaddingValues(horizontal = 8.dp),
-        applyScaffoldPadding = false,
-        isScroll = false,
+        topBarWindowInsets = WindowInsets(0),
+        contentWindowInsets = WindowInsets(0),
         topBarScroll = TopBarScroll.EnterAlways,
-        topBar = { scrollBehavior ->
-            StandardTopBar(
-                scrollBehavior = scrollBehavior,
-                windowInsets = WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal),
-            ) {
-                PopularPeriodsPanel(
-                    state = state,
-                    onSlotClick = { period, slot ->
-                        viewModel.onPeriodSlotClick(period, slot)
-                    }
-                )
-            }
+        contentPadding = PaddingValues(horizontal = 8.dp),
+        isScroll = false,
+        topBar = {
+            PopularPeriodsPanel(
+                state = state,
+                onSlotClick = { period, slot ->
+                    viewModel.onPeriodSlotClick(period, slot)
+                }
+            )
         },
         floatingActionButtonStart = {
             SiteToggleFab(
@@ -60,7 +56,6 @@ internal fun PopularPostsScreen(
                 onToggleSite = viewModel::switchSite,
             )
         },
-        fabApplyScaffoldPadding = false,
         floatingActionButtonBottomPadding = 12.dp,
         isLoading = isPageLoading,
     ) {
@@ -72,7 +67,6 @@ internal fun PopularPostsScreen(
             currentTag = null,
             onPostClick = viewModel::navigateToPost,
             onRetry = { posts.retry() },
-            parseError = viewModel::parseError,
             showFavCount = true
         )
     }

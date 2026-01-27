@@ -37,7 +37,6 @@ internal fun TagsPostsScreen(
             currentTag = null,
             onPostClick = viewModel::navigateToPost,
             onRetry = { posts.retry() },
-            parseError = viewModel::parseError,
         )
     }
 }

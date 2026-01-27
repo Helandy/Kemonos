@@ -45,24 +45,25 @@ fun CreatorListItem(
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(vertical = 6.dp)
+            .padding(vertical = 4.dp)
             .height(110.dp)
             .clickable { onClick() }
     ) {
         /** Фоновое изображение (баннер) */
         AsyncImageWithStatus(
             model = "$imgBaseUrl/banners/${service}/${id}",
-            contentDescription = "Banner for ${name}",
+            contentDescription = "Banner for $name",
             contentScale = ContentScale.Crop,
             modifier = Modifier
-                .matchParentSize()
                 .clip(shape = RoundedCornerShape(4.dp))
+                .matchParentSize()
         )
 
         /** Затемнение */
         Box(
             modifier = Modifier
                 .matchParentSize()
+                .clip(shape = RoundedCornerShape(4.dp))
                 .background(MaterialTheme.colorScheme.scrim.copy(alpha = 0.4f))
         )
 

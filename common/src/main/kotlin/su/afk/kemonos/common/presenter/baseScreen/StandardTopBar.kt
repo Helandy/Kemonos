@@ -4,50 +4,31 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun StandardTopBar(
     scrollBehavior: TopAppBarScrollBehavior?,
-    modifier: Modifier = Modifier,
-    contentPadding: PaddingValues = PaddingValues(top = 0.dp, end = 16.dp),
-    divider: Boolean = false,
-    windowInsets: WindowInsets = TopAppBarDefaults.windowInsets,
     content: @Composable ColumnScope.() -> Unit,
+    topBarWindowInsets: WindowInsets
 ) {
-    Surface(
-        modifier = modifier,
-        color = MaterialTheme.colorScheme.surface,
-        tonalElevation = 0.dp
-    ) {
-        CenterAlignedTopAppBar(
-            windowInsets = windowInsets,
-            colors = TopAppBarDefaults.topAppBarColors(
-                containerColor = Color.Transparent,
-                scrolledContainerColor = Color.Transparent,
-            ),
-            navigationIcon = {},
-            actions = {},
-            scrollBehavior = scrollBehavior,
-            title = {
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(contentPadding),
-                ) {
-                    content()
+    val compensateEnd = 16.dp
 
-                    if (divider) {
-                        HorizontalDivider(
-                            Modifier.padding(top = 8.dp),
-                            DividerDefaults.Thickness,
-                            DividerDefaults.color
-                        )
-                    }
-                }
+    TopAppBar(
+        windowInsets = topBarWindowInsets,
+        scrollBehavior = scrollBehavior,
+        title = {
+            Column(
+                Modifier.fillMaxWidth()
+                    .padding(end = compensateEnd) // чтобы визуально было ровно по правому краю
+            ) {
+                content()
             }
+        },
+        colors = TopAppBarDefaults.topAppBarColors(
+            containerColor = MaterialTheme.colorScheme.surface,
+            scrolledContainerColor = MaterialTheme.colorScheme.surface
         )
-    }
+    )
 }

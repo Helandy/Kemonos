@@ -39,11 +39,11 @@ gson = "2.13.2"
 
 # --- Serialization / Coroutines
 coroutines = "1.10.2"
-kotlinxSerializationJson = "1.9.0"
+kotlinxSerializationJson = "1.10.0"
 
 # --- Media / Images / UI helpers
 coil3 = "3.3.0"
-media3 = "1.9.0"
+media3 = "1.9.1"
 accompanistSystemUiController = "0.36.0"
 multiplatformMarkdownRendererM3 = "0.39.1"
 

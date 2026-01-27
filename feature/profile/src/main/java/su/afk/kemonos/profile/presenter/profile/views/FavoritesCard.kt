@@ -13,7 +13,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import su.afk.kemonos.common.utilsUI.KemonoPreviewScreen
+import su.afk.kemonos.common.utilsUI.KemonosPreviewScreen
 import su.afk.kemonos.profile.R
 
 /** Избранное */
@@ -88,7 +88,7 @@ internal fun FavoritesCard(
 @Preview("PreviewFavoritesCard")
 @Composable
 private fun PreviewFavoritesCard() {
-    KemonoPreviewScreen {
+    KemonosPreviewScreen {
         FavoritesCard(
             titleId = R.string.profile_favorites_title_coomer,
             updatesCount = 1,

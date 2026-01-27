@@ -10,7 +10,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.paging.LoadState
-import su.afk.kemonos.common.utilsUI.KemonoPreviewScreen
+import su.afk.kemonos.common.utilsUI.KemonosPreviewScreen
 import su.afk.kemonos.domain.models.ErrorItem
 
 /**
@@ -48,7 +48,7 @@ internal fun PagingAppendStateItem(
 @Preview("PagingAppend • Loading")
 @Composable
 private fun PreviewPagingAppendLoading() {
-    KemonoPreviewScreen {
+    KemonosPreviewScreen {
         PagingAppendStateItem(
             loadState = LoadState.Loading,
             onRetry = {},
@@ -65,7 +65,7 @@ private fun PreviewPagingAppendLoading() {
 @Preview("PagingAppend • Error")
 @Composable
 private fun PreviewPagingAppendError() {
-    KemonoPreviewScreen {
+    KemonosPreviewScreen {
         PagingAppendStateItem(
             loadState = LoadState.Error(RuntimeException("Network error")),
             onRetry = {},

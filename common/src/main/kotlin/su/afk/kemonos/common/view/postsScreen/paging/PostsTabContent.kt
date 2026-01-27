@@ -4,13 +4,13 @@ import androidx.compose.foundation.lazy.grid.LazyGridState
 import androidx.compose.runtime.Composable
 import androidx.paging.LoadState
 import androidx.paging.compose.LazyPagingItems
+import su.afk.kemonos.common.error.LocalErrorMapper
 import su.afk.kemonos.common.error.view.DefaultErrorContent
 import su.afk.kemonos.common.presenter.baseScreen.DefaultEmptyContent
 import su.afk.kemonos.common.presenter.baseScreen.DefaultLoadingContent
 import su.afk.kemonos.common.view.postsScreen.grid.PostsGridPaging
 import su.afk.kemonos.common.view.postsScreen.grid.PostsSource
 import su.afk.kemonos.common.view.postsScreen.list.PostsListPaging
-import su.afk.kemonos.domain.models.ErrorItem
 import su.afk.kemonos.domain.models.PostDomain
 import su.afk.kemonos.domain.models.Tag
 import su.afk.kemonos.preferences.ui.DateFormatMode
@@ -26,8 +26,9 @@ fun PostsTabContent(
     onPostClick: (PostDomain) -> Unit,
     onRetry: () -> Unit,
     showFavCount: Boolean = false,
-    parseError: (Throwable) -> ErrorItem,
 ) {
+    val errorMapper = LocalErrorMapper.current
+
     when (postsViewMode) {
         PostsViewMode.GRID -> {
             PostsGridPaging(
@@ -38,7 +39,7 @@ fun PostsTabContent(
                 gridState = gridState,
                 appendLoadState = posts.loadState.append,
                 onRetryAppend = { posts.retry() },
-                parseError = parseError
+                parseError = errorMapper::map
             )
         }
 
@@ -50,7 +51,7 @@ fun PostsTabContent(
                 showFavCount = showFavCount,
                 appendLoadState = posts.loadState.append,
                 onRetryAppend = { posts.retry() },
-                parseError = parseError
+                parseError = errorMapper::map
             )
         }
     }
@@ -58,7 +59,7 @@ fun PostsTabContent(
     when (val refresh = posts.loadState.refresh) {
         is LoadState.Loading -> DefaultLoadingContent()
         is LoadState.Error -> DefaultErrorContent(
-            errorItem = parseError(refresh.error),
+            errorItem = errorMapper.map(refresh.error),
             onRetry = onRetry
         )
         is LoadState.NotLoading -> {

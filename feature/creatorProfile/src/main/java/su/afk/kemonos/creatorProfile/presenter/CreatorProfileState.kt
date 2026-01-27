@@ -3,6 +3,9 @@ package su.afk.kemonos.creatorProfile.presenter
 import androidx.paging.PagingData
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
+import su.afk.kemonos.common.presenter.baseViewModel.UiEffect
+import su.afk.kemonos.common.presenter.baseViewModel.UiEvent
+import su.afk.kemonos.common.presenter.baseViewModel.UiState
 import su.afk.kemonos.creatorProfile.api.domain.models.profileAnnouncements.ProfileAnnouncement
 import su.afk.kemonos.creatorProfile.api.domain.models.profileDms.Dm
 import su.afk.kemonos.creatorProfile.api.domain.models.profileFanCards.ProfileFanCard
@@ -13,54 +16,85 @@ import su.afk.kemonos.domain.models.Profile
 import su.afk.kemonos.domain.models.Tag
 import su.afk.kemonos.preferences.ui.UiSettingModel
 
-internal data class CreatorProfileState(
-    val loading: Boolean = false,
+internal class CreatorProfileState {
 
-    var service: String = "",
-    var id: String = "",
-    var page: Int = 0,
+    data class State(
+        val loading: Boolean = false,
 
-    val isDiscordProfile: Boolean = false,
-    val discordUrlOpened: Boolean = false,
+        var service: String = "",
+        var id: String = "",
+        var page: Int = 0,
 
-    /** Информация об авторе */
-    val profile: Profile? = null,
+        val isDiscordProfile: Boolean = false,
+        val discordUrlOpened: Boolean = false,
 
-    /** Для решения нужен ли запрос на ДС */
-    val countDm: Int? = null,
-    /** Всего постов автора */
-    val countPost: Int? = null,
+        /** Информация об авторе */
+        val profile: Profile? = null,
 
-    /** Контент табов */
-    val profilePosts: Flow<PagingData<PostDomain>> = emptyFlow(),
-    val announcements: List<ProfileAnnouncement> = emptyList(),
-    val fanCardsList: List<ProfileFanCard> = emptyList(),
-    val dmList: List<Dm> = emptyList(),
-    val profileLinks: List<ProfileLink> = emptyList(),
+        /** Для решения нужен ли запрос на ДС */
+        val countDm: Int? = null,
+        /** Всего постов автора */
+        val countPost: Int? = null,
 
-    /** Табы */
-    val showTabs: List<ProfileTab> = listOf(ProfileTab.POSTS),
-    val selectedTab: ProfileTab = ProfileTab.POSTS,
+        /** Контент табов */
+        val profilePosts: Flow<PagingData<PostDomain>> = emptyFlow(),
+        val announcements: List<ProfileAnnouncement> = emptyList(),
+        val fanCardsList: List<ProfileFanCard> = emptyList(),
+        val dmList: List<Dm> = emptyList(),
+        val profileLinks: List<ProfileLink> = emptyList(),
 
-    /** Поиск */
-    val searchText: String = "",
-    /** показывать меню поиска */
-    val isSearchVisible: Boolean = false,
+        /** Табы */
+        val showTabs: List<ProfileTab> = listOf(ProfileTab.POSTS),
+        val selectedTab: ProfileTab = ProfileTab.POSTS,
 
-    /** tags */
-    val currentTag: Tag? = null,
-    val profileTags: List<Tag> = emptyList(),
+        /** Поиск */
+        val searchText: String = "",
+        /** показывать меню поиска */
+        val isSearchVisible: Boolean = false,
 
-    /** в избранном ли автор */
-    val isFavoriteShowButton: Boolean = false,
-    val isFavorite: Boolean = false,
-    val favoriteActionLoading: Boolean = false,
+        /** tags */
+        val currentTag: Tag? = null,
+        val profileTags: List<Tag> = emptyList(),
 
-    val uiSettingModel: UiSettingModel = UiSettingModel(),
-)
+        /** в избранном ли автор */
+        val isFavoriteShowButton: Boolean = false,
+        val isFavorite: Boolean = false,
+        val favoriteActionLoading: Boolean = false,
 
-sealed interface CreatorProfileEffect {
-    data class OpenUrl(val url: String) : CreatorProfileEffect
-    data class ShowToast(val message: String) : CreatorProfileEffect
-    data class CopyPostLink(val message: String) : CreatorProfileEffect
+        val uiSettingModel: UiSettingModel = UiSettingModel(),
+    ) : UiState
+
+    sealed interface Event : UiEvent {
+
+        /** жизненный цикл */
+        data object Retry : Event
+        data object PullRefresh : Event
+
+        /** навигация/шары */
+        data object Back : Event
+        data object CopyProfileLink : Event
+
+        data class OpenImage(val url: String) : Event
+        data class OpenLinkProfile(val link: ProfileLink) : Event
+        data class OpenPost(val post: PostDomain) : Event
+
+        /** табы/фильтры */
+        data class TabChanged(val tab: ProfileTab) : Event
+        data class TagClicked(val tag: Tag) : Event
+        data object ClearTag : Event
+
+        /** поиск */
+        data object ToggleSearch : Event
+        data object CloseSearch : Event
+        data class SearchTextChanged(val text: String) : Event
+
+        /** избранное */
+        data object FavoriteClick : Event
+    }
+
+    sealed interface Effect : UiEffect {
+        data class OpenUrl(val url: String) : Effect
+        data class ShowToast(val message: String) : Effect
+        data class CopyPostLink(val message: String) : Effect
+    }
 }

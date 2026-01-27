@@ -1,6 +1,8 @@
 package su.afk.kemonos.profile.presenter.favoritePosts
 
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.LazyGridState
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -18,7 +20,6 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import su.afk.kemonos.common.R
 import su.afk.kemonos.common.presenter.baseScreen.BaseScreen
-import su.afk.kemonos.common.presenter.baseScreen.StandardTopBar
 import su.afk.kemonos.common.presenter.baseScreen.TopBarScroll
 import su.afk.kemonos.common.view.postsScreen.grid.PostsGrid
 import su.afk.kemonos.common.view.postsScreen.grid.PostsSource
@@ -40,26 +41,21 @@ internal fun FavoritePostsScreen(viewModel: FavoritePostsViewModel) {
 
     BaseScreen(
         contentPadding = PaddingValues(horizontal = 8.dp),
-        isScroll = false,
         topBarScroll = TopBarScroll.EnterAlways,
-        topBar = { scrollBehavior ->
-            StandardTopBar(
-                scrollBehavior = scrollBehavior,
-                windowInsets = WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal),
-            ) {
-                OutlinedTextField(
-                    value = state.searchQuery,
-                    onValueChange = viewModel::onSearchQueryChanged,
-                    label = { Text(stringResource(R.string.search)) },
-                    singleLine = true,
-                    modifier = Modifier.fillMaxWidth().padding(bottom = 6.dp),
-                    keyboardActions = KeyboardActions(
-                        onSearch = {
-                            focusManager.clearFocus()
-                        }
-                    )
+        isScroll = false,
+        topBar = {
+            OutlinedTextField(
+                value = state.searchQuery,
+                onValueChange = viewModel::onSearchQueryChanged,
+                label = { Text(stringResource(R.string.search)) },
+                singleLine = true,
+                modifier = Modifier.fillMaxWidth().padding(bottom = 6.dp),
+                keyboardActions = KeyboardActions(
+                    onSearch = {
+                        focusManager.clearFocus()
+                    }
                 )
-            }
+            )
         },
         isLoading = state.loading,
         isEmpty = !state.loading && state.favoritePosts.isEmpty(),
