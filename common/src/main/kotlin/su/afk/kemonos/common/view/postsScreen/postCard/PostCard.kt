@@ -1,9 +1,10 @@
 package su.afk.kemonos.common.view.postsScreen.postCard
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -32,13 +33,26 @@ fun PostCard(
     val resolver = LocalDomainResolver.current
     val imgBaseUrl = remember(post.service) { resolver.imageBaseUrlByService(post.service) }
     val meta = rememberPostCardMeta(post)
+    val shape = RoundedCornerShape(4.dp)
 
-    Column(modifier = Modifier.clickable { onClick() }) {
+    Card(
+        onClick = onClick,
+        shape = shape,
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surface,
+        ),
+        elevation = CardDefaults.cardElevation(
+            defaultElevation = 4.dp,
+            pressedElevation = 1.dp,
+            hoveredElevation = 8.dp,
+            focusedElevation = 8.dp,
+        ),
+    ) {
         Box(
             modifier = Modifier
                 .fillMaxWidth()
                 .aspectRatio(1f)
-                .clip(RoundedCornerShape(4.dp))
+                .clip(RoundedCornerShape(topStart = 4.dp, topEnd = 4.dp))
                 .background(MaterialTheme.colorScheme.surfaceVariant)
         ) {
             PostPreview(
@@ -67,33 +81,33 @@ fun PostCard(
             }
         }
 
-        /** Тайтл и дата */
-        if (!post.title.isNullOrEmpty()) {
+        Column(
+            modifier = Modifier.padding(start = 4.dp, top = 4.dp, bottom = 4.dp),
+        ) {
+            /** Тайтл и дата */
             Text(
                 text = post.title.orEmpty(),
-                style = MaterialTheme.typography.labelLarge,
-                maxLines = 3,
+                style = MaterialTheme.typography.labelMedium,
+                minLines = 2,
+                maxLines = 2,
                 overflow = TextOverflow.Ellipsis,
-                modifier = Modifier.padding(top = 4.dp)
-            )
-        } else {
-            Spacer(modifier = Modifier.padding(top = 4.dp))
-        }
-
-        Row {
-            Text(
-                text = "📅 ${post.published?.toUiDateTime(dateMode)} ",
-                style = MaterialTheme.typography.bodySmall,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis
             )
 
-            if (post.attachments.isNotEmpty()) {
+            Row {
                 Text(
-                    text = stringResource(R.string.attachments_count, post.attachments.size),
-                    style = MaterialTheme.typography.bodySmall,
-                    maxLines = 1
+                    text = "📅 ${post.published?.toUiDateTime(dateMode)} ",
+                    style = MaterialTheme.typography.labelSmall,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
                 )
+
+                if (post.attachments.isNotEmpty()) {
+                    Text(
+                        text = stringResource(R.string.attachments_count, post.attachments.size),
+                        style = MaterialTheme.typography.labelSmall,
+                        maxLines = 1
+                    )
+                }
             }
         }
     }

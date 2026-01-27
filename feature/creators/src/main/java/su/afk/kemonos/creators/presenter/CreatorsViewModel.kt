@@ -40,7 +40,6 @@ internal class CreatorsViewModel @Inject constructor(
     override fun onRetry() {
         viewModelScope.launch {
             ensureFreshAndReloadServices()
-            rebuildPaging(scrollToTop = true)
         }
     }
 
@@ -182,16 +181,19 @@ internal class CreatorsViewModel @Inject constructor(
 
     /** Открыть случайного автора */
     fun randomCreator() = viewModelScope.launch {
-        setState { copy(loading = true) }
-        val creator = randomCreatorUseCase()
+        try {
+            setState { copy(loading = true) }
+            val creator = randomCreatorUseCase()
 
-        navManager.navigate(
-            creatorProfileNavigator.getCreatorProfileDest(
-                service = creator.service,
-                id = creator.artistId,
+            navManager.navigate(
+                creatorProfileNavigator.getCreatorProfileDest(
+                    service = creator.service,
+                    id = creator.artistId,
+                )
             )
-        )
-        setState { copy(loading = false) }
+        } finally {
+            setState { copy(loading = false) }
+        }
     }
 
     private var searchDebounceJob: Job? = null

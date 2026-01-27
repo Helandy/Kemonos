@@ -16,7 +16,7 @@ import su.afk.kemonos.creatorProfile.util.Utils.queryKey
 import su.afk.kemonos.domain.models.PostDomain
 import su.afk.kemonos.domain.models.Tag
 import su.afk.kemonos.network.util.call
-import su.afk.kemonos.network.util.callOrNull
+import su.afk.kemonos.network.util.safeCallOrNull
 import su.afk.kemonos.storage.api.creatorProfileCache.CreatorProfileCacheType
 import su.afk.kemonos.storage.api.creatorProfileCache.IStoreCreatorProfileCacheUseCase
 import su.afk.kemonos.storage.api.profilePosts.IStorageCreatorPostsCacheUseCase
@@ -61,9 +61,10 @@ internal class CreatorsRepository @Inject constructor(
         cacheStore.getFreshJsonOrNull(service, id, CreatorProfileCacheType.DMS)
             ?.let { return cacheJson.dmsFromJson(it) }
 
-        val fromNet = api.getProfileDms(service, id).callOrNull { dto ->
-            dto.toDomain()
-        } ?: emptyList()
+        val fromNet = safeCallOrNull(
+            api = { api.getProfileDms(service, id) },
+            mapper = { dto -> dto.toDomain() }
+        ) ?: emptyList()
 
         if (fromNet.isNotEmpty()) {
             cacheStore.putJson(
@@ -82,9 +83,10 @@ internal class CreatorsRepository @Inject constructor(
         cacheStore.getFreshJsonOrNull(service, id, CreatorProfileCacheType.TAGS)
             ?.let { return cacheJson.tagsFromJson(it) }
 
-        val fromNet = api.getProfileTags(service, id).callOrNull { dto ->
-            dto.toDomain()
-        } ?: emptyList()
+        val fromNet = safeCallOrNull(
+            api = { api.getProfileTags(service, id) },
+            mapper = { dto -> dto.toDomain() }
+        ) ?: emptyList()
 
         if (fromNet.isNotEmpty()) {
             cacheStore.putJson(
@@ -103,9 +105,10 @@ internal class CreatorsRepository @Inject constructor(
         cacheStore.getFreshJsonOrNull(service, id, CreatorProfileCacheType.ANNOUNCEMENTS)
             ?.let { return cacheJson.announcementsFromJson(it) }
 
-        val fromNet = api.getProfileAnnouncements(service, id).callOrNull { dto ->
-            dto.toDomain()
-        } ?: emptyList()
+        val fromNet = safeCallOrNull(
+            api = { api.getProfileAnnouncements(service, id) },
+            mapper = { dto -> dto.toDomain() }
+        ) ?: emptyList()
 
         if (fromNet.isNotEmpty()) {
             cacheStore.putJson(
@@ -124,9 +127,10 @@ internal class CreatorsRepository @Inject constructor(
         cacheStore.getFreshJsonOrNull(service, id, CreatorProfileCacheType.FANCARDS)
             ?.let { return cacheJson.fanCardsFromJson(it) }
 
-        val fromNet = api.getProfileFanCards(service, id).callOrNull { dto ->
-            dto.toDomain()
-        } ?: emptyList()
+        val fromNet = safeCallOrNull(
+            api = { api.getProfileFanCards(service, id) },
+            mapper = { dto -> dto.toDomain() }
+        ) ?: emptyList()
 
         if (fromNet.isNotEmpty()) {
             cacheStore.putJson(
@@ -145,9 +149,10 @@ internal class CreatorsRepository @Inject constructor(
         cacheStore.getFreshJsonOrNull(service, id, CreatorProfileCacheType.LINKS)
             ?.let { return cacheJson.linksFromJson(it) }
 
-        val fromNet = api.getProfileLinks(service, id).callOrNull { dto ->
-            dto.toDomain()
-        } ?: emptyList()
+        val fromNet = safeCallOrNull(
+            api = { api.getProfileLinks(service, id) },
+            mapper = { dto -> dto.toDomain() }
+        ) ?: emptyList()
 
         if (fromNet.isNotEmpty()) {
             cacheStore.putJson(

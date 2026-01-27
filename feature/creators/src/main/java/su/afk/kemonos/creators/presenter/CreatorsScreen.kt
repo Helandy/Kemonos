@@ -98,7 +98,6 @@ internal fun CreatorsScreen(
                 onToggleSite = { onEvent(Event.SwitchSiteClicked) },
             )
         },
-
         floatingActionButtonEnd = {
             if (showRandomFab) {
                 RandomFab(
