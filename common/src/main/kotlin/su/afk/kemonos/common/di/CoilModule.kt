@@ -4,7 +4,9 @@ import android.content.Context
 import coil3.ImageLoader
 import coil3.disk.DiskCache
 import coil3.disk.directory
+import coil3.gif.GifDecoder
 import coil3.memory.MemoryCache
+import coil3.request.crossfade
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -22,6 +24,10 @@ object CoilModule {
         @ApplicationContext appContext: Context,
     ): ImageLoader {
         return ImageLoader.Builder(appContext)
+            .components {
+                add(GifDecoder.Factory())
+            }
+            .crossfade(true)
             .memoryCache {
                 MemoryCache.Builder()
                     // 20% от доступной памяти приложения под картинки
@@ -31,8 +37,8 @@ object CoilModule {
             .diskCache {
                 DiskCache.Builder()
                     .directory(appContext.cacheDir.resolve("image_cache"))
-                    // 500 mb cache disk
-                    .maxSizeBytes(512L * 1024L * 1024L)
+                    // 256 mb cache disk
+                    .maxSizeBytes(256L * 1024L * 1024L)
                     .build()
             }
             .build()

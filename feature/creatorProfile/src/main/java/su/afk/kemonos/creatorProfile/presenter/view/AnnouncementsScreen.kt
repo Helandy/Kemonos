@@ -16,13 +16,12 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.toArgb
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.text.HtmlCompat
-import coil3.ImageLoader
 import su.afk.kemonos.common.R
+import su.afk.kemonos.common.imageLoader.LocalAppImageLoader
 import su.afk.kemonos.common.util.toUiDateTime
 import su.afk.kemonos.common.view.announcemnt.CoilImageGetter
 import su.afk.kemonos.creatorProfile.api.domain.models.profileAnnouncements.ProfileAnnouncement
@@ -35,9 +34,6 @@ fun AnnouncementsScreen(
     announcements: List<ProfileAnnouncement>,
     modifier: Modifier = Modifier
 ) {
-    val context = LocalContext.current
-    val imageLoader = remember { ImageLoader.Builder(context).build() }
-
     val listState = rememberLazyListState()
     val isScrolling = remember { derivedStateOf { listState.isScrollInProgress } }
 
@@ -66,7 +62,6 @@ fun AnnouncementsScreen(
                 AnnouncementCard(
                     dateMode = dateMode,
                     announcement = announcement,
-                    imageLoader = imageLoader,
                     isScrolling = { isScrolling.value }
                 )
             }
@@ -78,11 +73,11 @@ fun AnnouncementsScreen(
 fun AnnouncementCard(
     dateMode: DateFormatMode,
     announcement: ProfileAnnouncement,
-    imageLoader: ImageLoader,
     isScrolling: () -> Boolean,
 ) {
     val textColor = MaterialTheme.colorScheme.onBackground.toArgb()
     val scope = rememberCoroutineScope()
+    val imageLoader = LocalAppImageLoader.current
 
     Surface(
         shape = MaterialTheme.shapes.medium,
