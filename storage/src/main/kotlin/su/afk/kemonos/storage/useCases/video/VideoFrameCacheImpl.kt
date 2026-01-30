@@ -5,12 +5,17 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.os.Build
 import android.util.LruCache
+import androidx.datastore.core.DataStore
+import androidx.datastore.preferences.core.Preferences
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
 import su.afk.kemonos.common.constants.Constant.VIDEO_FRAMES_DIR_NAME
+import su.afk.kemonos.preferences.ui.UiSettingKey.PREVIEW_VIDEO_SIZE_MB
 import su.afk.kemonos.storage.api.video.IVideoFrameCache
 import java.io.File
 import java.security.MessageDigest
@@ -20,11 +25,20 @@ import kotlin.math.roundToInt
 
 class VideoFrameCacheImpl @Inject constructor(
     @ApplicationContext private val appContext: Context,
+    private val dataStore: DataStore<Preferences>,
 ) : IVideoFrameCache {
 
-    private val maxDiskBytes: Long = 150L * 1024L * 1024L // 150MB
+    private val maxDiskBytes: Long = runBlocking {
+        withContext(Dispatchers.IO) {
+            val p = dataStore.data.first()
+            val mb = p[PREVIEW_VIDEO_SIZE_MB] ?: DEFAULT_VIDEO_CACHE_MB
+            mb.coerceIn(MIN_VIDEO_CACHE_MB, MAX_VIDEO_CACHE_MB).toLong() * 1024L * 1024L
+        }
+    }
+
     private val useMemory: Boolean = true
     private val maxMemoryBytes: Int = 48 * 1024 * 1024 // 48MB
+
     private val maxW: Int = 1280
     private val maxH: Int = 720
 
@@ -135,6 +149,12 @@ class VideoFrameCacheImpl @Inject constructor(
             val len = f.length()
             if (f.delete()) total -= len
         }
+    }
+
+    companion object {
+        private const val DEFAULT_VIDEO_CACHE_MB = 150
+        private const val MIN_VIDEO_CACHE_MB = 50
+        private const val MAX_VIDEO_CACHE_MB = 500
     }
 }
 

@@ -30,6 +30,8 @@ dependencies {
     ksp(libs.androidx.room.compiler)
     implementation(libs.bundles.room)
 
+    implementation(libs.bundles.datastore)
+
     implementation(project(":storage-api"))
 
     implementation(project(":core:domain"))

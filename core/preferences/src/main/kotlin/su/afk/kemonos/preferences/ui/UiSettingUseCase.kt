@@ -4,6 +4,28 @@ import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.*
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import su.afk.kemonos.preferences.ui.UiSettingKey.ADD_SERVICE_NAME
+import su.afk.kemonos.preferences.ui.UiSettingKey.BLUR_IMAGES
+import su.afk.kemonos.preferences.ui.UiSettingKey.COIL_CACHE_SIZE_MB
+import su.afk.kemonos.preferences.ui.UiSettingKey.CREATORS_FAVORITE_VIEW_MODE
+import su.afk.kemonos.preferences.ui.UiSettingKey.CREATORS_VIEW_MODE
+import su.afk.kemonos.preferences.ui.UiSettingKey.DATE_FORMAT_MODE
+import su.afk.kemonos.preferences.ui.UiSettingKey.DOWNLOAD_FOLDER_MODE
+import su.afk.kemonos.preferences.ui.UiSettingKey.EXPERIMENTAL_CALENDAR
+import su.afk.kemonos.preferences.ui.UiSettingKey.FAVORITE_POSTS_VIEW_MODE
+import su.afk.kemonos.preferences.ui.UiSettingKey.POPULAR_POSTS_VIEW_MODE
+import su.afk.kemonos.preferences.ui.UiSettingKey.POSTS_SIZE
+import su.afk.kemonos.preferences.ui.UiSettingKey.PREVIEW_VIDEO_SIZE_MB
+import su.afk.kemonos.preferences.ui.UiSettingKey.PROFILE_POSTS_VIEW_MODE
+import su.afk.kemonos.preferences.ui.UiSettingKey.RANDOM_BUTTON_PLACEMENT
+import su.afk.kemonos.preferences.ui.UiSettingKey.SEARCH_POSTS_VIEW_MODE
+import su.afk.kemonos.preferences.ui.UiSettingKey.SHOW_PREVIEW_VIDEO
+import su.afk.kemonos.preferences.ui.UiSettingKey.SKIP_API_CHECK_ON_LOGIN
+import su.afk.kemonos.preferences.ui.UiSettingKey.SUGGEST_RANDOM_AUTHORS
+import su.afk.kemonos.preferences.ui.UiSettingKey.TAGS_POSTS_VIEW_MODE
+import su.afk.kemonos.preferences.ui.UiSettingKey.TRANSLATE_LANGUAGE_TAG
+import su.afk.kemonos.preferences.ui.UiSettingKey.TRANSLATE_TARGET
+import su.afk.kemonos.preferences.ui.UiSettingKey.USE_EXTERNAL_METADATA
 import javax.inject.Inject
 
 internal class UiSettingUseCase @Inject constructor(
@@ -160,38 +182,39 @@ internal class UiSettingUseCase @Inject constructor(
     override suspend fun setUseExternalMetaData(value: Boolean) {
         dataStore.edit { it[USE_EXTERNAL_METADATA] = value }
     }
+}
 
-    private companion object {
-        val SKIP_API_CHECK_ON_LOGIN = booleanPreferencesKey("SKIP_API_CHECK_ON_LOGIN")
-        val CREATORS_VIEW_MODE = stringPreferencesKey("CREATORS_VIEW_MODE")
-        val CREATORS_FAVORITE_VIEW_MODE = stringPreferencesKey("CREATORS_FAVORITE_VIEW_MODE")
+object UiSettingKey {
+    val SKIP_API_CHECK_ON_LOGIN = booleanPreferencesKey("SKIP_API_CHECK_ON_LOGIN")
+    val CREATORS_VIEW_MODE = stringPreferencesKey("CREATORS_VIEW_MODE")
+    val CREATORS_FAVORITE_VIEW_MODE = stringPreferencesKey("CREATORS_FAVORITE_VIEW_MODE")
 
-        val PROFILE_POSTS_VIEW_MODE = stringPreferencesKey("PROFILE_POSTS_VIEW_MODE")
-        val FAVORITE_POSTS_VIEW_MODE = stringPreferencesKey("FAVORITE_POSTS_VIEW_MODE")
-        val POPULAR_POSTS_VIEW_MODE = stringPreferencesKey("POPULAR_POSTS_VIEW_MODE")
-        val TAGS_POSTS_VIEW_MODE = stringPreferencesKey("TAGS_POSTS_VIEW_MODE")
-        val SEARCH_POSTS_VIEW_MODE = stringPreferencesKey("SEARCH_POSTS_VIEW_MODE")
+    val PROFILE_POSTS_VIEW_MODE = stringPreferencesKey("PROFILE_POSTS_VIEW_MODE")
+    val FAVORITE_POSTS_VIEW_MODE = stringPreferencesKey("FAVORITE_POSTS_VIEW_MODE")
+    val POPULAR_POSTS_VIEW_MODE = stringPreferencesKey("POPULAR_POSTS_VIEW_MODE")
+    val TAGS_POSTS_VIEW_MODE = stringPreferencesKey("TAGS_POSTS_VIEW_MODE")
+    val SEARCH_POSTS_VIEW_MODE = stringPreferencesKey("SEARCH_POSTS_VIEW_MODE")
 
-        val SUGGEST_RANDOM_AUTHORS = booleanPreferencesKey("SUGGEST_RANDOM_AUTHORS")
-        val TRANSLATE_TARGET = stringPreferencesKey("TRANSLATE_TARGET")
-        val RANDOM_BUTTON_PLACEMENT = stringPreferencesKey("RANDOM_BUTTON_PLACEMENT")
-        val TRANSLATE_LANGUAGE_TAG = stringPreferencesKey("TRANSLATE_LANGUAGE")
+    val SUGGEST_RANDOM_AUTHORS = booleanPreferencesKey("SUGGEST_RANDOM_AUTHORS")
+    val TRANSLATE_TARGET = stringPreferencesKey("TRANSLATE_TARGET")
+    val RANDOM_BUTTON_PLACEMENT = stringPreferencesKey("RANDOM_BUTTON_PLACEMENT")
+    val TRANSLATE_LANGUAGE_TAG = stringPreferencesKey("TRANSLATE_LANGUAGE")
 
-        val DATE_FORMAT_MODE = stringPreferencesKey("DATE_FORMAT_MODE")
+    val DATE_FORMAT_MODE = stringPreferencesKey("DATE_FORMAT_MODE")
 
-        val POSTS_SIZE = stringPreferencesKey("POSTS_SIZE")
+    val POSTS_SIZE = stringPreferencesKey("POSTS_SIZE")
 
-        val COIL_CACHE_SIZE_MB = intPreferencesKey("COIL_CACHE_SIZE_MB")
-        val PREVIEW_VIDEO_SIZE_MB = intPreferencesKey("PREVIEW_VIDEO_SIZE_MB")
+    val PREVIEW_VIDEO_SIZE_MB = intPreferencesKey("PREVIEW_VIDEO_SIZE_MB")
 
-        val SHOW_PREVIEW_VIDEO = booleanPreferencesKey("SHOW_PREVIEW_VIDEO")
-        val BLUR_IMAGES = booleanPreferencesKey("BLUR_IMAGES")
-        val EXPERIMENTAL_CALENDAR = booleanPreferencesKey("EXPERIMENTAL_CALENDAR")
+    val SHOW_PREVIEW_VIDEO = booleanPreferencesKey("SHOW_PREVIEW_VIDEO")
+    val BLUR_IMAGES = booleanPreferencesKey("BLUR_IMAGES")
+    val EXPERIMENTAL_CALENDAR = booleanPreferencesKey("EXPERIMENTAL_CALENDAR")
 
-        val DOWNLOAD_FOLDER_MODE = stringPreferencesKey("DOWNLOAD_FOLDER_MODE")
-        val ADD_SERVICE_NAME = booleanPreferencesKey("ADD_SERVICE_NAME")
-        val USE_EXTERNAL_METADATA = booleanPreferencesKey("USE_EXTERNAL_METADATA")
-    }
+    val DOWNLOAD_FOLDER_MODE = stringPreferencesKey("DOWNLOAD_FOLDER_MODE")
+    val ADD_SERVICE_NAME = booleanPreferencesKey("ADD_SERVICE_NAME")
+    val USE_EXTERNAL_METADATA = booleanPreferencesKey("USE_EXTERNAL_METADATA")
+
+    val COIL_CACHE_SIZE_MB = intPreferencesKey("COIL_CACHE_SIZE_MB")
 }
 
 // ---- helpers ----

@@ -36,6 +36,8 @@ dependencies {
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.bundles.compose.core)
 
+    implementation(libs.bundles.datastore)
+
     implementation(libs.bundles.coil)
     implementation(libs.bundles.translate)
     implementation("org.jsoup:jsoup:1.17.2")
