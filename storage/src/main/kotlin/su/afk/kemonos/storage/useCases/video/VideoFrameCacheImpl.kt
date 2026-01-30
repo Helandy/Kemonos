@@ -10,6 +10,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
+import su.afk.kemonos.common.constants.Constant.VIDEO_FRAMES_DIR_NAME
 import su.afk.kemonos.storage.api.video.IVideoFrameCache
 import java.io.File
 import java.security.MessageDigest
@@ -31,7 +32,7 @@ class VideoFrameCacheImpl @Inject constructor(
     private val webpLossless: Boolean = false
     private val EXT = "webp"
 
-    private val cacheDir: File = File(appContext.cacheDir, "video_frames").apply { mkdirs() }
+    private val cacheDir: File = File(appContext.cacheDir, VIDEO_FRAMES_DIR_NAME).apply { mkdirs() }
 
     private val mutexByKey = ConcurrentHashMap<String, Mutex>()
 

@@ -211,5 +211,18 @@
     <string name="settings_browser_custom_not_selected">Не выбран</string>
 
     <string name="settings_experiments_title">Эксперементальные</string>
+    <string name="settings_debug_storage_title">Информация о хранилище</string>
+    <string name="settings_debug_storage_loading">Загрузка…</string>
+
+    <string name="settings_debug_storage_cache_dir">cacheDir</string>
+    <string name="settings_debug_storage_files_dir">filesDir</string>
+    <string name="settings_debug_storage_ext_cache_dir">externalCacheDir</string>
+    <string name="settings_debug_storage_ext_files_dir">externalFilesDir</string>
+
+    <string name="settings_debug_storage_coil_custom">Coil disk cache (custom)</string>
+    <string name="settings_debug_storage_coil_actual">Coil disk cache (actual)</string>
+    <string name="settings_debug_storage_coil_default">Coil disk cache (default builder)</string>
+
+    <string name="settings_debug_storage_video_frames">Кэш кадров видео</string>
 
 </resources>

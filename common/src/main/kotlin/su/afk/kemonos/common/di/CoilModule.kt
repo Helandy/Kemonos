@@ -12,6 +12,7 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
+import su.afk.kemonos.common.constants.Constant.COIL_DISK_DIR_NAME
 import javax.inject.Singleton
 
 @Module
@@ -36,7 +37,7 @@ object CoilModule {
             }
             .diskCache {
                 DiskCache.Builder()
-                    .directory(appContext.cacheDir.resolve("image_cache"))
+                    .directory(appContext.cacheDir.resolve(COIL_DISK_DIR_NAME))
                     // 256 mb cache disk
                     .maxSizeBytes(256L * 1024L * 1024L)
                     .build()

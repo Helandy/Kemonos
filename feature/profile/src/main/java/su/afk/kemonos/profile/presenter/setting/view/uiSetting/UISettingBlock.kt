@@ -11,6 +11,7 @@ import su.afk.kemonos.profile.presenter.setting.view.uiSetting.cache.CacheSettin
 import su.afk.kemonos.profile.presenter.setting.view.uiSetting.common.LinksSection
 import su.afk.kemonos.profile.presenter.setting.view.uiSetting.common.SettingsHeader
 import su.afk.kemonos.profile.presenter.setting.view.uiSetting.debug.DebugSettingsSection
+import su.afk.kemonos.profile.presenter.setting.view.uiSetting.debug.DebugStorageInfoSection
 import su.afk.kemonos.profile.presenter.setting.view.uiSetting.download.DownloadSettingsSection
 import su.afk.kemonos.profile.presenter.setting.view.uiSetting.experiment.ExperimentsSection
 import su.afk.kemonos.profile.presenter.setting.view.uiSetting.general.GeneralSettingsSection
@@ -27,11 +28,15 @@ internal fun UISettingBlock(
     Column {
         SettingsHeader()
 
-        DebugSettingsSection(
-            enabled = BuildConfig.DEBUG,
-            skipApiCheckOnLogin = ui.skipApiCheckOnLogin,
-            onSkipApiCheckOnLogin = { onEvent(Event.ChangeViewSetting.SkipApiCheckOnLogin(it)) },
-        )
+        if (BuildConfig.DEBUG) {
+            DebugSettingsSection(
+                enabled = true,
+                skipApiCheckOnLogin = ui.skipApiCheckOnLogin,
+                onSkipApiCheckOnLogin = { onEvent(Event.ChangeViewSetting.SkipApiCheckOnLogin(it)) },
+            )
+
+            DebugStorageInfoSection(enabled = true)
+        }
 
         GeneralSettingsSection(
             suggestRandomAuthors = ui.suggestRandomAuthors,

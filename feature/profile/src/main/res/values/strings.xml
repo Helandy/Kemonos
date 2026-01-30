@@ -212,5 +212,18 @@
     <string name="settings_browser_custom_not_selected">Not selected</string>
 
     <string name="settings_experiments_title">Experimentals</string>
+    <string name="settings_debug_storage_title">Storage info</string>
+    <string name="settings_debug_storage_loading">Loading…</string>
+
+    <string name="settings_debug_storage_cache_dir">cacheDir</string>
+    <string name="settings_debug_storage_files_dir">filesDir</string>
+    <string name="settings_debug_storage_ext_cache_dir">externalCacheDir</string>
+    <string name="settings_debug_storage_ext_files_dir">externalFilesDir</string>
+
+    <string name="settings_debug_storage_coil_custom">Coil disk cache (custom)</string>
+    <string name="settings_debug_storage_coil_actual">Coil disk cache (actual)</string>
+    <string name="settings_debug_storage_coil_default">Coil disk cache (default builder)</string>
+
+    <string name="settings_debug_storage_video_frames">Video frames cache</string>
 
 </resources>
