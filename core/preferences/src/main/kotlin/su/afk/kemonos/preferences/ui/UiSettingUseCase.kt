@@ -1,10 +1,7 @@
 package su.afk.kemonos.preferences.ui
 
 import androidx.datastore.core.DataStore
-import androidx.datastore.preferences.core.Preferences
-import androidx.datastore.preferences.core.booleanPreferencesKey
-import androidx.datastore.preferences.core.edit
-import androidx.datastore.preferences.core.stringPreferencesKey
+import androidx.datastore.preferences.core.*
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
@@ -34,6 +31,19 @@ internal class UiSettingUseCase @Inject constructor(
             translateLanguageTag = p[TRANSLATE_LANGUAGE_TAG] ?: UiSettingModel.DEFAULT_TRANSLATE_LANGUAGE_TAG,
 
             dateFormatMode = p.readEnum(DATE_FORMAT_MODE, UiSettingModel.DEFAULT_DATE_FORMAT_MODE),
+
+            postsSize = p.readEnum(POSTS_SIZE, UiSettingModel.DEFAULT_POSTS_SIZE),
+
+            coilCacheSizeMb = p[COIL_CACHE_SIZE_MB] ?: UiSettingModel.DEFAULT_COIL_CACHE_SIZE,
+            previewVideoSizeMb = p[PREVIEW_VIDEO_SIZE_MB] ?: UiSettingModel.DEFAULT_VIDEO_PREVIEW_SIZE,
+
+            showPreviewVideo = p[SHOW_PREVIEW_VIDEO] ?: UiSettingModel.DEFAULT_SHOW_VIDEO_PREVIEW,
+            blurImages = p[BLUR_IMAGES] ?: UiSettingModel.DEFAULT_BLUR_PICTURE,
+            experimentalCalendar = p[EXPERIMENTAL_CALENDAR] ?: UiSettingModel.DEFAULT_EXPERIMENTAL_CALENDAR,
+
+            downloadFolderMode = p.readEnum(DOWNLOAD_FOLDER_MODE, UiSettingModel.DEFAULT_DOWNLOAD_FOLDER_MODE),
+            addServiceName = p[ADD_SERVICE_NAME] ?: UiSettingModel.DEFAULT_ADD_SERVICE_NAME,
+            useExternalMetaData = p[USE_EXTERNAL_METADATA] ?: UiSettingModel.USE_EXTERNAL_METADATA
         )
     }
 
@@ -106,13 +116,49 @@ internal class UiSettingUseCase @Inject constructor(
         dataStore.edit { it[DATE_FORMAT_MODE] = value.name }
     }
 
-    // ---- helpers ----
-    private inline fun <reified T : Enum<T>> Preferences.readEnum(
-        key: Preferences.Key<String>,
-        default: T
-    ): T {
-        val raw = this[key] ?: return default
-        return runCatching { enumValueOf<T>(raw) }.getOrDefault(default)
+    /** Размер постов в сетке */
+    override suspend fun setPostsSize(value: PostsSize) {
+        dataStore.edit { it[POSTS_SIZE] = value.name }
+    }
+
+    /** Размер кэша картинок (MB) */
+    override suspend fun setCoilCacheSizeMb(value: Int) {
+        dataStore.edit { it[COIL_CACHE_SIZE_MB] = value.coerceAtLeast(0) }
+    }
+
+    /** Размер кэша превьюшек (MB) */
+    override suspend fun setPreviewVideoSizeMb(value: Int) {
+        dataStore.edit { it[PREVIEW_VIDEO_SIZE_MB] = value.coerceAtLeast(0) }
+    }
+
+    /** Показывать ли превью видео */
+    override suspend fun setShowPreviewVideo(value: Boolean) {
+        dataStore.edit { it[SHOW_PREVIEW_VIDEO] = value }
+    }
+
+    /** Блюрить все картинки */
+    override suspend fun setBlurImages(value: Boolean) {
+        dataStore.edit { it[BLUR_IMAGES] = value }
+    }
+
+    /** Экспериментальный календарь */
+    override suspend fun setExperimentalCalendar(value: Boolean) {
+        dataStore.edit { it[EXPERIMENTAL_CALENDAR] = value }
+    }
+
+    /** Вид папок для скачивания */
+    override suspend fun setDownloadFolderMode(value: DownloadFolderMode) {
+        dataStore.edit { it[DOWNLOAD_FOLDER_MODE] = value.name }
+    }
+
+    /** Добавлять префикс сервиса при скачивании */
+    override suspend fun setAddServiceName(value: Boolean) {
+        dataStore.edit { it[ADD_SERVICE_NAME] = value }
+    }
+
+    /** Использовать внешнее хранилище метадатнных */
+    override suspend fun setUseExternalMetaData(value: Boolean) {
+        dataStore.edit { it[USE_EXTERNAL_METADATA] = value }
     }
 
     private companion object {
@@ -132,5 +178,27 @@ internal class UiSettingUseCase @Inject constructor(
         val TRANSLATE_LANGUAGE_TAG = stringPreferencesKey("TRANSLATE_LANGUAGE")
 
         val DATE_FORMAT_MODE = stringPreferencesKey("DATE_FORMAT_MODE")
+
+        val POSTS_SIZE = stringPreferencesKey("POSTS_SIZE")
+
+        val COIL_CACHE_SIZE_MB = intPreferencesKey("COIL_CACHE_SIZE_MB")
+        val PREVIEW_VIDEO_SIZE_MB = intPreferencesKey("PREVIEW_VIDEO_SIZE_MB")
+
+        val SHOW_PREVIEW_VIDEO = booleanPreferencesKey("SHOW_PREVIEW_VIDEO")
+        val BLUR_IMAGES = booleanPreferencesKey("BLUR_IMAGES")
+        val EXPERIMENTAL_CALENDAR = booleanPreferencesKey("EXPERIMENTAL_CALENDAR")
+
+        val DOWNLOAD_FOLDER_MODE = stringPreferencesKey("DOWNLOAD_FOLDER_MODE")
+        val ADD_SERVICE_NAME = booleanPreferencesKey("ADD_SERVICE_NAME")
+        val USE_EXTERNAL_METADATA = booleanPreferencesKey("USE_EXTERNAL_METADATA")
     }
+}
+
+// ---- helpers ----
+private inline fun <reified T : Enum<T>> Preferences.readEnum(
+    key: Preferences.Key<String>,
+    default: T
+): T {
+    val raw = this[key] ?: return default
+    return runCatching { enumValueOf<T>(raw) }.getOrDefault(default)
 }

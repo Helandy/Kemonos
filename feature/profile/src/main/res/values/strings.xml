@@ -163,4 +163,54 @@
 
 
     <string name="settings_ui_date_format_title">Date format</string>
+
+    <string name="settings_cache_sizes_title">Cache</string>
+
+    <string name="settings_cache_images_size_title">Image cache size</string>
+    <string name="settings_cache_video_previews_size_title">Video previews cache size</string>
+
+    <string name="settings_cache_size_value_mb">%1$d MB</string>
+
+    <string name="settings_posts_appearance_title">Posts</string>
+
+    <string name="settings_posts_size_title">Grid post size</string>
+    <string name="settings_posts_size_small">S</string>
+    <string name="settings_posts_size_medium">M</string>
+    <string name="settings_posts_size_large">L</string>
+
+    <string name="settings_show_preview_video_title">Show video previews</string>
+    <string name="settings_blur_images_title">Blur images</string>
+
+    <string name="settings_downloads_title">Downloads</string>
+
+    <string name="settings_download_folder_mode_title">Folder structure</string>
+
+    <string name="settings_download_folder_creator">Creator</string>
+    <string name="settings_download_folder_creator_post_id">Creator / ID</string>
+    <string name="settings_download_folder_creator_post_title">Creator / Title</string>
+
+    <string name="settings_download_folder_post_id">ID</string>
+    <string name="settings_download_folder_post_title">Title</string>
+    <string name="settings_download_folder_default">Default</string>
+
+    <string name="settings_download_add_service_title">Add service prefix</string>
+    <string name="settings_use_external_metadata_title">Use external metadata storage</string>
+
+    <string name="settings_experimental_calendar_title">New calendar for popular posts</string>
+    <string name="settings_experimental_calendar_hint">Adds a calendar picker to browse popular posts by date.</string>
+
+    <string name="settings_links_title">Links</string>
+    <string name="settings_browser_title">Open links in</string>
+
+    <string name="settings_browser_system_title">System default</string>
+    <string name="settings_browser_system_hint">Use the browser set in Android settings.</string>
+
+    <string name="settings_browser_chrome_title">Google Chrome</string>
+    <string name="settings_browser_chrome_hint">Always open links in Chrome (if installed).</string>
+
+    <string name="settings_browser_custom_title">Specific browser</string>
+    <string name="settings_browser_custom_not_selected">Not selected</string>
+
+    <string name="settings_experiments_title">Experimentals</string>
+
 </resources>

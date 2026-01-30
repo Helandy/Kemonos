@@ -1,5 +1,6 @@
 package su.afk.kemonos.preferences.ui
 
+import androidx.compose.ui.unit.dp
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.util.*
@@ -49,6 +50,23 @@ enum class DateFormatMode(val pattern: String) {
             .format(DateTimeFormatter.ofPattern(pattern, locale))
 }
 
+
+enum class PostsSize { SMALL, MEDIUM, LARGE }
+
+fun PostsSize.toDp() = when (this) {
+    PostsSize.SMALL -> 100.dp
+    PostsSize.MEDIUM -> 150.dp
+    PostsSize.LARGE -> 200.dp
+}
+
+enum class DownloadFolderMode {
+    CREATOR,                 // <creator>
+    CREATOR_POST_ID,         // <creator>/<postId>
+    CREATOR_POST_TITLE_ID,   // <creator>/<postTitle>_<postId>
+    POST_ID,                 // <postId>
+    POST_TITLE_ID,           // <postTitle>_<postId>
+}
+
 data class UiSettingModel(
 
     /** debug-only: пропустить проверку API при входе */
@@ -85,14 +103,52 @@ data class UiSettingModel(
 
     /** Формат даты в приложении */
     val dateFormatMode: DateFormatMode = DEFAULT_DATE_FORMAT_MODE,
+
+    /** Размер постов в сетке */
+    val postsSize: PostsSize = DEFAULT_POSTS_SIZE,
+
+    /** Размер кэша картинок */
+    val coilCacheSizeMb: Int = DEFAULT_COIL_CACHE_SIZE,
+
+    /** Размер кэша превьюшек */
+    val previewVideoSizeMb: Int = DEFAULT_VIDEO_PREVIEW_SIZE,
+
+    /** Показывать ли превью видео */
+    val showPreviewVideo: Boolean = DEFAULT_SHOW_VIDEO_PREVIEW,
+
+    /** Блюрить все картинки */
+    val blurImages: Boolean = DEFAULT_BLUR_PICTURE,
+
+    /** Эксперементальный календарь поиска популярных постов */
+    val experimentalCalendar: Boolean = DEFAULT_EXPERIMENTAL_CALENDAR,
+
+    /** Вид папок для скачивания */
+    val downloadFolderMode: DownloadFolderMode = DEFAULT_DOWNLOAD_FOLDER_MODE,
+
+    /** Добавление префикса сервиса при скачивание
+     * kemonos/<service> */
+    val addServiceName: Boolean = DEFAULT_ADD_SERVICE_NAME,
+
+    /** Использовать внешнее хранилище метадатнных */
+    val useExternalMetaData: Boolean = USE_EXTERNAL_METADATA,
 ) {
     companion object {
         val DEFAULT_CREATORS_VIEW_MODE = CreatorViewMode.LIST
         val DEFAULT_POSTS_VIEW_MODE = PostsViewMode.GRID
+        val DEFAULT_POSTS_SIZE = PostsSize.MEDIUM
         const val DEFAULT_SUGGEST_RANDOM_AUTHORS = false
         val DEFAULT_TRANSLATE_TARGET = TranslateTarget.APP
         val DEFAULT_RANDOM_BUTTON_PLACEMENT = RandomButtonPlacement.SEARCH_BAR
         const val DEFAULT_TRANSLATE_LANGUAGE_TAG = "" // системный
         val DEFAULT_DATE_FORMAT_MODE = DateFormatMode.DD_MM_YYYY
+        const val DEFAULT_COIL_CACHE_SIZE = 300
+        const val DEFAULT_VIDEO_PREVIEW_SIZE = 150
+        const val DEFAULT_SHOW_VIDEO_PREVIEW = true
+        const val DEFAULT_BLUR_PICTURE = false
+        const val DEFAULT_EXPERIMENTAL_CALENDAR = false
+
+        val DEFAULT_DOWNLOAD_FOLDER_MODE = DownloadFolderMode.CREATOR_POST_TITLE_ID
+        const val DEFAULT_ADD_SERVICE_NAME = false
+        const val USE_EXTERNAL_METADATA = true
     }
 }

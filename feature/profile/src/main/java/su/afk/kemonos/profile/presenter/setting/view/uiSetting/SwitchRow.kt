@@ -18,6 +18,7 @@ internal fun SwitchRow(
     title: String,
     checked: Boolean,
     onCheckedChange: (Boolean) -> Unit,
+    subtitle: String? = null,
 ) {
     Row(
         modifier = Modifier
@@ -27,6 +28,14 @@ internal fun SwitchRow(
     ) {
         Column(Modifier.weight(1f)) {
             Text(title, style = MaterialTheme.typography.bodyLarge)
+
+            if (!subtitle.isNullOrBlank()) {
+                Text(
+                    text = subtitle,
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
         }
 
         Switch(checked = checked, onCheckedChange = onCheckedChange)

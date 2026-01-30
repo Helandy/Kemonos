@@ -7,17 +7,14 @@ import kotlinx.coroutines.flow.onEach
 import su.afk.kemonos.common.error.IErrorHandlerUseCase
 import su.afk.kemonos.common.error.storage.RetryStorage
 import su.afk.kemonos.common.presenter.baseViewModel.BaseViewModelNew
-import su.afk.kemonos.common.presenter.baseViewModel.UiEffect
 import su.afk.kemonos.preferences.GetCoomerRootUrlUseCase
 import su.afk.kemonos.preferences.GetKemonoRootUrlUseCase
-import su.afk.kemonos.preferences.siteUrl.ISetBaseUrlsUseCase
 import su.afk.kemonos.preferences.ui.IUiSettingUseCase
 import su.afk.kemonos.preferences.useCase.CacheKeys
 import su.afk.kemonos.preferences.useCase.CacheTimes
 import su.afk.kemonos.preferences.useCase.ICacheTimestampUseCase
 import su.afk.kemonos.profile.BuildConfig
-import su.afk.kemonos.profile.presenter.setting.SettingState.Event
-import su.afk.kemonos.profile.presenter.setting.SettingState.State
+import su.afk.kemonos.profile.presenter.setting.SettingState.*
 import su.afk.kemonos.profile.presenter.setting.delegates.SettingApiDelegate
 import su.afk.kemonos.profile.presenter.setting.delegates.SettingCacheDelegate
 import su.afk.kemonos.profile.presenter.setting.delegates.SettingUiPreferencesDelegate
@@ -29,14 +26,13 @@ internal class SettingViewModel @Inject constructor(
     private val getCoomerRootUrlUseCase: GetCoomerRootUrlUseCase,
     private val getKemonoRootUrlUseCase: GetKemonoRootUrlUseCase,
     private val cacheTimestamps: ICacheTimestampUseCase,
-    private val setBaseUrlsUseCase: ISetBaseUrlsUseCase,
     private val uiSetting: IUiSettingUseCase,
     private val uiPrefsDelegate: SettingUiPreferencesDelegate,
     private val apiDelegate: SettingApiDelegate,
     private val cacheDelegate: SettingCacheDelegate,
     override val errorHandler: IErrorHandlerUseCase,
     override val retryStorage: RetryStorage
-) : BaseViewModelNew<State, Event, UiEffect>() {
+) : BaseViewModelNew<State, Event, Effect>() {
 
     override fun createInitialState(): State = State()
 
@@ -60,10 +56,6 @@ internal class SettingViewModel @Inject constructor(
                     setState = ::setState,
                     onAfterSuccess = ::observeCacheTimes,
                 )
-
-            Event.GitHubClick -> {
-                // setEffect(SettingEffect.OpenUrl("https://github.com/Helandy/Kemonos"))
-            }
         }
     }
 

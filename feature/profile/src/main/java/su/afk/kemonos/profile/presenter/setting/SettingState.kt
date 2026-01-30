@@ -1,5 +1,6 @@
 package su.afk.kemonos.profile.presenter.setting
 
+import su.afk.kemonos.common.presenter.baseViewModel.UiEffect
 import su.afk.kemonos.common.presenter.baseViewModel.UiEvent
 import su.afk.kemonos.common.presenter.baseViewModel.UiState
 import su.afk.kemonos.domain.SelectedSite
@@ -60,6 +61,19 @@ internal class SettingState {
             data class EventRandomButtonPlacement(val value: RandomButtonPlacement) : ChangeViewSetting
             data class TranslateLanguageTag(val value: String) : ChangeViewSetting
             data class EventDateFormatMode(val value: DateFormatMode) : ChangeViewSetting
+
+            data class CoilCacheSizeMb(val value: Int) : ChangeViewSetting
+            data class PreviewVideoSizeMb(val value: Int) : ChangeViewSetting
+
+            data class EditPostsSize(val value: PostsSize) : ChangeViewSetting
+            data class ShowPreviewVideo(val value: Boolean) : ChangeViewSetting
+            data class BlurImages(val value: Boolean) : ChangeViewSetting
+
+            data class EditDownloadFolderMode(val value: DownloadFolderMode) : ChangeViewSetting
+            data class AddServiceName(val value: Boolean) : ChangeViewSetting
+            data class UseExternalMetaData(val value: Boolean) : ChangeViewSetting
+
+            data class ExperimentalCalendar(val value: Boolean) : ChangeViewSetting
         }
 
         sealed interface ApiSetting : Event {
@@ -79,7 +93,9 @@ internal class SettingState {
             data class Creators(val site: SelectedSite) : CacheClearAction
             data class Tags(val site: SelectedSite) : CacheClearAction
         }
+    }
 
-        data object GitHubClick : Event
+    sealed interface Effect : UiEffect {
+        data class OpenUrl(val url: String) : Effect
     }
 }

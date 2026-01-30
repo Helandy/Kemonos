@@ -9,10 +9,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.emptyFlow
 import su.afk.kemonos.common.presenter.baseScreen.BaseScreen
 import su.afk.kemonos.common.utilsUI.KemonosPreviewScreen
-import su.afk.kemonos.profile.presenter.setting.SettingState.Event
-import su.afk.kemonos.profile.presenter.setting.SettingState.State
+import su.afk.kemonos.profile.presenter.setting.SettingState.*
 import su.afk.kemonos.profile.presenter.setting.view.apiSetting.ApiSettingsBlock
 import su.afk.kemonos.profile.presenter.setting.view.bottomLink.BottomLinksBlock
 import su.afk.kemonos.profile.presenter.setting.view.cache.CacheSettingsBlock
@@ -21,7 +22,7 @@ import su.afk.kemonos.profile.presenter.setting.view.uiSetting.UISettingBlock
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-internal fun SettingScreen(state: State, onEvent: (Event) -> Unit) {
+internal fun SettingScreen(state: State, onEvent: (Event) -> Unit, effect: Flow<Effect>) {
     val uriHandler = LocalUriHandler.current
 
     BaseScreen(
@@ -72,6 +73,7 @@ private fun PreviewSettingScreen() {
         SettingScreen(
             state = State().copy(loading = false),
             onEvent = {},
+            effect = emptyFlow(),
         )
     }
 }

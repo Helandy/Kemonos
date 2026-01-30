@@ -17,6 +17,7 @@ class SettingNavigatorRegister @Inject constructor() : NavRegistrar {
                 SettingScreen(
                     state = state,
                     onEvent = event,
+                    effect = effect
                 )
             }
         }

@@ -35,4 +35,31 @@ interface IUiSettingUseCase {
 
     /** Формат даты в приложении */
     suspend fun setDateFormatMode(value: DateFormatMode)
+
+    /** Размер постов в сетке */
+    suspend fun setPostsSize(value: PostsSize)
+
+    /** Размер кэша картинок (MB) */
+    suspend fun setCoilCacheSizeMb(value: Int)
+
+    /** Размер кэша превьюшек (MB) */
+    suspend fun setPreviewVideoSizeMb(value: Int)
+
+    /** Показывать превью видео */
+    suspend fun setShowPreviewVideo(value: Boolean)
+
+    /** Блюрить все картинки */
+    suspend fun setBlurImages(value: Boolean)
+
+    /** Экспериментальный календарь поиска популярных постов */
+    suspend fun setExperimentalCalendar(value: Boolean)
+
+    /** Вид папок для скачивания */
+    suspend fun setDownloadFolderMode(value: DownloadFolderMode)
+
+    /** Добавлять префикс сервиса при скачивании */
+    suspend fun setAddServiceName(value: Boolean)
+
+    /** Использовать внешнее хранилище метадатнных */
+    suspend fun setUseExternalMetaData(value: Boolean)
 }
