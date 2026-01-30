@@ -1,4 +1,4 @@
-package su.afk.kemonos.common.view.postsScreen.postCard.model
+package su.afk.kemonos.common.view.posts.postCard.model
 
 internal sealed interface PreviewState {
     data class Image(val path: String) : PreviewState

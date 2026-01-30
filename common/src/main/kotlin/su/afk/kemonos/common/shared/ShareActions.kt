@@ -5,7 +5,6 @@ import android.content.ClipboardManager
 import android.content.Context
 
 object ShareActions {
-
     fun copyToClipboard(
         context: Context,
         label: String,

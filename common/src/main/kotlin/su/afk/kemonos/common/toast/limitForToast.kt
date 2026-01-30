@@ -1,4 +1,4 @@
-package su.afk.kemonos.common.util
+package su.afk.kemonos.common.toast
 
 private const val TOAST_FILE_NAME_MAX = 60
 

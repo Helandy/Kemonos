@@ -1,4 +1,4 @@
-package su.afk.kemonos.common.view.postsScreen.grid
+package su.afk.kemonos.common.view.posts.grid
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.lazy.grid.GridCells
@@ -6,7 +6,7 @@ import androidx.compose.foundation.lazy.grid.LazyGridState
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.unit.dp
-import su.afk.kemonos.common.view.postsScreen.postCard.PostCard
+import su.afk.kemonos.common.view.posts.postCard.PostCard
 import su.afk.kemonos.domain.models.PostDomain
 import su.afk.kemonos.preferences.ui.DateFormatMode
 

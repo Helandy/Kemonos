@@ -1,4 +1,4 @@
-package su.afk.kemonos.common.view.postsScreen.paging
+package su.afk.kemonos.common.view.posts.paging
 
 sealed interface PaginationItem {
     data class Page(val index: Int) : PaginationItem

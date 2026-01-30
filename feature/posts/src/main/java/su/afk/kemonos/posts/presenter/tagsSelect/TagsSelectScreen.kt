@@ -11,7 +11,7 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.paging.compose.collectAsLazyPagingItems
 import su.afk.kemonos.common.presenter.baseScreen.BaseScreen
-import su.afk.kemonos.common.view.postsScreen.paging.PostsTabContent
+import su.afk.kemonos.common.view.posts.paging.PostsTabContent
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

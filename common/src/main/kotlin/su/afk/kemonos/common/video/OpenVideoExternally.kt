@@ -1,4 +1,4 @@
-package su.afk.kemonos.common.util
+package su.afk.kemonos.common.video
 
 import android.content.Context
 import android.content.Intent

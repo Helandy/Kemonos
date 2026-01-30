@@ -21,9 +21,9 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import su.afk.kemonos.common.R
 import su.afk.kemonos.common.presenter.baseScreen.BaseScreen
 import su.afk.kemonos.common.presenter.baseScreen.TopBarScroll
-import su.afk.kemonos.common.view.postsScreen.grid.PostsGrid
-import su.afk.kemonos.common.view.postsScreen.grid.PostsSource
-import su.afk.kemonos.common.view.postsScreen.list.PostsList
+import su.afk.kemonos.common.view.posts.grid.PostsGrid
+import su.afk.kemonos.common.view.posts.grid.PostsSource
+import su.afk.kemonos.common.view.posts.list.PostsList
 import su.afk.kemonos.preferences.ui.PostsViewMode
 
 @OptIn(ExperimentalMaterial3Api::class)

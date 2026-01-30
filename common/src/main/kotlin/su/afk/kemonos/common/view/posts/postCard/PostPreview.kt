@@ -1,4 +1,4 @@
-package su.afk.kemonos.common.view.postsScreen.postCard
+package su.afk.kemonos.common.view.posts.postCard
 
 import android.graphics.Bitmap
 import androidx.compose.foundation.Image
@@ -22,8 +22,8 @@ import su.afk.kemonos.common.R
 import su.afk.kemonos.common.imageLoader.AsyncImageWithStatus
 import su.afk.kemonos.common.presenter.androidView.clearHtml
 import su.afk.kemonos.common.video.LocalVideoFrameCache
-import su.afk.kemonos.common.view.postsScreen.postCard.model.PreviewState
-import su.afk.kemonos.common.view.postsScreen.postCard.placeHolder.PreviewPlaceholder
+import su.afk.kemonos.common.view.posts.postCard.model.PreviewState
+import su.afk.kemonos.common.view.posts.postCard.placeHolder.PreviewPlaceholder
 
 @Composable
 internal fun PostPreview(

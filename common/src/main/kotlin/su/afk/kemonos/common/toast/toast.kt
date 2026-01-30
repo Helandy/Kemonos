@@ -1,4 +1,4 @@
-package su.afk.kemonos.common.util
+package su.afk.kemonos.common.toast
 
 import android.content.Context
 import android.widget.Toast

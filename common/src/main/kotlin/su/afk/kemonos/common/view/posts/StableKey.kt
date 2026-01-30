@@ -1,4 +1,4 @@
-package su.afk.kemonos.common.view.postsScreen
+package su.afk.kemonos.common.view.posts
 
 import su.afk.kemonos.domain.models.PostDomain
 

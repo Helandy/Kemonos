@@ -1,4 +1,4 @@
-package su.afk.kemonos.common.view.postsScreen.postCard
+package su.afk.kemonos.common.view.posts.postCard
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*

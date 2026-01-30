@@ -1,5 +1,7 @@
 package su.afk.kemonos.common.shared
 
+import su.afk.kemonos.common.shared.model.ShareTarget
+
 object ShareLinkBuilder {
 
     fun build(target: ShareTarget): String {

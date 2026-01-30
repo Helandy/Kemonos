@@ -1,10 +1,10 @@
-package su.afk.kemonos.common.view.postsScreen.postCard
+package su.afk.kemonos.common.view.posts.postCard
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import su.afk.kemonos.common.util.*
-import su.afk.kemonos.common.view.postsScreen.postCard.model.PostCardMeta
-import su.afk.kemonos.common.view.postsScreen.postCard.model.PreviewState
+import su.afk.kemonos.common.view.posts.postCard.model.PostCardMeta
+import su.afk.kemonos.common.view.posts.postCard.model.PreviewState
 import su.afk.kemonos.domain.models.PostDomain
 
 @Composable

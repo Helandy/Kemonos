@@ -1,4 +1,4 @@
-package su.afk.kemonos.common.shared
+package su.afk.kemonos.common.shared.model
 
 sealed interface ShareTarget {
     val siteRoot: String

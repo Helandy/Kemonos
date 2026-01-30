@@ -1,4 +1,4 @@
-package su.afk.kemonos.common.util
+package su.afk.kemonos.common.utilsUI
 
 import androidx.compose.ui.graphics.Color
 

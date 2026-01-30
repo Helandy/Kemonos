@@ -18,7 +18,7 @@ import su.afk.kemonos.common.presenter.androidView.clearHtml
 import su.afk.kemonos.common.presenter.androidView.htmlToBlocks
 import su.afk.kemonos.common.presenter.baseViewModel.BaseViewModelNew
 import su.afk.kemonos.common.shared.ShareLinkBuilder
-import su.afk.kemonos.common.shared.ShareTarget
+import su.afk.kemonos.common.shared.model.ShareTarget
 import su.afk.kemonos.common.translate.TextTranslator
 import su.afk.kemonos.common.translate.preprocessForTranslation
 import su.afk.kemonos.common.util.audioMimeType

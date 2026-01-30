@@ -1,4 +1,4 @@
-package su.afk.kemonos.common.view.postsScreen.postCard.placeHolder
+package su.afk.kemonos.common.view.posts.postCard.placeHolder
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box

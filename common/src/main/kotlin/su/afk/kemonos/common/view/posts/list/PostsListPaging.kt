@@ -1,4 +1,4 @@
-package su.afk.kemonos.common.view.postsScreen.list
+package su.afk.kemonos.common.view.posts.list
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
@@ -7,8 +7,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.unit.dp
 import androidx.paging.LoadState
 import androidx.paging.compose.LazyPagingItems
-import su.afk.kemonos.common.view.postsScreen.paging.PagingAppendStateItem
-import su.afk.kemonos.common.view.postsScreen.postCard.PostCard
+import su.afk.kemonos.common.view.posts.paging.PagingAppendStateItem
+import su.afk.kemonos.common.view.posts.postCard.PostCard
 import su.afk.kemonos.domain.models.ErrorItem
 import su.afk.kemonos.domain.models.PostDomain
 import su.afk.kemonos.preferences.ui.DateFormatMode

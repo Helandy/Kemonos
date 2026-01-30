@@ -1,4 +1,4 @@
-package su.afk.kemonos.common.view.postsScreen.paging
+package su.afk.kemonos.common.view.posts.paging
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
