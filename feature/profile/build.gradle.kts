@@ -38,6 +38,7 @@ dependencies {
     implementation(libs.bundles.coil)
 
     implementation(libs.bundles.androidx.credentials)
+    implementation(libs.bundles.paging)
 
     implementation(project(":common"))
     implementation(project(":core:navigation"))

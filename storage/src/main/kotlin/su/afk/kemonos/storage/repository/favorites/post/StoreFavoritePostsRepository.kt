@@ -10,8 +10,12 @@ import su.afk.kemonos.storage.entity.favorites.post.mapper.FavoritePostMapper
 import javax.inject.Inject
 
 interface IStoreFavoritePostsRepository {
+    suspend fun page(site: SelectedSite, limit: Int, offset: Int): List<PostDomain>
+    suspend fun pageSearch(site: SelectedSite, query: String, limit: Int, offset: Int): List<PostDomain>
+
     suspend fun getAll(site: SelectedSite): List<PostDomain>
     suspend fun replaceAll(site: SelectedSite, items: List<PostDomain>)
+
     suspend fun clear(site: SelectedSite)
     suspend fun isCacheFresh(site: SelectedSite): Boolean
     suspend fun exists(site: SelectedSite, service: String, creatorId: String, postId: String): Boolean
@@ -25,6 +29,12 @@ internal class StoreFavoritePostsRepository @Inject constructor(
     private val cacheTimestamps: ICacheTimestampUseCase,
     private val mapper: FavoritePostMapper,
 ) : IStoreFavoritePostsRepository {
+
+    override suspend fun page(site: SelectedSite, limit: Int, offset: Int): List<PostDomain> =
+        dao.page(site = site, limit = limit, offset = offset).map(mapper::toDomain)
+
+    override suspend fun pageSearch(site: SelectedSite, query: String, limit: Int, offset: Int): List<PostDomain> =
+        dao.pageSearch(site = site, query = query, limit = limit, offset = offset).map(mapper::toDomain)
 
     override suspend fun getAll(site: SelectedSite): List<PostDomain> =
         dao.getAll(site).map(mapper::toDomain)

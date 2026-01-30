@@ -1,8 +1,10 @@
-package su.afk.kemonos.common.view.posts.list
+package su.afk.kemonos.common.view.posts
 
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.GridItemSpan
+import androidx.compose.foundation.lazy.grid.LazyGridState
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.unit.dp
 import androidx.paging.LoadState
@@ -14,18 +16,21 @@ import su.afk.kemonos.domain.models.PostDomain
 import su.afk.kemonos.preferences.ui.DateFormatMode
 
 @Composable
-fun PostsListPaging(
+fun PostsGridPaging(
     dateMode: DateFormatMode,
     posts: LazyPagingItems<PostDomain>,
-    onPostClick: (PostDomain) -> Unit,
-    showFavCount: Boolean,
+    postClick: (PostDomain) -> Unit,
+    showFavCount: Boolean = false,
+    gridState: LazyGridState,
     appendLoadState: LoadState,
     onRetryAppend: () -> Unit,
     parseError: (Throwable) -> ErrorItem,
 ) {
-    LazyColumn(
-        contentPadding = PaddingValues(vertical = 8.dp),
+    LazyVerticalGrid(
+        columns = GridCells.Adaptive(minSize = 150.dp),
+        state = gridState,
         verticalArrangement = Arrangement.spacedBy(8.dp),
+        horizontalArrangement = Arrangement.spacedBy(8.dp)
     ) {
         items(
             count = posts.itemCount,
@@ -34,14 +39,14 @@ fun PostsListPaging(
             val post = posts[index] ?: return@items
             PostCard(
                 post = post,
-                onClick = { onPostClick(post) },
+                onClick = { postClick(post) },
                 showFavCount = showFavCount,
                 dateMode = dateMode
             )
         }
 
         /** Loading + error retry button */
-        item {
+        item(span = { GridItemSpan(maxLineSpan) }) {
             PagingAppendStateItem(
                 loadState = appendLoadState,
                 onRetry = onRetryAppend,

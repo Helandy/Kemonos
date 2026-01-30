@@ -8,9 +8,8 @@ import su.afk.kemonos.common.error.LocalErrorMapper
 import su.afk.kemonos.common.error.view.DefaultErrorContent
 import su.afk.kemonos.common.presenter.baseScreen.DefaultEmptyContent
 import su.afk.kemonos.common.presenter.baseScreen.DefaultLoadingContent
-import su.afk.kemonos.common.view.posts.grid.PostsGridPaging
-import su.afk.kemonos.common.view.posts.grid.PostsSource
-import su.afk.kemonos.common.view.posts.list.PostsListPaging
+import su.afk.kemonos.common.view.posts.PostsGridPaging
+import su.afk.kemonos.common.view.posts.PostsListPaging
 import su.afk.kemonos.domain.models.PostDomain
 import su.afk.kemonos.domain.models.Tag
 import su.afk.kemonos.preferences.ui.DateFormatMode
@@ -33,7 +32,7 @@ fun PostsTabContent(
         PostsViewMode.GRID -> {
             PostsGridPaging(
                 dateMode = dateMode,
-                source = PostsSource.Paging(posts),
+                posts = posts,
                 postClick = onPostClick,
                 showFavCount = showFavCount,
                 gridState = gridState,

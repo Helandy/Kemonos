@@ -12,6 +12,13 @@ import su.afk.kemonos.storage.api.favorites.IStoreFavoritePostsUseCase
 import javax.inject.Inject
 
 internal interface IFavoritesRepository {
+    suspend fun pageFavoritePosts(
+        site: SelectedSite,
+        query: String?,
+        limit: Int,
+        offset: Int,
+    ): List<PostDomain>
+
     suspend fun getFavoriteArtists(
         site: SelectedSite,
         getOldCache: Boolean,
@@ -27,6 +34,20 @@ internal class FavoritesRepository @Inject constructor(
     private val artistsStore: IStoreFavoriteArtistsUseCase,
     private val postsStore: IStoreFavoritePostsUseCase,
 ) : IFavoritesRepository {
+
+    override suspend fun pageFavoritePosts(
+        site: SelectedSite,
+        query: String?,
+        limit: Int,
+        offset: Int,
+    ): List<PostDomain> {
+        val q = query?.trim().orEmpty()
+        return if (q.length >= 2) {
+            postsStore.pageSearch(site = site, query = q, limit = limit, offset = offset)
+        } else {
+            postsStore.page(site = site, limit = limit, offset = offset)
+        }
+    }
 
     override suspend fun getFavoriteArtists(
         site: SelectedSite,

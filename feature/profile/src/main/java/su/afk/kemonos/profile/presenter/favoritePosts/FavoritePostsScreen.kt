@@ -18,12 +18,14 @@ import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.paging.LoadState
+import androidx.paging.compose.collectAsLazyPagingItems
 import su.afk.kemonos.common.R
+import su.afk.kemonos.common.error.LocalErrorMapper
 import su.afk.kemonos.common.presenter.baseScreen.BaseScreen
 import su.afk.kemonos.common.presenter.baseScreen.TopBarScroll
-import su.afk.kemonos.common.view.posts.grid.PostsGrid
-import su.afk.kemonos.common.view.posts.grid.PostsSource
-import su.afk.kemonos.common.view.posts.list.PostsList
+import su.afk.kemonos.common.view.posts.PostsGridPaging
+import su.afk.kemonos.common.view.posts.PostsListPaging
 import su.afk.kemonos.preferences.ui.PostsViewMode
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -33,11 +35,16 @@ internal fun FavoritePostsScreen(viewModel: FavoritePostsViewModel) {
     val gridState = rememberSaveable(saver = LazyGridState.Saver) {
         LazyGridState()
     }
+    val errorMapper = LocalErrorMapper.current
 
     val focusManager = LocalFocusManager.current
 
+    val posts = state.posts.collectAsLazyPagingItems()
+
     val pullState = rememberPullToRefreshState()
     val refreshing = state.loading
+
+    val pagingIsEmpty = posts.loadState.refresh is LoadState.NotLoading && posts.itemCount == 0
 
     BaseScreen(
         contentPadding = PaddingValues(horizontal = 8.dp),
@@ -57,30 +64,40 @@ internal fun FavoritePostsScreen(viewModel: FavoritePostsViewModel) {
                 )
             )
         },
-        isLoading = state.loading,
-        isEmpty = !state.loading && state.favoritePosts.isEmpty(),
+        isEmpty = !refreshing && pagingIsEmpty,
         onRetry = viewModel::load,
     ) {
         PullToRefreshBox(
             state = pullState,
             isRefreshing = refreshing,
-            onRefresh = { viewModel.load(refresh = true) },
+            onRefresh = {
+                viewModel.load(refresh = true)
+                posts.refresh()
+            },
         ) {
             when (state.uiSettingModel.favoritePostsViewMode) {
                 PostsViewMode.GRID -> {
-                    PostsGrid(
+                    PostsGridPaging(
                         dateMode = state.uiSettingModel.dateFormatMode,
-                        source = PostsSource.Static(state.favoritePosts),
-                        postClick = { viewModel.navigateToPost(it) },
+                        posts = posts,
+                        postClick = viewModel::navigateToPost,
                         gridState = gridState,
+                        showFavCount = false,
+                        appendLoadState = posts.loadState.append,
+                        onRetryAppend = { posts.refresh() },
+                        parseError = errorMapper::map
                     )
                 }
 
                 PostsViewMode.LIST -> {
-                    PostsList(
+                    PostsListPaging(
                         dateMode = state.uiSettingModel.dateFormatMode,
-                        source = PostsSource.Static(state.favoritePosts),
-                        onPostClick = { viewModel.navigateToPost(it) },
+                        posts = posts,
+                        onPostClick = viewModel::navigateToPost,
+                        showFavCount = false,
+                        appendLoadState = posts.loadState.append,
+                        onRetryAppend = { posts.refresh() },
+                        parseError = errorMapper::map
                     )
                 }
             }

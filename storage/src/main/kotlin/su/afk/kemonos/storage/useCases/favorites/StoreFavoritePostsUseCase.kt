@@ -9,8 +9,15 @@ import javax.inject.Inject
 internal class StoreFavoritePostsUseCase @Inject constructor(
     private val repo: IStoreFavoritePostsRepository
 ) : IStoreFavoritePostsUseCase {
+    override suspend fun page(site: SelectedSite, limit: Int, offset: Int) =
+        repo.page(site, limit, offset)
+
+    override suspend fun pageSearch(site: SelectedSite, query: String, limit: Int, offset: Int) =
+        repo.pageSearch(site, query, limit, offset)
+
     override suspend fun getAll(site: SelectedSite) = repo.getAll(site = site)
     override suspend fun replaceAll(site: SelectedSite, items: List<PostDomain>) = repo.replaceAll(site = site, items)
+
     override suspend fun clear(site: SelectedSite) = repo.clear(site = site)
     override suspend fun isCacheFresh(site: SelectedSite) = repo.isCacheFresh(site = site)
     override suspend fun exists(site: SelectedSite, service: String, creatorId: String, postId: String): Boolean =
