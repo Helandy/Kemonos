@@ -35,8 +35,10 @@ dependencies {
     implementation(libs.bundles.navigation3)
 
     implementation(libs.bundles.retrofit)
+    implementation(libs.bundles.coil)
 
     implementation(libs.bundles.androidx.credentials)
+    implementation(libs.bundles.paging)
 
     implementation(project(":common"))
     implementation(project(":core:navigation"))

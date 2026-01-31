@@ -3,7 +3,7 @@ package su.afk.kemonos.storage.entity.creators
 import androidx.room.Entity
 import androidx.room.Index
 import androidx.room.PrimaryKey
-import su.afk.kemonos.domain.models.Creators
+import su.afk.kemonos.domain.models.creator.Creators
 
 @Entity(
     tableName = "creators",

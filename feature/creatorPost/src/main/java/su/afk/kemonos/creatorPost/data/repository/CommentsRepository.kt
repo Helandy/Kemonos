@@ -5,7 +5,7 @@ import su.afk.kemonos.creatorPost.api.domain.model.CommentDomain.Companion.empty
 import su.afk.kemonos.creatorPost.data.api.PostsApi
 import su.afk.kemonos.creatorPost.data.dto.comments.ProfilePostCommentsDto.Companion.toDomain
 import su.afk.kemonos.network.util.call
-import su.afk.kemonos.storage.api.IStoreCommentsUseCase
+import su.afk.kemonos.storage.api.repository.comments.IStoreCommentsRepository
 import javax.inject.Inject
 
 internal interface ICommentsRepository {
@@ -14,12 +14,12 @@ internal interface ICommentsRepository {
 
 internal class CommentsRepository @Inject constructor(
     private val api: PostsApi,
-    private val storeCommentsUseCase: IStoreCommentsUseCase,
+    private val storeCommentsUseCase: IStoreCommentsRepository,
 ) : ICommentsRepository {
 
     /** Получение комментариев к посту */
     override suspend fun getComments(service: String, id: String, postId: String): List<CommentDomain> {
-        storeCommentsUseCase.getComments(service, id, postId)?.let { return it }
+        storeCommentsUseCase.getCommentsFreshOrNull(service, id, postId)?.let { return it }
 
         val commentsFromNet = api.getProfilePostComments(service, id, postId).call { dto ->
             dto.map { it.toDomain() }

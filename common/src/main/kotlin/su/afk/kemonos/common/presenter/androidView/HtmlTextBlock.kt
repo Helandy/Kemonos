@@ -54,8 +54,6 @@ fun HtmlTextBlock(
                 setTextColor(textColor)
                 setLinkTextColor(linkColor)
                 setTextSize(TypedValue.COMPLEX_UNIT_SP, fontSizeSp)
-                // чтобы не было “серого” фона при тапе
-                highlightColor = android.graphics.Color.TRANSPARENT
             }
         },
         update = { tv ->

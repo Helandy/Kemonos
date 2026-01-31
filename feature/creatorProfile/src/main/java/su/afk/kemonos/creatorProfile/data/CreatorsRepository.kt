@@ -17,16 +17,16 @@ import su.afk.kemonos.domain.models.PostDomain
 import su.afk.kemonos.domain.models.Tag
 import su.afk.kemonos.network.util.call
 import su.afk.kemonos.network.util.safeCallOrNull
-import su.afk.kemonos.storage.api.creatorProfileCache.CreatorProfileCacheType
-import su.afk.kemonos.storage.api.creatorProfileCache.IStoreCreatorProfileCacheUseCase
-import su.afk.kemonos.storage.api.profilePosts.IStorageCreatorPostsCacheUseCase
+import su.afk.kemonos.storage.api.repository.creatorProfile.CreatorProfileCacheType
+import su.afk.kemonos.storage.api.repository.creatorProfile.IStoreCreatorProfileRepository
+import su.afk.kemonos.storage.api.repository.profilePosts.IStorageCreatorPostsRepository
 import javax.inject.Inject
 
 internal class CreatorsRepository @Inject constructor(
     private val api: CreatorProfileApi,
-    private val cacheStore: IStoreCreatorProfileCacheUseCase,
+    private val cacheStore: IStoreCreatorProfileRepository,
     private val cacheJson: CreatorProfileCacheJson,
-    private val postsCache: IStorageCreatorPostsCacheUseCase,
+    private val postsCache: IStorageCreatorPostsRepository,
 ) {
     /** Профиль посты и поиск */
     suspend fun getProfilePosts(

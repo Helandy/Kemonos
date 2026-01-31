@@ -14,7 +14,7 @@ import androidx.paging.compose.collectAsLazyPagingItems
 import su.afk.kemonos.common.presenter.baseScreen.BaseScreen
 import su.afk.kemonos.common.presenter.baseScreen.TopBarScroll
 import su.afk.kemonos.common.presenter.changeSite.SiteToggleFab
-import su.afk.kemonos.common.view.postsScreen.paging.PostsTabContent
+import su.afk.kemonos.common.view.posts.PostsContentPaging
 import su.afk.kemonos.posts.presenter.pagePopularPosts.views.PopularPeriodsPanel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -59,7 +59,7 @@ internal fun PopularPostsScreen(
         floatingActionButtonBottomPadding = 12.dp,
         isLoading = isPageLoading,
     ) {
-        PostsTabContent(
+        PostsContentPaging(
             dateMode = state.uiSettingModel.dateFormatMode,
             postsViewMode = state.uiSettingModel.popularPostsViewMode,
             posts = posts,

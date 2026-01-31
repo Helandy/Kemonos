@@ -18,9 +18,6 @@ android {
         sourceCompatibility = JavaVersion.VERSION_21
         targetCompatibility = JavaVersion.VERSION_21
     }
-    kotlinOptions {
-        freeCompilerArgs = listOf("-XXLanguage:+PropertyParamAnnotationDefaultTargetMode")
-    }
 }
 
 dependencies {
@@ -38,6 +35,8 @@ dependencies {
 
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.bundles.compose.core)
+
+    implementation(libs.bundles.datastore)
 
     implementation(libs.bundles.coil)
     implementation(libs.bundles.translate)

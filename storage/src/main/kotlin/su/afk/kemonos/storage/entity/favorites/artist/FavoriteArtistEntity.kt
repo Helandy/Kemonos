@@ -3,7 +3,7 @@ package su.afk.kemonos.storage.entity.favorites.artist
 import androidx.room.Entity
 import androidx.room.Index
 import su.afk.kemonos.domain.SelectedSite
-import su.afk.kemonos.profile.api.model.FavoriteArtist
+import su.afk.kemonos.domain.models.creator.FavoriteArtist
 
 @Entity(
     tableName = "favorite_artists",

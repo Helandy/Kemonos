@@ -5,13 +5,15 @@ import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import kotlinx.coroutines.flow.Flow
 import su.afk.kemonos.creators.data.ICreatorsRepository
-import su.afk.kemonos.domain.models.Creators
-import su.afk.kemonos.domain.models.CreatorsSort
-import su.afk.kemonos.storage.api.IStoreCreatorsUseCase
+import su.afk.kemonos.domain.models.creator.Creators
+import su.afk.kemonos.domain.models.creator.CreatorsSort
+import su.afk.kemonos.preferences.site.ISelectedSiteUseCase
+import su.afk.kemonos.storage.api.repository.creators.IStoreCreatorsRepository
 import javax.inject.Inject
 
 internal class GetCreatorsPagedUseCase @Inject constructor(
-    private val store: IStoreCreatorsUseCase,
+    private val selectedSite: ISelectedSiteUseCase,
+    private val store: IStoreCreatorsRepository,
     private val repository: ICreatorsRepository
 ) {
     fun paging(
@@ -29,6 +31,7 @@ internal class GetCreatorsPagedUseCase @Inject constructor(
             ),
             pagingSourceFactory = {
                 CreatorsPagingSource(
+                    site = selectedSite.getSite(),
                     store = store,
                     service = service,
                     query = query,
@@ -39,13 +42,16 @@ internal class GetCreatorsPagedUseCase @Inject constructor(
         ).flow
 
     suspend fun getServices(): List<String> {
-        val list = store.getDistinctServices()
+        val list = store.getDistinctServices(site = selectedSite.getSite())
         return listOf("Services") + list
     }
 
     suspend fun ensureFresh(): Boolean = repository.refreshCreatorsIfNeeded()
 
     suspend fun randomSuggestions(service: String, query: String, limit: Int): List<Creators> {
-        return store.randomCreators(service, query, limit)
+        return store.randomCreators(
+            site = selectedSite.getSite(),
+            service, query, limit
+        )
     }
 }

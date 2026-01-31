@@ -8,6 +8,31 @@ interface FavoritePostsDao {
 
     @Query(
         """
+    SELECT * FROM favorite_posts
+    WHERE site = :site
+    ORDER BY 
+        CASE WHEN favedSeq IS NULL THEN 1 ELSE 0 END,
+        favedSeq DESC
+    LIMIT :limit OFFSET :offset
+    """
+    )
+    suspend fun page(site: SelectedSite, limit: Int, offset: Int): List<FavoritePostEntity>
+
+    @Query(
+        """
+    SELECT * FROM favorite_posts
+    WHERE site = :site
+      AND title LIKE '%' || :query || '%'
+    ORDER BY 
+        CASE WHEN favedSeq IS NULL THEN 1 ELSE 0 END,
+        favedSeq DESC
+    LIMIT :limit OFFSET :offset
+    """
+    )
+    suspend fun pageSearch(site: SelectedSite, query: String, limit: Int, offset: Int): List<FavoritePostEntity>
+
+    @Query(
+        """
         SELECT EXISTS(
             SELECT 1 FROM favorite_posts
             WHERE site = :site
@@ -29,6 +54,7 @@ interface FavoritePostsDao {
             NULL AS title, NULL AS content, NULL AS added, NULL AS published, NULL AS edited,
             NULL AS fileName, NULL AS filePath, NULL AS attachmentsJson, NULL AS tagsJson,
             NULL AS nextId, NULL AS prevId, NULL AS favedSeq, NULL AS favCount,
+            '' AS substring,
             0 AS cachedAt
         FROM favorite_posts
         WHERE site = :site

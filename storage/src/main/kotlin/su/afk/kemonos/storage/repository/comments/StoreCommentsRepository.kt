@@ -3,17 +3,12 @@ package su.afk.kemonos.storage.repository.comments
 import su.afk.kemonos.creatorPost.api.domain.model.CommentDomain
 import su.afk.kemonos.preferences.useCase.CacheTimes.TLL_1_DAYS
 import su.afk.kemonos.preferences.useCase.CacheTimes.TTL_7_DAYS
+import su.afk.kemonos.storage.api.repository.comments.IStoreCommentsRepository
 import su.afk.kemonos.storage.entity.comments.CommentWithRevisions.Companion.toDomain
 import su.afk.kemonos.storage.entity.comments.dao.CommentsDao
 import su.afk.kemonos.storage.entity.comments.entity.CommentEntity.Companion.toEntity
 import su.afk.kemonos.storage.entity.comments.entity.CommentRevisionEntity.Companion.toEntity
 import javax.inject.Inject
-
-interface IStoreCommentsRepository {
-    suspend fun getCommentsFreshOrNull(service: String, userId: String, postId: String): List<CommentDomain>?
-    suspend fun updateComments(service: String, userId: String, postId: String, comments: List<CommentDomain>)
-    suspend fun clearCacheOver7Days()
-}
 
 internal class StoreCommentsRepository @Inject constructor(
     private val dao: CommentsDao

@@ -6,19 +6,12 @@ import su.afk.kemonos.preferences.useCase.CacheKeys.TAGS_COOMER
 import su.afk.kemonos.preferences.useCase.CacheKeys.TAGS_KEMONO
 import su.afk.kemonos.preferences.useCase.CacheTimes.TTL_30_DAYS
 import su.afk.kemonos.preferences.useCase.ICacheTimestampUseCase
+import su.afk.kemonos.storage.api.repository.tags.IStoreTagsRepository
 import su.afk.kemonos.storage.entity.tags.TagsEntity.Companion.toDomain
 import su.afk.kemonos.storage.entity.tags.TagsEntity.Companion.toEntity
 import su.afk.kemonos.storage.entity.tags.dao.CoomerTagsDao
 import su.afk.kemonos.storage.entity.tags.dao.KemonoTagsDao
 import javax.inject.Inject
-
-interface IStoreTagsRepository {
-    suspend fun getAll(site: SelectedSite): List<Tags>
-    suspend fun update(site: SelectedSite, items: List<Tags>)
-    suspend fun clear(site: SelectedSite)
-    suspend fun isCacheFresh(site: SelectedSite): Boolean
-    suspend fun clearIfExpired(site: SelectedSite)
-}
 
 internal class StoreTagsRepository @Inject constructor(
     private val kemonoTagsDao: KemonoTagsDao,

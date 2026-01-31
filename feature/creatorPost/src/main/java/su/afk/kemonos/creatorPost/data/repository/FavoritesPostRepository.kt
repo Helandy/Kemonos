@@ -4,7 +4,7 @@ import retrofit2.HttpException
 import su.afk.kemonos.creatorPost.data.api.FavoritesPostApi
 import su.afk.kemonos.domain.SelectedSite
 import su.afk.kemonos.domain.models.PostDomain
-import su.afk.kemonos.storage.api.favorites.IStoreFavoritePostsUseCase
+import su.afk.kemonos.storage.api.repository.favorites.post.IStoreFavoritePostsRepository
 import javax.inject.Inject
 
 internal interface IFavoritesPostRepository {
@@ -14,7 +14,7 @@ internal interface IFavoritesPostRepository {
 
 internal class FavoritesPostRepository @Inject constructor(
     private val api: FavoritesPostApi,
-    private val store: IStoreFavoritePostsUseCase,
+    private val store: IStoreFavoritePostsRepository,
 ) : IFavoritesPostRepository {
 
     override suspend fun addPost(site: SelectedSite, post: PostDomain): Result<Unit> = runCatching {

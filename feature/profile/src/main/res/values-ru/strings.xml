@@ -162,4 +162,67 @@
     <string name="settings_view_modes_section_title">Отображение</string>
 
     <string name="settings_ui_date_format_title">Формат даты</string>
+
+    <string name="settings_cache_sizes_title">Кэш</string>
+
+    <string name="settings_cache_images_size_title">Размер кэша картинок</string>
+    <string name="settings_cache_video_previews_size_title">Размер кэша превью видео</string>
+
+    <string name="settings_cache_size_value_mb">%1$d МБ</string>
+
+    <string name="settings_posts_appearance_title">Посты</string>
+
+    <string name="settings_posts_size_title">Размер постов в сетке</string>
+    <string name="settings_posts_size_small">S</string>
+    <string name="settings_posts_size_medium">M</string>
+    <string name="settings_posts_size_large">L</string>
+
+    <string name="settings_show_preview_video_title">Показывать превью видео</string>
+    <string name="settings_blur_images_title">Размывать изображения</string>
+
+    <string name="settings_downloads_title">Скачивание</string>
+
+    <string name="settings_download_folder_mode_title">Структура папок</string>
+
+    <string name="settings_download_folder_creator">Автор</string>
+    <string name="settings_download_folder_creator_post_id">Автор / ID</string>
+    <string name="settings_download_folder_creator_post_title">Автор / Заголовок</string>
+
+    <string name="settings_download_folder_post_id">ID</string>
+    <string name="settings_download_folder_post_title">Заголовок</string>
+    <string name="settings_download_folder_default">По умолчанию</string>
+
+    <string name="settings_download_add_service_title">Добавлять префикс сервиса</string>
+    <string name="settings_use_external_metadata_title">Использовать внешнее хранилище метаданных</string>
+
+    <string name="settings_experimental_calendar_title">Новый календарь популярных постов</string>
+    <string name="settings_experimental_calendar_hint">Добавляет выбор даты для просмотра популярных постов.</string>
+
+    <string name="settings_links_title">Ссылки</string>
+    <string name="settings_browser_title">Открывать ссылки в</string>
+
+    <string name="settings_browser_system_title">По умолчанию (система)</string>
+    <string name="settings_browser_system_hint">Использовать браузер из настроек Android.</string>
+
+    <string name="settings_browser_chrome_title">Google Chrome</string>
+    <string name="settings_browser_chrome_hint">Всегда открывать в Chrome (если установлен).</string>
+
+    <string name="settings_browser_custom_title">Конкретный браузер</string>
+    <string name="settings_browser_custom_not_selected">Не выбран</string>
+
+    <string name="settings_experiments_title">Эксперементальные</string>
+    <string name="settings_debug_storage_title">Информация о хранилище</string>
+    <string name="settings_debug_storage_loading">Загрузка…</string>
+
+    <string name="settings_debug_storage_cache_dir">cacheDir</string>
+    <string name="settings_debug_storage_files_dir">filesDir</string>
+    <string name="settings_debug_storage_ext_cache_dir">externalCacheDir</string>
+    <string name="settings_debug_storage_ext_files_dir">externalFilesDir</string>
+
+    <string name="settings_debug_storage_coil_custom">Coil disk cache (custom)</string>
+    <string name="settings_debug_storage_coil_actual">Coil disk cache (actual)</string>
+    <string name="settings_debug_storage_coil_default">Coil disk cache (default builder)</string>
+
+    <string name="settings_debug_storage_video_frames">Кэш кадров видео</string>
+
 </resources>

@@ -7,8 +7,8 @@ import su.afk.kemonos.common.presenter.baseViewModel.UiEffect
 import su.afk.kemonos.common.presenter.baseViewModel.UiEvent
 import su.afk.kemonos.common.presenter.baseViewModel.UiState
 import su.afk.kemonos.domain.SelectedSite
-import su.afk.kemonos.domain.models.Creators
-import su.afk.kemonos.domain.models.CreatorsSort
+import su.afk.kemonos.domain.models.creator.CreatorsSort
+import su.afk.kemonos.domain.models.creator.FavoriteArtist
 import su.afk.kemonos.preferences.ui.UiSettingModel
 
 internal class CreatorsState {
@@ -26,10 +26,10 @@ internal class CreatorsState {
         val sortAscending: Boolean = false,
 
         /** Пейджинг-результаты из БД. */
-        val creatorsPaged: Flow<PagingData<Creators>> = flowOf(PagingData.empty()),
+        val creatorsPaged: Flow<PagingData<FavoriteArtist>> = flowOf(PagingData.empty()),
 
         /** Рандомные авторы */
-        val randomSuggestions: List<Creators> = emptyList(),
+        val randomSuggestions: List<FavoriteArtist> = emptyList(),
 
         val selectedSite: SelectedSite = SelectedSite.K,
         val uiSettingModel: UiSettingModel = UiSettingModel(),
@@ -41,7 +41,7 @@ internal class CreatorsState {
         data class SortSelected(val value: CreatorsSort) : Event
         data object ToggleSortOrder : Event
 
-        data class CreatorClicked(val creator: Creators) : Event
+        data class CreatorClicked(val creator: FavoriteArtist) : Event
         data object RandomClicked : Event
         data object SwitchSiteClicked : Event
     }

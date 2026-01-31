@@ -1,28 +1,51 @@
 package su.afk.kemonos.storage.repository.favorites.artist
 
 import su.afk.kemonos.domain.SelectedSite
+import su.afk.kemonos.domain.models.creator.FavoriteArtist
 import su.afk.kemonos.preferences.useCase.CacheKeys.FAVORITES_ARTISTS
 import su.afk.kemonos.preferences.useCase.CacheTimes.TTL_1_HOURS
 import su.afk.kemonos.preferences.useCase.ICacheTimestampUseCase
-import su.afk.kemonos.profile.api.model.FavoriteArtist
+import su.afk.kemonos.profile.api.domain.favoriteProfiles.FavoriteSortedType
+import su.afk.kemonos.storage.api.repository.favorites.artist.IStoreFavoriteArtistsRepository
 import su.afk.kemonos.storage.entity.favorites.artist.FavoriteArtistEntity.Companion.toDomain
 import su.afk.kemonos.storage.entity.favorites.artist.FavoriteArtistEntity.Companion.toEntity
 import su.afk.kemonos.storage.entity.favorites.artist.FavoriteArtistsDao
 import javax.inject.Inject
 
-interface IStoreFavoriteArtistsRepository {
-    suspend fun getAll(site: SelectedSite): List<FavoriteArtist>
-    suspend fun replaceAll(site: SelectedSite, items: List<FavoriteArtist>)
-    suspend fun remove(site: SelectedSite, service: String, id: String)
-    suspend fun clear(site: SelectedSite)
-    suspend fun isCacheFresh(site: SelectedSite): Boolean
-    suspend fun exists(site: SelectedSite, service: String, creatorId: String): Boolean
-}
-
 internal class StoreFavoriteArtistsRepository @Inject constructor(
     private val dao: FavoriteArtistsDao,
     private val cacheTimestamps: ICacheTimestampUseCase,
 ) : IStoreFavoriteArtistsRepository {
+
+    override suspend fun page(
+        site: SelectedSite,
+        service: String,
+        query: String,
+        sort: FavoriteSortedType,
+        ascending: Boolean,
+        limit: Int,
+        offset: Int,
+    ): List<FavoriteArtist> {
+        val s = service.ifBlank { "Services" }
+        val q = query.trim()
+
+        return when (sort) {
+            FavoriteSortedType.NewPostsDate ->
+                if (ascending) dao.pageUpdatedAsc(site, s, q, limit, offset).map { it.toDomain() }
+                else dao.pageUpdatedDesc(site, s, q, limit, offset).map { it.toDomain() }
+
+            FavoriteSortedType.FavedDate ->
+                if (ascending) dao.pageFavedAsc(site, s, q, limit, offset).map { it.toDomain() }
+                else dao.pageFavedDesc(site, s, q, limit, offset).map { it.toDomain() }
+
+            FavoriteSortedType.ReimportDate ->
+                if (ascending) dao.pageReimportAsc(site, s, q, limit, offset).map { it.toDomain() }
+                else dao.pageReimportDesc(site, s, q, limit, offset).map { it.toDomain() }
+        }
+    }
+
+    override suspend fun getDistinctServices(site: SelectedSite): List<String> =
+        dao.getDistinctServices(site)
 
     override suspend fun getAll(site: SelectedSite): List<FavoriteArtist> =
         dao.getAll(site).map { it.toDomain() }

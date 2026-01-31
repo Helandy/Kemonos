@@ -20,15 +20,13 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
-import coil3.ImageLoader
 import coil3.compose.SubcomposeAsyncImage
-import coil3.gif.GifDecoder
 import coil3.request.CachePolicy
 import coil3.request.ImageRequest
-import coil3.request.crossfade
 import coil3.size.Precision
 import su.afk.kemonos.common.R
 import su.afk.kemonos.common.error.view.DefaultErrorContent
+import su.afk.kemonos.common.imageLoader.LocalAppImageLoader
 import su.afk.kemonos.domain.models.ErrorItem
 import kotlin.math.abs
 import kotlin.math.roundToInt
@@ -91,14 +89,7 @@ fun ImageViewScreen(
 
     /** Coil ImageLoader */
     val context = LocalContext.current
-    val imageLoader = remember {
-        ImageLoader.Builder(context)
-            .components {
-                add(GifDecoder.Factory())
-            }
-            .crossfade(true)
-            .build()
-    }
+    val imageLoader = LocalAppImageLoader.current
 
     /** пересоздаём запрос при retryKey++ */
     val request = remember(imageUrl, retryKey, container) {

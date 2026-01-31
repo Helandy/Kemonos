@@ -13,7 +13,7 @@ import su.afk.kemonos.common.error.storage.RetryStorage
 import su.afk.kemonos.common.error.toFavoriteToastBar
 import su.afk.kemonos.common.presenter.baseViewModel.BaseViewModelNew
 import su.afk.kemonos.common.shared.ShareLinkBuilder
-import su.afk.kemonos.common.shared.ShareTarget
+import su.afk.kemonos.common.shared.model.ShareTarget
 import su.afk.kemonos.creatorProfile.api.IGetProfileUseCase
 import su.afk.kemonos.creatorProfile.api.domain.models.profileLinks.ProfileLink
 import su.afk.kemonos.creatorProfile.domain.paging.GetProfilePostsPagingUseCase
@@ -30,7 +30,7 @@ import su.afk.kemonos.navigation.NavigationManager
 import su.afk.kemonos.preferences.GetKemonoRootUrlUseCase
 import su.afk.kemonos.preferences.IGetCurrentSiteRootUrlUseCase
 import su.afk.kemonos.preferences.ui.IUiSettingUseCase
-import su.afk.kemonos.storage.api.profilePosts.IStorageCreatorPostsCacheUseCase
+import su.afk.kemonos.storage.api.repository.profilePosts.IStorageCreatorPostsRepository
 
 internal class CreatorProfileViewModel @AssistedInject constructor(
     @Assisted private val dest: CreatorDest.CreatorProfile,
@@ -42,7 +42,7 @@ internal class CreatorProfileViewModel @AssistedInject constructor(
     private val loadingTabsContent: LoadingTabsContent,
     private val getProfilePostsPagingUseCase: GetProfilePostsPagingUseCase,
     private val navManager: NavigationManager,
-    private val postsCache: IStorageCreatorPostsCacheUseCase,
+    private val postsCache: IStorageCreatorPostsRepository,
     private val uiSetting: IUiSettingUseCase,
     override val errorHandler: IErrorHandlerUseCase,
     override val retryStorage: RetryStorage,

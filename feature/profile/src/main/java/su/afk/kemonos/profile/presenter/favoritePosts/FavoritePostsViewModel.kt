@@ -1,10 +1,10 @@
 package su.afk.kemonos.profile.presenter.favoritePosts
 
+import androidx.paging.cachedIn
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.FlowPreview
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import su.afk.kemonos.common.error.IErrorHandlerUseCase
 import su.afk.kemonos.common.error.storage.RetryStorage
@@ -17,6 +17,7 @@ import su.afk.kemonos.navigation.NavigationStorage
 import su.afk.kemonos.preferences.site.ISelectedSiteUseCase
 import su.afk.kemonos.preferences.ui.IUiSettingUseCase
 import su.afk.kemonos.profile.domain.favorites.GetFavoritePostsUseCase
+import su.afk.kemonos.profile.domain.favorites.posts.GetFavoritePostsPagingUseCase
 import su.afk.kemonos.profile.utils.Const.KEY_SELECT_SITE
 import javax.inject.Inject
 
@@ -26,14 +27,17 @@ internal class FavoritePostsViewModel @Inject constructor(
     private val navManager: NavigationManager,
     private val creatorPostNavigator: ICreatorPostNavigator,
     private val selectedSiteUseCase: ISelectedSiteUseCase,
+    private val getFavoritePostsPagingUseCase: GetFavoritePostsPagingUseCase,
     private val navigationStorage: NavigationStorage,
     private val uiSetting: IUiSettingUseCase,
     override val errorHandler: IErrorHandlerUseCase,
     override val retryStorage: RetryStorage,
 ) : BaseViewModel<FavoritePostsState>(FavoritePostsState()) {
 
+    private val searchQueryFlow = MutableStateFlow("")
+    private var observeSearchJob: Job? = null
+
     override fun onRetry() {
-        setState { copy(loading = true) }
         loadSelectedSite()
     }
 
@@ -51,38 +55,59 @@ internal class FavoritePostsViewModel @Inject constructor(
         loadSelectedSite()
     }
 
+    fun onSearchQueryChanged(query: String) {
+        searchQueryFlow.value = query
+        setState { copy(searchQuery = query) }
+    }
+
+    @OptIn(FlowPreview::class)
+    private fun startObserveSearchOnce() {
+        if (observeSearchJob != null) return
+
+        observeSearchJob = searchQueryFlow
+            .debounce(500L)
+            .map { it.trim() }
+            .distinctUntilChanged()
+            .onEach { query ->
+                setState {
+                    copy(
+                        posts = getFavoritePostsPagingUseCase(
+                            site = currentState.selectSite,
+                            query = query
+                        ).cachedIn(viewModelScope)
+                    )
+                }
+            }
+            .launchIn(viewModelScope)
+    }
+
+
     private fun loadSelectedSite() = viewModelScope.launch {
         val selectSite = navigationStorage.consume<SelectedSite>(KEY_SELECT_SITE) ?: SelectedSite.K
 
         selectedSiteUseCase.setSite(selectSite)
         selectedSiteUseCase.selectedSite.first { it == selectSite }
 
-        setState {
-            copy(
-                selectSite = selectSite
-            )
-        }
-        load()
+        setState { copy(selectSite = selectSite) }
+
+        load(refresh = false)
+
+        startObserveSearchOnce()
+
+        searchQueryFlow.value = currentState.searchQuery
     }
 
     /** Получить избранные посты */
     fun load(refresh: Boolean = false) = viewModelScope.launch {
         setState { copy(loading = true) }
 
-        val posts = getFavoritePostsUseCase(site = currentState.selectSite, refresh = refresh)
-
-        val sorted = posts.sortedWith(
-            compareBy<PostDomain> { it.favedSeq != null }
-                .thenByDescending { it.favedSeq ?: Long.MIN_VALUE }
-        )
-
-        setState {
-            copy(
-                loading = false,
-                allFavoritePosts = sorted,
-                favoritePosts = sorted,
-            )
+        runCatching {
+            getFavoritePostsUseCase(site = currentState.selectSite, refresh = refresh)
+        }.onFailure { t ->
+            errorHandler.parse(t)
         }
+
+        setState { copy(loading = false) }
     }
 
     /** Открытие поста */
@@ -95,23 +120,5 @@ internal class FavoritePostsViewModel @Inject constructor(
                 showBarCreator = true
             )
         )
-    }
-
-    fun onSearchQueryChanged(query: String) {
-        setState { copy(searchQuery = query) }
-
-        val filtered = filterPosts(all = state.value.allFavoritePosts, query = query)
-        setState { copy(favoritePosts = filtered) }
-    }
-
-    private fun filterPosts(all: List<PostDomain>, query: String): List<PostDomain> {
-        val q = query.trim()
-        if (q.isEmpty()) return all
-        if (q.length < 2) return all
-
-        return all.filter { post ->
-            val title = post.title.orEmpty()
-            title.contains(q, ignoreCase = true)
-        }
     }
 }

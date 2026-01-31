@@ -4,27 +4,27 @@ import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
-import su.afk.kemonos.storage.repository.comments.IStoreCommentsRepository
+import su.afk.kemonos.storage.api.repository.comments.IStoreCommentsRepository
+import su.afk.kemonos.storage.api.repository.creatorProfile.IStoreCreatorProfileRepository
+import su.afk.kemonos.storage.api.repository.creators.IStoreCreatorsRepository
+import su.afk.kemonos.storage.api.repository.favorites.artist.IStoreFavoriteArtistsRepository
+import su.afk.kemonos.storage.api.repository.favorites.post.IStoreFavoritePostsRepository
+import su.afk.kemonos.storage.api.repository.popular.IStoragePopularPostsRepository
+import su.afk.kemonos.storage.api.repository.post.IStoragePostStorageRepository
+import su.afk.kemonos.storage.api.repository.postsSearch.IStoragePostsSearchRepository
+import su.afk.kemonos.storage.api.repository.profile.IStoreProfileRepository
+import su.afk.kemonos.storage.api.repository.profilePosts.IStorageCreatorPostsRepository
+import su.afk.kemonos.storage.api.repository.tags.IStoreTagsRepository
 import su.afk.kemonos.storage.repository.comments.StoreCommentsRepository
-import su.afk.kemonos.storage.repository.creatorProfileCache.IStoreCreatorProfileCacheRepository
-import su.afk.kemonos.storage.repository.creatorProfileCache.StoreCreatorProfileCacheRepository
-import su.afk.kemonos.storage.repository.creators.IStoreCreatorsRepository
+import su.afk.kemonos.storage.repository.creatorProfileCache.StoreCreatorProfileRepository
 import su.afk.kemonos.storage.repository.creators.StoreCreatorsRepository
-import su.afk.kemonos.storage.repository.favorites.artist.IStoreFavoriteArtistsRepository
 import su.afk.kemonos.storage.repository.favorites.artist.StoreFavoriteArtistsRepository
-import su.afk.kemonos.storage.repository.favorites.post.IStoreFavoritePostsRepository
 import su.afk.kemonos.storage.repository.favorites.post.StoreFavoritePostsRepository
-import su.afk.kemonos.storage.repository.popular.IStoragePopularPostsCacheRepository
-import su.afk.kemonos.storage.repository.popular.StoragePopularPostsCacheRepository
-import su.afk.kemonos.storage.repository.post.IStoragePostStorageRepository
+import su.afk.kemonos.storage.repository.popular.StoragePopularPostsRepository
 import su.afk.kemonos.storage.repository.post.StoragePostStorageRepository
-import su.afk.kemonos.storage.repository.postsSearch.IPostsSearchCacheRepository
-import su.afk.kemonos.storage.repository.postsSearch.PostsSearchCacheRepository
-import su.afk.kemonos.storage.repository.profile.IStoreProfileRepository
+import su.afk.kemonos.storage.repository.postsSearch.StoragePostsSearchRepository
 import su.afk.kemonos.storage.repository.profile.StoreProfileRepository
-import su.afk.kemonos.storage.repository.profilePosts.IStorageCreatorPostsCacheRepository
-import su.afk.kemonos.storage.repository.profilePosts.StorageCreatorPostsCacheRepository
-import su.afk.kemonos.storage.repository.tags.IStoreTagsRepository
+import su.afk.kemonos.storage.repository.profilePosts.StorageCreatorPostsRepository
 import su.afk.kemonos.storage.repository.tags.StoreTagsRepository
 import javax.inject.Singleton
 
@@ -42,7 +42,7 @@ internal interface RepositoryModule {
 
     @Singleton
     @Binds
-    fun bindCreatorPostsCacheRepository(impl: StorageCreatorPostsCacheRepository): IStorageCreatorPostsCacheRepository
+    fun bindCreatorPostsCacheRepository(impl: StorageCreatorPostsRepository): IStorageCreatorPostsRepository
 
     @Singleton
     @Binds
@@ -58,7 +58,7 @@ internal interface RepositoryModule {
 
     @Singleton
     @Binds
-    fun bindPopularPostsCacheRepository(impl: StoragePopularPostsCacheRepository): IStoragePopularPostsCacheRepository
+    fun bindPopularPostsCacheRepository(impl: StoragePopularPostsRepository): IStoragePopularPostsRepository
 
     @Singleton
     @Binds
@@ -66,7 +66,7 @@ internal interface RepositoryModule {
 
     @Singleton
     @Binds
-    fun bindPostsSearchCacheRepository(impl: PostsSearchCacheRepository): IPostsSearchCacheRepository
+    fun bindPostsSearchCacheRepository(impl: StoragePostsSearchRepository): IStoragePostsSearchRepository
 
     @Singleton
     @Binds
@@ -74,5 +74,5 @@ internal interface RepositoryModule {
 
     @Singleton
     @Binds
-    fun bindStoreCreatorProfileCacheRepository(impl: StoreCreatorProfileCacheRepository): IStoreCreatorProfileCacheRepository
+    fun bindStoreCreatorProfileCacheRepository(impl: StoreCreatorProfileRepository): IStoreCreatorProfileRepository
 }

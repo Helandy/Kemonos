@@ -18,7 +18,7 @@ import su.afk.kemonos.navigation.NavRegistrar
 import su.afk.kemonos.navigation.NavigationManager
 import su.afk.kemonos.preferences.IDomainResolver
 import su.afk.kemonos.presenter.bottomBar.BottomNavigationBar
-import su.afk.kemonos.storage.api.video.IVideoFrameCache
+import su.afk.kemonos.storage.api.videoPreview.IVideoFrameCache
 import su.afk.kemonos.ui.theme.KemonosTheme
 import javax.inject.Inject
 import javax.inject.Singleton

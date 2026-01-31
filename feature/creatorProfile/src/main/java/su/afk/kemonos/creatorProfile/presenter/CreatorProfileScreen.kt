@@ -20,11 +20,11 @@ import su.afk.kemonos.common.presenter.baseScreen.BaseScreen
 import su.afk.kemonos.common.presenter.baseScreen.TopBarScroll
 import su.afk.kemonos.common.shared.ShareActions
 import su.afk.kemonos.common.shared.view.SharedActionButton
-import su.afk.kemonos.common.util.toast
+import su.afk.kemonos.common.toast.toast
 import su.afk.kemonos.common.utilsUI.KemonosPreviewScreen
 import su.afk.kemonos.common.view.button.FavoriteActionButton
 import su.afk.kemonos.common.view.creator.header.CreatorHeader
-import su.afk.kemonos.common.view.postsScreen.paging.PostsTabContent
+import su.afk.kemonos.common.view.posts.PostsContentPaging
 import su.afk.kemonos.creatorProfile.presenter.CreatorProfileState.*
 import su.afk.kemonos.creatorProfile.presenter.CreatorProfileState.State
 import su.afk.kemonos.creatorProfile.presenter.model.ProfileTab
@@ -179,7 +179,7 @@ private fun SelectedTab(
     gridState: LazyGridState,
 ) {
     when (state.selectedTab) {
-        ProfileTab.POSTS -> PostsTabContent(
+        ProfileTab.POSTS -> PostsContentPaging(
             dateMode = state.uiSettingModel.dateFormatMode,
             postsViewMode = state.uiSettingModel.profilePostsViewMode,
             posts = posts,

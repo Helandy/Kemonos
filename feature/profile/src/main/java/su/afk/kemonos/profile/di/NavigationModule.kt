@@ -9,7 +9,7 @@ import su.afk.kemonos.navigation.NavRegistrar
 import su.afk.kemonos.profile.api.domain.IProfileNavigator
 import su.afk.kemonos.profile.navigation.ProfileNavigator
 import su.afk.kemonos.profile.presenter.favoritePosts.FavoritePostsNavigator
-import su.afk.kemonos.profile.presenter.favoriteProfiles.FavoriteProfilesNavigator
+import su.afk.kemonos.profile.presenter.favoriteProfiles.FavoriteProfilesRegister
 import su.afk.kemonos.profile.presenter.login.LoginNavigator
 import su.afk.kemonos.profile.presenter.profile.ProfileNavigatorRegister
 import su.afk.kemonos.profile.presenter.register.RegisterNavigator
@@ -38,7 +38,7 @@ interface NavigationModule {
 
     @Binds
     @IntoSet
-    fun bindFavoriteProfilesNavigator(impl: FavoriteProfilesNavigator): NavRegistrar
+    fun bindFavoriteProfilesNavigator(impl: FavoriteProfilesRegister): NavRegistrar
 
     @Binds
     @IntoSet

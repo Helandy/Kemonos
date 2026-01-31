@@ -3,15 +3,35 @@ package su.afk.kemonos.profile.data
 import su.afk.kemonos.common.data.dto.PostUnifiedDto.Companion.toDomain
 import su.afk.kemonos.domain.SelectedSite
 import su.afk.kemonos.domain.models.PostDomain
+import su.afk.kemonos.domain.models.creator.FavoriteArtist
 import su.afk.kemonos.network.util.call
-import su.afk.kemonos.profile.api.model.FavoriteArtist
+import su.afk.kemonos.profile.api.domain.favoriteProfiles.FavoriteSortedType
 import su.afk.kemonos.profile.data.api.FavoritesApi
 import su.afk.kemonos.profile.data.dto.favorites.artist.FavoriteArtistDto.Companion.toDomain
-import su.afk.kemonos.storage.api.favorites.IStoreFavoriteArtistsUseCase
-import su.afk.kemonos.storage.api.favorites.IStoreFavoritePostsUseCase
+import su.afk.kemonos.storage.api.repository.favorites.artist.IStoreFavoriteArtistsRepository
+import su.afk.kemonos.storage.api.repository.favorites.post.IStoreFavoritePostsRepository
 import javax.inject.Inject
 
 internal interface IFavoritesRepository {
+    suspend fun pageFavoriteArtists(
+        site: SelectedSite,
+        service: String,
+        query: String,
+        sort: FavoriteSortedType,
+        ascending: Boolean,
+        limit: Int,
+        offset: Int,
+    ): List<FavoriteArtist>
+
+    suspend fun getDistinctServices(site: SelectedSite): List<String>
+
+    suspend fun pageFavoritePosts(
+        site: SelectedSite,
+        query: String?,
+        limit: Int,
+        offset: Int,
+    ): List<PostDomain>
+
     suspend fun getFavoriteArtists(
         site: SelectedSite,
         getOldCache: Boolean,
@@ -24,9 +44,46 @@ internal interface IFavoritesRepository {
 
 internal class FavoritesRepository @Inject constructor(
     private val api: FavoritesApi,
-    private val artistsStore: IStoreFavoriteArtistsUseCase,
-    private val postsStore: IStoreFavoritePostsUseCase,
+    private val artistsStore: IStoreFavoriteArtistsRepository,
+    private val postsStore: IStoreFavoritePostsRepository,
 ) : IFavoritesRepository {
+
+    override suspend fun pageFavoriteArtists(
+        site: SelectedSite,
+        service: String,
+        query: String,
+        sort: FavoriteSortedType,
+        ascending: Boolean,
+        limit: Int,
+        offset: Int,
+    ): List<FavoriteArtist> {
+        return artistsStore.page(
+            site = site,
+            service = service,
+            query = query,
+            sort = sort,
+            ascending = ascending,
+            limit = limit,
+            offset = offset
+        )
+    }
+
+    override suspend fun getDistinctServices(site: SelectedSite): List<String> =
+        artistsStore.getDistinctServices(site)
+
+    override suspend fun pageFavoritePosts(
+        site: SelectedSite,
+        query: String?,
+        limit: Int,
+        offset: Int,
+    ): List<PostDomain> {
+        val q = query?.trim().orEmpty()
+        return if (q.length >= 2) {
+            postsStore.pageSearch(site = site, query = q, limit = limit, offset = offset)
+        } else {
+            postsStore.page(site = site, limit = limit, offset = offset)
+        }
+    }
 
     override suspend fun getFavoriteArtists(
         site: SelectedSite,
