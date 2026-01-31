@@ -14,13 +14,29 @@ internal class GetFavoriteArtistsUseCase @Inject constructor(
 
     override suspend operator fun invoke(
         site: SelectedSite,
-        checkDifferent: Boolean
+        checkDifferent: Boolean,
+        refresh: Boolean,
     ): List<FavoriteArtist> {
 
-        if (!checkDifferent) {
-            return repository.getFavoriteArtists(site = site, getOldCache = false)
+        // refresh
+        if (refresh) {
+            return repository.getFavoriteArtists(
+                site = site,
+                getOldCache = false,
+                forceRefresh = true,
+            )
         }
 
+        // обычный сценарий без сравнения
+        if (!checkDifferent) {
+            return repository.getFavoriteArtists(
+                site = site,
+                getOldCache = false,
+                forceRefresh = false,
+            )
+        }
+
+        // сценарий с вычислением diff’ов
         val oldCache = repository.getFavoriteArtists(
             site = site,
             getOldCache = true,

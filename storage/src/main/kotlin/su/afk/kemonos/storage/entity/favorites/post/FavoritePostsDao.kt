@@ -54,6 +54,7 @@ interface FavoritePostsDao {
             NULL AS title, NULL AS content, NULL AS added, NULL AS published, NULL AS edited,
             NULL AS fileName, NULL AS filePath, NULL AS attachmentsJson, NULL AS tagsJson,
             NULL AS nextId, NULL AS prevId, NULL AS favedSeq, NULL AS favCount,
+            '' AS substring,
             0 AS cachedAt
         FROM favorite_posts
         WHERE site = :site

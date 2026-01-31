@@ -2,12 +2,14 @@ package su.afk.kemonos.creators.domain
 
 import androidx.paging.PagingSource
 import androidx.paging.PagingState
+import su.afk.kemonos.domain.SelectedSite
 import su.afk.kemonos.domain.models.creator.Creators
 import su.afk.kemonos.domain.models.creator.CreatorsSort
-import su.afk.kemonos.storage.api.IStoreCreatorsUseCase
+import su.afk.kemonos.storage.api.repository.creators.IStoreCreatorsRepository
 
 internal class CreatorsPagingSource(
-    private val store: IStoreCreatorsUseCase,
+    private val site: SelectedSite,
+    private val store: IStoreCreatorsRepository,
     private val service: String,
     private val query: String,
     private val sort: CreatorsSort,
@@ -26,6 +28,7 @@ internal class CreatorsPagingSource(
             val limit = params.loadSize.coerceAtMost(50)
 
             val data = store.searchCreators(
+                site = site,
                 service = service,
                 query = query,
                 sort = sort,

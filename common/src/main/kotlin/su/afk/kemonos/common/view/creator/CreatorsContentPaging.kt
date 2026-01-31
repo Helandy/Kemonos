@@ -30,7 +30,12 @@ fun CreatorsContentPaging(
     onCreatorClick: (FavoriteArtist) -> Unit,
     listState: LazyListState,
     gridState: LazyGridState,
+    updatedProvider: ((FavoriteArtist) -> String?)? = null,
+    isFreshProvider: ((FavoriteArtist) -> Boolean)? = null,
 ) {
+    fun updatedFor(item: FavoriteArtist): String? = updatedProvider?.invoke(item)
+    fun freshFor(item: FavoriteArtist): Boolean = isFreshProvider?.invoke(item) ?: false
+
     when (viewMode) {
         CreatorViewMode.LIST -> {
             LazyColumn(
@@ -60,7 +65,9 @@ fun CreatorsContentPaging(
                         id = creator.id,
                         name = creator.name,
                         favorited = creator.favorited,
-                        onClick = { onCreatorClick(creator) }
+                        onClick = { onCreatorClick(creator) },
+                        updated = updatedFor(creator),
+                        isFresh = freshFor(creator),
                     )
                     HorizontalDivider()
                 }
@@ -101,7 +108,9 @@ fun CreatorsContentPaging(
                         id = creator.id,
                         name = creator.name,
                         favorited = creator.favorited,
-                        onClick = { onCreatorClick(creator) }
+                        onClick = { onCreatorClick(creator) },
+                        updated = updatedFor(creator),
+                        isFresh = freshFor(creator),
                     )
                 }
             }

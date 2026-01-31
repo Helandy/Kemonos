@@ -146,7 +146,7 @@ internal class FavoriteProfilesViewModel @Inject constructor(
 
         runCatching {
             // это то, что реально кладёт в БД
-            getFavoriteArtistsUseCase(site = currentState.selectedSite, checkDifferent = false)
+            getFavoriteArtistsUseCase(site = currentState.selectedSite, checkDifferent = false, refresh = refresh)
         }.onFailure { t ->
             errorHandler.parse(t)
         }

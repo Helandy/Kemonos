@@ -2,27 +2,27 @@ package su.afk.kemonos.storage.useCases.clear
 
 import su.afk.kemonos.domain.SelectedSite
 import su.afk.kemonos.storage.api.clear.IClearCacheStorageUseCase
-import su.afk.kemonos.storage.repository.comments.IStoreCommentsRepository
-import su.afk.kemonos.storage.repository.creatorProfileCache.IStoreCreatorProfileCacheRepository
-import su.afk.kemonos.storage.repository.popular.IStoragePopularPostsCacheRepository
-import su.afk.kemonos.storage.repository.post.IStoragePostStorageRepository
-import su.afk.kemonos.storage.repository.postsSearch.IPostsSearchCacheRepository
-import su.afk.kemonos.storage.repository.profile.IStoreProfileRepository
-import su.afk.kemonos.storage.repository.profilePosts.IStorageCreatorPostsCacheRepository
-import su.afk.kemonos.storage.repository.tags.IStoreTagsRepository
-import su.afk.kemonos.storage.repository.video.IStoreVideoInfoRepository
+import su.afk.kemonos.storage.api.repository.comments.IStoreCommentsRepository
+import su.afk.kemonos.storage.api.repository.creatorProfile.IStoreCreatorProfileRepository
+import su.afk.kemonos.storage.api.repository.media.IStoreMediaInfoRepository
+import su.afk.kemonos.storage.api.repository.popular.IStoragePopularPostsRepository
+import su.afk.kemonos.storage.api.repository.post.IStoragePostStorageRepository
+import su.afk.kemonos.storage.api.repository.postsSearch.IStoragePostsSearchRepository
+import su.afk.kemonos.storage.api.repository.profile.IStoreProfileRepository
+import su.afk.kemonos.storage.api.repository.profilePosts.IStorageCreatorPostsRepository
+import su.afk.kemonos.storage.api.repository.tags.IStoreTagsRepository
 import javax.inject.Inject
 
 internal class ClearCacheStorageUseCase @Inject constructor(
     private val storeCommentsRepository: IStoreCommentsRepository,
-    private val storeCreatorProfileCacheRepository: IStoreCreatorProfileCacheRepository,
-    private val popularPostsCacheRepository: IStoragePopularPostsCacheRepository,
+    private val storeCreatorProfileCacheRepository: IStoreCreatorProfileRepository,
+    private val popularPostsCacheRepository: IStoragePopularPostsRepository,
     private val postStorageRepository: IStoragePostStorageRepository,
-    private val postsSearchCacheRepository: IPostsSearchCacheRepository,
+    private val postsSearchCacheRepository: IStoragePostsSearchRepository,
     private val storeProfileRepository: IStoreProfileRepository,
-    private val creatorPostsCacheRepository: IStorageCreatorPostsCacheRepository,
+    private val creatorPostsCacheRepository: IStorageCreatorPostsRepository,
     private val storeTagsRepository: IStoreTagsRepository,
-    private val storeVideoInfoRepository: IStoreVideoInfoRepository,
+    private val storeVideoInfoRepository: IStoreMediaInfoRepository,
 ) : IClearCacheStorageUseCase {
 
     override suspend fun clear() {

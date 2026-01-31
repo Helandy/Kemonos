@@ -24,6 +24,7 @@ data class Creators(
             relationId = 0,
             service = service,
             updated = updated.toString(),
+            favorited = favorited
         )
     }
 }

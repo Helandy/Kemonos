@@ -3,11 +3,11 @@ package su.afk.kemonos.creatorProfile.navigation
 import androidx.navigation3.runtime.NavKey
 import su.afk.kemonos.creatorProfile.api.ICreatorProfileNavigator
 import su.afk.kemonos.creatorProfile.util.Utils.queryKey
-import su.afk.kemonos.storage.api.profilePosts.IStorageCreatorPostsCacheUseCase
+import su.afk.kemonos.storage.api.repository.profilePosts.IStorageCreatorPostsRepository
 import javax.inject.Inject
 
 class CreatorProfileNavigator @Inject constructor(
-    private val postsCache: IStorageCreatorPostsCacheUseCase,
+    private val postsCache: IStorageCreatorPostsRepository,
 ) : ICreatorProfileNavigator {
 
     override suspend fun getCreatorProfileDest(

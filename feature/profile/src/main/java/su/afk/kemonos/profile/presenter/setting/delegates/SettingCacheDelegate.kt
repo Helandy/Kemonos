@@ -6,26 +6,26 @@ import su.afk.kemonos.common.error.IErrorHandlerUseCase
 import su.afk.kemonos.domain.SelectedSite
 import su.afk.kemonos.profile.presenter.setting.SettingState.Event.CacheClearAction
 import su.afk.kemonos.profile.presenter.setting.SettingState.State
-import su.afk.kemonos.storage.api.IStoreCreatorsUseCase
-import su.afk.kemonos.storage.api.creatorProfileCache.IStoreCreatorProfileCacheUseCase
-import su.afk.kemonos.storage.api.favorites.IStoreFavoriteArtistsUseCase
-import su.afk.kemonos.storage.api.favorites.IStoreFavoritePostsUseCase
-import su.afk.kemonos.storage.api.popular.IStoragePopularPostsCacheUseCase
-import su.afk.kemonos.storage.api.post.IStoragePostUseCase
-import su.afk.kemonos.storage.api.profilePosts.IStorageCreatorPostsCacheUseCase
-import su.afk.kemonos.storage.api.tags.IStoreTagsUseCase
+import su.afk.kemonos.storage.api.repository.creatorProfile.IStoreCreatorProfileRepository
+import su.afk.kemonos.storage.api.repository.creators.IStoreCreatorsRepository
+import su.afk.kemonos.storage.api.repository.favorites.artist.IStoreFavoriteArtistsRepository
+import su.afk.kemonos.storage.api.repository.favorites.post.IStoreFavoritePostsRepository
+import su.afk.kemonos.storage.api.repository.popular.IStoragePopularPostsRepository
+import su.afk.kemonos.storage.api.repository.post.IStoragePostStorageRepository
+import su.afk.kemonos.storage.api.repository.profilePosts.IStorageCreatorPostsRepository
+import su.afk.kemonos.storage.api.repository.tags.IStoreTagsRepository
 import javax.inject.Inject
 
 internal class SettingCacheDelegate @Inject constructor(
     private val errorHandler: IErrorHandlerUseCase,
-    private val storeTagsUseCase: IStoreTagsUseCase,
-    private val storeCreatorsUseCase: IStoreCreatorsUseCase,
-    private val storeCreatorProfileCacheUseCase: IStoreCreatorProfileCacheUseCase,
-    private val creatorPostsCacheUseCase: IStorageCreatorPostsCacheUseCase,
-    private val storagePostUseCase: IStoragePostUseCase,
-    private val storagePopularPostsCacheUseCase: IStoragePopularPostsCacheUseCase,
-    private val storeFavoriteArtistsUseCase: IStoreFavoriteArtistsUseCase,
-    private val storeFavoritePostsUseCase: IStoreFavoritePostsUseCase,
+    private val storeTagsUseCase: IStoreTagsRepository,
+    private val storeCreatorsUseCase: IStoreCreatorsRepository,
+    private val storeCreatorProfileCacheUseCase: IStoreCreatorProfileRepository,
+    private val creatorPostsCacheUseCase: IStorageCreatorPostsRepository,
+    private val storagePostUseCase: IStoragePostStorageRepository,
+    private val storagePopularPostsCacheUseCase: IStoragePopularPostsRepository,
+    private val storeFavoriteArtistsUseCase: IStoreFavoriteArtistsRepository,
+    private val storeFavoritePostsUseCase: IStoreFavoritePostsRepository,
 ) {
     fun handle(
         event: CacheClearAction,

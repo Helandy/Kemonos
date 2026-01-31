@@ -4,7 +4,7 @@ import su.afk.kemonos.creatorProfile.data.api.CreatorProfileApi
 import su.afk.kemonos.creatorProfile.data.dto.profile.ProfileDto.Companion.toDomain
 import su.afk.kemonos.domain.models.Profile
 import su.afk.kemonos.network.util.call
-import su.afk.kemonos.storage.api.StoreProfileUseCase
+import su.afk.kemonos.storage.api.repository.profile.IStoreProfileRepository
 import javax.inject.Inject
 
 interface IProfileRepository {
@@ -13,7 +13,7 @@ interface IProfileRepository {
 
 internal class ProfileRepository @Inject constructor(
     private val api: CreatorProfileApi,
-    private val storeProfileUseCase: StoreProfileUseCase
+    private val storeProfileUseCase: IStoreProfileRepository
 ) : IProfileRepository {
 
     /** Профиль креатора */

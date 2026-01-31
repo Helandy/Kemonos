@@ -10,8 +10,8 @@ import okhttp3.OkHttpClient
 import okhttp3.Request
 import su.afk.kemonos.creatorPost.api.domain.model.media.MediaInfo
 import su.afk.kemonos.creatorPost.domain.model.media.VideoMeta
-import su.afk.kemonos.storage.api.media.IMediaInfoUseCase
-import su.afk.kemonos.storage.api.video.IVideoFrameCache
+import su.afk.kemonos.storage.api.repository.media.IStoreMediaInfoRepository
+import su.afk.kemonos.storage.api.videoPreview.IVideoFrameCache
 import java.util.concurrent.ConcurrentHashMap
 import javax.inject.Inject
 import javax.inject.Named
@@ -24,7 +24,7 @@ import javax.inject.Named
  * */
 class GetMediaMetaUseCase @Inject constructor(
     @Named("VideoInfoClient") private val http: OkHttpClient,
-    private val infoCache: IMediaInfoUseCase,
+    private val infoCache: IStoreMediaInfoRepository,
     private val frameCache: IVideoFrameCache,
 ) {
     private val inFlight = ConcurrentHashMap<String, Deferred<VideoMeta>>()

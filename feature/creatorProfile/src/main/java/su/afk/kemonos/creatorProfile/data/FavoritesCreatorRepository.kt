@@ -4,7 +4,7 @@ import retrofit2.HttpException
 import su.afk.kemonos.creatorProfile.data.api.FavoritesCreatorApi
 import su.afk.kemonos.domain.SelectedSite
 import su.afk.kemonos.profile.api.domain.IRefreshFavoriteArtists
-import su.afk.kemonos.storage.api.favorites.IStoreFavoriteArtistsUseCase
+import su.afk.kemonos.storage.api.repository.favorites.artist.IStoreFavoriteArtistsRepository
 import javax.inject.Inject
 
 internal interface IFavoritesCreatorRepository {
@@ -14,7 +14,7 @@ internal interface IFavoritesCreatorRepository {
 
 internal class FavoritesCreatorRepository @Inject constructor(
     private val api: FavoritesCreatorApi,
-    private val store: IStoreFavoriteArtistsUseCase,
+    private val store: IStoreFavoriteArtistsRepository,
     private val refresher: IRefreshFavoriteArtists,
 ) : IFavoritesCreatorRepository {
 

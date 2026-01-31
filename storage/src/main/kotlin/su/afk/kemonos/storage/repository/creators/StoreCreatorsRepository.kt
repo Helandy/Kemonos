@@ -1,40 +1,19 @@
 package su.afk.kemonos.storage.repository.creators
 
 import su.afk.kemonos.domain.SelectedSite
+import su.afk.kemonos.domain.models.creator.Creators
 import su.afk.kemonos.domain.models.creator.CreatorsSort
 import su.afk.kemonos.preferences.useCase.CacheKeys.CREATORS_COOMER
 import su.afk.kemonos.preferences.useCase.CacheKeys.CREATORS_KEMONO
 import su.afk.kemonos.preferences.useCase.CacheTimes.TTL_7_DAYS
 import su.afk.kemonos.preferences.useCase.ICacheTimestampUseCase
+import su.afk.kemonos.storage.api.repository.creators.IStoreCreatorsRepository
 import su.afk.kemonos.storage.entity.creators.CreatorsEntity
+import su.afk.kemonos.storage.entity.creators.CreatorsEntity.Companion.toDomain
+import su.afk.kemonos.storage.entity.creators.CreatorsEntity.Companion.toEntity
 import su.afk.kemonos.storage.entity.creators.dao.CoomerCreatorsDao
 import su.afk.kemonos.storage.entity.creators.dao.KemonoCreatorsDao
 import javax.inject.Inject
-
-interface IStoreCreatorsRepository {
-    suspend fun updateCreators(site: SelectedSite, creators: List<CreatorsEntity>)
-    suspend fun clear(site: SelectedSite)
-    suspend fun isCreatorsCacheFresh(site: SelectedSite): Boolean
-
-    suspend fun getDistinctServices(site: SelectedSite): List<String>
-
-    suspend fun searchCreators(
-        site: SelectedSite,
-        service: String,
-        query: String,
-        sort: CreatorsSort,
-        ascending: Boolean,
-        limit: Int,
-        offset: Int,
-    ): List<CreatorsEntity>
-
-    suspend fun randomCreators(
-        site: SelectedSite,
-        service: String,
-        query: String,
-        limit: Int,
-    ): List<CreatorsEntity>
-}
 
 internal class StoreCreatorsRepository @Inject constructor(
     private val kemonoDao: KemonoCreatorsDao,
@@ -42,13 +21,13 @@ internal class StoreCreatorsRepository @Inject constructor(
     private val cacheTimestamps: ICacheTimestampUseCase
 ) : IStoreCreatorsRepository {
 
-    override suspend fun updateCreators(site: SelectedSite, creators: List<CreatorsEntity>) {
+    override suspend fun updateCreators(site: SelectedSite, creators: List<Creators>) {
         when (site) {
             SelectedSite.K -> {
-                kemonoDao.replaceAllChunked(creators)
+                kemonoDao.replaceAllChunked(creators.map { it.toEntity() })
             }
             SelectedSite.C -> {
-                coomerDao.replaceAllChunked(creators)
+                coomerDao.replaceAllChunked(creators.map { it.toEntity() })
             }
         }
         updateCacheTimestamp(site)
@@ -78,13 +57,13 @@ internal class StoreCreatorsRepository @Inject constructor(
         ascending: Boolean,
         limit: Int,
         offset: Int
-    ): List<CreatorsEntity> {
+    ): List<Creators> {
         val s = service.ifBlank { "Services" }
         val q = query.trim()
 
         return when (site) {
-            SelectedSite.K -> searchKemono(s, q, sort, ascending, limit, offset)
-            SelectedSite.C -> searchCoomer(s, q, sort, ascending, limit, offset)
+            SelectedSite.K -> searchKemono(s, q, sort, ascending, limit, offset).map { it.toDomain() }
+            SelectedSite.C -> searchCoomer(s, q, sort, ascending, limit, offset).map { it.toDomain() }
         }
     }
 
@@ -143,19 +122,17 @@ internal class StoreCreatorsRepository @Inject constructor(
         service: String,
         query: String,
         limit: Int
-    ): List<CreatorsEntity> = when (site) {
-        SelectedSite.K -> kemonoDao.randomCreators(service, query.trim(), limit)
-        SelectedSite.C -> coomerDao.randomCreators(service, query.trim(), limit)
+    ): List<Creators> = when (site) {
+        SelectedSite.K -> kemonoDao.randomCreators(service, query.trim(), limit).map { it.toDomain() }
+        SelectedSite.C -> coomerDao.randomCreators(service, query.trim(), limit).map { it.toDomain() }
     }
 
     private fun key(site: SelectedSite): String =
         if (site == SelectedSite.K) CREATORS_KEMONO else CREATORS_COOMER
 
-    private fun getCacheTimestamp(site: SelectedSite): Long =
-        cacheTimestamps.getCacheTimestamp(keyPref = key(site))
+    private fun getCacheTimestamp(site: SelectedSite): Long = cacheTimestamps.getCacheTimestamp(keyPref = key(site))
 
-    private fun updateCacheTimestamp(site: SelectedSite) =
-        cacheTimestamps.updateCacheTimestamp(keyPref = key(site))
+    private fun updateCacheTimestamp(site: SelectedSite) = cacheTimestamps.updateCacheTimestamp(keyPref = key(site))
 
     private fun isCacheFresh(site: SelectedSite): Boolean {
         val ts = getCacheTimestamp(site)

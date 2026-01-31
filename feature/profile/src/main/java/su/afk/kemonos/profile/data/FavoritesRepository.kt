@@ -8,8 +8,8 @@ import su.afk.kemonos.network.util.call
 import su.afk.kemonos.profile.api.domain.favoriteProfiles.FavoriteSortedType
 import su.afk.kemonos.profile.data.api.FavoritesApi
 import su.afk.kemonos.profile.data.dto.favorites.artist.FavoriteArtistDto.Companion.toDomain
-import su.afk.kemonos.storage.api.favorites.IStoreFavoriteArtistsUseCase
-import su.afk.kemonos.storage.api.favorites.IStoreFavoritePostsUseCase
+import su.afk.kemonos.storage.api.repository.favorites.artist.IStoreFavoriteArtistsRepository
+import su.afk.kemonos.storage.api.repository.favorites.post.IStoreFavoritePostsRepository
 import javax.inject.Inject
 
 internal interface IFavoritesRepository {
@@ -44,8 +44,8 @@ internal interface IFavoritesRepository {
 
 internal class FavoritesRepository @Inject constructor(
     private val api: FavoritesApi,
-    private val artistsStore: IStoreFavoriteArtistsUseCase,
-    private val postsStore: IStoreFavoritePostsUseCase,
+    private val artistsStore: IStoreFavoriteArtistsRepository,
+    private val postsStore: IStoreFavoritePostsRepository,
 ) : IFavoritesRepository {
 
     override suspend fun pageFavoriteArtists(
@@ -57,7 +57,7 @@ internal class FavoritesRepository @Inject constructor(
         limit: Int,
         offset: Int,
     ): List<FavoriteArtist> {
-        return artistsStore.pageFavoriteArtists(
+        return artistsStore.page(
             site = site,
             service = service,
             query = query,

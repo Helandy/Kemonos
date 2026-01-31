@@ -4,7 +4,7 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
-import su.afk.kemonos.storage.api.creatorProfileCache.CreatorProfileCacheType
+import su.afk.kemonos.storage.api.repository.creatorProfile.CreatorProfileCacheType
 import su.afk.kemonos.storage.entity.creatorProfileCache.CreatorProfileCacheEntity
 
 @Dao

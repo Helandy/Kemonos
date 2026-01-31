@@ -4,5 +4,9 @@ import su.afk.kemonos.domain.SelectedSite
 import su.afk.kemonos.domain.models.creator.FavoriteArtist
 
 interface IGetFavoriteArtistsUseCase {
-    suspend operator fun invoke(site: SelectedSite, checkDifferent: Boolean = false): List<FavoriteArtist>
+    suspend operator fun invoke(
+        site: SelectedSite,
+        checkDifferent: Boolean = false,
+        refresh: Boolean = false
+    ): List<FavoriteArtist>
 }

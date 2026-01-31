@@ -2,17 +2,11 @@ package su.afk.kemonos.storage.repository.profile
 
 import su.afk.kemonos.domain.models.Profile
 import su.afk.kemonos.preferences.useCase.CacheTimes.TTL_3_DAYS
+import su.afk.kemonos.storage.api.repository.profile.IStoreProfileRepository
 import su.afk.kemonos.storage.entity.profile.ProfileEntity.Companion.toDomain
 import su.afk.kemonos.storage.entity.profile.ProfileEntity.Companion.toEntity
 import su.afk.kemonos.storage.entity.profile.dao.ProfileDao
 import javax.inject.Inject
-
-interface IStoreProfileRepository {
-    suspend fun getProfileFreshOrNull(service: String, id: String): Profile?
-    suspend fun updateProfile(profile: Profile)
-    suspend fun clear()
-    suspend fun clearCacheOver24Hours()
-}
 
 internal class StoreProfileRepository @Inject constructor(
     private val dao: ProfileDao,

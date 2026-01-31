@@ -2,7 +2,7 @@ package su.afk.kemonos.storage.entity.creatorProfileCache
 
 import androidx.room.Entity
 import androidx.room.Index
-import su.afk.kemonos.storage.api.creatorProfileCache.CreatorProfileCacheType
+import su.afk.kemonos.storage.api.repository.creatorProfile.CreatorProfileCacheType
 
 @Entity(
     tableName = "creator_profile_cache",

@@ -2,7 +2,7 @@ package su.afk.kemonos.common.video
 
 import android.graphics.Bitmap
 import androidx.compose.runtime.staticCompositionLocalOf
-import su.afk.kemonos.storage.api.video.IVideoFrameCache
+import su.afk.kemonos.storage.api.videoPreview.IVideoFrameCache
 
 val LocalVideoFrameCache = staticCompositionLocalOf<IVideoFrameCache> {
     error("IVideoFrameCache not provided")
