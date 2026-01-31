@@ -1,7 +1,7 @@
 package su.afk.kemonos.storage.repository.creators
 
 import su.afk.kemonos.domain.SelectedSite
-import su.afk.kemonos.domain.models.CreatorsSort
+import su.afk.kemonos.domain.models.creator.CreatorsSort
 import su.afk.kemonos.preferences.useCase.CacheKeys.CREATORS_COOMER
 import su.afk.kemonos.preferences.useCase.CacheKeys.CREATORS_KEMONO
 import su.afk.kemonos.preferences.useCase.CacheTimes.TTL_7_DAYS

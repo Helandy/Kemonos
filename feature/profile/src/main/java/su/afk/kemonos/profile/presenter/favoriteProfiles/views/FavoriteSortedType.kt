@@ -3,19 +3,9 @@ package su.afk.kemonos.profile.presenter.favoriteProfiles.views
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.stringResource
 import su.afk.kemonos.common.view.searchBar.SortOption
+import su.afk.kemonos.domain.models.creator.FavoriteArtist
 import su.afk.kemonos.profile.R
-import su.afk.kemonos.profile.api.model.FavoriteArtist
-
-/**
- *  дата новой публикации
- *  дата добавления в избранное
- *  дата реимпорта
- */
-internal enum class FavoriteSortedType {
-    NewPostsDate,
-    FavedDate,
-    ReimportDate,
-}
+import su.afk.kemonos.profile.api.domain.favoriteProfiles.FavoriteSortedType
 
 @Composable
 internal fun favoriteProfilesSortOptions(): List<SortOption<FavoriteSortedType>> = listOf(

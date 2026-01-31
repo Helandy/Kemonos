@@ -24,9 +24,7 @@ import su.afk.kemonos.common.R
 import su.afk.kemonos.common.error.LocalErrorMapper
 import su.afk.kemonos.common.presenter.baseScreen.BaseScreen
 import su.afk.kemonos.common.presenter.baseScreen.TopBarScroll
-import su.afk.kemonos.common.view.posts.PostsGridPaging
-import su.afk.kemonos.common.view.posts.PostsListPaging
-import su.afk.kemonos.preferences.ui.PostsViewMode
+import su.afk.kemonos.common.view.posts.PostsContentPaging
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -35,7 +33,7 @@ internal fun FavoritePostsScreen(viewModel: FavoritePostsViewModel) {
     val gridState = rememberSaveable(saver = LazyGridState.Saver) {
         LazyGridState()
     }
-    val errorMapper = LocalErrorMapper.current
+    LocalErrorMapper.current
 
     val focusManager = LocalFocusManager.current
 
@@ -75,32 +73,16 @@ internal fun FavoritePostsScreen(viewModel: FavoritePostsViewModel) {
                 posts.refresh()
             },
         ) {
-            when (state.uiSettingModel.favoritePostsViewMode) {
-                PostsViewMode.GRID -> {
-                    PostsGridPaging(
-                        dateMode = state.uiSettingModel.dateFormatMode,
-                        posts = posts,
-                        postClick = viewModel::navigateToPost,
-                        gridState = gridState,
-                        showFavCount = false,
-                        appendLoadState = posts.loadState.append,
-                        onRetryAppend = { posts.refresh() },
-                        parseError = errorMapper::map
-                    )
-                }
-
-                PostsViewMode.LIST -> {
-                    PostsListPaging(
-                        dateMode = state.uiSettingModel.dateFormatMode,
-                        posts = posts,
-                        onPostClick = viewModel::navigateToPost,
-                        showFavCount = false,
-                        appendLoadState = posts.loadState.append,
-                        onRetryAppend = { posts.refresh() },
-                        parseError = errorMapper::map
-                    )
-                }
-            }
+            PostsContentPaging(
+                dateMode = state.uiSettingModel.dateFormatMode,
+                postsViewMode = state.uiSettingModel.searchPostsViewMode,
+                posts = posts,
+                onPostClick = viewModel::navigateToPost,
+                gridState = gridState,
+                showFavCount = false,
+                currentTag = null,
+                onRetry = { posts.refresh() },
+            )
         }
     }
 }

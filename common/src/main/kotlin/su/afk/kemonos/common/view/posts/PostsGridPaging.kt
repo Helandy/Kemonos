@@ -9,14 +9,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.unit.dp
 import androidx.paging.LoadState
 import androidx.paging.compose.LazyPagingItems
-import su.afk.kemonos.common.view.posts.paging.PagingAppendStateItem
+import su.afk.kemonos.common.paging.PagingAppendStateItem
 import su.afk.kemonos.common.view.posts.postCard.PostCard
 import su.afk.kemonos.domain.models.ErrorItem
 import su.afk.kemonos.domain.models.PostDomain
 import su.afk.kemonos.preferences.ui.DateFormatMode
 
 @Composable
-fun PostsGridPaging(
+internal fun PostsGridPaging(
     dateMode: DateFormatMode,
     posts: LazyPagingItems<PostDomain>,
     postClick: (PostDomain) -> Unit,

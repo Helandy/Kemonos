@@ -1,4 +1,4 @@
-package su.afk.kemonos.creators.presenter.views
+package su.afk.kemonos.common.view.creator.section
 
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.grid.GridItemSpan
@@ -7,15 +7,15 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import su.afk.kemonos.common.R
-import su.afk.kemonos.common.view.creator.grid.CreatorGridItem
-import su.afk.kemonos.common.view.creator.list.CreatorListItem
-import su.afk.kemonos.domain.models.Creators
+import su.afk.kemonos.common.view.creator.CreatorGridItem
+import su.afk.kemonos.common.view.creator.CreatorListItem
+import su.afk.kemonos.domain.models.creator.FavoriteArtist
 import su.afk.kemonos.preferences.ui.DateFormatMode
 
 internal fun LazyListScope.randomCreatorsSection(
     dateMode: DateFormatMode,
-    items: List<Creators>,
-    onCreatorClick: (Creators) -> Unit,
+    items: List<FavoriteArtist>,
+    onCreatorClick: (FavoriteArtist) -> Unit,
 ) {
     if (items.isEmpty()) return
 
@@ -50,8 +50,8 @@ internal fun LazyListScope.randomCreatorsSection(
 
 internal fun LazyGridScope.randomCreatorsSection(
     dateMode: DateFormatMode,
-    items: List<Creators>,
-    onCreatorClick: (Creators) -> Unit,
+    items: List<FavoriteArtist>,
+    onCreatorClick: (FavoriteArtist) -> Unit,
 ) {
     if (items.isEmpty()) return
 

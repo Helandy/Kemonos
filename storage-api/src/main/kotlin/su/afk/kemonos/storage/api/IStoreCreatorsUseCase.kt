@@ -1,8 +1,8 @@
 package su.afk.kemonos.storage.api
 
 import su.afk.kemonos.domain.SelectedSite
-import su.afk.kemonos.domain.models.Creators
-import su.afk.kemonos.domain.models.CreatorsSort
+import su.afk.kemonos.domain.models.creator.Creators
+import su.afk.kemonos.domain.models.creator.CreatorsSort
 
 interface IStoreCreatorsUseCase {
     suspend fun isCreatorsCacheFresh(): Boolean

@@ -1,11 +1,13 @@
 package su.afk.kemonos.creators.presenter
 
 import androidx.paging.cachedIn
+import androidx.paging.map
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import su.afk.kemonos.common.error.IErrorHandlerUseCase
@@ -16,8 +18,9 @@ import su.afk.kemonos.creators.domain.GetCreatorsPagedUseCase
 import su.afk.kemonos.creators.domain.RandomCreatorUseCase
 import su.afk.kemonos.creators.presenter.CreatorsState.*
 import su.afk.kemonos.domain.SelectedSite
-import su.afk.kemonos.domain.models.Creators
-import su.afk.kemonos.domain.models.CreatorsSort
+import su.afk.kemonos.domain.models.creator.Creators.Companion.toFavoriteArtistUi
+import su.afk.kemonos.domain.models.creator.CreatorsSort
+import su.afk.kemonos.domain.models.creator.FavoriteArtist
 import su.afk.kemonos.navigation.NavigationManager
 import su.afk.kemonos.preferences.site.ISelectedSiteUseCase
 import su.afk.kemonos.preferences.ui.IUiSettingUseCase
@@ -107,7 +110,8 @@ internal class CreatorsViewModel @Inject constructor(
         val asc = state.value.sortAscending
 
         val flow = getCreatorsPagedUseCase
-            .paging(service = s, query = qRaw, sort = sort, ascending = asc)
+            .paging(service = s, query = qRaw, sort = sort, ascending = asc) // Flow<PagingData<Creators>>
+            .map { paging -> paging.map { it.toFavoriteArtistUi() } }        // Flow<PagingData<FavoriteArtist>>
             .cachedIn(viewModelScope)
 
         setState { copy(creatorsPaged = flow) }
@@ -122,8 +126,11 @@ internal class CreatorsViewModel @Inject constructor(
                 setState { copy(randomSuggestions = emptyList()) }
                 return@launch
             }
+
             val list = getCreatorsPagedUseCase.randomSuggestions(service = s, query = "", limit = 50)
-            setState { copy(randomSuggestions = list) }
+            // list: List<Creators> -> List<FavoriteArtist>
+            setState { copy(randomSuggestions = list.map { it.toFavoriteArtistUi() }) }
+
         }
     }
 
@@ -150,7 +157,7 @@ internal class CreatorsViewModel @Inject constructor(
         }
     }
 
-    fun onCreatorClick(creator: Creators) = viewModelScope.launch {
+    fun onCreatorClick(creator: FavoriteArtist) = viewModelScope.launch {
         navManager.navigate(
             creatorProfileNavigator.getCreatorProfileDest(
                 service = creator.service,

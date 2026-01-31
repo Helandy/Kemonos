@@ -1,111 +1,91 @@
 package su.afk.kemonos.profile.presenter.favoriteProfiles
 
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.lazy.LazyListState
+import androidx.compose.foundation.lazy.grid.LazyGridState
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.ui.Modifier
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.paging.compose.collectAsLazyPagingItems
+import kotlinx.coroutines.flow.Flow
 import su.afk.kemonos.common.presenter.baseScreen.BaseScreen
 import su.afk.kemonos.common.presenter.baseScreen.TopBarScroll
-import su.afk.kemonos.common.view.creator.AdaptiveCreatorsStatic
-import su.afk.kemonos.common.view.creator.grid.CreatorGridItem
-import su.afk.kemonos.common.view.creator.list.CreatorListItem
+import su.afk.kemonos.common.view.creator.CreatorsContentPaging
 import su.afk.kemonos.common.view.searchBar.SearchBarNew
-import su.afk.kemonos.profile.data.FreshFavoriteArtistKey
-import su.afk.kemonos.profile.data.FreshFavoriteArtistsUpdates
+import su.afk.kemonos.preferences.ui.CreatorViewMode
+import su.afk.kemonos.profile.presenter.favoriteProfiles.FavoriteProfilesState.*
 import su.afk.kemonos.profile.presenter.favoriteProfiles.views.favoriteProfilesSortOptions
-import su.afk.kemonos.profile.presenter.favoriteProfiles.views.uiDateBySort
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-internal fun FavoriteProfilesScreen(viewModel: FavoriteProfilesViewModel) {
-    val state by viewModel.state.collectAsStateWithLifecycle()
+internal fun FavoriteProfilesScreen(state: State, onEvent: (Event) -> Unit, effect: Flow<Effect>) {
     val sortOptions = favoriteProfilesSortOptions()
-
     val pullState = rememberPullToRefreshState()
-    val refreshing = state.loading
+    val pagingItems = state.artistsPaged.collectAsLazyPagingItems()
+
+    val listState = rememberSaveable(saver = LazyListState.Saver) { LazyListState() }
+    val gridState = rememberSaveable(saver = LazyGridState.Saver) { LazyGridState() }
+
+    LaunchedEffect(effect) {
+        effect.collect { e ->
+            when (e) {
+                Effect.ScrollToTop -> {
+                    when (state.uiSettingModel.creatorsViewMode) {
+                        CreatorViewMode.LIST -> listState.scrollToItem(0)
+                        CreatorViewMode.GRID -> gridState.scrollToItem(0)
+                    }
+                }
+            }
+        }
+    }
 
     BaseScreen(
-        contentModifier = Modifier.padding(horizontal = 8.dp),
+        contentPadding = PaddingValues(horizontal = 8.dp),
         isScroll = false,
         floatingActionButtonBottomPadding = 12.dp,
         topBarScroll = TopBarScroll.EnterAlways,
         topBar = {
             SearchBarNew(
                 query = state.searchQuery,
-                onQueryChange = viewModel::updateSearch,
-                services = viewModel.getServices(),
+                onQueryChange = { onEvent(Event.QueryChanged(it)) },
+
+                services = state.services,
                 selectedService = state.selectedService,
-                onServiceSelect = viewModel::setService,
+                onServiceSelect = { onEvent(Event.ServiceSelected(it)) },
+
                 sortOptions = sortOptions,
                 selectedSort = state.sortedType,
-                onSortMethodSelect = viewModel::setSortType,
+                onSortMethodSelect = { onEvent(Event.SortSelected(it)) },
+
                 isAscending = state.sortAscending,
-                onToggleAscending = viewModel::toggleSortOrder,
+                onToggleAscending = { onEvent(Event.ToggleSortOrder) },
             )
         },
         isLoading = state.loading,
-        isEmpty = state.searchCreators.isEmpty() && state.searchQuery.length >= 2,
-        onRetry = viewModel::load,
+        onRetry = { onEvent(Event.Retry) },
     ) {
         PullToRefreshBox(
             state = pullState,
-            isRefreshing = refreshing,
-            onRefresh = { viewModel.load() }
+            isRefreshing = state.refreshing,
+            onRefresh = {
+                onEvent(Event.Refresh)
+                pagingItems.refresh()
+            }
         ) {
-            AdaptiveCreatorsStatic(
-                viewMode = state.uiSettingModel.creatorsFavoriteViewMode,
-                items = state.searchCreators,
-                key = { "${it.service}:${it.id}:${it.indexed}" },
-                listItem = { creator ->
-                    val freshSet = FreshFavoriteArtistsUpdates.get(state.selectSite)
-
-                    val isFresh = freshSet.contains(
-                        FreshFavoriteArtistKey(
-                            name = creator.name,
-                            service = creator.service,
-                            id = creator.id
-                        )
-                    )
-
-                    val dateForCard = creator.uiDateBySort(state.sortedType)
-
-                    CreatorListItem(
-                        dateMode = state.uiSettingModel.dateFormatMode,
-                        service = creator.service,
-                        id = creator.id,
-                        name = creator.name,
-                        updated = dateForCard,
-                        isFresh = isFresh,
-                        onClick = { viewModel.onCreatorClick(creator, isFresh) }
-                    )
+            CreatorsContentPaging(
+                dateMode = state.uiSettingModel.dateFormatMode,
+                viewMode = state.uiSettingModel.creatorsViewMode,
+                pagingItems = pagingItems,
+                randomItems = emptyList(),
+                onCreatorClick = { creator ->
+                    onEvent(Event.CreatorClicked(creator = creator, isFresh = false))
                 },
-                gridItem = { creator ->
-                    val freshSet = FreshFavoriteArtistsUpdates.get(state.selectSite)
-                    val isFresh = freshSet.contains(
-                        FreshFavoriteArtistKey(
-                            name = creator.name,
-                            service = creator.service,
-                            id = creator.id
-                        )
-                    )
-
-                    val dateForCard = creator.uiDateBySort(state.sortedType)
-
-                    CreatorGridItem(
-                        dateMode = state.uiSettingModel.dateFormatMode,
-                        service = creator.service,
-                        id = creator.id,
-                        name = creator.name,
-                        updated = dateForCard,
-                        isFresh = isFresh,
-                        onClick = { viewModel.onCreatorClick(creator, isFresh) }
-                    )
-                }
+                listState = listState,
+                gridState = gridState,
             )
         }
     }

@@ -24,7 +24,7 @@ import su.afk.kemonos.common.presenter.baseScreen.BaseScreen
 import su.afk.kemonos.common.presenter.baseScreen.TopBarScroll
 import su.afk.kemonos.common.presenter.changeSite.SiteToggleFab
 import su.afk.kemonos.common.view.button.RandomFab
-import su.afk.kemonos.common.view.posts.paging.PostsTabContent
+import su.afk.kemonos.common.view.posts.PostsContentPaging
 import su.afk.kemonos.preferences.ui.RandomButtonPlacement
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -102,7 +102,7 @@ internal fun SearchPostsScreen(
         floatingActionButtonBottomPadding = 12.dp,
     ) {
         /** Контент */
-        PostsTabContent(
+        PostsContentPaging(
             dateMode = state.uiSettingModel.dateFormatMode,
             postsViewMode = state.uiSettingModel.searchPostsViewMode,
             posts = posts,

@@ -1,4 +1,4 @@
-package su.afk.kemonos.common.view.creator.grid
+package su.afk.kemonos.common.view.creator
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -27,7 +27,7 @@ import su.afk.kemonos.common.utilsUI.getColorForFavorites
 import su.afk.kemonos.preferences.ui.DateFormatMode
 
 @Composable
-fun CreatorGridItem(
+internal fun CreatorGridItem(
     dateMode: DateFormatMode,
     service: String,
     id: String,

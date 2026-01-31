@@ -1,7 +1,7 @@
 package su.afk.kemonos.profile.data.dto.favorites.artist
 
 import com.google.gson.annotations.SerializedName
-import su.afk.kemonos.profile.api.model.FavoriteArtist
+import su.afk.kemonos.domain.models.creator.FavoriteArtist
 
 internal data class FavoriteArtistDto(
     @SerializedName("faved_seq")

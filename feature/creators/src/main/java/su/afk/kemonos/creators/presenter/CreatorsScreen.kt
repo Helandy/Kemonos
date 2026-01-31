@@ -20,10 +20,10 @@ import su.afk.kemonos.common.presenter.baseScreen.BaseScreen
 import su.afk.kemonos.common.presenter.baseScreen.TopBarScroll
 import su.afk.kemonos.common.presenter.changeSite.SiteToggleFab
 import su.afk.kemonos.common.view.button.RandomFab
+import su.afk.kemonos.common.view.creator.CreatorsContentPaging
 import su.afk.kemonos.common.view.searchBar.SearchBarNew
 import su.afk.kemonos.creators.presenter.CreatorsState.*
 import su.afk.kemonos.creators.presenter.model.creatorsSortOptions
-import su.afk.kemonos.creators.presenter.views.CreatorsContentPaging
 import su.afk.kemonos.domain.SelectedSite
 import su.afk.kemonos.preferences.ui.CreatorViewMode
 import su.afk.kemonos.preferences.ui.RandomButtonPlacement

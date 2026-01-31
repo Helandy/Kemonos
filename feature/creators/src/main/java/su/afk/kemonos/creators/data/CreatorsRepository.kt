@@ -4,8 +4,8 @@ import su.afk.kemonos.creators.data.api.CreatorsApi
 import su.afk.kemonos.creators.data.dto.CreatorsDto.Companion.toDomain
 import su.afk.kemonos.creators.data.dto.RandomCreatorDto.Companion.toDomain
 import su.afk.kemonos.creators.domain.model.RandomCreator
-import su.afk.kemonos.domain.models.Creators
-import su.afk.kemonos.domain.models.CreatorsSort
+import su.afk.kemonos.domain.models.creator.Creators
+import su.afk.kemonos.domain.models.creator.CreatorsSort
 import su.afk.kemonos.network.util.call
 import su.afk.kemonos.storage.api.IStoreCreatorsUseCase
 import javax.inject.Inject

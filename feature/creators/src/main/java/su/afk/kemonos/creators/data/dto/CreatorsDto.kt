@@ -1,7 +1,7 @@
 package su.afk.kemonos.creators.data.dto
 
 import com.google.gson.annotations.SerializedName
-import su.afk.kemonos.domain.models.Creators
+import su.afk.kemonos.domain.models.creator.Creators
 
 data class CreatorsDto(
     @SerializedName("favorited")

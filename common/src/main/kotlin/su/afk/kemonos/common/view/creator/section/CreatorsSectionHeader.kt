@@ -1,4 +1,4 @@
-package su.afk.kemonos.creators.presenter.views
+package su.afk.kemonos.common.view.creator.section
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.HorizontalDivider

@@ -1,8 +1,8 @@
 package su.afk.kemonos.storage.useCases
 
 import su.afk.kemonos.domain.SelectedSite
-import su.afk.kemonos.domain.models.Creators
-import su.afk.kemonos.domain.models.CreatorsSort
+import su.afk.kemonos.domain.models.creator.Creators
+import su.afk.kemonos.domain.models.creator.CreatorsSort
 import su.afk.kemonos.preferences.site.ISelectedSiteUseCase
 import su.afk.kemonos.storage.api.IStoreCreatorsUseCase
 import su.afk.kemonos.storage.entity.creators.CreatorsEntity

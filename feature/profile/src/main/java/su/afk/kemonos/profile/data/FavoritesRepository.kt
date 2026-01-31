@@ -3,8 +3,9 @@ package su.afk.kemonos.profile.data
 import su.afk.kemonos.common.data.dto.PostUnifiedDto.Companion.toDomain
 import su.afk.kemonos.domain.SelectedSite
 import su.afk.kemonos.domain.models.PostDomain
+import su.afk.kemonos.domain.models.creator.FavoriteArtist
 import su.afk.kemonos.network.util.call
-import su.afk.kemonos.profile.api.model.FavoriteArtist
+import su.afk.kemonos.profile.api.domain.favoriteProfiles.FavoriteSortedType
 import su.afk.kemonos.profile.data.api.FavoritesApi
 import su.afk.kemonos.profile.data.dto.favorites.artist.FavoriteArtistDto.Companion.toDomain
 import su.afk.kemonos.storage.api.favorites.IStoreFavoriteArtistsUseCase
@@ -12,6 +13,18 @@ import su.afk.kemonos.storage.api.favorites.IStoreFavoritePostsUseCase
 import javax.inject.Inject
 
 internal interface IFavoritesRepository {
+    suspend fun pageFavoriteArtists(
+        site: SelectedSite,
+        service: String,
+        query: String,
+        sort: FavoriteSortedType,
+        ascending: Boolean,
+        limit: Int,
+        offset: Int,
+    ): List<FavoriteArtist>
+
+    suspend fun getDistinctServices(site: SelectedSite): List<String>
+
     suspend fun pageFavoritePosts(
         site: SelectedSite,
         query: String?,
@@ -34,6 +47,29 @@ internal class FavoritesRepository @Inject constructor(
     private val artistsStore: IStoreFavoriteArtistsUseCase,
     private val postsStore: IStoreFavoritePostsUseCase,
 ) : IFavoritesRepository {
+
+    override suspend fun pageFavoriteArtists(
+        site: SelectedSite,
+        service: String,
+        query: String,
+        sort: FavoriteSortedType,
+        ascending: Boolean,
+        limit: Int,
+        offset: Int,
+    ): List<FavoriteArtist> {
+        return artistsStore.pageFavoriteArtists(
+            site = site,
+            service = service,
+            query = query,
+            sort = sort,
+            ascending = ascending,
+            limit = limit,
+            offset = offset
+        )
+    }
+
+    override suspend fun getDistinctServices(site: SelectedSite): List<String> =
+        artistsStore.getDistinctServices(site)
 
     override suspend fun pageFavoritePosts(
         site: SelectedSite,

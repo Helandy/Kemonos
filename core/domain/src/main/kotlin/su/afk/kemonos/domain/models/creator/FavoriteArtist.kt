@@ -1,5 +1,6 @@
-package su.afk.kemonos.profile.api.model
+package su.afk.kemonos.domain.models.creator
 
+/** Используется в избранном */
 data class FavoriteArtist(
     val favedSeq: Int,
     val id: String,
@@ -9,5 +10,6 @@ data class FavoriteArtist(
     val publicId: String,
     val relationId: Int,
     val service: String,
-    val updated: String
+    val updated: String,
+    val favorited: Int? = null,
 )
