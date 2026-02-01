@@ -195,6 +195,7 @@ internal fun CreatorPostScreen(state: State, onEvent: (Event) -> Unit, effect: F
             )
 
             postVideosSection(
+                uiSettingModel = state.uiSettingModel,
                 videos = state.post.videos,
                 videoThumbs = state.videoThumbs,
                 requestThumb = { server, path ->
