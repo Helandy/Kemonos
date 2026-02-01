@@ -182,8 +182,7 @@ private fun SelectedTab(
 ) {
     when (state.selectedTab) {
         ProfileTab.POSTS -> PostsContentPaging(
-            dateMode = state.uiSettingModel.dateFormatMode,
-            postsViewMode = state.uiSettingModel.profilePostsViewMode,
+            uiSettingModel = state.uiSettingModel,
             posts = posts,
             gridState = gridState,
             currentTag = state.currentTag,

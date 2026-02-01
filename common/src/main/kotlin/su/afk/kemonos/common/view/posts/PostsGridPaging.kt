@@ -13,11 +13,12 @@ import su.afk.kemonos.common.paging.PagingAppendStateItem
 import su.afk.kemonos.common.view.posts.postCard.PostCard
 import su.afk.kemonos.domain.models.ErrorItem
 import su.afk.kemonos.domain.models.PostDomain
-import su.afk.kemonos.preferences.ui.DateFormatMode
+import su.afk.kemonos.preferences.ui.UiSettingModel
+import su.afk.kemonos.preferences.ui.toDp
 
 @Composable
 internal fun PostsGridPaging(
-    dateMode: DateFormatMode,
+    uiSettingModel: UiSettingModel,
     posts: LazyPagingItems<PostDomain>,
     postClick: (PostDomain) -> Unit,
     showFavCount: Boolean = false,
@@ -27,7 +28,7 @@ internal fun PostsGridPaging(
     parseError: (Throwable) -> ErrorItem,
 ) {
     LazyVerticalGrid(
-        columns = GridCells.Adaptive(minSize = 150.dp),
+        columns = GridCells.Adaptive(minSize = uiSettingModel.postsSize.toDp()),
         state = gridState,
         verticalArrangement = Arrangement.spacedBy(8.dp),
         horizontalArrangement = Arrangement.spacedBy(8.dp)
@@ -41,7 +42,7 @@ internal fun PostsGridPaging(
                 post = post,
                 onClick = { postClick(post) },
                 showFavCount = showFavCount,
-                dateMode = dateMode
+                dateMode = uiSettingModel.dateFormatMode
             )
         }
 

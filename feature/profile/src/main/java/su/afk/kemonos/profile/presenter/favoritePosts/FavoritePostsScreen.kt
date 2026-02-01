@@ -74,8 +74,7 @@ internal fun FavoritePostsScreen(viewModel: FavoritePostsViewModel) {
             },
         ) {
             PostsContentPaging(
-                dateMode = state.uiSettingModel.dateFormatMode,
-                postsViewMode = state.uiSettingModel.searchPostsViewMode,
+                uiSettingModel = state.uiSettingModel,
                 posts = posts,
                 onPostClick = viewModel::navigateToPost,
                 gridState = gridState,

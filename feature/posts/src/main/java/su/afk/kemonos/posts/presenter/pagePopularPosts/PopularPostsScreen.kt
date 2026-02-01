@@ -60,8 +60,7 @@ internal fun PopularPostsScreen(
         isLoading = isPageLoading,
     ) {
         PostsContentPaging(
-            dateMode = state.uiSettingModel.dateFormatMode,
-            postsViewMode = state.uiSettingModel.popularPostsViewMode,
+            uiSettingModel = state.uiSettingModel,
             posts = posts,
             gridState = gridState,
             currentTag = null,
