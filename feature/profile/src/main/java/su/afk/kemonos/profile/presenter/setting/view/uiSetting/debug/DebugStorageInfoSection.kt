@@ -166,9 +166,7 @@ private fun collectStorageInfo(context: Context, imageLoader: ImageLoader): Stor
     val coilActualDirFile: File? = imageLoader.diskCache?.directory.toFileOrNull()
 
     // “Дефолтный” ImageLoader (okio.Path -> File)
-    val coilDefaultDirFile: File? = runCatching {
-        ImageLoader.Builder(context).build().diskCache?.directory.toFileOrNull()
-    }.getOrNull()
+    val coilDefaultDirFile: File = cacheDir.resolve("coil3_disk_cache")
 
     // Video frame cache dir
     val videoFramesDir = cacheDir.resolve(VIDEO_FRAMES_DIR_NAME)
@@ -189,8 +187,8 @@ private fun collectStorageInfo(context: Context, imageLoader: ImageLoader): Stor
         coilActualDirPath = coilActualDirFile?.absolutePath,
         coilActualDirMb = coilActualDirFile?.sizeMbSafe(),
 
-        coilDefaultDirPath = coilDefaultDirFile?.absolutePath,
-        coilDefaultDirMb = coilDefaultDirFile?.sizeMbSafe(),
+        coilDefaultDirPath = coilDefaultDirFile.absolutePath,
+        coilDefaultDirMb = coilDefaultDirFile.sizeMbSafe(),
 
         videoFramesDirPath = videoFramesDir.absolutePath,
         videoFramesDirMb = videoFramesDir.sizeMbSafe(),
