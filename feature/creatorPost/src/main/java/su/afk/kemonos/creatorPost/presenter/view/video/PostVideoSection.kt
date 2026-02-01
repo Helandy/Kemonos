@@ -44,6 +44,7 @@ internal fun LazyListScope.postVideosSection(
 
         VideoPreviewItem(
             showPreview = uiSettingModel.showPreviewVideo,
+            blurImage = uiSettingModel.blurImages,
             video = video,
             infoState = videoInfo[url],
             requestInfo = onVideoInfoRequested,

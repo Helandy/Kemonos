@@ -42,7 +42,8 @@ internal fun PostsGridPaging(
                 post = post,
                 onClick = { postClick(post) },
                 showFavCount = showFavCount,
-                dateMode = uiSettingModel.dateFormatMode
+                dateMode = uiSettingModel.dateFormatMode,
+                blurImage = uiSettingModel.blurImages
             )
         }
 

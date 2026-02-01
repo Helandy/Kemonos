@@ -15,6 +15,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.blur
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
@@ -37,6 +38,7 @@ import kotlin.math.roundToInt
 @Composable
 internal fun VideoPreviewItem(
     showPreview: Boolean,
+    blurImage: Boolean,
     video: VideoDomain,
     infoState: MediaInfoState?,
     requestInfo: (server: String, path: String) -> Unit,
@@ -46,7 +48,6 @@ internal fun VideoPreviewItem(
 ) {
     val url = remember(video) { "${video.server}/data${video.path}" }
 
-    // todo нужно убрать тест loading
     if (showPreview) {
         LaunchedEffect(url) {
             requestInfo(video.server, video.path)
@@ -67,7 +68,9 @@ internal fun VideoPreviewItem(
                     AsyncImageWithStatus(
                         model = thumbState.bitmap,
                         contentDescription = video.name,
-                        modifier = Modifier.matchParentSize().clip(RoundedCornerShape(8.dp)),
+                        modifier = Modifier.matchParentSize()
+                            .clip(RoundedCornerShape(8.dp))
+                            .then(if (blurImage) Modifier.blur(14.dp) else Modifier),
                         contentScale = ContentScale.Crop,
                     )
                 }

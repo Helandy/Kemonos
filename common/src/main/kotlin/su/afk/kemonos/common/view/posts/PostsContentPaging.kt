@@ -41,7 +41,7 @@ fun PostsContentPaging(
 
         PostsViewMode.LIST -> {
             PostsListPaging(
-                dateMode = uiSettingModel.dateFormatMode,
+                uiSettingModel = uiSettingModel,
                 posts = posts,
                 onPostClick = onPostClick,
                 showFavCount = showFavCount,

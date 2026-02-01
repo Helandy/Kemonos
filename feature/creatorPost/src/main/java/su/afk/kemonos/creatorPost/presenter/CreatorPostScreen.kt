@@ -183,6 +183,7 @@ internal fun CreatorPostScreen(state: State, onEvent: (Event) -> Unit, effect: F
             }
 
             postPreviewsSection(
+                uiSettingModel = state.uiSettingModel,
                 previews = uniquePreviews,
                 imgBaseUrl = imgBaseUrl,
                 showNames = showPreviewFileNames,

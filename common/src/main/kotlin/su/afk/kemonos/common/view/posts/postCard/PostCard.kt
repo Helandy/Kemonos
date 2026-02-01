@@ -25,10 +25,11 @@ import su.afk.kemonos.preferences.ui.DateFormatMode
 
 @Composable
 fun PostCard(
-    dateMode: DateFormatMode,
     post: PostDomain,
     onClick: () -> Unit,
     showFavCount: Boolean = false,
+    dateMode: DateFormatMode,
+    blurImage: Boolean,
 ) {
     val resolver = LocalDomainResolver.current
     val imgBaseUrl = remember(post.service) { resolver.imageBaseUrlByService(post.service) }
@@ -60,6 +61,7 @@ fun PostCard(
                 imgBaseUrl = imgBaseUrl,
                 title = post.title,
                 textPreview = post.substring,
+                blurImage = blurImage,
             )
 
             if (showFavCount && meta.favCount > 0) {
@@ -118,10 +120,11 @@ fun PostCard(
 private fun PreviewPostCard() {
     KemonosPreviewScreen {
         PostCard(
-            dateMode = DateFormatMode.DD_MM_YYYY,
             post = PostDomain.default(),
             onClick = {},
             showFavCount = false,
+            dateMode = DateFormatMode.DD_MM_YYYY,
+            blurImage = false,
         )
     }
 }
