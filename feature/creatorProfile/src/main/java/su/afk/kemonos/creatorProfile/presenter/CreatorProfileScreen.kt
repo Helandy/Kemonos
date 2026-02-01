@@ -46,14 +46,16 @@ internal fun CreatorScreen(state: State, onEvent: (Event) -> Unit, effect: Flow<
     }
 
     LaunchedEffect(effect) {
-        when (effect) {
-            is Effect.OpenUrl -> openUrlPreferChrome(context, effect.url)
-            is Effect.ShowToast -> context.toast(effect.message)
-            is Effect.CopyPostLink -> ShareActions.copyToClipboard(
-                context,
-                "Profile link",
-                effect.message
-            )
+        effect.collect { effect ->
+            when (effect) {
+                is Effect.OpenUrl -> openUrlPreferChrome(context, effect.url)
+                is Effect.ShowToast -> context.toast(effect.message)
+                is Effect.CopyPostLink -> ShareActions.copyToClipboard(
+                    context,
+                    "Profile link",
+                    effect.message
+                )
+            }
         }
     }
 
