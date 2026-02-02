@@ -296,7 +296,10 @@ internal class CreatorPostViewModel @AssistedInject constructor(
         downloadUtil.enqueueSystemDownload(
             url = url,
             fileName = fileName,
-            mimeType = null
+            service = currentState.service,
+            creatorName = currentState.profile?.name,
+            postId = currentState.postId,
+            postTitle = currentState.post?.post?.title
         )
         setEffect(
             Effect.DownloadToast(fileName.orEmpty())

@@ -6,7 +6,10 @@ interface IDownloadUtil {
      */
     fun enqueueSystemDownload(
         url: String,
-        fileName: String? = null,
-        mimeType: String? = null,
+        fileName: String?,
+        service: String? = null,
+        creatorName: String? = null,
+        postId: String? = null,
+        postTitle: String? = null,
     ): Long
 }
