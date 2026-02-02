@@ -6,7 +6,7 @@ jvmVersion = "21"
 
 # --- App versioning
 appVersionName = "1.5"
-appVersionCode = "21"
+appVersionCode = "23"
 
 agp = "8.12.3"
 kotlin = "2.3.0"

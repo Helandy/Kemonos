@@ -180,6 +180,7 @@
 
     <string name="settings_show_preview_video_title">Show video previews</string>
     <string name="settings_blur_images_title">Blur images</string>
+    <string name="settings_blur_images_substring" translatable="false">Android >12</string>
 
     <string name="settings_downloads_title">Downloads</string>
 

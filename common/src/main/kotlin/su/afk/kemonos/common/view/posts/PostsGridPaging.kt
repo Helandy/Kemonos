@@ -6,7 +6,6 @@ import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyGridState
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.unit.dp
 import androidx.paging.LoadState
 import androidx.paging.compose.LazyPagingItems
 import su.afk.kemonos.common.paging.PagingAppendStateItem
@@ -14,6 +13,7 @@ import su.afk.kemonos.common.view.posts.postCard.PostCard
 import su.afk.kemonos.domain.models.ErrorItem
 import su.afk.kemonos.domain.models.PostDomain
 import su.afk.kemonos.preferences.ui.UiSettingModel
+import su.afk.kemonos.preferences.ui.toArrangement
 import su.afk.kemonos.preferences.ui.toDp
 
 @Composable
@@ -21,7 +21,7 @@ internal fun PostsGridPaging(
     uiSettingModel: UiSettingModel,
     posts: LazyPagingItems<PostDomain>,
     postClick: (PostDomain) -> Unit,
-    showFavCount: Boolean = false,
+    showFavCount: Boolean,
     gridState: LazyGridState,
     appendLoadState: LoadState,
     onRetryAppend: () -> Unit,
@@ -30,8 +30,8 @@ internal fun PostsGridPaging(
     LazyVerticalGrid(
         columns = GridCells.Adaptive(minSize = uiSettingModel.postsSize.toDp()),
         state = gridState,
-        verticalArrangement = Arrangement.spacedBy(8.dp),
-        horizontalArrangement = Arrangement.spacedBy(8.dp)
+        verticalArrangement = Arrangement.spacedBy(uiSettingModel.postsSize.toArrangement()),
+        horizontalArrangement = Arrangement.spacedBy(uiSettingModel.postsSize.toArrangement())
     ) {
         items(
             count = posts.itemCount,

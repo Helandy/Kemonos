@@ -87,13 +87,15 @@ fun PostCard(
             modifier = Modifier.padding(start = 4.dp, top = 4.dp, bottom = 4.dp),
         ) {
             /** Тайтл и дата */
-            Text(
-                text = post.title.orEmpty(),
-                style = MaterialTheme.typography.labelMedium,
-                minLines = 2,
-                maxLines = 2,
-                overflow = TextOverflow.Ellipsis,
-            )
+            if (showFavCount || post.title?.isNotBlank() == true) {
+                Text(
+                    text = post.title.orEmpty(),
+                    style = MaterialTheme.typography.labelMedium,
+                    minLines = 2,
+                    maxLines = 2,
+                    overflow = TextOverflow.Ellipsis,
+                )
+            }
 
             Row {
                 Text(
