@@ -85,7 +85,6 @@ internal fun CreatorPostScreen(state: State, onEvent: (Event) -> Unit, effect: F
     BaseScreen(
         contentModifier = Modifier.padding(horizontal = 4.dp),
         isScroll = false,
-        floatingActionButtonBottomPadding = 12.dp,
         floatingActionButtonStart = {
             if (!state.loading) {
                 SharedActionButton(

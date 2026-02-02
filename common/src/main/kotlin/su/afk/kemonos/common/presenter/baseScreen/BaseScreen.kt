@@ -50,7 +50,6 @@ fun BaseScreen(
     floatingActionButtonStart: (@Composable () -> Unit)? = null,
     floatingActionButtonBottomPadding: Dp = 0.dp,
 
-    contentWindowInsets: WindowInsets = WindowInsets.safeDrawing,
     content: @Composable ColumnScope.() -> Unit,
 ) {
     val topAppBarState = rememberTopAppBarState()
@@ -68,7 +67,9 @@ fun BaseScreen(
     }
 
     Scaffold(
-        contentWindowInsets = contentWindowInsets,
+        contentWindowInsets = WindowInsets.safeDrawing.only(
+            WindowInsetsSides.Top + WindowInsetsSides.Horizontal
+        ),
         modifier = Modifier
             .fillMaxSize()
             .let {

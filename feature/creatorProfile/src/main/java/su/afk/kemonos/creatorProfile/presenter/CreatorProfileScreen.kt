@@ -130,7 +130,6 @@ internal fun CreatorScreen(state: State, onEvent: (Event) -> Unit, effect: Flow<
                 )
             }
         },
-        floatingActionButtonBottomPadding = 12.dp,
         floatingActionButtonEnd = {
             if (state.isFavoriteShowButton && state.loading.not()) {
                 FavoriteActionButton(

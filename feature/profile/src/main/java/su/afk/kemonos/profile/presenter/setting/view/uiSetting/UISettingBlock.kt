@@ -42,6 +42,8 @@ internal fun UISettingBlock(
             onSuggestRandomAuthors = { onEvent(Event.ChangeViewSetting.SuggestRandomAuthors(it)) },
             dateFormatMode = ui.dateFormatMode,
             onDateFormatMode = { onEvent(Event.ChangeViewSetting.EventDateFormatMode(it)) },
+            randomButtonPlace = ui.randomButtonPlacement,
+            onRandomButtonPlace = { onEvent(Event.ChangeViewSetting.EventRandomButtonPlacement(it)) }
         )
 
         TranslateSettingsSection(

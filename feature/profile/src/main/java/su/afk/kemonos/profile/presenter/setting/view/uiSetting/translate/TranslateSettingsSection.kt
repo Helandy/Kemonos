@@ -8,8 +8,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import su.afk.kemonos.preferences.ui.TranslateTarget
 import su.afk.kemonos.profile.R
-import su.afk.kemonos.profile.presenter.setting.view.uiSetting.TranslateLanguageRow
-import su.afk.kemonos.profile.presenter.setting.view.uiSetting.TranslateTargetRow
 import su.afk.kemonos.profile.presenter.setting.view.uiSetting.common.SectionSpacer
 import su.afk.kemonos.profile.presenter.setting.view.uiSetting.common.SettingsSectionTitle
 

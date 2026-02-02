@@ -1,4 +1,4 @@
-package su.afk.kemonos.profile.presenter.setting.view.uiSetting
+package su.afk.kemonos.profile.presenter.setting.view.uiSetting.translate
 
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth

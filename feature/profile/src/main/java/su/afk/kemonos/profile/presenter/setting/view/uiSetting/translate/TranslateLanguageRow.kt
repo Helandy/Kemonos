@@ -1,4 +1,4 @@
-package su.afk.kemonos.profile.presenter.setting.view.uiSetting
+package su.afk.kemonos.profile.presenter.setting.view.uiSetting.translate
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
@@ -12,6 +12,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import su.afk.kemonos.profile.R
+import java.util.*
 
 private data class LangOption(
     val tag: String,
@@ -62,7 +63,7 @@ internal fun TranslateLanguageRow(
     var expanded by remember { mutableStateOf(false) }
 
     val isSystem = languageTag.isBlank()
-    val systemLang = remember { java.util.Locale.getDefault().language }
+    val systemLang = remember { Locale.getDefault().language }
 
     Row(
         modifier = modifier

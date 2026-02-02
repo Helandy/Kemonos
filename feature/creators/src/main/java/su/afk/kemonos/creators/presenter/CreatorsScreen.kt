@@ -73,7 +73,6 @@ internal fun CreatorsScreen(
     BaseScreen(
         isScroll = false,
         contentModifier = Modifier.padding(horizontal = 8.dp),
-        floatingActionButtonBottomPadding = 12.dp,
         topBarScroll = TopBarScroll.EnterAlways,
         topBar = {
                 SearchBarNew(
