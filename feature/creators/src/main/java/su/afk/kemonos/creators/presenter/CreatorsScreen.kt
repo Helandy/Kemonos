@@ -42,18 +42,20 @@ internal fun CreatorsScreen(
     val pagingItems = state.creatorsPaged.collectAsLazyPagingItems()
     val isBusy = state.refreshing || siteSwitching
 
-    val refreshState = pagingItems.loadState.refresh
-    val isPagingRefreshing = refreshState is LoadState.Loading
-    val isFirstPageLoading = isPagingRefreshing && pagingItems.itemCount == 0
-
     val showEmpty = state.searchQuery.trim().length >= 2 &&
             pagingItems.loadState.refresh is LoadState.NotLoading &&
             pagingItems.itemCount == 0
+
+    val refreshState = pagingItems.loadState.refresh
+    val isFirstPageLoading = refreshState is LoadState.Loading && pagingItems.itemCount == 0
+
+    val isScreenLoading = isBusy || state.loading || isFirstPageLoading
 
     val listState = rememberSaveable(saver = LazyListState.Saver) { LazyListState() }
     val gridState = rememberSaveable(saver = LazyGridState.Saver) { LazyGridState() }
 
     val viewModeState by rememberUpdatedState(state.uiSettingModel.creatorsViewMode)
+
     LaunchedEffect(effect) {
         effect.collect { e ->
             when (e) {
@@ -105,14 +107,18 @@ internal fun CreatorsScreen(
                 )
             }
         },
-        isLoading = isBusy || isFirstPageLoading || state.loading,
+        isLoading = isScreenLoading,
         isEmpty = showEmpty
     ) {
         CreatorsContentPaging(
             dateMode = state.uiSettingModel.dateFormatMode,
             viewMode = state.uiSettingModel.creatorsViewMode,
             pagingItems = pagingItems,
-            randomItems = if (state.searchQuery.trim().isEmpty()) state.randomSuggestions else emptyList(),
+            randomItems =
+                if (state.uiSettingModel.suggestRandomAuthors)
+                    state.randomSuggestionsFiltered
+                else
+                    emptyList(),
             onCreatorClick = { onEvent(Event.CreatorClicked(it)) },
             listState = listState,
             gridState = gridState,

@@ -1,14 +1,6 @@
 package su.afk.kemonos.creators.presenter
 
-import androidx.paging.cachedIn
-import androidx.paging.map
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import su.afk.kemonos.common.error.IErrorHandlerUseCase
 import su.afk.kemonos.common.error.storage.RetryStorage
@@ -17,13 +9,12 @@ import su.afk.kemonos.creatorProfile.api.ICreatorProfileNavigator
 import su.afk.kemonos.creators.domain.GetCreatorsPagedUseCase
 import su.afk.kemonos.creators.domain.RandomCreatorUseCase
 import su.afk.kemonos.creators.presenter.CreatorsState.*
+import su.afk.kemonos.creators.presenter.delegates.CreatorsListDelegate
 import su.afk.kemonos.domain.SelectedSite
-import su.afk.kemonos.domain.models.creator.Creators.Companion.toFavoriteArtistUi
 import su.afk.kemonos.domain.models.creator.CreatorsSort
 import su.afk.kemonos.domain.models.creator.FavoriteArtist
 import su.afk.kemonos.navigation.NavigationManager
 import su.afk.kemonos.preferences.site.ISelectedSiteUseCase
-import su.afk.kemonos.preferences.ui.IUiSettingUseCase
 import javax.inject.Inject
 
 @HiltViewModel
@@ -32,21 +23,32 @@ internal class CreatorsViewModel @Inject constructor(
     private val navManager: NavigationManager,
     private val creatorProfileNavigator: ICreatorProfileNavigator,
     private val randomCreatorUseCase: RandomCreatorUseCase,
-    private val uiSetting: IUiSettingUseCase,
+    private val listDelegate: CreatorsListDelegate,
     override val selectedSiteUseCase: ISelectedSiteUseCase,
     override val errorHandler: IErrorHandlerUseCase,
     override val retryStorage: RetryStorage,
 ) : SiteAwareBaseViewModelNew<State, Event, Effect>() {
 
+
     override fun createInitialState(): State = State()
 
-    override fun onRetry() {
+    init {
+        listDelegate.observeUiSetting(viewModelScope, ::setState)
+        initSiteAware()
+
         viewModelScope.launch {
-            ensureFreshAndReloadServices()
+            loadServicesOnce()
+            listDelegate.rebuildPaging(viewModelScope, { state.value }, ::setState, ::setEffect, scrollToTop = false)
+
+            listDelegate.loadRandom(viewModelScope, { state.value }, ::setState, ::setEffect)
         }
     }
 
-    /** Смена сайта и первичная загрузка */
+
+    override fun onRetry() {
+        viewModelScope.launch { ensureFreshAndReloadServices() }
+    }
+
     override suspend fun reloadSite(site: SelectedSite) {
         setState {
             copy(
@@ -57,80 +59,56 @@ internal class CreatorsViewModel @Inject constructor(
             )
         }
 
-        rebuildPaging(scrollToTop = true)
-        ensureFreshAndReloadServices()
-    }
+        loadServicesOnce()
 
-    init {
-        observeUiSetting()
-        initSiteAware()
+        listDelegate.rebuildPaging(viewModelScope, { state.value }, ::setState, ::setEffect, scrollToTop = true)
+
+        // ✅ random перезагружаем только тут (смена сайта)
+        listDelegate.loadRandom(viewModelScope, { state.value }, ::setState, ::setEffect)
+
+        ensureFreshAndReloadServices()
     }
 
     override fun onEvent(event: Event) {
         when (event) {
-            is Event.QueryChanged -> updateSearch(event.value)
-            is Event.ServiceSelected -> setService(event.value)
-            is Event.SortSelected -> setSortType(event.value)
-            Event.ToggleSortOrder -> toggleSortOrder()
+            is Event.QueryChanged -> listDelegate.updateSearch(
+                scope = viewModelScope,
+                state = { state.value },
+                setState = ::setState,
+                setEffect = ::setEffect,
+                query = event.value,
+            )
+
+            is Event.ServiceSelected -> {
+                setState { copy(selectedService = event.value) }
+                listDelegate.rebuildPaging(
+                    scope = viewModelScope,
+                    state = { state.value },
+                    setState = ::setState,
+                    setEffect = ::setEffect,
+                    scrollToTop = true,
+                )
+                // random НЕ трогаем (по твоему требованию)
+                listDelegate.applyRandomFilter(
+                    query = state.value.searchQuery,
+                    state = { state.value },
+                    setState = ::setState,
+                )
+            }
+
+            is Event.SortSelected -> {
+                setState { copy(sortedType = event.value) }
+                listDelegate.rebuildPaging(viewModelScope, { state.value }, ::setState, ::setEffect, scrollToTop = true)
+            }
+
+            Event.ToggleSortOrder -> {
+                setState { copy(sortAscending = !state.value.sortAscending) }
+                listDelegate.rebuildPaging(viewModelScope, { state.value }, ::setState, ::setEffect, scrollToTop = true)
+            }
+
             is Event.CreatorClicked -> onCreatorClick(event.creator)
             Event.RandomClicked -> randomCreator()
             Event.SwitchSiteClicked -> switchSite()
-        }
-    }
-
-    /** UI настройки */
-    private fun observeUiSetting() {
-        uiSetting.prefs.distinctUntilChanged()
-            .onEach { model ->
-                setState { copy(uiSettingModel = model) }
-            }
-            .launchIn(viewModelScope)
-    }
-
-    fun setService(service: String) {
-        setState { copy(selectedService = service) }
-        rebuildPaging(scrollToTop = true)
-    }
-
-    fun setSortType(type: CreatorsSort) {
-        setState { copy(sortedType = type) }
-        rebuildPaging(scrollToTop = true)
-    }
-
-    fun toggleSortOrder() {
-        setState { copy(sortAscending = !state.value.sortAscending) }
-        rebuildPaging(scrollToTop = true)
-    }
-
-    private fun rebuildPaging(scrollToTop: Boolean) {
-        val s = state.value.selectedService
-        val qRaw = state.value.searchQuery
-        val q = qRaw.trim()
-        val sort = state.value.sortedType
-        val asc = state.value.sortAscending
-
-        val flow = getCreatorsPagedUseCase
-            .paging(service = s, query = qRaw, sort = sort, ascending = asc) // Flow<PagingData<Creators>>
-            .map { paging -> paging.map { it.toFavoriteArtistUi() } }        // Flow<PagingData<FavoriteArtist>>
-            .cachedIn(viewModelScope)
-
-        setState { copy(creatorsPaged = flow) }
-
-        if (scrollToTop) setEffect(Effect.ScrollToTop)
-
-        /** random suggestions */
-        viewModelScope.launch {
-            val suggest = state.value.uiSettingModel.suggestRandomAuthors
-            val shouldShow = suggest && q.isEmpty()
-            if (!shouldShow) {
-                setState { copy(randomSuggestions = emptyList()) }
-                return@launch
-            }
-
-            val list = getCreatorsPagedUseCase.randomSuggestions(service = s, query = "", limit = 50)
-            // list: List<Creators> -> List<FavoriteArtist>
-            setState { copy(randomSuggestions = list.map { it.toFavoriteArtistUi() }) }
-
         }
     }
 
@@ -139,13 +117,30 @@ internal class CreatorsViewModel @Inject constructor(
         val updated = ensureFresh()
         if (updated) {
             loadServicesOnce()
-            rebuildPaging(scrollToTop = true)
+            listDelegate.rebuildPaging(
+                scope = viewModelScope,
+                state = { state.value },
+                setState = ::setState,
+                setEffect = ::setEffect,
+                scrollToTop = true,
+            )
         }
     }
 
     private suspend fun loadServicesOnce() {
         val services = getCreatorsPagedUseCase.getServices()
-        setState { copy(services = services) }
+
+        setState {
+            val firstReal = services.firstOrNull().orEmpty()
+            val newSelected =
+                if (selectedService == "Services" && firstReal.isNotBlank()) firstReal
+                else selectedService
+
+            copy(
+                services = services,
+                selectedService = newSelected
+            )
+        }
     }
 
     private suspend fun ensureFresh(): Boolean {
@@ -157,7 +152,7 @@ internal class CreatorsViewModel @Inject constructor(
         }
     }
 
-    fun onCreatorClick(creator: FavoriteArtist) = viewModelScope.launch {
+    private fun onCreatorClick(creator: FavoriteArtist) = viewModelScope.launch {
         navManager.navigate(
             creatorProfileNavigator.getCreatorProfileDest(
                 service = creator.service,
@@ -166,32 +161,10 @@ internal class CreatorsViewModel @Inject constructor(
         )
     }
 
-    fun updateSearch(query: String) {
-        setState { copy(searchQuery = query) }
-
-        searchDebounceJob?.cancel()
-        val trimmed = query.trim()
-
-        if (trimmed.isEmpty()) {
-            rebuildPaging(scrollToTop = true)
-            return
-        }
-        if (trimmed.length < 2) return
-
-        searchDebounceJob = viewModelScope.launch {
-            delay(SEARCH_DEBOUNCE_MS)
-            val latest = state.value.searchQuery.trim()
-            if (latest != trimmed) return@launch
-            rebuildPaging(scrollToTop = true)
-        }
-    }
-
-    /** Открыть случайного автора */
-    fun randomCreator() = viewModelScope.launch {
+    private fun randomCreator() = viewModelScope.launch {
         try {
             setState { copy(loading = true) }
             val creator = randomCreatorUseCase()
-
             navManager.navigate(
                 creatorProfileNavigator.getCreatorProfileDest(
                     service = creator.service,
@@ -201,11 +174,5 @@ internal class CreatorsViewModel @Inject constructor(
         } finally {
             setState { copy(loading = false) }
         }
-    }
-
-    private var searchDebounceJob: Job? = null
-
-    private companion object {
-        private const val SEARCH_DEBOUNCE_MS = 350L
     }
 }

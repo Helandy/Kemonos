@@ -30,6 +30,8 @@ internal class CreatorsState {
 
         /** Рандомные авторы */
         val randomSuggestions: List<FavoriteArtist> = emptyList(),
+        val randomSuggestionsFiltered: List<FavoriteArtist> = emptyList(),
+        val randomSuggestionsLoading: Boolean = false,
 
         val selectedSite: SelectedSite = SelectedSite.K,
         val uiSettingModel: UiSettingModel = UiSettingModel(),
