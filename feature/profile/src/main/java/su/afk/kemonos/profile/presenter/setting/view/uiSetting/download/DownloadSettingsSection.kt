@@ -16,10 +16,8 @@ import su.afk.kemonos.profile.presenter.setting.view.uiSetting.common.SettingsSe
 internal fun DownloadSettingsSection(
     addServiceName: Boolean,
     downloadFolderMode: DownloadFolderMode,
-    useExternalMetaData: Boolean,
     onAddServiceName: (Boolean) -> Unit,
     onDownloadFolderMode: (DownloadFolderMode) -> Unit,
-    onUseExternalMetaData: (Boolean) -> Unit,
 ) {
     SectionSpacer()
     SettingsSectionTitle(text = stringResource(R.string.settings_downloads_title))
@@ -38,11 +36,5 @@ internal fun DownloadSettingsSection(
         value = downloadFolderMode,
         addServiceName = addServiceName,
         onChange = onDownloadFolderMode
-    )
-
-    SwitchRow(
-        title = stringResource(R.string.settings_use_external_metadata_title),
-        checked = useExternalMetaData,
-        onCheckedChange = onUseExternalMetaData
     )
 }

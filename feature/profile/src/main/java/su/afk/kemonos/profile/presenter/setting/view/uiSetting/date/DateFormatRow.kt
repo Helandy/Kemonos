@@ -1,4 +1,4 @@
-package su.afk.kemonos.profile.presenter.setting.view.uiSetting
+package su.afk.kemonos.profile.presenter.setting.view.uiSetting.date
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*

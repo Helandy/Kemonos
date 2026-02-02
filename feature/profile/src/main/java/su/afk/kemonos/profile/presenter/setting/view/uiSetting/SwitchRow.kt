@@ -38,7 +38,10 @@ internal fun SwitchRow(
             }
         }
 
-        Switch(checked = checked, onCheckedChange = onCheckedChange)
+        Switch(
+            checked = checked,
+            onCheckedChange = onCheckedChange
+        )
     }
     Divider()
 }

@@ -8,10 +8,10 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import su.afk.kemonos.preferences.ui.DateFormatMode
 import su.afk.kemonos.profile.R
-import su.afk.kemonos.profile.presenter.setting.view.uiSetting.DateFormatRow
 import su.afk.kemonos.profile.presenter.setting.view.uiSetting.SwitchRow
 import su.afk.kemonos.profile.presenter.setting.view.uiSetting.common.SectionSpacer
 import su.afk.kemonos.profile.presenter.setting.view.uiSetting.common.SettingsSectionTitle
+import su.afk.kemonos.profile.presenter.setting.view.uiSetting.date.DateFormatRow
 
 @Composable
 internal fun GeneralSettingsSection(
