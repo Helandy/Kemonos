@@ -16,6 +16,8 @@ internal fun LazyListScope.randomCreatorsSection(
     dateMode: DateFormatMode,
     items: List<FavoriteArtist>,
     onCreatorClick: (FavoriteArtist) -> Unit,
+    expanded: Boolean?,
+    onClickRandomHeader: (() -> Unit)? = null,
 ) {
     if (items.isEmpty()) return
 
@@ -25,8 +27,12 @@ internal fun LazyListScope.randomCreatorsSection(
             topSpace = 0.dp,
             showTopDivider = false,
             showBottomDivider = true,
+            expanded = expanded,
+            onClick = onClickRandomHeader
         )
     }
+
+    expanded?.let { if (!it) return }
 
     items(
         count = items.size,
@@ -52,6 +58,8 @@ internal fun LazyGridScope.randomCreatorsSection(
     dateMode: DateFormatMode,
     items: List<FavoriteArtist>,
     onCreatorClick: (FavoriteArtist) -> Unit,
+    expanded: Boolean?,
+    onClickRandomHeader: (() -> Unit)? = null,
 ) {
     if (items.isEmpty()) return
 
@@ -64,8 +72,12 @@ internal fun LazyGridScope.randomCreatorsSection(
             topSpace = 0.dp,
             showTopDivider = false,
             showBottomDivider = true,
+            expanded = expanded,
+            onClick = onClickRandomHeader
         )
     }
+
+    expanded?.let { if (!it) return }
 
     items(
         count = items.size,

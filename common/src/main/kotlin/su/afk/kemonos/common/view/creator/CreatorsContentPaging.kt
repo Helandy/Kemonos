@@ -32,9 +32,12 @@ fun CreatorsContentPaging(
     gridState: LazyGridState,
     updatedProvider: ((FavoriteArtist) -> String?)? = null,
     isFreshProvider: ((FavoriteArtist) -> Boolean)? = null,
+    expanded: Boolean? = null,
+    onClickRandomHeader: (() -> Unit)? = null,
 ) {
     fun updatedFor(item: FavoriteArtist): String? = updatedProvider?.invoke(item)
     fun freshFor(item: FavoriteArtist): Boolean = isFreshProvider?.invoke(item) ?: false
+
 
     when (viewMode) {
         CreatorViewMode.LIST -> {
@@ -42,7 +45,13 @@ fun CreatorsContentPaging(
                 state = listState,
                 contentPadding = PaddingValues(bottom = 8.dp),
             ) {
-                randomCreatorsSection(items = randomItems, onCreatorClick = onCreatorClick, dateMode = dateMode)
+                randomCreatorsSection(
+                    items = randomItems,
+                    onCreatorClick = onCreatorClick,
+                    dateMode = dateMode,
+                    expanded = expanded,
+                    onClickRandomHeader = onClickRandomHeader,
+                )
 
                 item(key = "all_title") {
                     if (randomItems.isNotEmpty()) {
@@ -82,7 +91,13 @@ fun CreatorsContentPaging(
                 horizontalArrangement = Arrangement.spacedBy(6.dp),
                 contentPadding = PaddingValues(bottom = 8.dp),
             ) {
-                randomCreatorsSection(items = randomItems, onCreatorClick = onCreatorClick, dateMode = dateMode)
+                randomCreatorsSection(
+                    items = randomItems,
+                    onCreatorClick = onCreatorClick,
+                    dateMode = dateMode,
+                    expanded = expanded,
+                    onClickRandomHeader = onClickRandomHeader,
+                )
 
                 item(
                     key = "all_title",

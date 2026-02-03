@@ -120,11 +120,10 @@ internal class StoreCreatorsRepository @Inject constructor(
     override suspend fun randomCreators(
         site: SelectedSite,
         service: String,
-        query: String,
         limit: Int
     ): List<Creators> = when (site) {
-        SelectedSite.K -> kemonoDao.randomCreators(service, query.trim(), limit).map { it.toDomain() }
-        SelectedSite.C -> coomerDao.randomCreators(service, query.trim(), limit).map { it.toDomain() }
+        SelectedSite.K -> kemonoDao.randomCreators(service, limit).map { it.toDomain() }
+        SelectedSite.C -> coomerDao.randomCreators(service, limit).map { it.toDomain() }
     }
 
     private fun key(site: SelectedSite): String =

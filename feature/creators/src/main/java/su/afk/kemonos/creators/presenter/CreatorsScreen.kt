@@ -40,7 +40,7 @@ internal fun CreatorsScreen(
     val sortOptions = creatorsSortOptions()
 
     val pagingItems = state.creatorsPaged.collectAsLazyPagingItems()
-    val isBusy = state.refreshing || siteSwitching
+    val isBusy = state.loading || siteSwitching
 
     val showEmpty = state.searchQuery.trim().length >= 2 &&
             pagingItems.loadState.refresh is LoadState.NotLoading &&
@@ -49,7 +49,7 @@ internal fun CreatorsScreen(
     val refreshState = pagingItems.loadState.refresh
     val isFirstPageLoading = refreshState is LoadState.Loading && pagingItems.itemCount == 0
 
-    val isScreenLoading = isBusy || state.loading || isFirstPageLoading
+    val isScreenLoading = isBusy || isFirstPageLoading
 
     val listState = rememberSaveable(saver = LazyListState.Saver) { LazyListState() }
     val gridState = rememberSaveable(saver = LazyGridState.Saver) { LazyGridState() }
@@ -122,6 +122,8 @@ internal fun CreatorsScreen(
             onCreatorClick = { onEvent(Event.CreatorClicked(it)) },
             listState = listState,
             gridState = gridState,
+            expanded = state.randomExpanded,
+            onClickRandomHeader = { onEvent(Event.ToggleRandomExpanded) },
         )
     }
 }

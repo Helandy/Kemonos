@@ -24,7 +24,6 @@ interface IStoreCreatorsRepository {
     suspend fun randomCreators(
         site: SelectedSite,
         service: String,
-        query: String,
         limit: Int,
     ): List<Creators>
 }
