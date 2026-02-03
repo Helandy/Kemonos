@@ -28,13 +28,30 @@
             <!-- Deep Link -->
             <intent-filter android:autoVerify="false">
                 <action android:name="android.intent.action.VIEW"/>
+
                 <category android:name="android.intent.category.DEFAULT"/>
                 <category android:name="android.intent.category.BROWSABLE"/>
 
-                <data android:scheme="http"/>
-                <data android:scheme="https"/>
-                <data android:host="kemono.cr"/>
-                <data android:host="coomer.st"/>
+                <!-- Hosts -->
+                <data android:scheme="https" android:host="kemono.cr"/>
+                <data android:scheme="https" android:host="coomer.st"/>
+
+                <!-- Sections -->
+                <data android:path="/artists"/>
+                <data android:path="/posts"/>
+                <data android:pathPrefix="/posts/"/>
+
+                <!-- Creator / Posts -->
+                <data android:pathPrefix="/patreon/user/"/>
+                <data android:pathPrefix="/fanbox/user/"/>
+                <data android:pathPrefix="/fantia/user/"/>
+                <data android:pathPrefix="/boosty/user/"/>
+                <data android:pathPrefix="/gumroad/user/"/>
+                <data android:pathPrefix="/subscriblestar/user/"/>
+                <data android:pathPrefix="/dlslite/user/"/>
+                <data android:pathPrefix="/onlyfans/user/"/>
+                <data android:pathPrefix="/fansly/user/"/>
+                <data android:pathPrefix="/candfans/user/"/>
             </intent-filter>
         </activity>
     </application>
