@@ -47,7 +47,6 @@ internal fun TagsPageScreen(
 
     BaseScreen(
         topBarWindowInsets = WindowInsets(0),
-        contentWindowInsets = WindowInsets(0),
         topBarScroll = TopBarScroll.EnterAlways,
         contentPadding = PaddingValues(horizontal = 8.dp),
         isScroll = false,
@@ -72,7 +71,6 @@ internal fun TagsPageScreen(
                 onToggleSite = viewModel::switchSite,
             )
         },
-        floatingActionButtonBottomPadding = 12.dp,
         isLoading = isBusy,
     ) {
         LazyColumn(

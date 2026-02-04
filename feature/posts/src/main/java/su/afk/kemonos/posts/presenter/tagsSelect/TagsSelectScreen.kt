@@ -30,8 +30,7 @@ internal fun TagsPostsScreen(
     ) {
         /** Контент */
         PostsContentPaging(
-            dateMode = state.uiSettingModel.dateFormatMode,
-            postsViewMode = state.uiSettingModel.tagsPostsViewMode,
+            uiSettingModel = state.uiSettingModel,
             posts = posts,
             gridState = gridState,
             currentTag = null,

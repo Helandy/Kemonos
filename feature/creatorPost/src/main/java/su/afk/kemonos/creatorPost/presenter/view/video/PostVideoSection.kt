@@ -11,8 +11,10 @@ import su.afk.kemonos.common.R
 import su.afk.kemonos.creatorPost.domain.model.media.MediaInfoState
 import su.afk.kemonos.creatorPost.domain.model.video.VideoThumbState
 import su.afk.kemonos.domain.models.VideoDomain
+import su.afk.kemonos.preferences.ui.UiSettingModel
 
 internal fun LazyListScope.postVideosSection(
+    uiSettingModel: UiSettingModel,
     videos: List<VideoDomain>,
     videoInfo: Map<String, MediaInfoState>,
     onVideoInfoRequested: (server: String, path: String) -> Unit,
@@ -41,6 +43,8 @@ internal fun LazyListScope.postVideosSection(
         val url = "${video.server}/data${video.path}"
 
         VideoPreviewItem(
+            showPreview = uiSettingModel.showPreviewVideo,
+            blurImage = uiSettingModel.blurImages,
             video = video,
             infoState = videoInfo[url],
             requestInfo = onVideoInfoRequested,

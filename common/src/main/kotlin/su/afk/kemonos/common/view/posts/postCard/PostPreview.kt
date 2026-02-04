@@ -12,6 +12,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.produceState
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.blur
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.stringResource
@@ -31,13 +32,17 @@ internal fun PostPreview(
     imgBaseUrl: String,
     title: String?,
     textPreview: String?,
+    blurImage: Boolean,
 ) {
+    val imageModifier = Modifier.fillMaxSize()
+        .then(if (blurImage) Modifier.blur(14.dp) else Modifier)
+
     when (preview) {
         is PreviewState.Image -> {
             AsyncImageWithStatus(
                 model = "$imgBaseUrl/thumbnail/data${preview.path}",
                 contentDescription = title,
-                modifier = Modifier.fillMaxSize(),
+                modifier = imageModifier,
                 contentScale = ContentScale.Crop
             )
         }
@@ -62,7 +67,7 @@ internal fun PostPreview(
                 Image(
                     bitmap = frame!!.asImageBitmap(),
                     contentDescription = title,
-                    modifier = Modifier.fillMaxSize(),
+                    modifier = imageModifier,
                     contentScale = ContentScale.Crop
                 )
             } else {

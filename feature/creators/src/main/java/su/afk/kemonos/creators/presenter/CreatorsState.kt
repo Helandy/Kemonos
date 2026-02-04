@@ -13,9 +13,7 @@ import su.afk.kemonos.preferences.ui.UiSettingModel
 
 internal class CreatorsState {
     data class State(
-        val loading: Boolean = false,
-        /** Сетевое обновление кэша (ensureFresh). */
-        val refreshing: Boolean = false,
+        val loading: Boolean = true,
 
         /** Список сервисов для фильтра. */
         val services: List<String> = listOf("Services"),
@@ -30,6 +28,11 @@ internal class CreatorsState {
 
         /** Рандомные авторы */
         val randomSuggestions: List<FavoriteArtist> = emptyList(),
+        val randomSuggestionsFiltered: List<FavoriteArtist> = emptyList(),
+        val randomSuggestionsLoading: Boolean = false,
+
+        /** Скрыть рандомных авторов */
+        val randomExpanded: Boolean = true,
 
         val selectedSite: SelectedSite = SelectedSite.K,
         val uiSettingModel: UiSettingModel = UiSettingModel(),
@@ -44,6 +47,8 @@ internal class CreatorsState {
         data class CreatorClicked(val creator: FavoriteArtist) : Event
         data object RandomClicked : Event
         data object SwitchSiteClicked : Event
+
+        data object ToggleRandomExpanded : Event
     }
 
     sealed interface Effect : UiEffect {

@@ -15,6 +15,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.blur
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
@@ -36,6 +37,8 @@ import kotlin.math.roundToInt
  */
 @Composable
 internal fun VideoPreviewItem(
+    showPreview: Boolean,
+    blurImage: Boolean,
     video: VideoDomain,
     infoState: MediaInfoState?,
     requestInfo: (server: String, path: String) -> Unit,
@@ -45,9 +48,11 @@ internal fun VideoPreviewItem(
 ) {
     val url = remember(video) { "${video.server}/data${video.path}" }
 
-    LaunchedEffect(url) {
-        requestInfo(video.server, video.path)
-        requestThumb(video.server, video.path)
+    if (showPreview) {
+        LaunchedEffect(url) {
+            requestInfo(video.server, video.path)
+            requestThumb(video.server, video.path)
+        }
     }
 
     val context = LocalContext.current
@@ -63,7 +68,9 @@ internal fun VideoPreviewItem(
                     AsyncImageWithStatus(
                         model = thumbState.bitmap,
                         contentDescription = video.name,
-                        modifier = Modifier.matchParentSize().clip(RoundedCornerShape(8.dp)),
+                        modifier = Modifier.matchParentSize()
+                            .clip(RoundedCornerShape(8.dp))
+                            .then(if (blurImage) Modifier.blur(14.dp) else Modifier),
                         contentScale = ContentScale.Crop,
                     )
                 }
@@ -86,32 +93,34 @@ internal fun VideoPreviewItem(
                 }
             }
 
-            androidx.compose.animation.AnimatedVisibility(
-                visible = thumbLoading,
-                enter = fadeIn(),
-                exit = fadeOut(),
-                modifier = Modifier
-                    .align(Alignment.BottomStart)
-                    .padding(10.dp)
-            ) {
-                Surface(
-                    shape = RoundedCornerShape(48.dp),
-                    tonalElevation = 2.dp,
-                    color = MaterialTheme.colorScheme.surface.copy(alpha = 0.85f),
+            if (showPreview) {
+                androidx.compose.animation.AnimatedVisibility(
+                    visible = thumbLoading,
+                    enter = fadeIn(),
+                    exit = fadeOut(),
+                    modifier = Modifier
+                        .align(Alignment.BottomStart)
+                        .padding(10.dp)
                 ) {
-                    Row(
-                        modifier = Modifier.padding(horizontal = 10.dp, vertical = 6.dp),
-                        verticalAlignment = Alignment.CenterVertically
+                    Surface(
+                        shape = RoundedCornerShape(48.dp),
+                        tonalElevation = 2.dp,
+                        color = MaterialTheme.colorScheme.surface.copy(alpha = 0.85f),
                     ) {
-                        CircularProgressIndicator(
-                            strokeWidth = 2.dp,
-                            modifier = Modifier.size(16.dp)
-                        )
-                        Spacer(Modifier.width(8.dp))
-                        Text(
-                            text = stringResource(R.string.loading),
-                            style = MaterialTheme.typography.labelMedium
-                        )
+                        Row(
+                            modifier = Modifier.padding(horizontal = 10.dp, vertical = 6.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            CircularProgressIndicator(
+                                strokeWidth = 2.dp,
+                                modifier = Modifier.size(16.dp)
+                            )
+                            Spacer(Modifier.width(8.dp))
+                            Text(
+                                text = stringResource(R.string.loading),
+                                style = MaterialTheme.typography.labelMedium
+                            )
+                        }
                     }
                 }
             }

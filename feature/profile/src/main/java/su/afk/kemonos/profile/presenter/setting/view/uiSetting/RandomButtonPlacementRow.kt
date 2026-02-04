@@ -15,7 +15,6 @@ import su.afk.kemonos.profile.R
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun RandomButtonPlacementRow(
-    title: String,
     value: RandomButtonPlacement,
     onChange: (RandomButtonPlacement) -> Unit,
 ) {
@@ -26,7 +25,7 @@ internal fun RandomButtonPlacementRow(
         verticalAlignment = Alignment.CenterVertically
     ) {
         Text(
-            text = title,
+            text = stringResource(R.string.settings_random_button_title),
             style = MaterialTheme.typography.bodyLarge,
             modifier = Modifier.weight(1f)
         )

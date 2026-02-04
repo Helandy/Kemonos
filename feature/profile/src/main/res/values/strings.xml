@@ -180,6 +180,7 @@
 
     <string name="settings_show_preview_video_title">Show video previews</string>
     <string name="settings_blur_images_title">Blur images</string>
+    <string name="settings_blur_images_substring" translatable="false">Android >12</string>
 
     <string name="settings_downloads_title">Downloads</string>
 
@@ -194,7 +195,13 @@
     <string name="settings_download_folder_default">Default</string>
 
     <string name="settings_download_add_service_title">Add service prefix</string>
-    <string name="settings_use_external_metadata_title">Use external metadata storage</string>
+
+    <string name="settings_use_external_metadata_title">
+        Use external video metadata
+    </string>
+    <string name="settings_use_external_metadata_subtitle">
+        Load pre-generated video frames and metadata instead of fetching them locally
+    </string>
 
     <string name="settings_experimental_calendar_title">New calendar for popular posts</string>
     <string name="settings_experimental_calendar_hint">Adds a calendar picker to browse popular posts by date.</string>

@@ -7,7 +7,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import su.afk.kemonos.profile.R
-import su.afk.kemonos.profile.presenter.setting.view.uiSetting.DebugSwitchRow
 import su.afk.kemonos.profile.presenter.setting.view.uiSetting.common.SectionSpacer
 import su.afk.kemonos.profile.presenter.setting.view.uiSetting.common.SettingsSectionTitle
 

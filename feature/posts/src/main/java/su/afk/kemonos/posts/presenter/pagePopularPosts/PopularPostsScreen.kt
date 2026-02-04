@@ -37,7 +37,6 @@ internal fun PopularPostsScreen(
 
     BaseScreen(
         topBarWindowInsets = WindowInsets(0),
-        contentWindowInsets = WindowInsets(0),
         topBarScroll = TopBarScroll.EnterAlways,
         contentPadding = PaddingValues(horizontal = 8.dp),
         isScroll = false,
@@ -56,12 +55,10 @@ internal fun PopularPostsScreen(
                 onToggleSite = viewModel::switchSite,
             )
         },
-        floatingActionButtonBottomPadding = 12.dp,
         isLoading = isPageLoading,
     ) {
         PostsContentPaging(
-            dateMode = state.uiSettingModel.dateFormatMode,
-            postsViewMode = state.uiSettingModel.popularPostsViewMode,
+            uiSettingModel = state.uiSettingModel,
             posts = posts,
             gridState = gridState,
             currentTag = null,

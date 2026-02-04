@@ -1,4 +1,4 @@
-package su.afk.kemonos.profile.presenter.setting.view.uiSetting
+package su.afk.kemonos.profile.presenter.setting.view.uiSetting.debug
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.Divider

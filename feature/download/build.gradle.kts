@@ -31,6 +31,6 @@ dependencies {
 
     implementation(libs.bundles.navigation3)
 
-
+    implementation(project(":core:preferences"))
     implementation(project(":feature:download-api"))
 }

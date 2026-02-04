@@ -46,14 +46,16 @@ internal fun CreatorScreen(state: State, onEvent: (Event) -> Unit, effect: Flow<
     }
 
     LaunchedEffect(effect) {
-        when (effect) {
-            is Effect.OpenUrl -> openUrlPreferChrome(context, effect.url)
-            is Effect.ShowToast -> context.toast(effect.message)
-            is Effect.CopyPostLink -> ShareActions.copyToClipboard(
-                context,
-                "Profile link",
-                effect.message
-            )
+        effect.collect { effect ->
+            when (effect) {
+                is Effect.OpenUrl -> openUrlPreferChrome(context, effect.url)
+                is Effect.ShowToast -> context.toast(effect.message)
+                is Effect.CopyPostLink -> ShareActions.copyToClipboard(
+                    context,
+                    "Profile link",
+                    effect.message
+                )
+            }
         }
     }
 
@@ -128,7 +130,6 @@ internal fun CreatorScreen(state: State, onEvent: (Event) -> Unit, effect: Flow<
                 )
             }
         },
-        floatingActionButtonBottomPadding = 12.dp,
         floatingActionButtonEnd = {
             if (state.isFavoriteShowButton && state.loading.not()) {
                 FavoriteActionButton(
@@ -180,8 +181,7 @@ private fun SelectedTab(
 ) {
     when (state.selectedTab) {
         ProfileTab.POSTS -> PostsContentPaging(
-            dateMode = state.uiSettingModel.dateFormatMode,
-            postsViewMode = state.uiSettingModel.profilePostsViewMode,
+            uiSettingModel = state.uiSettingModel,
             posts = posts,
             gridState = gridState,
             currentTag = state.currentTag,

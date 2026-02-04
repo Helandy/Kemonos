@@ -1,4 +1,4 @@
-package su.afk.kemonos.commonscreen.errorScreen
+package su.afk.kemonos.commonscreen.domain
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
@@ -9,6 +9,8 @@ import androidx.navigation3.runtime.EntryProviderScope
 import androidx.navigation3.runtime.NavKey
 import dagger.hilt.android.EntryPointAccessors
 import su.afk.kemonos.commonscreen.di.ErrorNavigatorEntryPoint
+import su.afk.kemonos.commonscreen.errorScreen.ErrorScreen
+import su.afk.kemonos.commonscreen.errorScreen.ErrorViewModel
 import su.afk.kemonos.commonscreen.navigator.CommonScreenDest
 import su.afk.kemonos.commonscreen.navigator.IErrorNavigator
 import su.afk.kemonos.domain.models.ErrorItem

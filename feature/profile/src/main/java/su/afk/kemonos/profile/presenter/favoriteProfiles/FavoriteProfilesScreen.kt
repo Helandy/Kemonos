@@ -52,7 +52,6 @@ internal fun FavoriteProfilesScreen(state: State, onEvent: (Event) -> Unit, effe
     BaseScreen(
         contentPadding = PaddingValues(horizontal = 8.dp),
         isScroll = false,
-        floatingActionButtonBottomPadding = 12.dp,
         topBarScroll = TopBarScroll.EnterAlways,
         topBar = {
             SearchBarNew(

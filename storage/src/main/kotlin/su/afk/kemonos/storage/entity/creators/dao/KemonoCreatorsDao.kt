@@ -118,10 +118,9 @@ internal interface KemonoCreatorsDao {
         """
     SELECT * FROM creators
     WHERE (:service = 'Services' OR service = :service)
-      AND (:q = '' OR name LIKE '%' || :q || '%')
     ORDER BY RANDOM()
     LIMIT :limit
     """
     )
-    suspend fun randomCreators(service: String, q: String, limit: Int): List<CreatorsEntity>
+    suspend fun randomCreators(service: String, limit: Int): List<CreatorsEntity>
 }

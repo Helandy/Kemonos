@@ -25,6 +25,7 @@ interface IVideoFrameCache {
     suspend fun clear()
 
     companion object {
-        const val DEFAULT_TIME_US: Long = 1_000_000L
+        /** 2 секунда */
+        const val DEFAULT_TIME_US: Long = 2_000_000L
     }
 }

@@ -16,6 +16,9 @@ internal class GetCreatorsPagedUseCase @Inject constructor(
     private val store: IStoreCreatorsRepository,
     private val repository: ICreatorsRepository
 ) {
+    /** Проверка свежий ли кэш */
+    suspend fun checkFreshCache(): Boolean = repository.refreshCreatorsIfNeeded()
+
     fun paging(
         service: String,
         query: String,
@@ -46,12 +49,11 @@ internal class GetCreatorsPagedUseCase @Inject constructor(
         return listOf("Services") + list
     }
 
-    suspend fun ensureFresh(): Boolean = repository.refreshCreatorsIfNeeded()
-
-    suspend fun randomSuggestions(service: String, query: String, limit: Int): List<Creators> {
+    suspend fun getRandomCreatorsFromStorage(service: String, limit: Int): List<Creators> {
         return store.randomCreators(
             site = selectedSite.getSite(),
-            service, query, limit
+            service = service,
+            limit = limit,
         )
     }
 }

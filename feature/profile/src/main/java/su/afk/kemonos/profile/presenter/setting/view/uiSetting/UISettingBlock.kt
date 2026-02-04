@@ -13,7 +13,6 @@ import su.afk.kemonos.profile.presenter.setting.view.uiSetting.common.SettingsHe
 import su.afk.kemonos.profile.presenter.setting.view.uiSetting.debug.DebugSettingsSection
 import su.afk.kemonos.profile.presenter.setting.view.uiSetting.debug.DebugStorageInfoSection
 import su.afk.kemonos.profile.presenter.setting.view.uiSetting.download.DownloadSettingsSection
-import su.afk.kemonos.profile.presenter.setting.view.uiSetting.experiment.ExperimentsSection
 import su.afk.kemonos.profile.presenter.setting.view.uiSetting.general.GeneralSettingsSection
 import su.afk.kemonos.profile.presenter.setting.view.uiSetting.translate.TranslateSettingsSection
 import su.afk.kemonos.profile.presenter.setting.view.uiSetting.viewSettings.ViewSettingsSection
@@ -43,6 +42,8 @@ internal fun UISettingBlock(
             onSuggestRandomAuthors = { onEvent(Event.ChangeViewSetting.SuggestRandomAuthors(it)) },
             dateFormatMode = ui.dateFormatMode,
             onDateFormatMode = { onEvent(Event.ChangeViewSetting.EventDateFormatMode(it)) },
+            randomButtonPlace = ui.randomButtonPlacement,
+            onRandomButtonPlace = { onEvent(Event.ChangeViewSetting.EventRandomButtonPlacement(it)) }
         )
 
         TranslateSettingsSection(
@@ -67,16 +68,17 @@ internal fun UISettingBlock(
         DownloadSettingsSection(
             addServiceName = ui.addServiceName,
             downloadFolderMode = ui.downloadFolderMode,
-            useExternalMetaData = ui.useExternalMetaData,
             onAddServiceName = { onEvent(Event.ChangeViewSetting.AddServiceName(it)) },
             onDownloadFolderMode = { onEvent(Event.ChangeViewSetting.EditDownloadFolderMode(it)) },
-            onUseExternalMetaData = { onEvent(Event.ChangeViewSetting.UseExternalMetaData(it)) },
         )
 
-        ExperimentsSection(
-            experimentalCalendar = ui.experimentalCalendar,
-            onExperimentalCalendar = { onEvent(Event.ChangeViewSetting.ExperimentalCalendar(it)) },
-        )
+        // todo в будущем
+//        ExperimentsSection(
+//            experimentalCalendar = ui.experimentalCalendar,
+//            onExperimentalCalendar = { onEvent(Event.ChangeViewSetting.ExperimentalCalendar(it)) },
+//            useExternalMetaData = ui.useExternalMetaData,
+//            onUseExternalMetaData = { onEvent(Event.ChangeViewSetting.UseExternalMetaData(it)) },
+//        )
 
         LinksSection()
     }

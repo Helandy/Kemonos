@@ -1,4 +1,4 @@
-package su.afk.kemonos.navigation
+package su.afk.kemonos.navigation.storage
 
 import javax.inject.Inject
 import javax.inject.Singleton

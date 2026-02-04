@@ -9,7 +9,6 @@ object CommonScreenDest {
     @Serializable
     data class ImageViewDest(
         val imageUrl: String,
-        val onBack: () -> Unit
     ) : NavKey
 
     @Serializable

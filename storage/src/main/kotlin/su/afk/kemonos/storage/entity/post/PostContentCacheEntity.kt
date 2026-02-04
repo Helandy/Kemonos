@@ -20,6 +20,7 @@ data class PostContentCacheEntity(
     val added: String?,
     val edited: String?,
 
+    val incompleteRewardsJson: String?,
     val fileName: String?,
     val filePath: String?,
 

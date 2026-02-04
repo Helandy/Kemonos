@@ -15,6 +15,8 @@ import su.afk.kemonos.profile.presenter.setting.view.uiSetting.common.SettingsSe
 internal fun ExperimentsSection(
     experimentalCalendar: Boolean,
     onExperimentalCalendar: (Boolean) -> Unit,
+    useExternalMetaData: Boolean,
+    onUseExternalMetaData: (Boolean) -> Unit,
 ) {
     SectionSpacer()
     SettingsSectionTitle(text = stringResource(R.string.settings_experiments_title))
@@ -25,5 +27,12 @@ internal fun ExperimentsSection(
         subtitle = stringResource(R.string.settings_experimental_calendar_hint),
         checked = experimentalCalendar,
         onCheckedChange = onExperimentalCalendar,
+    )
+
+    SwitchRow(
+        title = stringResource(R.string.settings_use_external_metadata_title),
+        subtitle = stringResource(R.string.settings_use_external_metadata_subtitle),
+        checked = useExternalMetaData,
+        onCheckedChange = onUseExternalMetaData
     )
 }

@@ -3,6 +3,7 @@ package su.afk.kemonos.common.data.dto
 import com.google.gson.annotations.SerializedName
 import su.afk.kemonos.common.data.dto.AttachmentDto.Companion.toDomain
 import su.afk.kemonos.common.data.dto.FileDto.Companion.toDomain
+import su.afk.kemonos.common.data.dto.IncompleteRewardsDto.Companion.toDomain
 import su.afk.kemonos.domain.models.PostDomain
 
 /** Общая модель для поиск и избранного */
@@ -39,6 +40,9 @@ data class PostUnifiedDto(
     @SerializedName("file")
     val file: FileDto?,
 
+    @SerializedName("incomplete_rewards")
+    val incompleteRewards: IncompleteRewardsDto?,
+
     /** detail-only */
     @SerializedName("next") val next: String? = null,
     @SerializedName("prev") val prev: String? = null,
@@ -59,6 +63,7 @@ data class PostUnifiedDto(
             published = published,
             edited = edited,
             file = file?.toDomain(),
+            incompleteRewards = incompleteRewards?.toDomain(),
             attachments = attachments.orEmpty().map { it.toDomain() },
             tags = tags.orEmpty(),
             nextId = next,

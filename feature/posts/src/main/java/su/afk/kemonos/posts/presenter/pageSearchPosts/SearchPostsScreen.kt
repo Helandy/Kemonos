@@ -52,7 +52,6 @@ internal fun SearchPostsScreen(
 
     BaseScreen(
         topBarWindowInsets = WindowInsets(0),
-        contentWindowInsets = WindowInsets(0),
         topBarScroll = TopBarScroll.EnterAlways,
         contentPadding = PaddingValues(horizontal = 8.dp),
         isScroll = false,
@@ -99,12 +98,10 @@ internal fun SearchPostsScreen(
                 )
             }
         },
-        floatingActionButtonBottomPadding = 12.dp,
     ) {
         /** Контент */
         PostsContentPaging(
-            dateMode = state.uiSettingModel.dateFormatMode,
-            postsViewMode = state.uiSettingModel.searchPostsViewMode,
+            uiSettingModel = state.uiSettingModel,
             posts = posts,
             currentTag = null,
             onPostClick = viewModel::navigateToPost,

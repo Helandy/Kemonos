@@ -13,8 +13,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import su.afk.kemonos.domain.models.PreviewDomain
+import su.afk.kemonos.preferences.ui.UiSettingModel
 
 internal fun LazyListScope.postPreviewsSection(
+    uiSettingModel: UiSettingModel,
     previews: List<PreviewDomain>,
     imgBaseUrl: String,
     showNames: Boolean,
@@ -58,7 +60,8 @@ internal fun LazyListScope.postPreviewsSection(
                 imgBaseUrl = imgBaseUrl,
                 showFileName = showNames,
                 onPreviewClick = onOpenImage,
-                onDownloadClick = download
+                onDownloadClick = download,
+                blurImage = uiSettingModel.blurImages
             )
 
             "embed" -> EmbedPreviewItem(

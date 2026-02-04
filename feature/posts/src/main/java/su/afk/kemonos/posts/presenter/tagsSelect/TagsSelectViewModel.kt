@@ -10,7 +10,7 @@ import su.afk.kemonos.common.error.IErrorHandlerUseCase
 import su.afk.kemonos.common.error.storage.RetryStorage
 import su.afk.kemonos.common.presenter.baseViewModel.BaseViewModel
 import su.afk.kemonos.domain.models.PostDomain
-import su.afk.kemonos.navigation.NavigationStorage
+import su.afk.kemonos.navigation.storage.NavigationStorage
 import su.afk.kemonos.posts.domain.pagingSearch.GetSearchPostsPagingUseCase
 import su.afk.kemonos.posts.presenter.common.NavigateToPostDelegate
 import su.afk.kemonos.posts.presenter.util.Const.KEY_SELECTED_TAG

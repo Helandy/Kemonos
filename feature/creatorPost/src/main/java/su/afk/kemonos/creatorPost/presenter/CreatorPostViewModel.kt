@@ -138,17 +138,20 @@ internal class CreatorPostViewModel @AssistedInject constructor(
         val comments = commentsDeferred.await()
         val profile = profileDeferred?.await()
 
+        val showButtonTranslate = post?.post?.content?.clearHtml()?.isNotBlank() ?: false
         val mediaRefs = post?.collectMediaRefsForDedup()
-        val cleanContent = cleanDuplicatedMediaFromContent(
-            html = post?.post?.content.orEmpty(),
-            attachmentPaths = mediaRefs.orEmpty(),
-        )
-
         val siteBaseUrl = getCurrentSiteRootUrlUseCase()
+
+        val cleanContent = withContext(Dispatchers.Default) {
+            cleanDuplicatedMediaFromContent(
+                html = post?.post?.content.orEmpty().take(MAX_HTML_CHARS),
+                attachmentPaths = mediaRefs.orEmpty(),
+            )
+        }
+
         val blocks = withContext(Dispatchers.Default) {
             htmlToBlocks(cleanContent, siteBaseUrl)
         }
-        val showButtonTranslate = post?.post?.content?.clearHtml()?.isNotBlank() ?: false
 
         setState {
             copy(
@@ -296,7 +299,10 @@ internal class CreatorPostViewModel @AssistedInject constructor(
         downloadUtil.enqueueSystemDownload(
             url = url,
             fileName = fileName,
-            mimeType = null
+            service = currentState.service,
+            creatorName = currentState.profile?.name,
+            postId = currentState.postId,
+            postTitle = currentState.post?.post?.title
         )
         setEffect(
             Effect.DownloadToast(fileName.orEmpty())
@@ -364,4 +370,8 @@ internal class CreatorPostViewModel @AssistedInject constructor(
         post.file?.path?.let(::add)
         addAll(post.attachments.map { it.path })
     }.filter { it.isNotBlank() }
+
+    companion object {
+        const val MAX_HTML_CHARS = 100_000
+    }
 }

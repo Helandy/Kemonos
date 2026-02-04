@@ -46,7 +46,7 @@ internal fun CreatorListItem(
         modifier = Modifier
             .fillMaxWidth()
             .padding(vertical = 4.dp)
-            .height(110.dp)
+            .height(120.dp)
             .clickable { onClick() }
     ) {
         /** Фоновое изображение (баннер) */
@@ -70,7 +70,7 @@ internal fun CreatorListItem(
         Row(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(12.dp),
+                .padding(6.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
             /** Иконка (аватар) */

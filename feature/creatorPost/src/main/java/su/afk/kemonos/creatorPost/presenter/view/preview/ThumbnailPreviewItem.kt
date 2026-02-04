@@ -11,6 +11,7 @@ import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.blur
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Brush
@@ -47,6 +48,7 @@ fun ThumbnailPreviewItem(
     showFileName: Boolean,
     onPreviewClick: (String) -> Unit,
     onDownloadClick: (String, String) -> Unit,
+    blurImage: Boolean,
 ) {
     val urls = remember(preview, imgBaseUrl) { buildPreviewUrls(imgBaseUrl, preview) } ?: return
     val filename = preview.name.orEmpty()
@@ -69,6 +71,7 @@ fun ThumbnailPreviewItem(
             modifier = Modifier
                 .fillMaxWidth()
                 .aspectRatio(safeRatio)
+                .then(if (blurImage) Modifier.blur(20.dp) else Modifier)
                 .clickable { onPreviewClick(urls.fullUrl) },
             onSuccessSize = { size: Size ->
                 val w = size.width

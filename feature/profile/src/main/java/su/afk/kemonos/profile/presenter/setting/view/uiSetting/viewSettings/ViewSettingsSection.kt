@@ -20,25 +20,6 @@ internal fun ViewSettingsSection(
     ui: UiSettingModel,
     onEvent: (Event) -> Unit,
 ) {
-    SectionSpacer()
-    SettingsSectionTitle(text = stringResource(R.string.settings_view_modes_section_title))
-    ViewModesSection(
-        creatorsViewMode = ui.creatorsViewMode,
-        creatorsFavoriteViewMode = ui.creatorsFavoriteViewMode,
-        profilePostsViewMode = ui.profilePostsViewMode,
-        favoritePostsViewMode = ui.favoritePostsViewMode,
-        popularPostsViewMode = ui.popularPostsViewMode,
-        tagsPostsViewMode = ui.tagsPostsViewMode,
-        searchPostsViewMode = ui.searchPostsViewMode,
-        onCreatorsViewMode = { onEvent(Event.ChangeViewSetting.CreatorsViewMode(it)) },
-        onCreatorsFavoriteViewMode = { onEvent(Event.ChangeViewSetting.CreatorsFavoriteViewMode(it)) },
-        onProfilePostsViewMode = { onEvent(Event.ChangeViewSetting.ProfilePostsViewMode(it)) },
-        onFavoritePostsViewMode = { onEvent(Event.ChangeViewSetting.FavoritePostsViewMode(it)) },
-        onPopularPostsViewMode = { onEvent(Event.ChangeViewSetting.PopularPostsViewMode(it)) },
-        onTagsPostsViewMode = { onEvent(Event.ChangeViewSetting.TagsPostsViewMode(it)) },
-        onSearchPostsViewMode = { onEvent(Event.ChangeViewSetting.SearchPostsViewMode(it)) },
-    )
-
     SectionSpacerSmall()
     SettingsSectionTitle(text = stringResource(R.string.settings_posts_appearance_title))
     Spacer(Modifier.height(6.dp))
@@ -57,7 +38,27 @@ internal fun ViewSettingsSection(
 
     SwitchRow(
         title = stringResource(R.string.settings_blur_images_title),
+        subtitle = stringResource(R.string.settings_blur_images_substring),
         checked = ui.blurImages,
         onCheckedChange = { onEvent(Event.ChangeViewSetting.BlurImages(it)) },
+    )
+
+    SectionSpacer()
+    SettingsSectionTitle(text = stringResource(R.string.settings_view_modes_section_title))
+    ViewModesSection(
+        creatorsViewMode = ui.creatorsViewMode,
+        creatorsFavoriteViewMode = ui.creatorsFavoriteViewMode,
+        profilePostsViewMode = ui.profilePostsViewMode,
+        favoritePostsViewMode = ui.favoritePostsViewMode,
+        popularPostsViewMode = ui.popularPostsViewMode,
+        tagsPostsViewMode = ui.tagsPostsViewMode,
+        searchPostsViewMode = ui.searchPostsViewMode,
+        onCreatorsViewMode = { onEvent(Event.ChangeViewSetting.CreatorsViewMode(it)) },
+        onCreatorsFavoriteViewMode = { onEvent(Event.ChangeViewSetting.CreatorsFavoriteViewMode(it)) },
+        onProfilePostsViewMode = { onEvent(Event.ChangeViewSetting.ProfilePostsViewMode(it)) },
+        onFavoritePostsViewMode = { onEvent(Event.ChangeViewSetting.FavoritePostsViewMode(it)) },
+        onPopularPostsViewMode = { onEvent(Event.ChangeViewSetting.PopularPostsViewMode(it)) },
+        onTagsPostsViewMode = { onEvent(Event.ChangeViewSetting.TagsPostsViewMode(it)) },
+        onSearchPostsViewMode = { onEvent(Event.ChangeViewSetting.SearchPostsViewMode(it)) },
     )
 }

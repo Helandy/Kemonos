@@ -10,13 +10,12 @@ import su.afk.kemonos.common.presenter.baseScreen.DefaultEmptyContent
 import su.afk.kemonos.common.presenter.baseScreen.DefaultLoadingContent
 import su.afk.kemonos.domain.models.PostDomain
 import su.afk.kemonos.domain.models.Tag
-import su.afk.kemonos.preferences.ui.DateFormatMode
 import su.afk.kemonos.preferences.ui.PostsViewMode
+import su.afk.kemonos.preferences.ui.UiSettingModel
 
 @Composable
 fun PostsContentPaging(
-    postsViewMode: PostsViewMode,
-    dateMode: DateFormatMode,
+    uiSettingModel: UiSettingModel,
     posts: LazyPagingItems<PostDomain>,
     gridState: LazyGridState,
     currentTag: Tag?,
@@ -26,10 +25,10 @@ fun PostsContentPaging(
 ) {
     val errorMapper = LocalErrorMapper.current
 
-    when (postsViewMode) {
+    when (uiSettingModel.searchPostsViewMode) {
         PostsViewMode.GRID -> {
             PostsGridPaging(
-                dateMode = dateMode,
+                uiSettingModel = uiSettingModel,
                 posts = posts,
                 postClick = onPostClick,
                 showFavCount = showFavCount,
@@ -42,7 +41,7 @@ fun PostsContentPaging(
 
         PostsViewMode.LIST -> {
             PostsListPaging(
-                dateMode = dateMode,
+                uiSettingModel = uiSettingModel,
                 posts = posts,
                 onPostClick = onPostClick,
                 showFavCount = showFavCount,

@@ -193,7 +193,11 @@
     <string name="settings_download_folder_default">По умолчанию</string>
 
     <string name="settings_download_add_service_title">Добавлять префикс сервиса</string>
-    <string name="settings_use_external_metadata_title">Использовать внешнее хранилище метаданных</string>
+
+    <string name="settings_use_external_metadata_title">Использовать внешние метаданные видео</string>
+    <string name="settings_use_external_metadata_subtitle">
+        Получать готовые кадры и данные видео вместо самостоятельной загрузки
+    </string>
 
     <string name="settings_experimental_calendar_title">Новый календарь популярных постов</string>
     <string name="settings_experimental_calendar_hint">Добавляет выбор даты для просмотра популярных постов.</string>

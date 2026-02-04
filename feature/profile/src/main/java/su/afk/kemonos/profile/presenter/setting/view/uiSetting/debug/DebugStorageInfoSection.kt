@@ -15,9 +15,6 @@ import androidx.compose.ui.unit.dp
 import coil3.ImageLoader
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import okio.Path
-import su.afk.kemonos.common.constants.Constant.COIL_DISK_DIR_NAME
-import su.afk.kemonos.common.constants.Constant.VIDEO_FRAMES_DIR_NAME
 import su.afk.kemonos.common.imageLoader.LocalAppImageLoader
 import su.afk.kemonos.profile.R
 import su.afk.kemonos.profile.presenter.setting.view.uiSetting.common.SectionSpacer
@@ -37,7 +34,7 @@ internal fun DebugStorageInfoSection(
     var info by remember { mutableStateOf<StorageInfo?>(null) }
 
     LaunchedEffect(imageLoader) {
-        info = withContext(Dispatchers.IO) { collectStorageInfo(context, imageLoader) }
+        info = withContext(Dispatchers.IO) { collectStorageInfo(context) }
     }
 
     SectionSpacer()
@@ -55,57 +52,48 @@ internal fun DebugStorageInfoSection(
     }
 
     // Общие системные
-    DebugPathBlock(stringResource(R.string.settings_debug_storage_cache_dir), model.cacheDirPath, model.cacheDirMb)
-    DebugPathBlock(stringResource(R.string.settings_debug_storage_files_dir), model.filesDirPath, model.filesDirMb)
+    DebugPathBlock(
+        title = stringResource(R.string.settings_debug_storage_cache_dir),
+        path = model.cacheDirPath,
+        sizeMb = model.cacheDirMb
+    )
+    DebugPathBlock(
+        title = stringResource(R.string.settings_debug_storage_files_dir),
+        path = model.filesDirPath,
+        sizeMb = model.filesDirMb
+    )
 
     model.externalCacheDirPath?.let {
         DebugPathBlock(
-            stringResource(R.string.settings_debug_storage_ext_cache_dir),
-            it,
-            model.externalCacheDirMb ?: 0
+            title = stringResource(R.string.settings_debug_storage_ext_cache_dir),
+            path = it,
+            sizeMb = model.externalCacheDirMb ?: 0
         )
     }
     model.externalFilesDirPath?.let {
         DebugPathBlock(
-            stringResource(R.string.settings_debug_storage_ext_files_dir),
-            it,
-            model.externalFilesDirMb ?: 0
+            title = stringResource(R.string.settings_debug_storage_ext_files_dir),
+            path = it,
+            sizeMb = model.externalFilesDirMb ?: 0
         )
     }
 
     Spacer(Modifier.height(8.dp))
 
-    // Coil
-    DebugPathBlock(
-        title = stringResource(R.string.settings_debug_storage_coil_custom),
-        path = model.coilCustomDirPath,
-        sizeMb = model.coilCustomDirMb,
+    // ТОП папок в cacheDir
+    Text(
+        text = "Top cache folders (top 5):",
+        style = MaterialTheme.typography.bodyLarge,
     )
+    Spacer(Modifier.height(6.dp))
 
-    model.coilActualDirPath?.let { path ->
+    model.topCacheFolders.forEach { item ->
         DebugPathBlock(
-            title = stringResource(R.string.settings_debug_storage_coil_actual),
-            path = path,
-            sizeMb = model.coilActualDirMb ?: 0,
+            title = item.name,
+            path = item.path,
+            sizeMb = item.sizeMb,
         )
     }
-
-    model.coilDefaultDirPath?.let { path ->
-        DebugPathBlock(
-            title = stringResource(R.string.settings_debug_storage_coil_default),
-            path = path,
-            sizeMb = model.coilDefaultDirMb ?: 0,
-        )
-    }
-
-    Spacer(Modifier.height(8.dp))
-
-    // Video frames
-    DebugPathBlock(
-        title = stringResource(R.string.settings_debug_storage_video_frames),
-        path = model.videoFramesDirPath,
-        sizeMb = model.videoFramesDirMb,
-    )
 }
 
 @Composable
@@ -140,38 +128,22 @@ private data class StorageInfo(
     val externalFilesDirPath: String?,
     val externalFilesDirMb: Int?,
 
-    // Coil
-    val coilCustomDirPath: String,
-    val coilCustomDirMb: Int,
-    val coilActualDirPath: String?,
-    val coilActualDirMb: Int?,
-    val coilDefaultDirPath: String?,
-    val coilDefaultDirMb: Int?,
-
-    // Video
-    val videoFramesDirPath: String,
-    val videoFramesDirMb: Int,
+    val topCacheFolders: List<CacheFolderInfo>,
 )
 
-private fun collectStorageInfo(context: Context, imageLoader: ImageLoader): StorageInfo {
+private data class CacheFolderInfo(
+    val name: String,
+    val path: String,
+    val sizeMb: Int,
+)
+
+private fun collectStorageInfo(context: Context): StorageInfo {
     val cacheDir = context.cacheDir
     val filesDir = context.filesDir
     val extCache = context.externalCacheDir
     val extFiles = context.getExternalFilesDir(null)
 
-    // Ожидаемый путь
-    val coilCustomDir = cacheDir.resolve(COIL_DISK_DIR_NAME)
-
-    // Реальный путь из DI ImageLoader (okio.Path -> File)
-    val coilActualDirFile: File? = imageLoader.diskCache?.directory.toFileOrNull()
-
-    // “Дефолтный” ImageLoader (okio.Path -> File)
-    val coilDefaultDirFile: File? = runCatching {
-        ImageLoader.Builder(context).build().diskCache?.directory.toFileOrNull()
-    }.getOrNull()
-
-    // Video frame cache dir
-    val videoFramesDir = cacheDir.resolve(VIDEO_FRAMES_DIR_NAME)
+    val top5 = listTopCacheFolders(cacheDir, top = 5)
 
     return StorageInfo(
         cacheDirPath = cacheDir.absolutePath,
@@ -182,27 +154,33 @@ private fun collectStorageInfo(context: Context, imageLoader: ImageLoader): Stor
         externalCacheDirMb = extCache?.sizeMbSafe(),
         externalFilesDirPath = extFiles?.absolutePath,
         externalFilesDirMb = extFiles?.sizeMbSafe(),
-
-        coilCustomDirPath = coilCustomDir.absolutePath,
-        coilCustomDirMb = coilCustomDir.sizeMbSafe(),
-
-        coilActualDirPath = coilActualDirFile?.absolutePath,
-        coilActualDirMb = coilActualDirFile?.sizeMbSafe(),
-
-        coilDefaultDirPath = coilDefaultDirFile?.absolutePath,
-        coilDefaultDirMb = coilDefaultDirFile?.sizeMbSafe(),
-
-        videoFramesDirPath = videoFramesDir.absolutePath,
-        videoFramesDirMb = videoFramesDir.sizeMbSafe(),
+        topCacheFolders = top5,
     )
 }
 
+private fun listTopCacheFolders(cacheDir: File, top: Int): List<CacheFolderInfo> {
+    val children = cacheDir.listFiles().orEmpty()
 
-private fun Path?.toFileOrNull(): File? = this?.toFile()
+    return children
+        .filter { it.exists() }
+        .map { f ->
+            val bytes = runCatching { dirSizeBytes(f) }.getOrDefault(0L)
+            CacheFolderInfo(
+                name = f.name,
+                path = f.absolutePath,
+                sizeMb = bytes.toMbRound(),
+            )
+        }
+        .sortedByDescending { it.sizeMb }
+        .take(top)
+}
+
+private fun Long.toMbRound(): Int =
+    (this / (1024.0 * 1024.0)).roundToInt()
 
 private fun File.sizeMbSafe(): Int {
     val bytes = runCatching { dirSizeBytes(this) }.getOrDefault(0L)
-    return (bytes / (1024.0 * 1024.0)).roundToInt()
+    return bytes.toMbRound()
 }
 
 private fun dirSizeBytes(file: File): Long {

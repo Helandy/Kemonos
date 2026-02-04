@@ -59,6 +59,12 @@ fun PostsSize.toDp() = when (this) {
     PostsSize.LARGE -> 200.dp
 }
 
+fun PostsSize.toArrangement() = when (this) {
+    PostsSize.SMALL -> 4.dp
+    PostsSize.MEDIUM -> 8.dp
+    PostsSize.LARGE -> 12.dp
+}
+
 enum class DownloadFolderMode {
     CREATOR,                 // <creator>
     CREATOR_POST_ID,         // <creator>/<postId>

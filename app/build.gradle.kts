@@ -78,7 +78,7 @@ android.applicationVariants.configureEach {
     }
 }
 dependencies {
-    debugImplementation("com.squareup.leakcanary:leakcanary-android:2.14")
+    debugImplementation(libs.leakcanary.android)
 
     implementation(libs.bundles.hilt)
     ksp(libs.dagger.hilt.compiler)

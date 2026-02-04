@@ -6,7 +6,7 @@ jvmVersion = "21"
 
 # --- App versioning
 appVersionName = "1.5"
-appVersionCode = "20"
+appVersionCode = "24"
 
 agp = "8.12.3"
 kotlin = "2.3.0"
@@ -36,6 +36,7 @@ androidxHilt = "1.3.0"
 retrofit = "3.0.0"
 okhttp = "5.3.2"
 gson = "2.13.2"
+jsoup = "1.22.1"
 
 # --- Serialization / Coroutines
 coroutines = "1.10.2"
@@ -54,12 +55,15 @@ material3AdaptiveNav3 = "1.0.0-alpha03"
 # --- Play Services
 playServicesCast = "22.2.0"
 
+# --- Translate
+translate = "17.0.3"
+languageId = "17.0.6"
+
 # --- Tests
 junit4 = "4.13.2"
 androidxJunit = "1.3.0"
 espresso = "3.7.0"
-translate = "17.0.3"
-languageId = "17.0.6"
+leakcanaryAndroid = "2.14"
 
 [libraries]
 # --- Base AndroidX
@@ -157,7 +161,8 @@ junit = { module = "junit:junit", version.ref = "junit4" }
 androidx-junit = { module = "androidx.test.ext:junit", version.ref = "androidxJunit" }
 androidx-espresso-core = { module = "androidx.test.espresso:espresso-core", version.ref = "espresso" }
 
-
+leakcanary-android = { module = "com.squareup.leakcanary:leakcanary-android", version.ref = "leakcanaryAndroid" }
+jsoup = { module = "org.jsoup:jsoup", version.ref = "jsoup" }
 [plugins]
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
 
