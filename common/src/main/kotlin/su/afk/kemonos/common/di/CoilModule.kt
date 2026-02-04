@@ -8,6 +8,7 @@ import coil3.disk.DiskCache
 import coil3.disk.directory
 import coil3.gif.GifDecoder
 import coil3.memory.MemoryCache
+import coil3.network.okhttp.OkHttpNetworkFetcherFactory
 import coil3.request.crossfade
 import dagger.Module
 import dagger.Provides
@@ -17,9 +18,17 @@ import dagger.hilt.components.SingletonComponent
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
+import okhttp3.OkHttpClient
 import su.afk.kemonos.common.constants.Constant.COIL_DISK_DIR_NAME
+import su.afk.kemonos.common.imageLoader.imageProgress.ImageProgressStore
+import su.afk.kemonos.common.imageLoader.imageProgress.ProgressInterceptor
 import su.afk.kemonos.preferences.ui.UiSettingKey.COIL_CACHE_SIZE_MB
+import javax.inject.Qualifier
 import javax.inject.Singleton
+
+@Qualifier
+@Retention(AnnotationRetention.BINARY)
+annotation class CoilOkHttp
 
 @Module
 @InstallIn(SingletonComponent::class)
@@ -27,19 +36,32 @@ object CoilModule {
 
     @Provides
     @Singleton
+    @CoilOkHttp
+    fun provideCoilOkHttpClient(
+        progressStore: ImageProgressStore,
+    ): OkHttpClient =
+        OkHttpClient.Builder()
+            .addNetworkInterceptor(ProgressInterceptor(progressStore))
+            .build()
+
+    @Provides
+    @Singleton
     fun provideImageLoader(
         @ApplicationContext appContext: Context,
         dataStore: DataStore<Preferences>,
+        @CoilOkHttp okHttpClient: OkHttpClient,
     ): ImageLoader {
         val cacheMb = runBlocking(Dispatchers.IO) {
-            val p = dataStore.data.first()
-            p[COIL_CACHE_SIZE_MB] ?: DEFAULT_COIL_CACHE_MB
+            dataStore.data.first()[COIL_CACHE_SIZE_MB] ?: DEFAULT_COIL_CACHE_MB
         }.coerceIn(MIN_COIL_CACHE_MB, MAX_COIL_CACHE_MB)
 
         val cacheBytes = cacheMb.toLong() * 1024L * 1024L
 
         return ImageLoader.Builder(appContext)
-            .components { add(GifDecoder.Factory()) }
+            .components {
+                add(GifDecoder.Factory())
+                add(OkHttpNetworkFetcherFactory(okHttpClient))
+            }
             .crossfade(true)
             .memoryCache {
                 MemoryCache.Builder()
@@ -54,6 +76,7 @@ object CoilModule {
             }
             .build()
     }
+
 
     private const val DEFAULT_COIL_CACHE_MB = 300
     private const val MIN_COIL_CACHE_MB = 50

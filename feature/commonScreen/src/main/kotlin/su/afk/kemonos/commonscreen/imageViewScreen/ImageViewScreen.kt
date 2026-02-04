@@ -4,10 +4,11 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.gestures.rememberTransformableState
 import androidx.compose.foundation.gestures.transformable
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.*
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ProgressIndicatorDefaults
+import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -21,6 +22,9 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import coil3.compose.SubcomposeAsyncImage
+import coil3.compose.SubcomposeAsyncImageContent
+import coil3.network.NetworkHeaders
+import coil3.network.httpHeaders
 import coil3.request.CachePolicy
 import coil3.request.ImageRequest
 import coil3.size.Precision
@@ -28,6 +32,8 @@ import kotlinx.coroutines.flow.Flow
 import su.afk.kemonos.common.R
 import su.afk.kemonos.common.error.view.DefaultErrorContent
 import su.afk.kemonos.common.imageLoader.LocalAppImageLoader
+import su.afk.kemonos.common.imageLoader.imageProgress.IMAGE_PROGRESS_REQUEST_ID_HEADER
+import su.afk.kemonos.common.util.formatBytes
 import su.afk.kemonos.commonscreen.imageViewScreen.ImageViewState.Effect
 import su.afk.kemonos.commonscreen.imageViewScreen.ImageViewState.Event
 import su.afk.kemonos.domain.models.ErrorItem
@@ -41,7 +47,6 @@ internal fun ImageViewScreen(state: ImageViewState.State, onEvent: (Event) -> Un
     val doubleTapScale: Float = 3f
 
     var retryKey by remember { mutableIntStateOf(0) }
-
     var container by remember { mutableStateOf(IntSize.Zero) }
 
     /** «живые» значения под пальцами */
@@ -92,6 +97,12 @@ internal fun ImageViewScreen(state: ImageViewState.State, onEvent: (Event) -> Un
     val context = LocalContext.current
     val imageLoader = LocalAppImageLoader.current
 
+    val headers = remember(state.requestId) {
+        NetworkHeaders.Builder()
+            .set(IMAGE_PROGRESS_REQUEST_ID_HEADER, state.requestId)
+            .build()
+    }
+
     /** пересоздаём запрос при retryKey++ */
     val request = remember(state.imageUrl, retryKey, container) {
         val w = (container.width * maxScale).roundToInt().coerceAtLeast(1)
@@ -107,6 +118,7 @@ internal fun ImageViewScreen(state: ImageViewState.State, onEvent: (Event) -> Un
             .size(rw, rh)
             .precision(Precision.EXACT)
             .diskCachePolicy(CachePolicy.ENABLED)
+            .httpHeaders(headers)
             .build()
     }
 
@@ -139,15 +151,61 @@ internal fun ImageViewScreen(state: ImageViewState.State, onEvent: (Event) -> Un
                     translationY = offsetY,
                     rotationZ = 0f
                 ),
+            success = {
+                LaunchedEffect(Unit) { onEvent(Event.ImageLoaded) }
+                SubcomposeAsyncImageContent()
+            },
             loading = {
                 Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                    CircularProgressIndicator(
-                        strokeWidth = 3.dp,
-                        color = MaterialTheme.colorScheme.primary
-                    )
+                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+
+                        val isDeterminate = state.contentLength > 0L && state.bytesRead > 0L && state.progress > 0f
+
+                        if (isDeterminate) {
+                            CircularProgressIndicator(
+                                progress = { state.progress },
+                                modifier = Modifier.size(72.dp),
+                                color = MaterialTheme.colorScheme.primary,
+                                strokeWidth = 6.dp,
+                                strokeCap = ProgressIndicatorDefaults.CircularDeterminateStrokeCap,
+                            )
+                        } else {
+                            CircularProgressIndicator(
+                                modifier = Modifier.size(72.dp),
+                                color = MaterialTheme.colorScheme.primary,
+                                strokeWidth = 6.dp,
+                                trackColor = ProgressIndicatorDefaults.circularIndeterminateTrackColor,
+                                strokeCap = ProgressIndicatorDefaults.CircularIndeterminateStrokeCap,
+                            )
+                        }
+
+                        Spacer(Modifier.height(12.dp))
+
+                        val shouldShowBytes =
+                            state.bytesRead > 0L || state.contentLength > 0L
+
+                        if (shouldShowBytes) {
+                            val text = buildString {
+                                if (state.bytesRead > 0L) {
+                                    append(formatBytes(state.bytesRead))
+                                }
+                                if (state.contentLength > 0L) {
+                                    if (state.bytesRead > 0L) append(" / ")
+                                    append(formatBytes(state.contentLength))
+                                }
+                            }
+
+                            if (text.isNotBlank()) {
+                                Text(text = text, style = MaterialTheme.typography.bodyMedium)
+                            }
+                        } else {
+                            Text(text = stringResource(R.string.loading), style = MaterialTheme.typography.bodyMedium)
+                        }
+                    }
                 }
             },
             error = {
+                LaunchedEffect(Unit) { onEvent(Event.ImageFailed) }
                 DefaultErrorContent(
                     onBack = {
                         onEvent(Event.Back)

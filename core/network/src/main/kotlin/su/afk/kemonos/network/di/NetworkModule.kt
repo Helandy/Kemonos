@@ -17,7 +17,12 @@ import su.afk.kemonos.network.textInterceptor.TextInterceptor
 import su.afk.kemonos.preferences.UrlPrefs
 import java.util.concurrent.TimeUnit
 import javax.inject.Named
+import javax.inject.Qualifier
 import javax.inject.Singleton
+
+@Qualifier
+@Retention(AnnotationRetention.BINARY)
+annotation class ApiOkHttp
 
 @Module
 @InstallIn(SingletonComponent::class)
@@ -32,6 +37,7 @@ internal object NetworkModule {
 
     @Provides
     @Singleton
+    @ApiOkHttp
     fun provideOkHttpClient(
         logging: HttpLoggingInterceptor,
         baseProvider: BaseUrlProvider,
@@ -49,8 +55,9 @@ internal object NetworkModule {
 
     @Provides
     @Singleton
-    fun provideRetrofit(client: OkHttpClient): Retrofit =
-        Retrofit.Builder()
+    fun provideRetrofit(
+        @ApiOkHttp client: OkHttpClient
+    ): Retrofit = Retrofit.Builder()
             .baseUrl("https://placeholder/api/")
             .client(client)
             .addConverterFactory(GsonConverterFactory.create())
@@ -66,7 +73,7 @@ internal object NetworkModule {
     @Provides
     @Named("VideoInfoClient")
     fun provideVideoInfoClient(
-        client: OkHttpClient,
+        @ApiOkHttp client: OkHttpClient
     ): OkHttpClient {
         return client
     }

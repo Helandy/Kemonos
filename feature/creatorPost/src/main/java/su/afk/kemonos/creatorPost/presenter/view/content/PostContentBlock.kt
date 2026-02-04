@@ -7,7 +7,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.core.net.toUri
-import su.afk.kemonos.common.imageLoader.MediaWithAutoRatio
+import su.afk.kemonos.common.imageLoader.videoPreview.MediaWithAutoRatio
 import su.afk.kemonos.common.presenter.androidView.HtmlTextBlock
 import su.afk.kemonos.common.presenter.androidView.model.PostBlock
 
