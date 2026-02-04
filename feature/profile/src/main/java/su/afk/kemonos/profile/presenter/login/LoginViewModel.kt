@@ -11,7 +11,7 @@ import su.afk.kemonos.common.presenter.baseViewModel.BaseViewModel
 import su.afk.kemonos.domain.SelectedSite
 import su.afk.kemonos.domain.models.ErrorItem
 import su.afk.kemonos.navigation.NavigationManager
-import su.afk.kemonos.navigation.NavigationStorage
+import su.afk.kemonos.navigation.storage.NavigationStorage
 import su.afk.kemonos.preferences.site.ISelectedSiteUseCase
 import su.afk.kemonos.profile.domain.login.LoginResult
 import su.afk.kemonos.profile.domain.login.LoginUseCase

@@ -7,7 +7,7 @@ import su.afk.kemonos.common.error.storage.RetryStorage
 import su.afk.kemonos.common.presenter.changeSite.SiteAwareBaseViewModel
 import su.afk.kemonos.domain.SelectedSite
 import su.afk.kemonos.navigation.NavigationManager
-import su.afk.kemonos.navigation.NavigationStorage
+import su.afk.kemonos.navigation.storage.NavigationStorage
 import su.afk.kemonos.posts.api.tags.Tags
 import su.afk.kemonos.posts.domain.usecase.GetAllTagsUseCase
 import su.afk.kemonos.posts.navigation.PostsDest
@@ -70,9 +70,8 @@ internal class TagsPageViewModel @Inject constructor(
     }
 
     fun navigateToSelectTag(tag: String?) {
-        val t = tag.orEmpty()
-        setState { copy(selectTag = t) }
-        navigationStorage.put(KEY_SELECTED_TAG, t)
+        setState { copy(selectTag = tag.orEmpty()) }
+        navigationStorage.put(KEY_SELECTED_TAG, tag.orEmpty())
         navManager.navigate(PostsDest.TagsSelect)
     }
 }

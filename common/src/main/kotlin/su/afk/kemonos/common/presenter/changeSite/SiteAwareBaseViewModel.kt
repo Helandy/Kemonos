@@ -60,6 +60,10 @@ abstract class SiteAwareBaseViewModelNew<S : UiState, E : UiEvent, F : UiEffect>
     }
 }
 
+@Deprecated(
+    "Использовать SiteAwareBaseViewModelNew",
+    replaceWith = ReplaceWith("SiteAwareBaseViewModelNew<S, E, F, T>")
+)
 abstract class SiteAwareBaseViewModel<S>(
     initialState: S,
 ) : BaseViewModel<S>(initialState) {

@@ -5,9 +5,9 @@ import dagger.Module
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import dagger.multibindings.IntoSet
-import su.afk.kemonos.commonscreen.errorScreen.ErrorNavigator
-import su.afk.kemonos.commonscreen.errorScreen.ErrorNavigatorRegister
-import su.afk.kemonos.commonscreen.imageViewScreen.ImageViewNavigator
+import su.afk.kemonos.commonscreen.domain.ErrorNavigator
+import su.afk.kemonos.commonscreen.domain.ErrorNavigatorRegister
+import su.afk.kemonos.commonscreen.domain.ImageViewNavigator
 import su.afk.kemonos.commonscreen.imageViewScreen.ImageViewRegistrar
 import su.afk.kemonos.commonscreen.navigator.IErrorNavigator
 import su.afk.kemonos.commonscreen.navigator.IImageViewNavigator

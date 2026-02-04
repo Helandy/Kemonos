@@ -64,10 +64,9 @@ internal class CreatorsViewModel @Inject constructor(
 
     init {
         initSiteAware()
-        initAndReloadSite()
     }
 
-    fun initAndReloadSite() {
+    private fun initAndReloadSite() {
         observeUiSetting()
 
         viewModelScope.launch {

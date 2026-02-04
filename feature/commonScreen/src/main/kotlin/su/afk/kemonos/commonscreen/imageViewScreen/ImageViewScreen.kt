@@ -24,21 +24,22 @@ import coil3.compose.SubcomposeAsyncImage
 import coil3.request.CachePolicy
 import coil3.request.ImageRequest
 import coil3.size.Precision
+import kotlinx.coroutines.flow.Flow
 import su.afk.kemonos.common.R
 import su.afk.kemonos.common.error.view.DefaultErrorContent
 import su.afk.kemonos.common.imageLoader.LocalAppImageLoader
+import su.afk.kemonos.commonscreen.imageViewScreen.ImageViewState.Effect
+import su.afk.kemonos.commonscreen.imageViewScreen.ImageViewState.Event
 import su.afk.kemonos.domain.models.ErrorItem
 import kotlin.math.abs
 import kotlin.math.roundToInt
 
 @Composable
-fun ImageViewScreen(
-    imageUrl: String,
-    onBack: () -> Unit,
-    minScale: Float = 1f,
-    maxScale: Float = 4f,
-    doubleTapScale: Float = 3f
-) {
+internal fun ImageViewScreen(state: ImageViewState.State, onEvent: (Event) -> Unit, effect: Flow<Effect>) {
+    val minScale: Float = 1f
+    val maxScale: Float = 4f
+    val doubleTapScale: Float = 3f
+
     var retryKey by remember { mutableIntStateOf(0) }
 
     var container by remember { mutableStateOf(IntSize.Zero) }
@@ -92,7 +93,7 @@ fun ImageViewScreen(
     val imageLoader = LocalAppImageLoader.current
 
     /** пересоздаём запрос при retryKey++ */
-    val request = remember(imageUrl, retryKey, container) {
+    val request = remember(state.imageUrl, retryKey, container) {
         val w = (container.width * maxScale).roundToInt().coerceAtLeast(1)
         val h = (container.height * maxScale).roundToInt().coerceAtLeast(1)
 
@@ -102,7 +103,7 @@ fun ImageViewScreen(
         val rh = (h / scaleDown).roundToInt()
 
         ImageRequest.Builder(context)
-            .data(imageUrl)
+            .data(state.imageUrl)
             .size(rw, rh)
             .precision(Precision.EXACT)
             .diskCachePolicy(CachePolicy.ENABLED)
@@ -117,7 +118,7 @@ fun ImageViewScreen(
             .pointerInput(Unit) {
                 detectTapGestures(
                     onTap = {
-                        if (abs(scale - minScale) < 0.01f) onBack()
+                        if (abs(scale - minScale) < 0.01f) onEvent(Event.Back)
                     },
                     onDoubleTap = { tap -> onDoubleTap(tap) }
                 )
@@ -148,7 +149,9 @@ fun ImageViewScreen(
             },
             error = {
                 DefaultErrorContent(
-                    onBack = onBack,
+                    onBack = {
+                        onEvent(Event.Back)
+                    },
                     errorItem = ErrorItem(
                         title = stringResource(R.string.err_title_generic),
                         message = stringResource(R.string.err_msg_generic),

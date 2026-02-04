@@ -18,7 +18,6 @@ internal class NavigationDelegate @Inject constructor(
         navManager.navigate(
             imageViewNavigator(
                 imageUrl = originalUrl,
-                onBack = { navManager.back() }
             )
         )
     }

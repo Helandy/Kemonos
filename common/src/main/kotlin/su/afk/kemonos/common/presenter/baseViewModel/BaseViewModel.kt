@@ -45,6 +45,10 @@ abstract class BaseViewModelNew<S : UiState, E : UiEvent, F : UiEffect> : Corout
     protected open fun onRetry() {}
 }
 
+@Deprecated(
+    "Использовать BaseViewModelNew",
+    replaceWith = ReplaceWith("BaseViewModelNew")
+)
 abstract class BaseViewModel<S>(
     initialState: S,
 ) : CoroutineVieModel() {
