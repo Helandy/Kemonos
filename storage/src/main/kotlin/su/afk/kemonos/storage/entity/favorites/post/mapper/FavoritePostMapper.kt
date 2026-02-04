@@ -6,6 +6,7 @@ import kotlinx.serialization.json.Json
 import su.afk.kemonos.domain.SelectedSite
 import su.afk.kemonos.domain.models.AttachmentDomain
 import su.afk.kemonos.domain.models.FileDomain
+import su.afk.kemonos.domain.models.IncompleteRewards
 import su.afk.kemonos.domain.models.PostDomain
 import su.afk.kemonos.storage.entity.favorites.post.FavoritePostEntity
 import javax.inject.Inject
@@ -35,6 +36,9 @@ internal class FavoritePostMapper @Inject constructor(
 
             fileName = domain.file?.name,
             filePath = domain.file?.path,
+            incompleteRewardsJson = domain.incompleteRewards?.let {
+                json.encodeToString(IncompleteRewards.serializer(), it)
+            },
             attachmentsJson = json.encodeToString(attachmentListSer, domain.attachments),
             tagsJson = json.encodeToString(stringListSer, domain.tags),
 
@@ -62,7 +66,9 @@ internal class FavoritePostMapper @Inject constructor(
             file = if (!entity.fileName.isNullOrBlank() && !entity.filePath.isNullOrBlank())
                 FileDomain(name = entity.fileName, path = entity.filePath)
             else null,
-
+            incompleteRewards = entity.incompleteRewardsJson?.let {
+                runCatching { json.decodeFromString(IncompleteRewards.serializer(), it) }.getOrNull()
+            },
             attachments = json.decodeFromString(attachmentListSer, entity.attachmentsJson ?: "[]"),
             tags = json.decodeFromString(stringListSer, entity.tagsJson ?: "[]"),
 

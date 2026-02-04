@@ -41,7 +41,9 @@ internal class PostContentCacheMapper @Inject constructor(
 
             fileName = p.file?.name,
             filePath = p.file?.path,
-
+            incompleteRewardsJson = p.incompleteRewards?.let {
+                json.encodeToString(IncompleteRewards.serializer(), it)
+            },
             attachmentsJson = json.encodeToString(attachmentListSer, attachments),
             tagsJson = json.encodeToString(stringListSer, p.tags),
             videosJson = json.encodeToString(videoListSer, domain.videos),
@@ -70,7 +72,9 @@ internal class PostContentCacheMapper @Inject constructor(
             file = if (!entity.fileName.isNullOrBlank() && !entity.filePath.isNullOrBlank()) {
                 FileDomain(name = entity.fileName, path = entity.filePath)
             } else null,
-
+            incompleteRewards = entity.incompleteRewardsJson?.let {
+                runCatching { json.decodeFromString(IncompleteRewards.serializer(), it) }.getOrNull()
+            },
             attachments = attachments,
             tags = tags,
 

@@ -17,6 +17,7 @@ data class PostDomain(
     val published: String?,
     val edited: String?,
     val file: FileDomain?,
+    val incompleteRewards: IncompleteRewards?,
     val attachments: List<AttachmentDomain>,
     val tags: List<String>,
     val nextId: String?,
@@ -38,6 +39,7 @@ data class PostDomain(
             published = "22.01.2026",
             edited = "22.01.2026",
             file = null,
+            incompleteRewards = null,
             attachments = emptyList(),
             tags = emptyList(),
             nextId = null,
@@ -77,4 +79,12 @@ data class VideoDomain(
     val server: String,
     val path: String,
     val name: String
+)
+
+@Serializable
+data class IncompleteRewards(
+    val price: Int?,
+    val mediaCount: Int?,
+    val photoCount: Int?,
+    val videoCount: Int?,
 )

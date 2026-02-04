@@ -1,15 +1,19 @@
 package su.afk.kemonos.common.presenter.androidView
 
+import kotlinx.coroutines.currentCoroutineContext
+import kotlinx.coroutines.ensureActive
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Element
 import org.jsoup.nodes.Node
 import su.afk.kemonos.common.presenter.androidView.model.PostBlock
 
-fun htmlToBlocks(
+suspend fun htmlToBlocks(
     html: String,
     baseUrl: String,
 ): List<PostBlock> {
     if (html.isBlank()) return emptyList()
+
+    val ctx = currentCoroutineContext()
 
     val doc = Jsoup.parseBodyFragment(html, baseUrl).apply {
         outputSettings().prettyPrint(false)
@@ -57,7 +61,9 @@ fun htmlToBlocks(
         }
 
         val childrenSnapshot: List<Node> = container.childNodes().toList()
-        childrenSnapshot.forEach { node ->
+        for (node in childrenSnapshot) {
+            ctx.ensureActive()
+
             val el = node as? Element
             if (el != null && isMediaEl(el)) {
                 flushCurrent()
@@ -104,14 +110,18 @@ fun htmlToBlocks(
 
     // Нормализуем href/src/poster в оставшемся HTML, чтобы ссылки были абсолютными
     doc.select("[href]").forEach { it.attr("href", resolveUrl(it.attr("href"), baseUrl)) }
+    ctx.ensureActive()
     doc.select("[src]").forEach { it.attr("src", resolveUrl(it.attr("src"), baseUrl)) }
+    ctx.ensureActive()
     doc.select("[data-src]").forEach { it.attr("data-src", resolveUrl(it.attr("data-src"), baseUrl)) }
+    ctx.ensureActive()
     doc.select("[poster]").forEach { it.attr("poster", resolveUrl(it.attr("poster"), baseUrl)) }
 
     val out = mutableListOf<PostBlock>()
 
     // идём по top-level элементам, а внутри умеем вытаскивать медиа среди direct-children
-    doc.body().children().forEach { top ->
+    for (top in doc.body().children()) {
+        ctx.ensureActive()
         val tag = top.tagName().lowercase()
 
         when {

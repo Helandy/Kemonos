@@ -35,7 +35,8 @@ import su.afk.kemonos.creatorPost.presenter.view.PostTitleBlock
 import su.afk.kemonos.creatorPost.presenter.view.TagsRow
 import su.afk.kemonos.creatorPost.presenter.view.attachment.PostAttachmentsSection
 import su.afk.kemonos.creatorPost.presenter.view.audio.postAudioSection
-import su.afk.kemonos.creatorPost.presenter.view.content.PostContentBlock
+import su.afk.kemonos.creatorPost.presenter.view.content.postContentSection
+import su.afk.kemonos.creatorPost.presenter.view.incompleteRewards.incompleteRewardsBlock
 import su.afk.kemonos.creatorPost.presenter.view.postCommentsSection
 import su.afk.kemonos.creatorPost.presenter.view.preview.postPreviewsSection
 import su.afk.kemonos.creatorPost.presenter.view.translate.PostTranslateItem
@@ -109,6 +110,7 @@ internal fun CreatorPostScreen(state: State, onEvent: (Event) -> Unit, effect: F
 
         val profile = state.profile
         val previews = state.post.previews
+        val blocks = state.contentBlocks.orEmpty()
 
         val imgBaseUrl = remember(post.service) { resolver.imageBaseUrlByService(post.service) }
 
@@ -173,10 +175,16 @@ internal fun CreatorPostScreen(state: State, onEvent: (Event) -> Unit, effect: F
                 )
             }
 
-            item(key = "contentBlock") {
-                /** Контент поста */
-                PostContentBlock(
-                    blocks = state.contentBlocks,
+            item(key = "incompleteRewards") {
+                val rewards = state.post.post.incompleteRewards ?: return@item
+
+                incompleteRewardsBlock(rewards)
+            }
+
+            /** Контент поста */
+            if (blocks.isNotEmpty()) {
+                postContentSection(
+                    blocks = blocks,
                     onOpenImage = { url -> onEvent(Event.OpenImage(url)) }
                 )
             }
