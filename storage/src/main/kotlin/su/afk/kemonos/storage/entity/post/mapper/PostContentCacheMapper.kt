@@ -52,6 +52,8 @@ internal class PostContentCacheMapper @Inject constructor(
             videosJson = json.encodeToString(videoListSer, domain.videos),
             previewsJson = json.encodeToString(previewListSer, domain.previews),
 
+            nextId = post.nextId,
+            prevId = post.prevId,
             cachedAt = cachedAt
         )
     }
@@ -84,8 +86,8 @@ internal class PostContentCacheMapper @Inject constructor(
             attachments = attachments,
             tags = tags,
 
-            nextId = null,
-            prevId = null,
+            nextId = entity.nextId,
+            prevId = entity.prevId,
             favedSeq = null,
             favCount = null
         )

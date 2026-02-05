@@ -48,7 +48,6 @@ internal class CreatorsListDelegate @Inject constructor(
         setState {
             copy(
                 creatorsPaged = flow,
-                loading = false,
             )
         }
 

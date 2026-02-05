@@ -16,7 +16,7 @@ internal class CreatorPostCacheMapper @Inject constructor(
     private val stringListSer = ListSerializer(String.serializer())
 
     fun toEntity(
-        domain: PostDomain,
+        post: PostDomain,
         queryKey: String,
         offset: Int,
         indexInPage: Int,
@@ -25,26 +25,28 @@ internal class CreatorPostCacheMapper @Inject constructor(
         CreatorPostCacheEntity(
             queryKey = queryKey,
             offset = offset,
-            id = domain.id,
-            userId = domain.userId,
-            service = domain.service,
-            title = domain.title,
-            published = domain.published,
-            added = domain.added,
-            edited = domain.edited,
-            substring = domain.substring,
+            id = post.id,
+            userId = post.userId,
+            service = post.service,
+            title = post.title,
+            published = post.published,
+            added = post.added,
+            edited = post.edited,
+            substring = post.substring,
 
-            fileName = domain.file?.name,
-            filePath = domain.file?.path,
-            incompleteRewardsJson = domain.incompleteRewards?.let {
+            fileName = post.file?.name,
+            filePath = post.file?.path,
+            incompleteRewardsJson = post.incompleteRewards?.let {
                 json.encodeToString(IncompleteRewards.serializer(), it)
             },
-            pollJson = domain.poll?.let {
+            pollJson = post.poll?.let {
                 json.encodeToString(PollDomain.serializer(), it)
             },
-            attachmentsJson = json.encodeToString(attachmentListSer, domain.attachments),
-            tagsJson = json.encodeToString(stringListSer, domain.tags),
+            attachmentsJson = json.encodeToString(attachmentListSer, post.attachments),
+            tagsJson = json.encodeToString(stringListSer, post.tags),
 
+            nextId = post.nextId,
+            prevId = post.prevId,
             indexInPage = indexInPage,
             updatedAt = updatedAt
         )
@@ -73,8 +75,8 @@ internal class CreatorPostCacheMapper @Inject constructor(
             attachments = json.decodeFromString(attachmentListSer, entity.attachmentsJson ?: "[]"),
             tags = json.decodeFromString(stringListSer, entity.tagsJson ?: "[]"),
 
-            nextId = null,
-            prevId = null,
+            nextId = entity.nextId,
+            prevId = entity.prevId,
             favedSeq = null,
             favCount = null
         )

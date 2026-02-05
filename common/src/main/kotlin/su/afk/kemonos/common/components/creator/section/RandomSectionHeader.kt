@@ -3,7 +3,6 @@ package su.afk.kemonos.common.components.creator.section
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyGridScope
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import su.afk.kemonos.common.R
@@ -50,7 +49,6 @@ internal fun LazyListScope.randomCreatorsSection(
             favorited = creator.favorited,
             onClick = { onCreatorClick(creator) }
         )
-        HorizontalDivider()
     }
 }
 

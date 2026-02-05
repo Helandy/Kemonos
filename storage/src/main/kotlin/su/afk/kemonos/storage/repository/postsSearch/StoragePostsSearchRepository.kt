@@ -54,7 +54,7 @@ internal class StoragePostsSearchRepository @Inject constructor(
 
         val entities = items.mapIndexed { index, post ->
             mapper.toEntity(
-                domain = post,
+                post = post,
                 queryKey = queryKey,
                 offset = offset,
                 indexInPage = index,

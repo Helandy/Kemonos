@@ -36,7 +36,7 @@ internal class StorageCreatorPostsRepository @Inject constructor(
         val now = System.currentTimeMillis()
         val entities = items.mapIndexed { index, post ->
             mapper.toEntity(
-                domain = post,
+                post = post,
                 queryKey = queryKey,
                 offset = offset,
                 indexInPage = index,

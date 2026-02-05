@@ -30,5 +30,7 @@ data class PostContentCacheEntity(
     val videosJson: String?,
     val previewsJson: String?,
 
+    val nextId: String?,
+    val prevId: String?,
     val cachedAt: Long,
 )

@@ -34,6 +34,8 @@ data class CreatorPostCacheEntity(
     val attachmentsJson: String?,
     val tagsJson: String?,
 
+    val nextId: String?,
+    val prevId: String?,
     val indexInPage: Int,
     val updatedAt: Long,
 )

@@ -55,7 +55,7 @@ import su.afk.kemonos.storage.entity.video.dao.VideoInfoDao
 
         PostsPopularCacheEntity::class,
     ],
-    version = 5,
+    version = 6,
     exportSchema = false
 )
 @TypeConverters(SelectedSiteConverters::class)

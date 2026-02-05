@@ -1,4 +1,4 @@
-package su.afk.kemonos.storage.database.migrations
+package su.afk.kemonos.storage.database.migrations.coomer
 
 import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase

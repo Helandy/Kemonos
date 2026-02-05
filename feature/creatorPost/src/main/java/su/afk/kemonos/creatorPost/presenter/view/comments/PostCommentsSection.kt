@@ -1,4 +1,4 @@
-package su.afk.kemonos.creatorPost.presenter.view
+package su.afk.kemonos.creatorPost.presenter.view.comments
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
