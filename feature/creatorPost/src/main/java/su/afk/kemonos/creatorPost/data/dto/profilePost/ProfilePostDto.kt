@@ -29,10 +29,15 @@ internal data class PostResponseDto(
 ) {
     companion object {
         fun PostResponseDto.toDomain(): PostContentDomain {
+            val postDomain = post.toDomain()
+
+            val root = attachments.orEmpty().map { it.toDomain() }
+            val merged = root.ifEmpty { postDomain.attachments }
+
             return PostContentDomain(
-                post = post.toDomain(),
+                post = postDomain,
                 videos = videos.orEmpty().map { it.toDomain() },
-                attachments = attachments.orEmpty().map { it.toDomain() },
+                attachments = merged,
                 previews = previews.orEmpty().map { it.toDomain() },
             )
         }
