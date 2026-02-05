@@ -23,32 +23,37 @@ internal class PostContentCacheMapper @Inject constructor(
         domain: PostContentDomain,
         cachedAt: Long = System.currentTimeMillis(),
     ): PostContentCacheEntity {
-        val p = domain.post
+        val post = domain.post
 
-        val attachments = domain.attachments.ifEmpty { p.attachments }
+        val attachments = domain.attachments.ifEmpty { post.attachments }
 
         return PostContentCacheEntity(
-            service = p.service,
-            userId = p.userId,
-            postId = p.id,
+            service = post.service,
+            userId = post.userId,
+            postId = post.id,
 
-            title = p.title,
-            content = p.content,
-            substring = p.substring,
-            published = p.published,
-            added = p.added,
-            edited = p.edited,
+            title = post.title,
+            content = post.content,
+            substring = post.substring,
+            published = post.published,
+            added = post.added,
+            edited = post.edited,
 
-            fileName = p.file?.name,
-            filePath = p.file?.path,
-            incompleteRewardsJson = p.incompleteRewards?.let {
+            fileName = post.file?.name,
+            filePath = post.file?.path,
+            incompleteRewardsJson = post.incompleteRewards?.let {
                 json.encodeToString(IncompleteRewards.serializer(), it)
             },
+            pollJson = post.poll?.let {
+                json.encodeToString(PollDomain.serializer(), it)
+            },
             attachmentsJson = json.encodeToString(attachmentListSer, attachments),
-            tagsJson = json.encodeToString(stringListSer, p.tags),
+            tagsJson = json.encodeToString(stringListSer, post.tags),
             videosJson = json.encodeToString(videoListSer, domain.videos),
             previewsJson = json.encodeToString(previewListSer, domain.previews),
 
+            nextId = post.nextId,
+            prevId = post.prevId,
             cachedAt = cachedAt
         )
     }
@@ -75,11 +80,14 @@ internal class PostContentCacheMapper @Inject constructor(
             incompleteRewards = entity.incompleteRewardsJson?.let {
                 runCatching { json.decodeFromString(IncompleteRewards.serializer(), it) }.getOrNull()
             },
+            poll = entity.pollJson?.let {
+                runCatching { json.decodeFromString(PollDomain.serializer(), it) }.getOrNull()
+            },
             attachments = attachments,
             tags = tags,
 
-            nextId = null,
-            prevId = null,
+            nextId = entity.nextId,
+            prevId = entity.prevId,
             favedSeq = null,
             favCount = null
         )

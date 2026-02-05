@@ -3,7 +3,7 @@ package su.afk.kemonos.creators.presenter.model
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.stringResource
 import su.afk.kemonos.common.R
-import su.afk.kemonos.common.view.searchBar.SortOption
+import su.afk.kemonos.common.components.searchBar.SortOption
 import su.afk.kemonos.domain.models.creator.CreatorsSort
 
 @Composable

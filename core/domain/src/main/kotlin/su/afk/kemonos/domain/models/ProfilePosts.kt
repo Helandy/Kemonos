@@ -18,6 +18,7 @@ data class PostDomain(
     val edited: String?,
     val file: FileDomain?,
     val incompleteRewards: IncompleteRewards?,
+    val poll: PollDomain?,
     val attachments: List<AttachmentDomain>,
     val tags: List<String>,
     val nextId: String?,
@@ -40,6 +41,7 @@ data class PostDomain(
             edited = "22.01.2026",
             file = null,
             incompleteRewards = null,
+            poll = null,
             attachments = emptyList(),
             tags = emptyList(),
             nextId = null,
@@ -47,6 +49,8 @@ data class PostDomain(
             favedSeq = null,
             favCount = null,
         )
+
+        fun PostDomain.stableKey(): String = "$service:$userId:$id"
     }
 }
 
@@ -87,4 +91,21 @@ data class IncompleteRewards(
     val mediaCount: Int?,
     val photoCount: Int?,
     val videoCount: Int?,
+)
+
+@Serializable
+data class PollDomain(
+    val title: String?,
+    val choices: List<ChoicesDomain>?,
+    val closesAt: String?,
+    val createdAt: String?,
+    val description: String?,
+
+    val allowsMultiple: Boolean,
+)
+
+@Serializable
+data class ChoicesDomain(
+    val text: String?,
+    val votes: Int?,
 )

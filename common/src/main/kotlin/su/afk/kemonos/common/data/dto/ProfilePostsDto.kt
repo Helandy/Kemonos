@@ -4,6 +4,7 @@ import com.google.gson.annotations.SerializedName
 import su.afk.kemonos.common.data.dto.AttachmentDto.Companion.toDomain
 import su.afk.kemonos.common.data.dto.FileDto.Companion.toDomain
 import su.afk.kemonos.common.data.dto.IncompleteRewardsDto.Companion.toDomain
+import su.afk.kemonos.common.data.dto.PollDto.Companion.toDomain
 import su.afk.kemonos.domain.models.PostDomain
 
 /** Общая модель для поиск и избранного */
@@ -40,8 +41,13 @@ data class PostUnifiedDto(
     @SerializedName("file")
     val file: FileDto?,
 
+    /** Если контент в посте заблокирован */
     @SerializedName("incomplete_rewards")
     val incompleteRewards: IncompleteRewardsDto?,
+
+    /** Голосования */
+    @SerializedName("poll")
+    val poll: PollDto?,
 
     /** detail-only */
     @SerializedName("next") val next: String? = null,
@@ -64,6 +70,7 @@ data class PostUnifiedDto(
             edited = edited,
             file = file?.toDomain(),
             incompleteRewards = incompleteRewards?.toDomain(),
+            poll = poll?.toDomain(),
             attachments = attachments.orEmpty().map { it.toDomain() },
             tags = tags.orEmpty(),
             nextId = next,

@@ -64,6 +64,9 @@ internal class CreatorPostState {
         data class AudioInfoRequested(val url: String) : Event
 
         data class PlayAudio(val url: String, val name: String?) : Event
+
+        data object OpenNextPost : Event
+        data object OpenPrevPost : Event
     }
 
     sealed interface Effect : UiEffect {

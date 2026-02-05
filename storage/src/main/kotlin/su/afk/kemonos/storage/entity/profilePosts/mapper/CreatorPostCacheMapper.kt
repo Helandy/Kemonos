@@ -3,10 +3,7 @@ package su.afk.kemonos.storage.entity.profilePosts.mapper
 import kotlinx.serialization.builtins.ListSerializer
 import kotlinx.serialization.builtins.serializer
 import kotlinx.serialization.json.Json
-import su.afk.kemonos.domain.models.AttachmentDomain
-import su.afk.kemonos.domain.models.FileDomain
-import su.afk.kemonos.domain.models.IncompleteRewards
-import su.afk.kemonos.domain.models.PostDomain
+import su.afk.kemonos.domain.models.*
 import su.afk.kemonos.storage.entity.profilePosts.CreatorPostCacheEntity
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -19,7 +16,7 @@ internal class CreatorPostCacheMapper @Inject constructor(
     private val stringListSer = ListSerializer(String.serializer())
 
     fun toEntity(
-        domain: PostDomain,
+        post: PostDomain,
         queryKey: String,
         offset: Int,
         indexInPage: Int,
@@ -28,23 +25,28 @@ internal class CreatorPostCacheMapper @Inject constructor(
         CreatorPostCacheEntity(
             queryKey = queryKey,
             offset = offset,
-            id = domain.id,
-            userId = domain.userId,
-            service = domain.service,
-            title = domain.title,
-            published = domain.published,
-            added = domain.added,
-            edited = domain.edited,
-            substring = domain.substring,
+            id = post.id,
+            userId = post.userId,
+            service = post.service,
+            title = post.title,
+            published = post.published,
+            added = post.added,
+            edited = post.edited,
+            substring = post.substring,
 
-            fileName = domain.file?.name,
-            filePath = domain.file?.path,
-            incompleteRewardsJson = domain.incompleteRewards?.let {
+            fileName = post.file?.name,
+            filePath = post.file?.path,
+            incompleteRewardsJson = post.incompleteRewards?.let {
                 json.encodeToString(IncompleteRewards.serializer(), it)
             },
-            attachmentsJson = json.encodeToString(attachmentListSer, domain.attachments),
-            tagsJson = json.encodeToString(stringListSer, domain.tags),
+            pollJson = post.poll?.let {
+                json.encodeToString(PollDomain.serializer(), it)
+            },
+            attachmentsJson = json.encodeToString(attachmentListSer, post.attachments),
+            tagsJson = json.encodeToString(stringListSer, post.tags),
 
+            nextId = post.nextId,
+            prevId = post.prevId,
             indexInPage = indexInPage,
             updatedAt = updatedAt
         )
@@ -67,11 +69,14 @@ internal class CreatorPostCacheMapper @Inject constructor(
             incompleteRewards = entity.incompleteRewardsJson?.let {
                 runCatching { json.decodeFromString(IncompleteRewards.serializer(), it) }.getOrNull()
             },
+            poll = entity.pollJson?.let {
+                runCatching { json.decodeFromString(PollDomain.serializer(), it) }.getOrNull()
+            },
             attachments = json.decodeFromString(attachmentListSer, entity.attachmentsJson ?: "[]"),
             tags = json.decodeFromString(stringListSer, entity.tagsJson ?: "[]"),
 
-            nextId = null,
-            prevId = null,
+            nextId = entity.nextId,
+            prevId = entity.prevId,
             favedSeq = null,
             favCount = null
         )

@@ -4,10 +4,7 @@ import kotlinx.serialization.builtins.ListSerializer
 import kotlinx.serialization.builtins.serializer
 import kotlinx.serialization.json.Json
 import su.afk.kemonos.domain.SelectedSite
-import su.afk.kemonos.domain.models.AttachmentDomain
-import su.afk.kemonos.domain.models.FileDomain
-import su.afk.kemonos.domain.models.IncompleteRewards
-import su.afk.kemonos.domain.models.PostDomain
+import su.afk.kemonos.domain.models.*
 import su.afk.kemonos.storage.entity.favorites.post.FavoritePostEntity
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -39,6 +36,9 @@ internal class FavoritePostMapper @Inject constructor(
             incompleteRewardsJson = domain.incompleteRewards?.let {
                 json.encodeToString(IncompleteRewards.serializer(), it)
             },
+            pollJson = domain.poll?.let {
+                json.encodeToString(PollDomain.serializer(), it)
+            },
             attachmentsJson = json.encodeToString(attachmentListSer, domain.attachments),
             tagsJson = json.encodeToString(stringListSer, domain.tags),
 
@@ -68,6 +68,9 @@ internal class FavoritePostMapper @Inject constructor(
             else null,
             incompleteRewards = entity.incompleteRewardsJson?.let {
                 runCatching { json.decodeFromString(IncompleteRewards.serializer(), it) }.getOrNull()
+            },
+            poll = entity.pollJson?.let {
+                runCatching { json.decodeFromString(PollDomain.serializer(), it) }.getOrNull()
             },
             attachments = json.decodeFromString(attachmentListSer, entity.attachmentsJson ?: "[]"),
             tags = json.decodeFromString(stringListSer, entity.tagsJson ?: "[]"),

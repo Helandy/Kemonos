@@ -40,7 +40,7 @@ dependencies {
 
     implementation(libs.bundles.coil)
     implementation(libs.bundles.translate)
-    implementation(libs.jsoup)
+    implementation(libs.bundles.jsoup)
 
     debugImplementation(libs.bundles.compose.debug)
 

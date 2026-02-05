@@ -21,10 +21,10 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.paging.LoadState
 import androidx.paging.compose.collectAsLazyPagingItems
 import su.afk.kemonos.common.R
+import su.afk.kemonos.common.components.posts.PostsContentPaging
 import su.afk.kemonos.common.error.LocalErrorMapper
 import su.afk.kemonos.common.presenter.baseScreen.BaseScreen
 import su.afk.kemonos.common.presenter.baseScreen.TopBarScroll
-import su.afk.kemonos.common.view.posts.PostsContentPaging
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

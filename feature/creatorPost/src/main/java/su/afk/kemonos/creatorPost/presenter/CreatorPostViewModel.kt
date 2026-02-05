@@ -23,6 +23,7 @@ import su.afk.kemonos.common.translate.TextTranslator
 import su.afk.kemonos.common.translate.preprocessForTranslation
 import su.afk.kemonos.common.util.audioMimeType
 import su.afk.kemonos.common.util.buildFileUrl
+import su.afk.kemonos.creatorPost.api.ICreatorPostNavigator
 import su.afk.kemonos.creatorPost.api.domain.model.PostContentDomain
 import su.afk.kemonos.creatorPost.domain.model.media.MediaInfoState
 import su.afk.kemonos.creatorPost.domain.model.video.VideoThumbState
@@ -31,11 +32,14 @@ import su.afk.kemonos.creatorPost.domain.useCase.GetMediaMetaUseCase
 import su.afk.kemonos.creatorPost.domain.useCase.GetPostUseCase
 import su.afk.kemonos.creatorPost.navigation.CreatorPostDest
 import su.afk.kemonos.creatorPost.presenter.CreatorPostState.*
+import su.afk.kemonos.creatorPost.presenter.CreatorPostState.Effect.OpenAudio
+import su.afk.kemonos.creatorPost.presenter.CreatorPostState.Effect.OpenUrl
 import su.afk.kemonos.creatorPost.presenter.delegates.LikeDelegate
 import su.afk.kemonos.creatorPost.presenter.delegates.MediaMetaDelegate
 import su.afk.kemonos.creatorPost.presenter.delegates.NavigateDelegates
 import su.afk.kemonos.creatorProfile.api.IGetProfileUseCase
 import su.afk.kemonos.download.api.IDownloadUtil
+import su.afk.kemonos.navigation.NavigationManager
 import su.afk.kemonos.preferences.IGetCurrentSiteRootUrlUseCase
 import su.afk.kemonos.preferences.ui.IUiSettingUseCase
 import su.afk.kemonos.preferences.ui.TranslateTarget
@@ -52,6 +56,8 @@ internal class CreatorPostViewModel @AssistedInject constructor(
     private val downloadUtil: IDownloadUtil,
     private val translator: TextTranslator,
     private val uiSetting: IUiSettingUseCase,
+    private val creatorPostNavigator: ICreatorPostNavigator,
+    private val navManager: NavigationManager,
     override val errorHandler: IErrorHandlerUseCase,
     override val retryStorage: RetryStorage,
 ) : BaseViewModelNew<State, Event, Effect>() {
@@ -105,7 +111,7 @@ internal class CreatorPostViewModel @AssistedInject constructor(
 
             is Event.Download -> download(event.url, event.fileName)
 
-            is Event.OpenExternalUrl -> setEffect(Effect.OpenUrl(event.url))
+            is Event.OpenExternalUrl -> setEffect(OpenUrl(event.url))
 
             is Event.VideoThumbRequested -> requestVideoMeta(event.server, event.path)
             is Event.VideoInfoRequested -> requestVideoMeta(event.server, event.path)
@@ -114,7 +120,31 @@ internal class CreatorPostViewModel @AssistedInject constructor(
             is Event.PlayAudio -> {
                 val safeName = event.name?.takeIf { it.isNotBlank() } ?: event.url.substringAfterLast('/')
                 val mime = audioMimeType(event.url)
-                setEffect(Effect.OpenAudio(event.url, safeName, mime))
+                setEffect(OpenAudio(event.url, safeName, mime))
+            }
+
+            Event.OpenNextPost -> {
+                val next = currentState.post?.post?.nextId ?: return
+
+                setState {
+                    copy(
+                        postId = next,
+                        loading = true
+                    )
+                }
+                loadingPost()
+            }
+
+            Event.OpenPrevPost -> {
+                val prev = currentState.post?.post?.prevId ?: return
+
+                setState {
+                    copy(
+                        postId = prev,
+                        loading = true
+                    )
+                }
+                loadingPost()
             }
         }
     }
