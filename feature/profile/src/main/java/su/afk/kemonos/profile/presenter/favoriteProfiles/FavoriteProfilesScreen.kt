@@ -14,11 +14,11 @@ import androidx.compose.ui.unit.dp
 import androidx.paging.compose.collectAsLazyPagingItems
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
+import su.afk.kemonos.common.components.creator.CreatorsContentPaging
+import su.afk.kemonos.common.components.searchBar.SearchBarNew
 import su.afk.kemonos.common.presenter.baseScreen.BaseScreen
 import su.afk.kemonos.common.presenter.baseScreen.TopBarScroll
 import su.afk.kemonos.common.utilsUI.KemonosPreviewScreen
-import su.afk.kemonos.common.view.creator.CreatorsContentPaging
-import su.afk.kemonos.common.view.searchBar.SearchBarNew
 import su.afk.kemonos.preferences.ui.CreatorViewMode
 import su.afk.kemonos.profile.data.FreshFavoriteArtistKey
 import su.afk.kemonos.profile.data.FreshFavoriteArtistsUpdates

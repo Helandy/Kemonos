@@ -47,6 +47,8 @@ data class PostDomain(
             favedSeq = null,
             favCount = null,
         )
+
+        fun PostDomain.stableKey(): String = "$service:$userId:$id"
     }
 }
 

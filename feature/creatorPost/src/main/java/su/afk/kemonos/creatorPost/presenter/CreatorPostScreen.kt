@@ -18,6 +18,8 @@ import androidx.core.net.toUri
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
 import su.afk.kemonos.common.R
+import su.afk.kemonos.common.components.button.FavoriteActionButton
+import su.afk.kemonos.common.components.creator.header.CreatorHeader
 import su.afk.kemonos.common.di.LocalDomainResolver
 import su.afk.kemonos.common.presenter.baseScreen.BaseScreen
 import su.afk.kemonos.common.shared.ShareActions
@@ -27,8 +29,6 @@ import su.afk.kemonos.common.toast.toast
 import su.afk.kemonos.common.util.buildDataUrl
 import su.afk.kemonos.common.util.openAudioExternally
 import su.afk.kemonos.common.utilsUI.KemonosPreviewScreen
-import su.afk.kemonos.common.view.button.FavoriteActionButton
-import su.afk.kemonos.common.view.creator.header.CreatorHeader
 import su.afk.kemonos.creatorPost.presenter.CreatorPostState.*
 import su.afk.kemonos.creatorPost.presenter.CreatorPostState.State
 import su.afk.kemonos.creatorPost.presenter.view.PostTitleBlock
