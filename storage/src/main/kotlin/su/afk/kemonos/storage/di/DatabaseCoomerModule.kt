@@ -10,6 +10,7 @@ import dagger.hilt.components.SingletonComponent
 import su.afk.kemonos.storage.database.CoomerDatabase
 import su.afk.kemonos.storage.database.migrations.COOMER_MIGRATION_2_3
 import su.afk.kemonos.storage.database.migrations.CoomerFrom3To4
+import su.afk.kemonos.storage.database.migrations.CoomerFrom4To5
 import su.afk.kemonos.storage.entity.creators.dao.CoomerCreatorsDao
 import su.afk.kemonos.storage.entity.popular.dao.CoomerPostsPopularCacheDao
 import su.afk.kemonos.storage.entity.postsSearch.dao.CoomerPostsSearchCacheDao
@@ -24,7 +25,7 @@ internal object DatabaseCoomerModule {
     @Singleton
     fun provideCoomerDatabase(@ApplicationContext context: Context): CoomerDatabase =
         Room.databaseBuilder(context, CoomerDatabase::class.java, "coomer_db")
-            .addMigrations(COOMER_MIGRATION_2_3, CoomerFrom3To4)
+            .addMigrations(COOMER_MIGRATION_2_3, CoomerFrom3To4, CoomerFrom4To5)
             .build()
 
     @Provides

@@ -10,6 +10,7 @@ import dagger.hilt.components.SingletonComponent
 import su.afk.kemonos.storage.database.KemonoDatabase
 import su.afk.kemonos.storage.database.migrations.KEMONO_MIGRATION_2_3
 import su.afk.kemonos.storage.database.migrations.KemonoFrom3To4
+import su.afk.kemonos.storage.database.migrations.KemonoFrom4To5
 import su.afk.kemonos.storage.entity.comments.dao.CommentsDao
 import su.afk.kemonos.storage.entity.creatorProfileCache.dao.CreatorProfileCacheDao
 import su.afk.kemonos.storage.entity.creators.dao.KemonoCreatorsDao
@@ -32,7 +33,7 @@ internal object DatabaseKemonoModule {
     @Singleton
     fun provideKemonoDatabase(@ApplicationContext context: Context): KemonoDatabase =
         Room.databaseBuilder(context, KemonoDatabase::class.java, "kemono_db")
-            .addMigrations(KEMONO_MIGRATION_2_3, KemonoFrom3To4)
+            .addMigrations(KEMONO_MIGRATION_2_3, KemonoFrom3To4, KemonoFrom4To5)
             .build()
 
     @Provides

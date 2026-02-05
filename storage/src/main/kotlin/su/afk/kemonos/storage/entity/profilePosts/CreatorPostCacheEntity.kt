@@ -28,6 +28,7 @@ data class CreatorPostCacheEntity(
     val edited: String?,
 
     val incompleteRewardsJson: String?,
+    val pollJson: String?,
     val fileName: String?,
     val filePath: String?,
     val attachmentsJson: String?,

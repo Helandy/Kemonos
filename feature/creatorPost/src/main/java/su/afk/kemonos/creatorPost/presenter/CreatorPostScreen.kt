@@ -37,6 +37,7 @@ import su.afk.kemonos.creatorPost.presenter.view.attachment.PostAttachmentsSecti
 import su.afk.kemonos.creatorPost.presenter.view.audio.postAudioSection
 import su.afk.kemonos.creatorPost.presenter.view.content.postContentSection
 import su.afk.kemonos.creatorPost.presenter.view.incompleteRewards.incompleteRewardsBlock
+import su.afk.kemonos.creatorPost.presenter.view.poll.PollBlock
 import su.afk.kemonos.creatorPost.presenter.view.postCommentsSection
 import su.afk.kemonos.creatorPost.presenter.view.preview.postPreviewsSection
 import su.afk.kemonos.creatorPost.presenter.view.translate.PostTranslateItem
@@ -179,6 +180,15 @@ internal fun CreatorPostScreen(state: State, onEvent: (Event) -> Unit, effect: F
                 val rewards = state.post.post.incompleteRewards ?: return@item
 
                 incompleteRewardsBlock(rewards)
+            }
+
+            item(key = "poll") {
+                val poll = state.post.post.poll ?: return@item
+
+                PollBlock(
+                    poll = poll,
+                    dateMode = state.uiSettingModel.dateFormatMode,
+                )
             }
 
             /** Контент поста */
