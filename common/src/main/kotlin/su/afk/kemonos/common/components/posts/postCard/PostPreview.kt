@@ -57,7 +57,7 @@ internal fun PostPreview(
                 if (path.isBlank()) return@produceState
 
                 /** если быстро скроллят — отменится, и диск не перегружается */
-                kotlinx.coroutines.delay(150)
+                kotlinx.coroutines.delay(200)
 
                 value = withContext(Dispatchers.IO) {
                     cache.getByPath(path)
