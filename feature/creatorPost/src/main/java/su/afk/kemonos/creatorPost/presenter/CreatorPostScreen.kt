@@ -128,6 +128,9 @@ internal fun CreatorPostScreen(state: State, onEvent: (Event) -> Unit, effect: F
             }
         }
 
+        val canPrevPost = post.prevId != null
+        val canNextPost = post.nextId != null
+
         val listState = rememberSaveable(
             state.postId,
             saver = LazyListState.Saver
@@ -138,8 +141,8 @@ internal fun CreatorPostScreen(state: State, onEvent: (Event) -> Unit, effect: F
             threshold = 300.dp,
             dragDamping = 0.55f,
 
-            canSwipeDownAtTop = post.prevId != null,
-            canSwipeUpAtBottom = post.nextId != null,
+            canSwipeDownAtTop = canPrevPost,
+            canSwipeUpAtBottom = canNextPost,
 
             onSwipeDownAtTop = { onEvent(Event.OpenPrevPost) },
             onSwipeUpAtBottom = { onEvent(Event.OpenNextPost) },
@@ -289,13 +292,13 @@ internal fun CreatorPostScreen(state: State, onEvent: (Event) -> Unit, effect: F
             }
 
             /** подсказка свайпа */
-            if (swipe.direction == SwipeHintDirection.DOWN && post.prevId != null) {
+            if (swipe.direction == SwipeHintDirection.DOWN && canPrevPost) {
                 SwipeArrowHint(
                     modifier = Modifier.align(Alignment.TopCenter),
                     progress = swipe.progress,
                     isDown = true
                 )
-            } else if (swipe.direction == SwipeHintDirection.UP && post.nextId != null) {
+            } else if (swipe.direction == SwipeHintDirection.UP && canNextPost) {
                 SwipeArrowHint(
                     modifier = Modifier.align(Alignment.BottomCenter),
                     progress = swipe.progress,
@@ -311,7 +314,7 @@ internal fun CreatorPostScreen(state: State, onEvent: (Event) -> Unit, effect: F
 private fun PreviewCreatorPostScreen() {
     KemonosPreviewScreen {
         CreatorPostScreen(
-            state = State().copy(loading = false),
+            state = State.default().copy(loading = false),
             onEvent = {},
             effect = emptyFlow()
         )

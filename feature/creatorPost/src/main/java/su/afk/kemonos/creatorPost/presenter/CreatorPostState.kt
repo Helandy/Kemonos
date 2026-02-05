@@ -13,36 +13,62 @@ import su.afk.kemonos.preferences.ui.UiSettingModel
 
 internal class CreatorPostState {
     data class State(
-        val loading: Boolean = false,
+        val loading: Boolean,
 
-        val service: String = "",
-        val id: String = "",
-        val postId: String = "",
+        val service: String,
+        val id: String,
+        val postId: String,
 
-        val post: PostContentDomain? = null,
-        val showButtonTranslate: Boolean = false,
-        val contentBlocks: List<PostBlock>? = null,
-        val commentDomains: List<CommentDomain> = emptyList(),
+        val post: PostContentDomain?,
+        val showButtonTranslate: Boolean,
+        val contentBlocks: List<PostBlock>?,
+        val commentDomains: List<CommentDomain>,
 
-        val profile: Profile? = null,
-        var showBarCreator: Boolean = false,
+        val profile: Profile?,
+        var showBarCreator: Boolean,
 
-        val isFavoriteShowButton: Boolean = false,
-        val isFavorite: Boolean = false,
-        val favoriteActionLoading: Boolean = false,
+        val isFavoriteShowButton: Boolean,
+        val isFavorite: Boolean,
+        val favoriteActionLoading: Boolean,
 
 
-        val translateExpanded: Boolean = false,
-        val translateLoading: Boolean = false,
-        val translateText: String? = null,
-        val translateError: String? = null,
+        val translateExpanded: Boolean,
+        val translateLoading: Boolean,
+        val translateText: String?,
+        val translateError: String?,
 
-        val uiSettingModel: UiSettingModel = UiSettingModel(),
+        val uiSettingModel: UiSettingModel,
 
-        val videoThumbs: Map<String, VideoThumbState> = emptyMap(),
-        val videoInfo: Map<String, MediaInfoState> = emptyMap(),
-        val audioInfo: Map<String, MediaInfoState> = emptyMap(),
-    ) : UiState
+        val videoThumbs: Map<String, VideoThumbState>,
+        val videoInfo: Map<String, MediaInfoState>,
+        val audioInfo: Map<String, MediaInfoState>,
+    ) : UiState {
+        companion object {
+            fun default() = State(
+                loading = true,
+                service = "",
+                id = "",
+                postId = "",
+                post = null,
+                showButtonTranslate = false,
+                contentBlocks = null,
+                commentDomains = emptyList(),
+                profile = null,
+                showBarCreator = false,
+                isFavoriteShowButton = false,
+                isFavorite = false,
+                favoriteActionLoading = false,
+                translateExpanded = false,
+                translateLoading = false,
+                translateText = null,
+                translateError = null,
+                uiSettingModel = UiSettingModel(),
+                videoThumbs = emptyMap(),
+                videoInfo = emptyMap(),
+                audioInfo = emptyMap(),
+            )
+        }
+    }
 
     sealed interface Event : UiEvent {
         data object Retry : Event
