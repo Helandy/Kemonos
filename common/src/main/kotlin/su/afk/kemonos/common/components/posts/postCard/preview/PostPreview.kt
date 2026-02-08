@@ -1,13 +1,8 @@
-package su.afk.kemonos.common.components.posts.postCard
+package su.afk.kemonos.common.components.posts.postCard.preview
 
 import android.graphics.Bitmap
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.produceState
@@ -18,6 +13,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.withContext
 import su.afk.kemonos.common.R
 import su.afk.kemonos.common.components.posts.postCard.model.PreviewState
@@ -57,7 +53,7 @@ internal fun PostPreview(
                 if (path.isBlank()) return@produceState
 
                 /** если быстро скроллят — отменится, и диск не перегружается */
-                kotlinx.coroutines.delay(200)
+                delay(200)
 
                 value = withContext(Dispatchers.IO) {
                     cache.getByPath(path)
@@ -87,25 +83,5 @@ internal fun PostPreview(
                 PreviewPlaceholder(textPreview.clearHtml())
             }
         }
-    }
-}
-
-@Composable
-internal fun CornerBadge(
-    text: String,
-    modifier: Modifier = Modifier
-) {
-    Surface(
-        modifier = modifier,
-        shape = RoundedCornerShape(99.dp),
-        color = MaterialTheme.colorScheme.surface.copy(alpha = 0.85f),
-        tonalElevation = 2.dp,
-    ) {
-        Text(
-            text = text,
-            style = MaterialTheme.typography.labelSmall,
-            modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
-            maxLines = 1,
-        )
     }
 }

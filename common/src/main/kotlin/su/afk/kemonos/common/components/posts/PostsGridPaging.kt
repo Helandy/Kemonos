@@ -12,9 +12,9 @@ import su.afk.kemonos.common.components.posts.postCard.PostCard
 import su.afk.kemonos.common.paging.PagingAppendStateItem
 import su.afk.kemonos.domain.models.ErrorItem
 import su.afk.kemonos.domain.models.PostDomain
+import su.afk.kemonos.preferences.ui.PostsSize.Companion.toArrangement
+import su.afk.kemonos.preferences.ui.PostsSize.Companion.toDp
 import su.afk.kemonos.preferences.ui.UiSettingModel
-import su.afk.kemonos.preferences.ui.toArrangement
-import su.afk.kemonos.preferences.ui.toDp
 
 @Composable
 internal fun PostsGridPaging(
@@ -42,8 +42,7 @@ internal fun PostsGridPaging(
                 post = post,
                 onClick = { postClick(post) },
                 showFavCount = showFavCount,
-                dateMode = uiSettingModel.dateFormatMode,
-                blurImage = uiSettingModel.blurImages
+                uiSettingModel = uiSettingModel,
             )
         }
 
