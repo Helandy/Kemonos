@@ -1,5 +1,6 @@
 package su.afk.kemonos.creatorPost.presenter.view.incompleteRewards
 
+import android.util.Log
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -12,17 +13,40 @@ import su.afk.kemonos.domain.models.IncompleteRewards
 
 @Composable
 internal fun incompleteRewardsBlock(rewards: IncompleteRewards) {
-    val parts = listOfNotNull(
+
+    Log.e("super", "rewards $rewards")
+    val missingParts = listOfNotNull(
         rewards.mediaCount?.let { "$it media" },
         rewards.photoCount?.let { "$it photos" },
         rewards.videoCount?.let { "$it videos" },
     ).joinToString(", ")
 
-    val priceText = rewards.price?.let { "$$it" } ?: "unknown price"
+    val downloadedText = run {
+        val complete = rewards.completeCount
+        val total = rewards.incompleteCount
+        if (complete != null && total != null) {
+            "Downloaded $complete of $total"
+        } else {
+            null
+        }
+    }
+
+    val priceText = rewards.price?.let { "$$it" }
 
     Text(
-        text = "This post is missing paid rewards from a higher tier.\n\n" +
-                "Missing $parts for $priceText.",
+        text = buildString {
+            append("This post is missing paid rewards from a higher tier.\n\n")
+
+            if (missingParts.isNotEmpty()) {
+                append("Missing $missingParts")
+                if (priceText != null) append(" for $priceText")
+                append(".\n")
+            }
+
+            if (downloadedText != null) {
+                append(downloadedText)
+            }
+        },
         color = MaterialTheme.colorScheme.error,
         style = MaterialTheme.typography.labelLarge,
         modifier = Modifier.padding(8.dp)

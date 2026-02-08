@@ -3,6 +3,7 @@ package su.afk.kemonos.commonscreen.imageViewScreen
 import su.afk.kemonos.common.presenter.baseViewModel.UiEffect
 import su.afk.kemonos.common.presenter.baseViewModel.UiEvent
 import su.afk.kemonos.common.presenter.baseViewModel.UiState
+import su.afk.kemonos.domain.models.ErrorItem
 
 internal class ImageViewState {
 
@@ -11,6 +12,9 @@ internal class ImageViewState {
         val imageUrl: String? = null,
 
         val requestId: String = java.util.UUID.randomUUID().toString(),
+        val reloadKey: Int = 0,
+        val isLoadError: Boolean = false,
+        val errorItem: ErrorItem? = null,
 
         val bytesRead: Long = 0L,
         val contentLength: Long = -1L,
@@ -20,7 +24,8 @@ internal class ImageViewState {
     sealed class Event : UiEvent {
         object Back : Event()
         data object ImageLoaded : Event()
-        data object ImageFailed : Event()
+        data class ImageFailed(val throwable: Throwable?) : Event()
+        data object Retry : Event()
     }
 
     sealed interface Effect : UiEffect {

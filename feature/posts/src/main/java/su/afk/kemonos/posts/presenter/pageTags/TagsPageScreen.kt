@@ -22,9 +22,9 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import su.afk.kemonos.common.R
+import su.afk.kemonos.common.components.button.SiteToggleFab
 import su.afk.kemonos.common.presenter.baseScreen.BaseScreen
 import su.afk.kemonos.common.presenter.baseScreen.TopBarScroll
-import su.afk.kemonos.common.presenter.changeSite.SiteToggleFab
 import su.afk.kemonos.posts.api.tags.Tags
 
 @OptIn(ExperimentalMaterial3Api::class)

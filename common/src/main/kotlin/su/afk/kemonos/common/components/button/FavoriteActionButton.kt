@@ -1,13 +1,16 @@
 package su.afk.kemonos.common.components.button
 
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.outlined.FavoriteBorder
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.SmallFloatingActionButton
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import su.afk.kemonos.common.utilsUI.favoriteColor
 
 @Composable
@@ -16,15 +19,14 @@ fun FavoriteActionButton(
     isFavorite: Boolean,
     onFavoriteClick: () -> Unit,
 ) {
-    SmallFloatingActionButton(
-        onClick = {
-            if (enabled) onFavoriteClick()
-        },
+    FloatingActionButton(
+        onClick = { if (enabled) onFavoriteClick() },
         containerColor = favoriteColor(isFavorite)
     ) {
         if (!enabled) {
             CircularProgressIndicator(
-                color = MaterialTheme.colorScheme.onSecondaryContainer
+                color = MaterialTheme.colorScheme.onSecondaryContainer,
+                modifier = Modifier.padding(4.dp)
             )
         } else {
             Icon(
@@ -39,7 +41,7 @@ fun FavoriteActionButton(
                 tint = if (isFavorite)
                     MaterialTheme.colorScheme.onSecondaryContainer
                 else
-                    MaterialTheme.colorScheme.onSurfaceVariant
+                    MaterialTheme.colorScheme.onSurface,
             )
         }
     }

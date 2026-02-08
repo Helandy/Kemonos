@@ -9,6 +9,7 @@ import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import su.afk.kemonos.network.BuildConfig
 import su.afk.kemonos.network.api.BaseUrlProvider
 import su.afk.kemonos.network.api.ReplaceBaseUrlInterceptor
 import su.afk.kemonos.network.api.SwitchingBaseUrlProvider
@@ -66,7 +67,14 @@ internal object NetworkModule {
     @Provides
     @Singleton
     fun provideLoggingInterceptor(): HttpLoggingInterceptor =
-        HttpLoggingInterceptor().apply { level = HttpLoggingInterceptor.Level.BODY }
+        HttpLoggingInterceptor().apply {
+            redactHeader("Cookie")
+            level = if (BuildConfig.DEBUG) {
+                HttpLoggingInterceptor.Level.BODY
+            } else {
+                HttpLoggingInterceptor.Level.NONE
+            }
+        }
 
 
     /** Для запроса инфы о видео */

@@ -36,8 +36,7 @@ internal fun PostsListPaging(
                 post = post,
                 onClick = { onPostClick(post) },
                 showFavCount = showFavCount,
-                dateMode = uiSettingModel.dateFormatMode,
-                blurImage = uiSettingModel.blurImages
+                uiSettingModel = uiSettingModel
             )
         }
 

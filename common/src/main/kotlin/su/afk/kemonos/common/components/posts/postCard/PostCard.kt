@@ -3,10 +3,7 @@ package su.afk.kemonos.common.components.posts.postCard
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -17,19 +14,21 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import su.afk.kemonos.common.R
+import su.afk.kemonos.common.components.posts.postCard.preview.PostPreview
 import su.afk.kemonos.common.di.LocalDomainResolver
 import su.afk.kemonos.common.util.toUiDateTime
 import su.afk.kemonos.common.utilsUI.KemonosPreviewScreen
 import su.afk.kemonos.domain.models.PostDomain
-import su.afk.kemonos.preferences.ui.DateFormatMode
+import su.afk.kemonos.preferences.ui.PostsSize.Companion.isSmall
+import su.afk.kemonos.preferences.ui.PostsSize.Companion.toPaddingInCornerBadge
+import su.afk.kemonos.preferences.ui.UiSettingModel
 
 @Composable
 fun PostCard(
     post: PostDomain,
     onClick: () -> Unit,
     showFavCount: Boolean = false,
-    dateMode: DateFormatMode,
-    blurImage: Boolean,
+    uiSettingModel: UiSettingModel,
 ) {
     val resolver = LocalDomainResolver.current
     val imgBaseUrl = remember(post.service) { resolver.imageBaseUrlByService(post.service) }
@@ -60,24 +59,33 @@ fun PostCard(
                 imgBaseUrl = imgBaseUrl,
                 title = post.title,
                 textPreview = post.substring,
-                blurImage = blurImage,
+                blurImage = uiSettingModel.blurImages,
             )
 
+            /** Число лайков */
             if (showFavCount && meta.favCount > 0) {
                 CornerBadge(
                     text = "❤ ${meta.favCount}",
-                    modifier = Modifier
-                        .align(Alignment.TopEnd)
-                        .padding(6.dp)
+                    modifier = Modifier.align(Alignment.TopEnd)
+                        .padding(uiSettingModel.postsSize.toPaddingInCornerBadge())
                 )
             }
 
+            /** Число видео */
             if (meta.videoCount > 0) {
                 CornerBadge(
                     text = "🎬 ${meta.videoCount}",
-                    modifier = Modifier
-                        .align(Alignment.BottomEnd)
-                        .padding(6.dp)
+                    modifier = Modifier.align(Alignment.BottomEnd)
+                        .padding(uiSettingModel.postsSize.toPaddingInCornerBadge())
+                )
+            }
+
+            /** Число вложений */
+            if (post.attachments.isNotEmpty() && uiSettingModel.postsSize.isSmall()) {
+                CornerBadge(
+                    text = "\uD83D\uDCCE ${post.attachments.size}",
+                    modifier = Modifier.align(Alignment.BottomStart)
+                        .padding(uiSettingModel.postsSize.toPaddingInCornerBadge())
                 )
             }
         }
@@ -98,13 +106,13 @@ fun PostCard(
 
             Row {
                 Text(
-                    text = "📅 ${post.published?.toUiDateTime(dateMode)} ",
+                    text = "📅 ${post.published?.toUiDateTime(uiSettingModel.dateFormatMode)} ",
                     style = MaterialTheme.typography.labelSmall,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
                 )
 
-                if (post.attachments.isNotEmpty()) {
+                if (post.attachments.isNotEmpty() && uiSettingModel.postsSize.isSmall().not()) {
                     Text(
                         text = stringResource(R.string.attachments_count, post.attachments.size),
                         style = MaterialTheme.typography.labelSmall,
@@ -116,6 +124,26 @@ fun PostCard(
     }
 }
 
+@Composable
+internal fun CornerBadge(
+    text: String,
+    modifier: Modifier = Modifier
+) {
+    Surface(
+        modifier = modifier,
+        shape = RoundedCornerShape(99.dp),
+        color = MaterialTheme.colorScheme.surface.copy(alpha = 0.85f),
+        tonalElevation = 2.dp,
+    ) {
+        Text(
+            text = text,
+            style = MaterialTheme.typography.labelSmall,
+            modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
+            maxLines = 1,
+        )
+    }
+}
+
 @Preview("PreviewPostCard")
 @Composable
 private fun PreviewPostCard() {
@@ -124,8 +152,7 @@ private fun PreviewPostCard() {
             post = PostDomain.default(),
             onClick = {},
             showFavCount = false,
-            dateMode = DateFormatMode.DD_MM_YYYY,
-            blurImage = false,
+            uiSettingModel = UiSettingModel()
         )
     }
 }

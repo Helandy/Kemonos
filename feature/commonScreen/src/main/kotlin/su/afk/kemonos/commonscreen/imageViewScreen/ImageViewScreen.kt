@@ -46,7 +46,6 @@ internal fun ImageViewScreen(state: ImageViewState.State, onEvent: (Event) -> Un
     val maxScale: Float = 4f
     val doubleTapScale: Float = 3f
 
-    var retryKey by remember { mutableIntStateOf(0) }
     var container by remember { mutableStateOf(IntSize.Zero) }
 
     /** «живые» значения под пальцами */
@@ -97,14 +96,15 @@ internal fun ImageViewScreen(state: ImageViewState.State, onEvent: (Event) -> Un
     val context = LocalContext.current
     val imageLoader = LocalAppImageLoader.current
 
-    val headers = remember(state.requestId) {
+    val headers = remember(state.requestId, state.reloadKey) {
         NetworkHeaders.Builder()
             .set(IMAGE_PROGRESS_REQUEST_ID_HEADER, state.requestId)
+            .set("X-Kemonos-Retry-Key", state.reloadKey.toString())
             .build()
     }
 
-    /** пересоздаём запрос при retryKey++ */
-    val request = remember(state.imageUrl, retryKey, container) {
+    /** пересоздаём запрос при Retry из ViewModel */
+    val request = remember(state.imageUrl, state.reloadKey, container) {
         val w = (container.width * maxScale).roundToInt().coerceAtLeast(1)
         val h = (container.height * maxScale).roundToInt().coerceAtLeast(1)
 
@@ -137,86 +137,94 @@ internal fun ImageViewScreen(state: ImageViewState.State, onEvent: (Event) -> Un
             }
             .transformable(transformState)
     ) {
-        SubcomposeAsyncImage(
-            model = request,
-            imageLoader = imageLoader,
-            contentDescription = null,
-            contentScale = ContentScale.Fit,
-            modifier = Modifier
-                .fillMaxSize()
-                .graphicsLayer(
-                    scaleX = scale,
-                    scaleY = scale,
-                    translationX = offsetX,
-                    translationY = offsetY,
-                    rotationZ = 0f
-                ),
-            success = {
-                LaunchedEffect(Unit) { onEvent(Event.ImageLoaded) }
-                SubcomposeAsyncImageContent()
-            },
-            loading = {
-                Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+        key(state.reloadKey) {
+            SubcomposeAsyncImage(
+                model = request,
+                imageLoader = imageLoader,
+                contentDescription = null,
+                contentScale = ContentScale.Fit,
+                onSuccess = {
+                    onEvent(Event.ImageLoaded)
+                },
+                onError = {
+                    onEvent(Event.ImageFailed(it.result.throwable))
+                },
+                modifier = Modifier
+                    .fillMaxSize()
+                    .graphicsLayer(
+                        scaleX = scale,
+                        scaleY = scale,
+                        translationX = offsetX,
+                        translationY = offsetY,
+                        rotationZ = 0f
+                    ),
+                success = { SubcomposeAsyncImageContent() },
+                loading = {
+                    Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                        Column(horizontalAlignment = Alignment.CenterHorizontally) {
 
-                        val isDeterminate = state.contentLength > 0L && state.bytesRead > 0L && state.progress > 0f
+                            val isDeterminate =
+                                state.contentLength > 0L && state.bytesRead > 0L && state.progress > 0f
 
-                        if (isDeterminate) {
-                            CircularProgressIndicator(
-                                progress = { state.progress },
-                                modifier = Modifier.size(72.dp),
-                                color = MaterialTheme.colorScheme.primary,
-                                strokeWidth = 6.dp,
-                                strokeCap = ProgressIndicatorDefaults.CircularDeterminateStrokeCap,
-                            )
-                        } else {
-                            CircularProgressIndicator(
-                                modifier = Modifier.size(72.dp),
-                                color = MaterialTheme.colorScheme.primary,
-                                strokeWidth = 6.dp,
-                                trackColor = ProgressIndicatorDefaults.circularIndeterminateTrackColor,
-                                strokeCap = ProgressIndicatorDefaults.CircularIndeterminateStrokeCap,
-                            )
-                        }
-
-                        Spacer(Modifier.height(12.dp))
-
-                        val shouldShowBytes =
-                            state.bytesRead > 0L || state.contentLength > 0L
-
-                        if (shouldShowBytes) {
-                            val text = buildString {
-                                if (state.bytesRead > 0L) {
-                                    append(formatBytes(state.bytesRead))
-                                }
-                                if (state.contentLength > 0L) {
-                                    if (state.bytesRead > 0L) append(" / ")
-                                    append(formatBytes(state.contentLength))
-                                }
+                            if (isDeterminate) {
+                                CircularProgressIndicator(
+                                    progress = { state.progress },
+                                    modifier = Modifier.size(72.dp),
+                                    color = MaterialTheme.colorScheme.primary,
+                                    strokeWidth = 6.dp,
+                                    strokeCap = ProgressIndicatorDefaults.CircularDeterminateStrokeCap,
+                                )
+                            } else {
+                                CircularProgressIndicator(
+                                    modifier = Modifier.size(72.dp),
+                                    color = MaterialTheme.colorScheme.primary,
+                                    strokeWidth = 6.dp,
+                                    trackColor = ProgressIndicatorDefaults.circularIndeterminateTrackColor,
+                                    strokeCap = ProgressIndicatorDefaults.CircularIndeterminateStrokeCap,
+                                )
                             }
 
-                            if (text.isNotBlank()) {
-                                Text(text = text, style = MaterialTheme.typography.bodyMedium)
+                            Spacer(Modifier.height(12.dp))
+
+                            val shouldShowBytes =
+                                state.bytesRead > 0L || state.contentLength > 0L
+
+                            if (shouldShowBytes) {
+                                val text = buildString {
+                                    if (state.bytesRead > 0L) {
+                                        append(formatBytes(state.bytesRead))
+                                    }
+                                    if (state.contentLength > 0L) {
+                                        if (state.bytesRead > 0L) append(" / ")
+                                        append(formatBytes(state.contentLength))
+                                    }
+                                }
+
+                                if (text.isNotBlank()) {
+                                    Text(text = text, style = MaterialTheme.typography.bodyMedium)
+                                }
+                            } else {
+                                Text(
+                                    text = stringResource(R.string.loading),
+                                    style = MaterialTheme.typography.bodyMedium
+                                )
                             }
-                        } else {
-                            Text(text = stringResource(R.string.loading), style = MaterialTheme.typography.bodyMedium)
                         }
                     }
+                },
+                error = {
+                    DefaultErrorContent(
+                        onBack = {
+                            onEvent(Event.Back)
+                        },
+                        errorItem = state.errorItem ?: ErrorItem(
+                            title = stringResource(R.string.err_title_generic),
+                            message = stringResource(R.string.err_msg_generic),
+                        ),
+                        onRetry = { onEvent(Event.Retry) }
+                    )
                 }
-            },
-            error = {
-                LaunchedEffect(Unit) { onEvent(Event.ImageFailed) }
-                DefaultErrorContent(
-                    onBack = {
-                        onEvent(Event.Back)
-                    },
-                    errorItem = ErrorItem(
-                        title = stringResource(R.string.err_title_generic),
-                        message = stringResource(R.string.err_msg_generic),
-                    ),
-                    onRetry = { retryKey++ }
-                )
-            }
-        )
+            )
+        }
     }
 }

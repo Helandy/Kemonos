@@ -50,19 +50,36 @@ enum class DateFormatMode(val pattern: String) {
             .format(DateTimeFormatter.ofPattern(pattern, locale))
 }
 
+/** Размер постов */
+enum class PostsSize {
+    SMALL,
+    MEDIUM,
+    LARGE;
 
-enum class PostsSize { SMALL, MEDIUM, LARGE }
+    companion object {
+        fun PostsSize.toDp() = when (this) {
+            SMALL -> 100.dp
+            MEDIUM -> 150.dp
+            LARGE -> 200.dp
+        }
 
-fun PostsSize.toDp() = when (this) {
-    PostsSize.SMALL -> 100.dp
-    PostsSize.MEDIUM -> 150.dp
-    PostsSize.LARGE -> 200.dp
-}
+        fun PostsSize.toArrangement() = when (this) {
+            SMALL -> 4.dp
+            MEDIUM -> 8.dp
+            LARGE -> 12.dp
+        }
 
-fun PostsSize.toArrangement() = when (this) {
-    PostsSize.SMALL -> 4.dp
-    PostsSize.MEDIUM -> 8.dp
-    PostsSize.LARGE -> 12.dp
+        fun PostsSize.isSmall() = when (this) {
+            SMALL -> true
+            else -> false
+        }
+
+        fun PostsSize.toPaddingInCornerBadge() = when (this) {
+            SMALL -> 4.dp
+            MEDIUM -> 6.dp
+            LARGE -> 8.dp
+        }
+    }
 }
 
 enum class DownloadFolderMode {
