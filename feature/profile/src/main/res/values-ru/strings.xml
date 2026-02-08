@@ -162,6 +162,8 @@
     <string name="settings_view_modes_section_title">Отображение</string>
 
     <string name="settings_ui_date_format_title">Формат даты</string>
+    <string name="settings_ui_app_language_title">Язык приложения</string>
+    <string name="settings_ui_app_language_subtitle">Открыть настройки языка Android для этого приложения</string>
 
     <string name="settings_cache_sizes_title">Кэш</string>
 

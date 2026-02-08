@@ -163,6 +163,8 @@
 
 
     <string name="settings_ui_date_format_title">Date format</string>
+    <string name="settings_ui_app_language_title">App language</string>
+    <string name="settings_ui_app_language_subtitle">Open Android language settings for this app</string>
 
     <string name="settings_cache_sizes_title">Cache</string>
 

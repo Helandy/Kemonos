@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import su.afk.kemonos.preferences.ui.DateFormatMode
@@ -14,6 +15,8 @@ import su.afk.kemonos.profile.presenter.setting.view.uiSetting.SwitchRow
 import su.afk.kemonos.profile.presenter.setting.view.uiSetting.common.SectionSpacer
 import su.afk.kemonos.profile.presenter.setting.view.uiSetting.common.SettingsSectionTitle
 import su.afk.kemonos.profile.presenter.setting.view.uiSetting.date.DateFormatRow
+import su.afk.kemonos.profile.presenter.setting.view.uiSetting.language.AppLanguageSettingsRow
+import su.afk.kemonos.profile.presenter.setting.view.uiSetting.language.openAppLanguageSettingsSafely
 
 @Composable
 internal fun GeneralSettingsSection(
@@ -24,9 +27,19 @@ internal fun GeneralSettingsSection(
     randomButtonPlace: RandomButtonPlacement,
     onRandomButtonPlace: (RandomButtonPlacement) -> Unit,
 ) {
+    val context = LocalContext.current
+
     SectionSpacer()
     SettingsSectionTitle(text = stringResource(R.string.settings_ui_general_title))
     Spacer(Modifier.height(6.dp))
+
+    AppLanguageSettingsRow(
+        title = stringResource(R.string.settings_ui_app_language_title),
+        subtitle = stringResource(R.string.settings_ui_app_language_subtitle),
+        onClick = { context.openAppLanguageSettingsSafely() }
+    )
+
+    Spacer(Modifier.height(8.dp))
 
     DateFormatRow(
         title = stringResource(R.string.settings_ui_date_format_title),
