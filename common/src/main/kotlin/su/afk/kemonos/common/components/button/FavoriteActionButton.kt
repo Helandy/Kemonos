@@ -5,9 +5,9 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.outlined.FavoriteBorder
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.SmallFloatingActionButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -19,7 +19,7 @@ fun FavoriteActionButton(
     isFavorite: Boolean,
     onFavoriteClick: () -> Unit,
 ) {
-    SmallFloatingActionButton(
+    FloatingActionButton(
         onClick = { if (enabled) onFavoriteClick() },
         containerColor = favoriteColor(isFavorite)
     ) {
@@ -41,7 +41,7 @@ fun FavoriteActionButton(
                 tint = if (isFavorite)
                     MaterialTheme.colorScheme.onSecondaryContainer
                 else
-                    MaterialTheme.colorScheme.onSurfaceVariant
+                    MaterialTheme.colorScheme.onSurfaceVariant,
             )
         }
     }
