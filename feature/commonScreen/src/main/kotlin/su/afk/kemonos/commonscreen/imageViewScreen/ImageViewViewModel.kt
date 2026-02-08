@@ -1,5 +1,6 @@
 package su.afk.kemonos.commonscreen.imageViewScreen
 
+import android.util.Log
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -58,11 +59,12 @@ internal class ImageViewViewModel @Inject constructor(
 
             Event.Retry -> {
                 progressStore.clear(state.value.requestId)
+
+                Log.e("super", "retry")
                 setState {
                     copy(
                         loading = true,
                         isLoadError = false,
-                        errorItem = null,
                         reloadKey = reloadKey + 1,
                         bytesRead = 0L,
                         contentLength = -1L,
