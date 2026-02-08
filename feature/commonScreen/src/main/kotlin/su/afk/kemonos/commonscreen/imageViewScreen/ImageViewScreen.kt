@@ -46,7 +46,6 @@ internal fun ImageViewScreen(state: ImageViewState.State, onEvent: (Event) -> Un
     val maxScale: Float = 4f
     val doubleTapScale: Float = 3f
 
-    var retryKey by remember { mutableIntStateOf(0) }
     var container by remember { mutableStateOf(IntSize.Zero) }
 
     /** «живые» значения под пальцами */
@@ -103,8 +102,8 @@ internal fun ImageViewScreen(state: ImageViewState.State, onEvent: (Event) -> Un
             .build()
     }
 
-    /** пересоздаём запрос при retryKey++ */
-    val request = remember(state.imageUrl, retryKey, container) {
+    /** пересоздаём запрос при Retry из ViewModel */
+    val request = remember(state.imageUrl, state.reloadKey, container) {
         val w = (container.width * maxScale).roundToInt().coerceAtLeast(1)
         val h = (container.height * maxScale).roundToInt().coerceAtLeast(1)
 
@@ -142,6 +141,12 @@ internal fun ImageViewScreen(state: ImageViewState.State, onEvent: (Event) -> Un
             imageLoader = imageLoader,
             contentDescription = null,
             contentScale = ContentScale.Fit,
+            onSuccess = {
+                onEvent(Event.ImageLoaded)
+            },
+            onError = {
+                onEvent(Event.ImageFailed(it.result.throwable))
+            },
             modifier = Modifier
                 .fillMaxSize()
                 .graphicsLayer(
@@ -151,10 +156,7 @@ internal fun ImageViewScreen(state: ImageViewState.State, onEvent: (Event) -> Un
                     translationY = offsetY,
                     rotationZ = 0f
                 ),
-            success = {
-                LaunchedEffect(Unit) { onEvent(Event.ImageLoaded) }
-                SubcomposeAsyncImageContent()
-            },
+            success = { SubcomposeAsyncImageContent() },
             loading = {
                 Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                     Column(horizontalAlignment = Alignment.CenterHorizontally) {
@@ -205,16 +207,15 @@ internal fun ImageViewScreen(state: ImageViewState.State, onEvent: (Event) -> Un
                 }
             },
             error = {
-                LaunchedEffect(Unit) { onEvent(Event.ImageFailed) }
                 DefaultErrorContent(
                     onBack = {
                         onEvent(Event.Back)
                     },
-                    errorItem = ErrorItem(
+                    errorItem = state.errorItem ?: ErrorItem(
                         title = stringResource(R.string.err_title_generic),
                         message = stringResource(R.string.err_msg_generic),
                     ),
-                    onRetry = { retryKey++ }
+                    onRetry = { onEvent(Event.Retry) }
                 )
             }
         )

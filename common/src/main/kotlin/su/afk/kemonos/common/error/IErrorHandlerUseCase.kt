@@ -28,23 +28,37 @@ class ErrorHandlerUseCaseImpl @Inject constructor(
         val base = when (t) {
             is HttpException -> parseHttp(t)
 
-            is SocketTimeoutException -> ErrorItem(
-                title = strings.get(R.string.err_title_timeout),
-                message = strings.get(R.string.err_msg_timeout),
-                cause = t.toString()
-            )
+            // Coil network errors are not retrofit2.HttpException.
+            // We parse status code from message ("HTTP 500") and map it consistently.
+            else -> {
+                val coilHttpCode = t.extractCoilHttpCode()
+                when {
+                    coilHttpCode != null -> ErrorItem(
+                        title = httpTitle(coilHttpCode),
+                        message = httpMessage(coilHttpCode),
+                        code = coilHttpCode,
+                        cause = t.toString()
+                    )
 
-            is IOException -> ErrorItem(
-                title = strings.get(R.string.err_title_no_connection),
-                message = strings.get(R.string.err_msg_no_connection),
-                cause = t.toString()
-            )
+                    t is SocketTimeoutException -> ErrorItem(
+                        title = strings.get(R.string.err_title_timeout),
+                        message = strings.get(R.string.err_msg_timeout),
+                        cause = t.toString()
+                    )
 
-            else -> ErrorItem(
-                title = strings.get(R.string.err_title_generic),
-                message = t.message?.takeIf { it.isNotBlank() } ?: strings.get(R.string.err_msg_generic),
-                cause = t.toString()
-            )
+                    t is IOException -> ErrorItem(
+                        title = strings.get(R.string.err_title_no_connection),
+                        message = strings.get(R.string.err_msg_no_connection),
+                        cause = t.toString()
+                    )
+
+                    else -> ErrorItem(
+                        title = strings.get(R.string.err_title_generic),
+                        message = t.message?.takeIf { it.isNotBlank() } ?: strings.get(R.string.err_msg_generic),
+                        cause = t.toString()
+                    )
+                }
+            }
         }
 
         val item = base.copy(retryKey = retryKey)
@@ -110,6 +124,18 @@ class ErrorHandlerUseCaseImpl @Inject constructor(
         504 -> strings.get(R.string.err_msg_gateway_timeout_504)
         else -> strings.get(R.string.err_msg_http_generic)
     }
+}
+
+private fun Throwable.extractCoilHttpCode(): Int? {
+    val isCoilHttp = this::class.qualifiedName == "coil3.network.HttpException"
+    if (!isCoilHttp) return null
+
+    val msg = message.orEmpty()
+    return """\b(\d{3})\b""".toRegex()
+        .find(msg)
+        ?.groupValues
+        ?.getOrNull(1)
+        ?.toIntOrNull()
 }
 
 /** errorBody можно прочитать только 1 раз — делаем безопасно */

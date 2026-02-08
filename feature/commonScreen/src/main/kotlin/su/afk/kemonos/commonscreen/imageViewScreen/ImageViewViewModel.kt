@@ -40,12 +40,35 @@ internal class ImageViewViewModel @Inject constructor(
 
             Event.ImageLoaded -> {
                 progressStore.clear(state.value.requestId)
-                setState { copy(loading = false) }
+                setState { copy(loading = false, isLoadError = false, errorItem = null) }
             }
 
-            Event.ImageFailed -> {
+            is Event.ImageFailed -> {
                 progressStore.clear(state.value.requestId)
-                setState { copy(loading = false) }
+                val throwable = event.throwable ?: IllegalStateException("Image loading failed")
+                val parsed = errorHandler.parse(throwable, navigate = false)
+                setState {
+                    copy(
+                        loading = false,
+                        isLoadError = true,
+                        errorItem = parsed,
+                    )
+                }
+            }
+
+            Event.Retry -> {
+                progressStore.clear(state.value.requestId)
+                setState {
+                    copy(
+                        loading = true,
+                        isLoadError = false,
+                        errorItem = null,
+                        reloadKey = reloadKey + 1,
+                        bytesRead = 0L,
+                        contentLength = -1L,
+                        progress = 0f,
+                    )
+                }
             }
         }
     }
@@ -57,6 +80,8 @@ internal class ImageViewViewModel @Inject constructor(
             copy(
                 imageUrl = imageUrl,
                 loading = true,
+                isLoadError = false,
+                errorItem = null,
                 bytesRead = 0L,
                 contentLength = -1L,
                 progress = 0f,
