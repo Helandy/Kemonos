@@ -91,6 +91,8 @@ data class IncompleteRewards(
     val mediaCount: Int?,
     val photoCount: Int?,
     val videoCount: Int?,
+    val completeCount: Int?,
+    val incompleteCount: Int?,
 )
 
 @Serializable

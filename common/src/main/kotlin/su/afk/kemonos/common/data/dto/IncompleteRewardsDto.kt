@@ -12,6 +12,10 @@ data class IncompleteRewardsDto(
     val photoCount: Int?,
     @SerializedName("video_count")
     val videoCount: Int?,
+    @SerializedName("complete")
+    val complete: Int?,
+    @SerializedName("incomplete")
+    val incomplete: Int?
 ) {
     companion object {
         fun IncompleteRewardsDto.toDomain(): IncompleteRewards =
@@ -20,6 +24,8 @@ data class IncompleteRewardsDto(
                 mediaCount = this.mediaCount,
                 photoCount = this.photoCount,
                 videoCount = this.videoCount,
+                completeCount = this.complete,
+                incompleteCount = this.incomplete
             )
     }
 }

@@ -21,10 +21,10 @@ import androidx.paging.LoadState
 import androidx.paging.compose.collectAsLazyPagingItems
 import su.afk.kemonos.common.R
 import su.afk.kemonos.common.components.button.RandomButton
+import su.afk.kemonos.common.components.button.SiteToggleFab
 import su.afk.kemonos.common.components.posts.PostsContentPaging
 import su.afk.kemonos.common.presenter.baseScreen.BaseScreen
 import su.afk.kemonos.common.presenter.baseScreen.TopBarScroll
-import su.afk.kemonos.common.presenter.changeSite.SiteToggleFab
 import su.afk.kemonos.preferences.ui.RandomButtonPlacement
 
 @OptIn(ExperimentalMaterial3Api::class)

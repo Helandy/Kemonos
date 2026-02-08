@@ -41,7 +41,7 @@ fun FavoriteActionButton(
                 tint = if (isFavorite)
                     MaterialTheme.colorScheme.onSecondaryContainer
                 else
-                    MaterialTheme.colorScheme.onSurfaceVariant,
+                    MaterialTheme.colorScheme.onSurface,
             )
         }
     }
