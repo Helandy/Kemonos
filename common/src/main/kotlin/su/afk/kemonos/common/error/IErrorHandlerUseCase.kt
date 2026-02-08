@@ -31,16 +31,19 @@ class ErrorHandlerUseCaseImpl @Inject constructor(
             is SocketTimeoutException -> ErrorItem(
                 title = strings.get(R.string.err_title_timeout),
                 message = strings.get(R.string.err_msg_timeout),
+                cause = t.toString()
             )
 
             is IOException -> ErrorItem(
                 title = strings.get(R.string.err_title_no_connection),
                 message = strings.get(R.string.err_msg_no_connection),
+                cause = t.toString()
             )
 
             else -> ErrorItem(
                 title = strings.get(R.string.err_title_generic),
                 message = t.message?.takeIf { it.isNotBlank() } ?: strings.get(R.string.err_msg_generic),
+                cause = t.toString()
             )
         }
 

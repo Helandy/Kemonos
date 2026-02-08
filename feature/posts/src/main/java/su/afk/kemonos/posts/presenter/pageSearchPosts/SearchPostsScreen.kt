@@ -20,7 +20,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.paging.LoadState
 import androidx.paging.compose.collectAsLazyPagingItems
 import su.afk.kemonos.common.R
-import su.afk.kemonos.common.components.button.RandomFab
+import su.afk.kemonos.common.components.button.RandomButton
 import su.afk.kemonos.common.components.posts.PostsContentPaging
 import su.afk.kemonos.common.presenter.baseScreen.BaseScreen
 import su.afk.kemonos.common.presenter.baseScreen.TopBarScroll
@@ -92,7 +92,7 @@ internal fun SearchPostsScreen(
         },
         floatingActionButtonEnd = {
             if (showRandomFab) {
-                RandomFab(
+                RandomButton(
                     enabled = !isBusy,
                     onClick = { viewModel.randomPost() }
                 )

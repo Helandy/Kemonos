@@ -87,7 +87,7 @@ data class VideoDomain(
 
 @Serializable
 data class IncompleteRewards(
-    val price: Int?,
+    val price: Double?,
     val mediaCount: Int?,
     val photoCount: Int?,
     val videoCount: Int?,

@@ -5,7 +5,7 @@ import su.afk.kemonos.domain.models.IncompleteRewards
 
 data class IncompleteRewardsDto(
     @SerializedName("price")
-    val price: Int?,
+    val price: Double?,
     @SerializedName("media_count")
     val mediaCount: Int?,
     @SerializedName("photo_count")

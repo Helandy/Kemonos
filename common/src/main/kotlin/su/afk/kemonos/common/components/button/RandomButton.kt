@@ -16,7 +16,7 @@ import androidx.compose.ui.unit.dp
 import su.afk.kemonos.common.R
 
 @Composable
-fun RandomFab(
+fun RandomButton(
     enabled: Boolean,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
