@@ -6,6 +6,8 @@ import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import su.afk.kemonos.preferences.GetCurrentSiteRootUrlUseCase
 import su.afk.kemonos.preferences.IGetCurrentSiteRootUrlUseCase
+import su.afk.kemonos.preferences.favoriteProfiles.FavoriteProfilesFiltersUseCase
+import su.afk.kemonos.preferences.favoriteProfiles.IFavoriteProfilesFiltersUseCase
 import su.afk.kemonos.preferences.site.ISelectedSiteUseCase
 import su.afk.kemonos.preferences.site.SelectedSiteUseCase
 import su.afk.kemonos.preferences.siteUrl.GetFlowBaseUrlPrefsUseCase
@@ -42,4 +44,10 @@ internal interface UseCaseModule {
     @Binds
     @Singleton
     fun bindUiPrefsUseCase(impl: UiSettingUseCase): IUiSettingUseCase
+
+    @Binds
+    @Singleton
+    fun bindFavoriteProfilesFiltersUseCase(
+        impl: FavoriteProfilesFiltersUseCase
+    ): IFavoriteProfilesFiltersUseCase
 }

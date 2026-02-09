@@ -14,9 +14,11 @@ import su.afk.kemonos.domain.SelectedSite
 import su.afk.kemonos.domain.models.creator.FavoriteArtist
 import su.afk.kemonos.navigation.NavigationManager
 import su.afk.kemonos.navigation.storage.NavigationStorage
+import su.afk.kemonos.preferences.favoriteProfiles.IFavoriteProfilesFiltersUseCase
 import su.afk.kemonos.preferences.site.ISelectedSiteUseCase
 import su.afk.kemonos.preferences.ui.IUiSettingUseCase
 import su.afk.kemonos.profile.api.domain.IGetFavoriteArtistsUseCase
+import su.afk.kemonos.profile.api.domain.favoriteProfiles.FavoriteSortedType
 import su.afk.kemonos.profile.domain.favorites.creator.GetFavoriteArtistsPagingUseCase
 import su.afk.kemonos.profile.presenter.favoriteProfiles.FavoriteProfilesState.*
 import su.afk.kemonos.profile.utils.Const.KEY_SELECT_SITE
@@ -27,6 +29,7 @@ internal class FavoriteProfilesViewModel @Inject constructor(
     private val getFavoriteArtistsUseCase: IGetFavoriteArtistsUseCase,
     private val getFavoriteArtistsPagingUseCase: GetFavoriteArtistsPagingUseCase,
     private val selectedSiteUseCase: ISelectedSiteUseCase,
+    private val favoriteProfilesFiltersUseCase: IFavoriteProfilesFiltersUseCase,
     private val navManager: NavigationManager,
     private val creatorProfileNavigator: ICreatorProfileNavigator,
     private val navigationStorage: NavigationStorage,
@@ -54,18 +57,22 @@ internal class FavoriteProfilesViewModel @Inject constructor(
 
             is Event.ServiceSelected -> {
                 setState { copy(selectedService = event.value) }
+                saveSelectedService(event.value)
                 requestPaging()
                 setEffect(Effect.ScrollToTop)
             }
 
             is Event.SortSelected -> {
                 setState { copy(sortedType = event.value) }
+                saveSortedType(event.value)
                 requestPaging()
                 setEffect(Effect.ScrollToTop)
             }
 
             Event.ToggleSortOrder -> {
-                setState { copy(sortAscending = !sortAscending) }
+                val newSortAscending = !currentState.sortAscending
+                setState { copy(sortAscending = newSortAscending) }
+                saveSortAscending(newSortAscending)
                 requestPaging()
                 setEffect(Effect.ScrollToTop)
             }
@@ -111,7 +118,18 @@ internal class FavoriteProfilesViewModel @Inject constructor(
         selectedSiteUseCase.setSite(site)
         selectedSiteUseCase.selectedSite.first { it == site }
 
-        setState { copy(selectedSite = site) }
+        val savedFilters = favoriteProfilesFiltersUseCase.read(site)
+        val restoredSortType = runCatching {
+            enumValueOf<FavoriteSortedType>(savedFilters.sortedTypeName)
+        }.getOrDefault(FavoriteSortedType.NewPostsDate)
+        setState {
+            copy(
+                selectedSite = site,
+                selectedService = savedFilters.selectedService,
+                sortedType = restoredSortType,
+                sortAscending = savedFilters.sortAscending
+            )
+        }
 
         // 1) сначала обновляем БД сетью (если нужно)
         load(refresh = false)
@@ -165,6 +183,18 @@ internal class FavoriteProfilesViewModel @Inject constructor(
         }
     }
 
+    private fun saveSelectedService(value: String) = viewModelScope.launch {
+        favoriteProfilesFiltersUseCase.setSelectedService(currentState.selectedSite, value)
+    }
+
+    private fun saveSortedType(value: FavoriteSortedType) = viewModelScope.launch {
+        favoriteProfilesFiltersUseCase.setSortedTypeName(currentState.selectedSite, value.name)
+    }
+
+    private fun saveSortAscending(value: Boolean) = viewModelScope.launch {
+        favoriteProfilesFiltersUseCase.setSortAscending(currentState.selectedSite, value)
+    }
+
     override fun onRetry() {
         onEvent(Event.Retry)
     }
@@ -179,4 +209,3 @@ internal class FavoriteProfilesViewModel @Inject constructor(
         )
     }
 }
-
