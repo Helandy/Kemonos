@@ -24,8 +24,10 @@ internal class CreatorsRepository @Inject constructor(
 ) : ICreatorsRepository {
 
     override suspend fun getCreators(): List<Creators> {
+        val site = selectedSite.getSite()
+
         val cached = storeCreatorsUseCase.searchCreators(
-            site = selectedSite.getSite(),
+            site = site,
             service = "Services",
             query = "",
             sort = CreatorsSort.POPULARITY,
@@ -34,7 +36,7 @@ internal class CreatorsRepository @Inject constructor(
             offset = 0
         )
 
-        val isFresh = storeCreatorsUseCase.isCreatorsCacheFresh(site = selectedSite.getSite())
+        val isFresh = storeCreatorsUseCase.isCreatorsCacheFresh(site = site)
         if (isFresh && cached.isNotEmpty()) return cached
 
         val fromNet = try {
@@ -45,7 +47,7 @@ internal class CreatorsRepository @Inject constructor(
         }
 
         if (fromNet.isNotEmpty()) {
-            storeCreatorsUseCase.updateCreators(site = selectedSite.getSite(), creators = fromNet)
+            storeCreatorsUseCase.updateCreators(site = site, creators = fromNet)
             return fromNet
         }
 
@@ -53,12 +55,14 @@ internal class CreatorsRepository @Inject constructor(
     }
 
     override suspend fun refreshCreatorsIfNeeded(): Boolean {
-        if (storeCreatorsUseCase.isCreatorsCacheFresh(site = selectedSite.getSite())) return false
+        val site = selectedSite.getSite()
+
+        if (storeCreatorsUseCase.isCreatorsCacheFresh(site = site)) return false
 
         val fromNet = api.getCreators().call { list -> list.map { it.toDomain() } }
         if (fromNet.isEmpty()) return false
 
-        storeCreatorsUseCase.updateCreators(site = selectedSite.getSite(), creators = fromNet)
+        storeCreatorsUseCase.updateCreators(site = site, creators = fromNet)
         return true
     }
 
