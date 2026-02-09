@@ -9,7 +9,7 @@ appVersionName = "1.6"
 appVersionCode = "26"
 
 agp = "8.12.3"
-kotlin = "2.3.0"
+kotlin = "2.3.10"
 ksp = "2.3.4"
 
 # --- AndroidX
@@ -47,7 +47,7 @@ kotlinxSerializationJson = "1.10.0"
 
 # --- Media / Images / UI helpers
 coil3 = "3.3.0"
-media3 = "1.9.1"
+media3 = "1.9.2"
 accompanistSystemUiController = "0.36.0"
 multiplatformMarkdownRendererM3 = "0.39.2"
 

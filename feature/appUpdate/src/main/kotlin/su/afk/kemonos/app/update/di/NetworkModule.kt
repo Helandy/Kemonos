@@ -21,18 +21,14 @@ internal object NetworkModule {
     @Named("GitHubClient")
     fun provideGitHubClient(
         logging: HttpLoggingInterceptor,
-    ): OkHttpClient =
-        OkHttpClient.Builder()
-            .addInterceptor(logging)
-            .build()
+    ): OkHttpClient = OkHttpClient.Builder().addInterceptor(logging).build()
 
     @Provides
     @Singleton
     @Named("GitHubRetrofit")
     fun provideGitHubRetrofit(
         @Named("GitHubClient") client: OkHttpClient
-    ): Retrofit =
-        Retrofit.Builder()
+    ): Retrofit = Retrofit.Builder()
             .baseUrl("https://api.github.com/")
             .client(client)
             .addConverterFactory(GsonConverterFactory.create())

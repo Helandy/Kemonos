@@ -2,7 +2,7 @@ package su.afk.kemonos.app.update.data.dto
 
 import com.google.gson.annotations.SerializedName
 
-data class GitHubReleaseDto(
+internal data class GitHubReleaseDto(
     @SerializedName("tag_name")
     val tagName: String,
 

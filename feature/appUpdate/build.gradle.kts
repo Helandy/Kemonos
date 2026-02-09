@@ -24,11 +24,6 @@ dependencies {
     ksp(libs.dagger.hilt.compiler)
     implementation(libs.bundles.hilt)
 
-    implementation(platform(libs.androidx.compose.bom))
-    implementation(libs.bundles.compose.core)
-
-    implementation(libs.bundles.navigation3)
-
     implementation(libs.bundles.retrofit)
 
     implementation(project(":feature:appUpdate-api"))

@@ -47,7 +47,7 @@ internal class MainViewModel @Inject constructor(
             val uiSettings = uiSetting.prefs.first()
 
             if (uiSettings.skipApiCheckOnLogin.not()) {
-                gateUpdateThenInit()
+                checkGitHubUpdate()
                 clearCacheStorageUseCase.clear()
             } else {
                 setState { copy(isLoading = false, apiSuccess = true) }
@@ -56,7 +56,8 @@ internal class MainViewModel @Inject constructor(
         }
     }
 
-    private suspend fun gateUpdateThenInit() {
+    /** Проверка версии приложения github */
+    private suspend fun checkGitHubUpdate() {
         val updateInfo = updateGateDelegate.check()
         if (updateInfo != null) {
             setState { copy(updateInfo = updateInfo) }

@@ -5,7 +5,7 @@ import dagger.Module
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import su.afk.kemonos.app.update.data.AppUpdateRepository
-import su.afk.kemonos.app.update.data.IAppUpdateRepository
+import su.afk.kemonos.app.update.domain.repository.IAppUpdateRepository
 
 @Module
 @InstallIn(SingletonComponent::class)
