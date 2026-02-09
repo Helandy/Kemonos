@@ -6,25 +6,28 @@ import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.saveable.rememberSaveableStateHolder
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import su.afk.kemonos.common.presenter.baseScreen.BaseScreen
 import su.afk.kemonos.common.presenter.baseScreen.TopBarScroll
 import su.afk.kemonos.posts.presenter.pagePopularPosts.PopularPostsNavigation
 import su.afk.kemonos.posts.presenter.pageSearchPosts.SearchPostsNavigation
 import su.afk.kemonos.posts.presenter.pageTags.TagsPageNavigation
+import su.afk.kemonos.posts.presenter.pager.PostsPagerState.*
 import su.afk.kemonos.posts.presenter.pager.model.ALL_POSTS_PAGES
 import su.afk.kemonos.posts.presenter.pager.model.PostsPage
 import su.afk.kemonos.posts.presenter.pager.views.PagerTabs
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-internal fun PostsScreen(viewModel: PostsPagerViewModel) {
-    val state by viewModel.state.collectAsStateWithLifecycle()
+internal fun PostsScreen(
+    state: State,
+    effect: Flow<Effect>,
+    onEvent: (Event) -> Unit,
+) {
     val pages = ALL_POSTS_PAGES
 
     val pagerState = rememberPagerState(
@@ -46,7 +49,7 @@ internal fun PostsScreen(viewModel: PostsPagerViewModel) {
             .distinctUntilChanged()
             .collect { settledIndex ->
                 val page = pages.getOrNull(settledIndex) ?: PostsPage.Popular
-                viewModel.setPage(page)
+                onEvent(Event.SetPage(page))
             }
     }
 
@@ -59,7 +62,7 @@ internal fun PostsScreen(viewModel: PostsPagerViewModel) {
         PagerTabs(
             currentPage = state.currentPage,
             onTabSelected = { page ->
-                viewModel.setPage(page)
+                onEvent(Event.SetPage(page))
             }
         )
 

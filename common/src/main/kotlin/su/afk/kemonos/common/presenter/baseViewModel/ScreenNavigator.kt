@@ -1,13 +1,9 @@
-package su.afk.kemonos.common.presenter.baseScreen
+package su.afk.kemonos.common.presenter.baseViewModel
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kotlinx.coroutines.flow.Flow
-import su.afk.kemonos.common.presenter.baseViewModel.BaseViewModelNew
-import su.afk.kemonos.common.presenter.baseViewModel.UiEffect
-import su.afk.kemonos.common.presenter.baseViewModel.UiEvent
-import su.afk.kemonos.common.presenter.baseViewModel.UiState
 
 @Composable
 fun <S : UiState, E : UiEvent, F : UiEffect> ScreenNavigator(

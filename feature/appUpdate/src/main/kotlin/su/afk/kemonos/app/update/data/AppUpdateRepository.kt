@@ -2,11 +2,8 @@ package su.afk.kemonos.app.update.data
 
 import su.afk.kemonos.app.update.api.model.AppUpdateInfo
 import su.afk.kemonos.app.update.data.api.GitHubReleasesApi
+import su.afk.kemonos.app.update.domain.repository.IAppUpdateRepository
 import javax.inject.Inject
-
-interface IAppUpdateRepository {
-    suspend fun getLatestVersion(): Result<AppUpdateInfo>
-}
 
 internal class AppUpdateRepository @Inject constructor(
     private val api: GitHubReleasesApi

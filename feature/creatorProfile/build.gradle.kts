@@ -32,7 +32,6 @@ dependencies {
 
     implementation(libs.bundles.navigation3)
 
-    implementation(libs.bundles.coroutines)
     implementation(libs.bundles.retrofit)
     implementation(libs.bundles.paging)
     implementation(libs.bundles.coil)

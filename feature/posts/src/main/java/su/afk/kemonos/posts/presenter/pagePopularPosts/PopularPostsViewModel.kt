@@ -8,13 +8,14 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import su.afk.kemonos.common.error.IErrorHandlerUseCase
 import su.afk.kemonos.common.error.storage.RetryStorage
-import su.afk.kemonos.common.presenter.changeSite.SiteAwareBaseViewModel
+import su.afk.kemonos.common.presenter.changeSite.SiteAwareBaseViewModelNew
 import su.afk.kemonos.domain.SelectedSite
 import su.afk.kemonos.domain.models.PostDomain
 import su.afk.kemonos.posts.domain.model.popular.Period
 import su.afk.kemonos.posts.domain.model.popular.PopularNavSlot
 import su.afk.kemonos.posts.domain.pagingPopular.GetPopularPostsUseCase
 import su.afk.kemonos.posts.presenter.common.NavigateToPostDelegate
+import su.afk.kemonos.posts.presenter.pagePopularPosts.PopularPostsState.*
 import su.afk.kemonos.posts.presenter.pagePopularPosts.utils.tripleFor
 import su.afk.kemonos.preferences.site.ISelectedSiteUseCase
 import su.afk.kemonos.preferences.ui.IUiSettingUseCase
@@ -28,16 +29,16 @@ internal class PopularPostsViewModel @Inject constructor(
     override val selectedSiteUseCase: ISelectedSiteUseCase,
     override val errorHandler: IErrorHandlerUseCase,
     override val retryStorage: RetryStorage,
-) : SiteAwareBaseViewModel<PopularPostsState>(
-    initialState = PopularPostsState()
-) {
+) : SiteAwareBaseViewModelNew<State, Event, Effect>() {
+
+    override fun createInitialState(): State = State()
 
     override fun onRetry() {
         viewModelScope.launch {
-            val s = state.value
+            val s = currentState
             loadPopular(
                 date = s.popularDateForPopular,
-                period = s.popularPeriod ?: Period.RECENT
+                period = s.popularPeriod
             )
         }
     }
@@ -60,8 +61,17 @@ internal class PopularPostsViewModel @Inject constructor(
         loadPopular(date = null, period = Period.RECENT)
     }
 
+    override fun onEvent(event: Event) {
+        when (event) {
+            is Event.LoadPopular -> loadPopular(date = event.date, period = event.period)
+            is Event.PeriodSlotClick -> onPeriodSlotClick(event.period, event.slot)
+            is Event.NavigateToPost -> navigateToPost(event.post)
+            Event.SwitchSite -> switchSite()
+        }
+    }
+
     /** Пересоздать paging под текущий site + date/period */
-    fun loadPopular(date: String?, period: Period) {
+    private fun loadPopular(date: String?, period: Period) {
         setState { copy(popularDateForPopular = date, popularPeriod = period) }
 
         val currentSite = site.value
@@ -84,8 +94,8 @@ internal class PopularPostsViewModel @Inject constructor(
     }
 
     /** Клик по стрелке / центру в панели периодов */
-    fun onPeriodSlotClick(period: Period, slot: PopularNavSlot) {
-        val navDates = state.value.popularPostsInfo?.navigationDates ?: return
+    private fun onPeriodSlotClick(period: Period, slot: PopularNavSlot) {
+        val navDates = currentState.popularPostsInfo?.navigationDates ?: return
         val triple = navDates.tripleFor(period) ?: return
 
         val date = when (slot) {
@@ -97,7 +107,7 @@ internal class PopularPostsViewModel @Inject constructor(
         loadPopular(date = date, period = period)
     }
 
-    fun navigateToPost(post: PostDomain) = navigateToPostDelegate.navigateToPost(post)
-
-    fun parseError(t: Throwable) = errorHandler.parse(t)
+    private fun navigateToPost(post: PostDomain) {
+        navigateToPostDelegate.navigateToPost(post)
+    }
 }

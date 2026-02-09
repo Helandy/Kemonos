@@ -182,6 +182,18 @@
     <string name="main_api_meta_request_id">requestId: %1$s</string>
     <string name="main_api_meta_cause">cause: %1$s</string>
 
+    <string name="crash_report_dialog_title">App crashed last time</string>
+    <string name="crash_report_dialog_message">The app unexpectedly closed during the previous session. Do you want to
+        send a crash report?
+    </string>
+    <string name="crash_report_dialog_send">Send</string>
+    <string name="crash_report_dialog_save">Save</string>
+    <string name="crash_report_dialog_later">Later</string>
+    <string name="crash_report_dialog_delete">Delete</string>
+    <string name="crash_report_chooser_title">Send crash report</string>
+    <string name="crash_report_email_subject">Kemonos crash report</string>
+    <string name="crash_report_saved_success">Crash report saved to Downloads</string>
+
 
     <string name="translate_show">Translate</string>
     <string name="translate_hide">Hide translation</string>

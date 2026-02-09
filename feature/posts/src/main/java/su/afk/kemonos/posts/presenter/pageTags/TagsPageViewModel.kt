@@ -4,13 +4,14 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import su.afk.kemonos.common.error.IErrorHandlerUseCase
 import su.afk.kemonos.common.error.storage.RetryStorage
-import su.afk.kemonos.common.presenter.changeSite.SiteAwareBaseViewModel
+import su.afk.kemonos.common.presenter.changeSite.SiteAwareBaseViewModelNew
 import su.afk.kemonos.domain.SelectedSite
 import su.afk.kemonos.navigation.NavigationManager
 import su.afk.kemonos.navigation.storage.NavigationStorage
 import su.afk.kemonos.posts.api.tags.Tags
 import su.afk.kemonos.posts.domain.usecase.GetAllTagsUseCase
 import su.afk.kemonos.posts.navigation.PostsDest
+import su.afk.kemonos.posts.presenter.pageTags.TagsPageState.*
 import su.afk.kemonos.posts.presenter.util.Const.KEY_SELECTED_TAG
 import su.afk.kemonos.preferences.site.ISelectedSiteUseCase
 import javax.inject.Inject
@@ -20,20 +21,29 @@ internal class TagsPageViewModel @Inject constructor(
     private val getAllTagsUseCase: GetAllTagsUseCase,
     private val navManager: NavigationManager,
     private val navigationStorage: NavigationStorage,
+    override val selectedSiteUseCase: ISelectedSiteUseCase,
     override val errorHandler: IErrorHandlerUseCase,
     override val retryStorage: RetryStorage,
-    override val selectedSiteUseCase: ISelectedSiteUseCase,
-) : SiteAwareBaseViewModel<TagsPageState>(
-    initialState = TagsPageState()
-) {
+) : SiteAwareBaseViewModelNew<State, Event, Effect>() {
+
+    override fun createInitialState(): State = State()
+
+    override fun onRetry() {
+        onEvent(Event.Retry)
+    }
 
     init {
         initSiteAware()
     }
 
-    override fun onRetry() {
-        viewModelScope.launch {
-            load(site = site.value, query = state.value.searchQuery)
+    override fun onEvent(event: Event) {
+        when (event) {
+            is Event.SearchQueryChanged -> onSearchQueryChanged(event.value)
+            is Event.SelectTag -> navigateToSelectTag(event.tag)
+            Event.SwitchSite -> switchSite()
+            Event.Retry -> viewModelScope.launch {
+                load(site = site.value, query = currentState.searchQuery)
+            }
         }
     }
 
@@ -42,10 +52,10 @@ internal class TagsPageViewModel @Inject constructor(
         load(site = site, query = "")
     }
 
-    fun onSearchQueryChanged(newQuery: String) {
+    private fun onSearchQueryChanged(newQuery: String) {
         setState { copy(searchQuery = newQuery) }
 
-        val filtered = filterTags(all = state.value.allTags, query = newQuery)
+        val filtered = filterTags(all = currentState.allTags, query = newQuery)
         setState { copy(tags = filtered) }
     }
 
@@ -69,7 +79,7 @@ internal class TagsPageViewModel @Inject constructor(
         return all.filter { it.tags.orEmpty().contains(q, ignoreCase = true) }
     }
 
-    fun navigateToSelectTag(tag: String?) {
+    private fun navigateToSelectTag(tag: String?) {
         setState { copy(selectTag = tag.orEmpty()) }
         navigationStorage.put(KEY_SELECTED_TAG, tag.orEmpty())
         navManager.navigate(PostsDest.TagsSelect)

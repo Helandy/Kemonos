@@ -8,11 +8,12 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import su.afk.kemonos.common.error.IErrorHandlerUseCase
 import su.afk.kemonos.common.error.storage.RetryStorage
-import su.afk.kemonos.common.presenter.baseViewModel.BaseViewModel
+import su.afk.kemonos.common.presenter.baseViewModel.BaseViewModelNew
 import su.afk.kemonos.domain.models.PostDomain
 import su.afk.kemonos.navigation.storage.NavigationStorage
 import su.afk.kemonos.posts.domain.pagingSearch.GetSearchPostsPagingUseCase
 import su.afk.kemonos.posts.presenter.common.NavigateToPostDelegate
+import su.afk.kemonos.posts.presenter.tagsSelect.TagsSelectState.*
 import su.afk.kemonos.posts.presenter.util.Const.KEY_SELECTED_TAG
 import su.afk.kemonos.preferences.site.ISelectedSiteUseCase
 import su.afk.kemonos.preferences.ui.IUiSettingUseCase
@@ -27,7 +28,9 @@ internal class TagsSelectViewModel @Inject constructor(
     private val uiSetting: IUiSettingUseCase,
     override val errorHandler: IErrorHandlerUseCase,
     override val retryStorage: RetryStorage,
-) : BaseViewModel<TagsSelectState>(TagsSelectState()) {
+) : BaseViewModelNew<State, Event, Effect>() {
+
+    override fun createInitialState(): State = State()
 
     override fun onRetry() {
         requestPage()
@@ -50,6 +53,12 @@ internal class TagsSelectViewModel @Inject constructor(
         requestPage()
     }
 
+    override fun onEvent(event: Event) {
+        when (event) {
+            is Event.NavigateToPost -> navigateToPost(event.post)
+        }
+    }
+
     /** Общий метод запроса страницы (suspend, без лишних launch) */
     private fun requestPage() = viewModelScope.launch {
         setState { copy(loading = true) }
@@ -67,7 +76,7 @@ internal class TagsSelectViewModel @Inject constructor(
         }
     }
 
-    fun navigateToPost(post: PostDomain) = navigateToPostDelegate.navigateToPost(post = post)
-
-    fun parseError(t: Throwable) = errorHandler.parse(t)
+    private fun navigateToPost(post: PostDomain) {
+        navigateToPostDelegate.navigateToPost(post = post)
+    }
 }

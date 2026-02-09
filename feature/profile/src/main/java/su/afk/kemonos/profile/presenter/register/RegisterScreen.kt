@@ -5,7 +5,6 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -15,12 +14,13 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import kotlinx.coroutines.flow.Flow
 import su.afk.kemonos.common.R.drawable
 import su.afk.kemonos.common.presenter.baseScreen.BaseScreen
 import su.afk.kemonos.common.util.findActivity
 import su.afk.kemonos.domain.SelectedSite
 import su.afk.kemonos.profile.R
+import su.afk.kemonos.profile.presenter.register.RegisterState.*
 import su.afk.kemonos.profile.presenter.register.util.confirmErrorRes
 import su.afk.kemonos.profile.presenter.register.util.passwordErrorRes
 import su.afk.kemonos.profile.presenter.register.util.usernameErrorRes
@@ -28,21 +28,21 @@ import su.afk.kemonos.profile.presenter.register.util.usernameErrorRes
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun RegisterScreen(
-    viewModel: RegisterViewModel
+    state: State,
+    effect: Flow<Effect>,
+    onEvent: (Event) -> Unit,
+    savePassword: suspend (android.app.Activity, String, String) -> Unit,
 ) {
-    val state by viewModel.state.collectAsStateWithLifecycle()
-
     val context = LocalContext.current
     val activity = remember(context) { context.findActivity() }
 
-    LaunchedEffect(viewModel, activity) {
-        viewModel.effect.collect { effect ->
+    LaunchedEffect(effect, activity) {
+        effect.collect { item ->
             val a = activity ?: return@collect
-            when (effect) {
-                is RegisterEffect.SavePassword -> {
-                    viewModel.savePassword(a, effect.username, effect.password)
-
-                    viewModel.onPasswordSaveFinished()
+            when (item) {
+                is Effect.SavePassword -> {
+                    savePassword(a, item.username, item.password)
+                    onEvent(Event.PasswordSaveFinished)
                 }
             }
         }
@@ -93,7 +93,7 @@ internal fun RegisterScreen(
 
                     OutlinedTextField(
                         value = state.username,
-                        onValueChange = viewModel::onUsernameChange,
+                        onValueChange = { onEvent(Event.UsernameChanged(it)) },
                         label = { Text(stringResource(R.string.register_username_label)) },
                         singleLine = true,
                         modifier = Modifier.fillMaxWidth(),
@@ -107,7 +107,7 @@ internal fun RegisterScreen(
 
                     OutlinedTextField(
                         value = state.password,
-                        onValueChange = viewModel::onPasswordChange,
+                        onValueChange = { onEvent(Event.PasswordChanged(it)) },
                         label = { Text(stringResource(R.string.register_password_label)) },
                         visualTransformation = PasswordVisualTransformation(),
                         singleLine = true,
@@ -122,7 +122,7 @@ internal fun RegisterScreen(
 
                     OutlinedTextField(
                         value = state.confirm,
-                        onValueChange = viewModel::onConfirmChange,
+                        onValueChange = { onEvent(Event.ConfirmChanged(it)) },
                         label = { Text(stringResource(R.string.register_confirm_label)) },
                         visualTransformation = PasswordVisualTransformation(),
                         singleLine = true,
@@ -145,7 +145,7 @@ internal fun RegisterScreen(
                     }
 
                     Button(
-                        onClick = viewModel::onRegisterClick,
+                        onClick = { onEvent(Event.RegisterClick) },
                         modifier = Modifier.fillMaxWidth(),
                         enabled = !state.isLoading
                     ) {
@@ -165,7 +165,7 @@ internal fun RegisterScreen(
 
             /** login */
             TextButton(
-                onClick = viewModel::onNavigateToLoginClick
+                onClick = { onEvent(Event.NavigateToLoginClick) }
             ) {
                 Text(stringResource(R.string.register_button_login))
             }

@@ -7,12 +7,13 @@ import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import su.afk.kemonos.common.error.IErrorHandlerUseCase
 import su.afk.kemonos.common.error.storage.RetryStorage
-import su.afk.kemonos.common.presenter.changeSite.SiteAwareBaseViewModel
+import su.afk.kemonos.common.presenter.changeSite.SiteAwareBaseViewModelNew
 import su.afk.kemonos.domain.SelectedSite
 import su.afk.kemonos.domain.models.PostDomain
 import su.afk.kemonos.posts.domain.pagingSearch.GetSearchPostsPagingUseCase
 import su.afk.kemonos.posts.domain.usecase.GetRandomPost
 import su.afk.kemonos.posts.presenter.common.NavigateToPostDelegate
+import su.afk.kemonos.posts.presenter.pageSearchPosts.SearchPostsState.*
 import su.afk.kemonos.preferences.site.ISelectedSiteUseCase
 import su.afk.kemonos.preferences.ui.IUiSettingUseCase
 import javax.inject.Inject
@@ -26,9 +27,9 @@ internal class SearchPostsViewModel @Inject constructor(
     override val selectedSiteUseCase: ISelectedSiteUseCase,
     override val errorHandler: IErrorHandlerUseCase,
     override val retryStorage: RetryStorage,
-) : SiteAwareBaseViewModel<SearchPostsState>(
-    initialState = SearchPostsState()
-) {
+) : SiteAwareBaseViewModelNew<State, Event, Effect>() {
+
+    override fun createInitialState(): State = State()
 
     /** Flow для текстового поиска */
     private val searchQueryFlow = MutableStateFlow("")
@@ -60,7 +61,7 @@ internal class SearchPostsViewModel @Inject constructor(
 
     override fun onRetry() {
         viewModelScope.launch {
-            requestPosts(query = state.value.searchQuery)
+            requestPosts(query = currentState.searchQuery)
         }
     }
 
@@ -71,7 +72,16 @@ internal class SearchPostsViewModel @Inject constructor(
         requestPosts(query = "")
     }
 
-    fun onSearchQueryChanged(newQuery: String) {
+    override fun onEvent(event: Event) {
+        when (event) {
+            is Event.SearchQueryChanged -> onSearchQueryChanged(event.value)
+            is Event.NavigateToPost -> navigateToPost(event.post)
+            Event.RandomPost -> randomPost()
+            Event.SwitchSite -> switchSite()
+        }
+    }
+
+    private fun onSearchQueryChanged(newQuery: String) {
         setState { copy(searchQuery = newQuery) }
         searchQueryFlow.value = newQuery
     }
@@ -91,7 +101,7 @@ internal class SearchPostsViewModel @Inject constructor(
         }
     }
 
-    fun randomPost() = viewModelScope.launch {
+    private fun randomPost() = viewModelScope.launch {
         val postId = getRandomPost()
         navigateToPostDelegate.navigateToPostId(
             service = postId.service,
@@ -100,7 +110,7 @@ internal class SearchPostsViewModel @Inject constructor(
         )
     }
 
-    fun navigateToPost(post: PostDomain) = navigateToPostDelegate.navigateToPost(post)
-
-    fun parseError(t: Throwable) = errorHandler.parse(t)
+    private fun navigateToPost(post: PostDomain) {
+        navigateToPostDelegate.navigateToPost(post)
+    }
 }

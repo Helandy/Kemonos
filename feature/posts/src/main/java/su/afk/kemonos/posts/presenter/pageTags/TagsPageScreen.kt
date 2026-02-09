@@ -13,29 +13,30 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import kotlinx.coroutines.flow.Flow
 import su.afk.kemonos.common.R
 import su.afk.kemonos.common.components.button.SiteToggleFab
 import su.afk.kemonos.common.presenter.baseScreen.BaseScreen
 import su.afk.kemonos.common.presenter.baseScreen.TopBarScroll
+import su.afk.kemonos.domain.SelectedSite
 import su.afk.kemonos.posts.api.tags.Tags
+import su.afk.kemonos.posts.presenter.pageTags.TagsPageState.*
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun TagsPageScreen(
-    viewModel: TagsPageViewModel
+    state: State,
+    effect: Flow<Effect>,
+    site: SelectedSite,
+    siteSwitching: Boolean,
+    onEvent: (Event) -> Unit,
 ) {
-    val state by viewModel.state.collectAsStateWithLifecycle()
-    val site by viewModel.site.collectAsStateWithLifecycle()
-    val siteSwitching by viewModel.siteSwitching.collectAsStateWithLifecycle()
-
     val isPageLoading = state.loading || siteSwitching
 
     val isBusy = isPageLoading
@@ -53,7 +54,7 @@ internal fun TagsPageScreen(
         topBar = {
             OutlinedTextField(
                 value = state.searchQuery,
-                onValueChange = viewModel::onSearchQueryChanged,
+                onValueChange = { onEvent(Event.SearchQueryChanged(it)) },
                 label = { Text(stringResource(R.string.search)) },
                 singleLine = true,
                 modifier = Modifier.fillMaxWidth().padding(bottom = 6.dp),
@@ -68,7 +69,7 @@ internal fun TagsPageScreen(
             SiteToggleFab(
                 enable = !isBusy,
                 selectedSite = site,
-                onToggleSite = viewModel::switchSite,
+                onToggleSite = { onEvent(Event.SwitchSite) },
             )
         },
         isLoading = isBusy,
@@ -86,7 +87,7 @@ internal fun TagsPageScreen(
                             TagChip(
                                 tag = tag,
                                 onClick = {
-                                    viewModel.navigateToSelectTag(tag = tag.tags)
+                                    onEvent(Event.SelectTag(tag.tags))
                                 }
                             )
                         }

@@ -4,7 +4,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import su.afk.kemonos.auth.ClearAuthUseCase
 import su.afk.kemonos.domain.SelectedSite
-import su.afk.kemonos.profile.presenter.profile.ProfileState
+import su.afk.kemonos.profile.presenter.profile.ProfileState.State
 import javax.inject.Inject
 
 internal class LogoutDelegate @Inject constructor(
@@ -12,7 +12,7 @@ internal class LogoutDelegate @Inject constructor(
 ) {
     fun onLogoutClick(
         site: SelectedSite,
-        updateState: (ProfileState.() -> ProfileState) -> Unit,
+        updateState: (State.() -> State) -> Unit,
     ) {
         updateState {
             copy(
@@ -24,8 +24,8 @@ internal class LogoutDelegate @Inject constructor(
 
     fun onLogoutConfirm(
         scope: CoroutineScope,
-        getState: () -> ProfileState,
-        updateState: (ProfileState.() -> ProfileState) -> Unit,
+        getState: () -> State,
+        updateState: (State.() -> State) -> Unit,
     ) {
         scope.launch {
             val site = getState().logoutSite ?: return@launch
@@ -41,7 +41,7 @@ internal class LogoutDelegate @Inject constructor(
     }
 
     fun onLogoutDismiss(
-        updateState: (ProfileState.() -> ProfileState) -> Unit,
+        updateState: (State.() -> State) -> Unit,
     ) {
         updateState {
             copy(

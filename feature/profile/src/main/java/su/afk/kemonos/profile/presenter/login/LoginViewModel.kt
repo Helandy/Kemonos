@@ -2,12 +2,10 @@ package su.afk.kemonos.profile.presenter.login
 
 import android.app.Activity
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 import su.afk.kemonos.common.error.IErrorHandlerUseCase
 import su.afk.kemonos.common.error.storage.RetryStorage
-import su.afk.kemonos.common.presenter.baseViewModel.BaseViewModel
+import su.afk.kemonos.common.presenter.baseViewModel.BaseViewModelNew
 import su.afk.kemonos.domain.SelectedSite
 import su.afk.kemonos.domain.models.ErrorItem
 import su.afk.kemonos.navigation.NavigationManager
@@ -16,6 +14,7 @@ import su.afk.kemonos.preferences.site.ISelectedSiteUseCase
 import su.afk.kemonos.profile.domain.login.LoginResult
 import su.afk.kemonos.profile.domain.login.LoginUseCase
 import su.afk.kemonos.profile.navigation.AuthDest
+import su.afk.kemonos.profile.presenter.login.LoginState.*
 import su.afk.kemonos.profile.utils.AppCredentialStore
 import su.afk.kemonos.profile.utils.Const.KEY_SELECT_SITE
 import javax.inject.Inject
@@ -29,7 +28,9 @@ internal class LoginViewModel @Inject constructor(
     private val credentialStore: AppCredentialStore,
     override val errorHandler: IErrorHandlerUseCase,
     override val retryStorage: RetryStorage,
-) : BaseViewModel<LoginState>(LoginState()) {
+) : BaseViewModelNew<State, Event, Effect>() {
+
+    override fun createInitialState(): State = State()
 
     private var credentialsRequested = false
 
@@ -58,36 +59,58 @@ internal class LoginViewModel @Inject constructor(
         }
     }
 
-    fun onUsernameChange(value: String) {
-        setState { copy(username = value, usernameError = null, filledFromCredentialManager = false) }
+    override fun onEvent(event: Event) {
+        when (event) {
+            is Event.UsernameChanged -> {
+                setState {
+                    copy(
+                        username = event.value,
+                        usernameError = null,
+                        filledFromCredentialManager = false
+                    )
+                }
+            }
+
+            is Event.PasswordChanged -> {
+                setState {
+                    copy(
+                        password = event.value,
+                        passwordError = null,
+                        filledFromCredentialManager = false
+                    )
+                }
+            }
+
+            Event.LoginClick -> onLoginClick()
+            Event.NavigateToRegisterClick -> onNavigateToRegisterClick()
+            Event.RequestSavedCredentials -> requestSavedCredentials()
+        }
     }
 
-    fun onPasswordChange(value: String) {
-        setState { copy(password = value, passwordError = null, filledFromCredentialManager = false) }
-    }
-
-    fun onLoginClick() = viewModelScope.launch {
+    private fun onLoginClick() = viewModelScope.launch {
         if (currentState.isLoading) return@launch
 
         setState { copy(isLoading = true, error = null) }
 
-        when (val result = loginUseCase(
-            username = state.value.username,
-            password = state.value.password,
-        )) {
+        when (
+            val result = loginUseCase(
+                username = currentState.username,
+                password = currentState.password,
+            )
+        ) {
             is LoginResult.Success -> {
                 setState { copy(isLoading = false) }
 
                 val shouldAskToSave = !currentState.filledFromCredentialManager
                 if (shouldAskToSave) {
-                    _effect.trySend(
-                        LoginEffect.SavePasswordAndNavigate(
-                            username = state.value.username,
-                            password = state.value.password
+                    setEffect(
+                        Effect.SavePasswordAndNavigate(
+                            username = currentState.username,
+                            password = currentState.password
                         )
                     )
                 } else {
-                    _effect.trySend(LoginEffect.NavigateToProfile)
+                    setEffect(Effect.NavigateToProfile)
                 }
             }
 
@@ -113,15 +136,11 @@ internal class LoginViewModel @Inject constructor(
     }
 
     /** навигация на регистрацию */
-    fun onNavigateToRegisterClick() {
-        navigationStorage.put(KEY_SELECT_SITE, state.value.selectSite)
+    private fun onNavigateToRegisterClick() {
+        navigationStorage.put(KEY_SELECT_SITE, currentState.selectSite)
         navigationManager.replace(AuthDest.Register)
     }
 
-    private val _effect = Channel<LoginEffect>(Channel.BUFFERED)
-    val effect = _effect.receiveAsFlow()
-
-    // suspend, чтобы можно было await в Screen
     suspend fun savePassword(activity: Activity, username: String, password: String) {
         credentialStore.savePassword(activity, username, password)
     }
@@ -148,10 +167,10 @@ internal class LoginViewModel @Inject constructor(
     }
 
     /** Использовать существуюющие креды */
-    fun requestSavedCredentials() {
+    private fun requestSavedCredentials() {
         if (credentialsRequested) return
         if (currentState.username.isNotBlank() || currentState.password.isNotBlank()) return
         credentialsRequested = true
-        _effect.trySend(LoginEffect.PickPassword)
+        setEffect(Effect.PickPassword)
     }
 }

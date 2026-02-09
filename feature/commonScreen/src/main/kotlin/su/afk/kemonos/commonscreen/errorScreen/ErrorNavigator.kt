@@ -1,4 +1,4 @@
-package su.afk.kemonos.commonscreen.domain
+package su.afk.kemonos.commonscreen.errorScreen
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
@@ -8,9 +8,8 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation3.runtime.EntryProviderScope
 import androidx.navigation3.runtime.NavKey
 import dagger.hilt.android.EntryPointAccessors
+import su.afk.kemonos.common.presenter.baseViewModel.ScreenNavigator
 import su.afk.kemonos.commonscreen.di.ErrorNavigatorEntryPoint
-import su.afk.kemonos.commonscreen.errorScreen.ErrorScreen
-import su.afk.kemonos.commonscreen.errorScreen.ErrorViewModel
 import su.afk.kemonos.commonscreen.navigator.CommonScreenDest
 import su.afk.kemonos.commonscreen.navigator.IErrorNavigator
 import su.afk.kemonos.domain.models.ErrorItem
@@ -50,5 +49,11 @@ private fun ErrorNavigatorEntry(dest: CommonScreenDest.ErrorNavigatorDest) {
         }
     )
 
-    ErrorScreen(viewModel = vm)
+    ScreenNavigator(vm) { state, effect, event ->
+        ErrorScreen(
+            state = state,
+            onEvent = event,
+            effect = effect,
+        )
+    }
 }

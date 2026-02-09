@@ -19,14 +19,14 @@ import androidx.compose.ui.unit.dp
 import su.afk.kemonos.posts.R
 import su.afk.kemonos.posts.domain.model.popular.Period
 import su.afk.kemonos.posts.domain.model.popular.PopularNavSlot
-import su.afk.kemonos.posts.presenter.pagePopularPosts.PopularPostsState
+import su.afk.kemonos.posts.presenter.pagePopularPosts.PopularPostsState.State
 import su.afk.kemonos.posts.presenter.pagePopularPosts.utils.formatRangeDesc
 import su.afk.kemonos.posts.presenter.pagePopularPosts.utils.isNextAllowed
 import su.afk.kemonos.posts.presenter.pagePopularPosts.utils.tripleFor
 
 @Composable
 internal fun PopularPeriodsPanel(
-    state: PopularPostsState,
+    state: State,
     onSlotClick: (Period, PopularNavSlot) -> Unit,
 ) {
     val info = state.popularPostsInfo
