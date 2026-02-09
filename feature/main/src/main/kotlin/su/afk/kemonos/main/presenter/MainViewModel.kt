@@ -1,16 +1,16 @@
 package su.afk.kemonos.main.presenter
 
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import su.afk.kemonos.app.update.api.model.AppUpdateInfo
+import su.afk.kemonos.common.crash.ICrashReportManager
 import su.afk.kemonos.common.error.IErrorHandlerUseCase
 import su.afk.kemonos.common.error.storage.RetryStorage
-import su.afk.kemonos.common.presenter.baseViewModel.BaseViewModel
+import su.afk.kemonos.common.presenter.baseViewModel.BaseViewModelNew
 import su.afk.kemonos.domain.SelectedSite
 import su.afk.kemonos.main.domain.CheckAuthForAllSitesUseCase
+import su.afk.kemonos.main.presenter.MainState.*
 import su.afk.kemonos.main.presenter.delegates.ApiCheckDelegate
 import su.afk.kemonos.main.presenter.delegates.AppUpdateGateDelegate
 import su.afk.kemonos.main.presenter.delegates.BaseUrlsObserveDelegate
@@ -32,17 +32,58 @@ internal class MainViewModel @Inject constructor(
     private val updateGateDelegate: AppUpdateGateDelegate,
     private val baseUrlsObserveDelegate: BaseUrlsObserveDelegate,
     private val uiSetting: IUiSettingUseCase,
+    private val crashReportManager: ICrashReportManager,
     override val errorHandler: IErrorHandlerUseCase,
     override val retryStorage: RetryStorage,
-) : BaseViewModel<MainState.State>(MainState.State()) {
+) : BaseViewModelNew<State, Event, Effect>() {
 
-    private val _effect = MutableSharedFlow<MainState.MainEffect>()
-    val effect = _effect.asSharedFlow()
+    override fun createInitialState(): State = State()
 
     /** Чтобы не запустить стартовую инициализацию дважды */
     private var apiInitStarted = false
+    private var startupFlowStarted = false
 
     init {
+        viewModelScope.launch {
+            val pendingCrashPath = crashReportManager.latestCrashPath()
+            if (pendingCrashPath != null) {
+                setState { copy(pendingCrashPath = pendingCrashPath) }
+                return@launch
+            }
+            startStartupFlowIfNeeded()
+        }
+    }
+
+    override fun onEvent(event: Event) {
+        when (event) {
+            is Event.UpdateClick -> onUpdateClick(event.info)
+            Event.UpdateLaterClick -> onUpdateLaterClick()
+            Event.SaveAndCheck -> onSaveAndCheck()
+            Event.SkipCheck -> onSkipCheck()
+            is Event.InputKemonoDomainChanged -> {
+                setState { copy(inputKemonoDomain = event.value) }
+            }
+
+            is Event.InputCoomerDomainChanged -> {
+                setState { copy(inputCoomerDomain = event.value) }
+            }
+
+            Event.CrashReportDelete -> onCrashReportDelete()
+            Event.CrashReportSaveToDevice -> onCrashReportSaveToDevice()
+            is Event.CrashReportShared -> {
+                crashReportManager.deleteCrash(event.path)
+            }
+
+            is Event.CrashReportShareFailed -> {
+                setState { copy(pendingCrashPath = event.path) }
+            }
+        }
+    }
+
+    private fun startStartupFlowIfNeeded() {
+        if (startupFlowStarted) return
+        startupFlowStarted = true
+
         viewModelScope.launch {
             val uiSettings = uiSetting.prefs.first()
 
@@ -80,69 +121,79 @@ internal class MainViewModel @Inject constructor(
                 copy(
                     kemonoUrl = kemono,
                     coomerUrl = coomer,
-                    inputKemonoDomain = state.value.inputKemonoDomain
+                    inputKemonoDomain = currentState.inputKemonoDomain
                         .ifEmpty { normalizeDomain(kemono) },
-                    inputCoomerDomain = state.value.inputCoomerDomain
+                    inputCoomerDomain = currentState.inputCoomerDomain
                         .ifEmpty { normalizeDomain(coomer) },
                 )
             }
         }
     }
 
-    fun onUpdateClick(info: AppUpdateInfo) = viewModelScope.launch {
-        _effect.emit(MainState.MainEffect.OpenUrl(info.releaseUrl))
+    private fun onUpdateClick(info: AppUpdateInfo) {
+        setEffect(Effect.OpenUrl(info.releaseUrl))
     }
 
-    fun onUpdateLaterClick() {
+    private fun onUpdateLaterClick() {
         setState { copy(updateInfo = null) }
         startApiInitIfNeeded()
     }
 
-    fun onSaveAndCheck() = viewModelScope.launch {
-        setBaseUrlsUseCase(
-            kemonoUrl = buildBaseUrl(state.value.inputKemonoDomain),
-            coomerUrl = buildBaseUrl(state.value.inputCoomerDomain),
-        )
-        runApiCheck()
+    private fun onSaveAndCheck() {
+        viewModelScope.launch {
+            setBaseUrlsUseCase(
+                kemonoUrl = buildBaseUrl(currentState.inputKemonoDomain),
+                coomerUrl = buildBaseUrl(currentState.inputCoomerDomain),
+            )
+            runApiCheck()
+        }
     }
 
-    private fun runApiCheck() = viewModelScope.launch {
-        setState { copy(isLoading = true, kemonoError = null, coomerError = null) }
+    private fun runApiCheck() {
+        viewModelScope.launch {
+            setState { copy(isLoading = true, kemonoError = null, coomerError = null) }
 
-        // 1) если есть cookie — дернем избранное, а если 4xx — cookie очистится
-        //    и сайт попадёт в sitesToApiCheck
-        val sitesToApiCheck: Set<SelectedSite> = checkAuthForAllSitesUseCase()
+            // 1) если есть cookie — дернем избранное, а если 4xx — cookie очистится
+            //    и сайт попадёт в sitesToApiCheck
+            val sitesToApiCheck: Set<SelectedSite> = checkAuthForAllSitesUseCase()
 
-        // 2) /posts дергаем только для сайтов, где авторизации нет (или она слетела)
-        when (val result = apiCheckDelegate.check(sitesToApiCheck)) {
-            ApiCheckDelegate.ApiCheckUiResult.Success -> {
-                setState { copy(isLoading = false, apiSuccess = true) }
-                navManager.enterTabs()
-            }
+            // 2) /posts дергаем только для сайтов, где авторизации нет (или она слетела)
+            when (val result = apiCheckDelegate.check(sitesToApiCheck)) {
+                ApiCheckDelegate.ApiCheckUiResult.Success -> {
+                    setState { copy(isLoading = false, apiSuccess = true) }
+                    navManager.enterTabs()
+                }
 
-            is ApiCheckDelegate.ApiCheckUiResult.Failure -> {
-                setState {
-                    copy(
-                        isLoading = false,
-                        apiSuccess = false,
-                        kemonoError = result.kemonoError,
-                        coomerError = result.coomerError,
-                    )
+                is ApiCheckDelegate.ApiCheckUiResult.Failure -> {
+                    setState {
+                        copy(
+                            isLoading = false,
+                            apiSuccess = false,
+                            kemonoError = result.kemonoError,
+                            coomerError = result.coomerError,
+                        )
+                    }
                 }
             }
         }
     }
 
-    fun onSkipCheck() {
+    private fun onSkipCheck() {
         setState { copy(isLoading = false, apiSuccess = true, kemonoError = null, coomerError = null) }
         navManager.enterTabs()
     }
 
-    fun onInputKemonoDomainChanged(value: String) {
-        setState { copy(inputKemonoDomain = value) }
+    private fun onCrashReportDelete() {
+        val crashPath = currentState.pendingCrashPath ?: return
+        crashReportManager.deleteCrash(crashPath)
+        setState { copy(pendingCrashPath = null) }
+        startStartupFlowIfNeeded()
     }
 
-    fun onInputCoomerDomainChanged(value: String) {
-        setState { copy(inputCoomerDomain = value) }
+    private fun onCrashReportSaveToDevice() {
+        val crashPath = currentState.pendingCrashPath ?: return
+        setState { copy(pendingCrashPath = null) }
+        setEffect(Effect.SaveCrashReportToDevice(crashPath))
+        startStartupFlowIfNeeded()
     }
 }

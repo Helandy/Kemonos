@@ -178,6 +178,18 @@
     <string name="main_api_meta_request_id">requestId: %1$s</string>
     <string name="main_api_meta_cause">cause: %1$s</string>
 
+    <string name="crash_report_dialog_title">Приложение завершилось с ошибкой</string>
+    <string name="crash_report_dialog_message">Во время прошлого запуска приложение аварийно завершилось. Отправить
+        отчёт об ошибке?
+    </string>
+    <string name="crash_report_dialog_send">Отправить</string>
+    <string name="crash_report_dialog_save">Сохранить</string>
+    <string name="crash_report_dialog_later">Позже</string>
+    <string name="crash_report_dialog_delete">Удалить</string>
+    <string name="crash_report_chooser_title">Отправить отчёт</string>
+    <string name="crash_report_email_subject">Отчёт о сбое Kemonos</string>
+    <string name="crash_report_saved_success">Отчёт сохранён в Загрузки</string>
+
     <string name="translate_show">Перевести</string>
     <string name="translate_hide">Скрыть перевод</string>
     <string name="translate_in_progress">Перевожу…</string>
