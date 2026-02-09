@@ -9,7 +9,7 @@ import androidx.navigation3.runtime.EntryProviderScope
 import androidx.navigation3.runtime.NavKey
 import dagger.hilt.android.EntryPointAccessors
 import jakarta.inject.Inject
-import su.afk.kemonos.common.presenter.baseScreen.ScreenNavigator
+import su.afk.kemonos.common.presenter.baseViewModel.ScreenNavigator
 import su.afk.kemonos.creatorPost.di.CreatorPostVmFactoryEntryPoint
 import su.afk.kemonos.creatorPost.navigation.CreatorPostDest
 import su.afk.kemonos.navigation.NavRegistrar

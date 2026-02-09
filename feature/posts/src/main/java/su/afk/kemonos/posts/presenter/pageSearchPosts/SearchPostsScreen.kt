@@ -10,31 +10,33 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Casino
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.paging.LoadState
 import androidx.paging.compose.collectAsLazyPagingItems
+import kotlinx.coroutines.flow.Flow
 import su.afk.kemonos.common.R
 import su.afk.kemonos.common.components.button.RandomButton
 import su.afk.kemonos.common.components.button.SiteToggleFab
 import su.afk.kemonos.common.components.posts.PostsContentPaging
 import su.afk.kemonos.common.presenter.baseScreen.BaseScreen
 import su.afk.kemonos.common.presenter.baseScreen.TopBarScroll
+import su.afk.kemonos.domain.SelectedSite
+import su.afk.kemonos.posts.presenter.pageSearchPosts.SearchPostsState.*
 import su.afk.kemonos.preferences.ui.RandomButtonPlacement
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun SearchPostsScreen(
-    viewModel: SearchPostsViewModel
+    state: State,
+    effect: Flow<Effect>,
+    site: SelectedSite,
+    siteSwitching: Boolean,
+    onEvent: (Event) -> Unit,
 ) {
-    val state by viewModel.state.collectAsStateWithLifecycle()
-    val site by viewModel.site.collectAsStateWithLifecycle()
-    val siteSwitching by viewModel.siteSwitching.collectAsStateWithLifecycle()
 
     val posts = state.posts.collectAsLazyPagingItems()
 
@@ -58,14 +60,14 @@ internal fun SearchPostsScreen(
         topBar = {
             OutlinedTextField(
                 value = state.searchQuery,
-                onValueChange = viewModel::onSearchQueryChanged,
+                onValueChange = { onEvent(Event.SearchQueryChanged(it)) },
                 label = { Text(stringResource(R.string.search)) },
                 singleLine = true,
                 modifier = Modifier.fillMaxWidth().padding(bottom = 6.dp),
                 trailingIcon = {
                     if (showRandomInSearchBar) {
                         IconButton(
-                            onClick = { viewModel.randomPost() },
+                            onClick = { onEvent(Event.RandomPost) },
                             enabled = !isBusy,
                         ) {
                             Icon(
@@ -87,14 +89,14 @@ internal fun SearchPostsScreen(
             SiteToggleFab(
                 enable = !isBusy,
                 selectedSite = site,
-                onToggleSite = viewModel::switchSite,
+                onToggleSite = { onEvent(Event.SwitchSite) },
             )
         },
         floatingActionButtonEnd = {
             if (showRandomFab) {
                 RandomButton(
                     enabled = !isBusy,
-                    onClick = { viewModel.randomPost() }
+                    onClick = { onEvent(Event.RandomPost) }
                 )
             }
         },
@@ -104,7 +106,7 @@ internal fun SearchPostsScreen(
             uiSettingModel = state.uiSettingModel,
             posts = posts,
             currentTag = null,
-            onPostClick = viewModel::navigateToPost,
+            onPostClick = { onEvent(Event.NavigateToPost(it)) },
             onRetry = { posts.retry() },
             gridState = gridState
         )

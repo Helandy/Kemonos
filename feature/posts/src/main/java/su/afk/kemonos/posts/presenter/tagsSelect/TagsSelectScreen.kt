@@ -4,21 +4,21 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.lazy.grid.LazyGridState
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.unit.dp
-import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.paging.compose.collectAsLazyPagingItems
+import kotlinx.coroutines.flow.Flow
 import su.afk.kemonos.common.components.posts.PostsContentPaging
 import su.afk.kemonos.common.presenter.baseScreen.BaseScreen
+import su.afk.kemonos.posts.presenter.tagsSelect.TagsSelectState.*
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun TagsPostsScreen(
-    viewModel: TagsSelectViewModel = hiltViewModel()
+    state: State,
+    onEvent: (Event) -> Unit,
+    effect: Flow<Effect>,
 ) {
-    val state by viewModel.state.collectAsStateWithLifecycle()
     val posts = state.posts.collectAsLazyPagingItems()
     val gridState = rememberSaveable(saver = LazyGridState.Saver) {
         LazyGridState()
@@ -34,7 +34,7 @@ internal fun TagsPostsScreen(
             posts = posts,
             gridState = gridState,
             currentTag = null,
-            onPostClick = viewModel::navigateToPost,
+            onPostClick = { onEvent(Event.NavigateToPost(it)) },
             onRetry = { posts.retry() },
         )
     }

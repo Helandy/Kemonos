@@ -8,7 +8,7 @@ import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import su.afk.kemonos.common.error.IErrorHandlerUseCase
 import su.afk.kemonos.common.error.storage.RetryStorage
-import su.afk.kemonos.common.presenter.baseViewModel.BaseViewModel
+import su.afk.kemonos.common.presenter.baseViewModel.BaseViewModelNew
 import su.afk.kemonos.creatorPost.api.ICreatorPostNavigator
 import su.afk.kemonos.domain.SelectedSite
 import su.afk.kemonos.domain.models.PostDomain
@@ -18,6 +18,7 @@ import su.afk.kemonos.preferences.site.ISelectedSiteUseCase
 import su.afk.kemonos.preferences.ui.IUiSettingUseCase
 import su.afk.kemonos.profile.domain.favorites.GetFavoritePostsUseCase
 import su.afk.kemonos.profile.domain.favorites.posts.GetFavoritePostsPagingUseCase
+import su.afk.kemonos.profile.presenter.favoritePosts.FavoritePostsState.*
 import su.afk.kemonos.profile.utils.Const.KEY_SELECT_SITE
 import javax.inject.Inject
 
@@ -32,7 +33,9 @@ internal class FavoritePostsViewModel @Inject constructor(
     private val uiSetting: IUiSettingUseCase,
     override val errorHandler: IErrorHandlerUseCase,
     override val retryStorage: RetryStorage,
-) : BaseViewModel<FavoritePostsState>(FavoritePostsState()) {
+) : BaseViewModelNew<State, Event, Effect>() {
+
+    override fun createInitialState(): State = State()
 
     private val searchQueryFlow = MutableStateFlow("")
     private var observeSearchJob: Job? = null
@@ -55,7 +58,15 @@ internal class FavoritePostsViewModel @Inject constructor(
         loadSelectedSite()
     }
 
-    fun onSearchQueryChanged(query: String) {
+    override fun onEvent(event: Event) {
+        when (event) {
+            is Event.SearchQueryChanged -> onSearchQueryChanged(event.query)
+            is Event.Load -> load(event.refresh)
+            is Event.NavigateToPost -> navigateToPost(event.post)
+        }
+    }
+
+    private fun onSearchQueryChanged(query: String) {
         searchQueryFlow.value = query
         setState { copy(searchQuery = query) }
     }
@@ -98,7 +109,7 @@ internal class FavoritePostsViewModel @Inject constructor(
     }
 
     /** Получить избранные посты */
-    fun load(refresh: Boolean = false) = viewModelScope.launch {
+    private fun load(refresh: Boolean = false) = viewModelScope.launch {
         setState { copy(loading = true) }
 
         runCatching {
@@ -111,7 +122,7 @@ internal class FavoritePostsViewModel @Inject constructor(
     }
 
     /** Открытие поста */
-    fun navigateToPost(post: PostDomain) {
+    private fun navigateToPost(post: PostDomain) {
         navManager.navigate(
             creatorPostNavigator.getCreatorPostDest(
                 id = post.userId,

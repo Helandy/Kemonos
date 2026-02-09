@@ -16,45 +16,50 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import kotlinx.coroutines.flow.Flow
 import su.afk.kemonos.common.R.drawable.coomer_logo
 import su.afk.kemonos.common.R.drawable.kemono_logo
 import su.afk.kemonos.common.presenter.baseScreen.BaseScreen
 import su.afk.kemonos.common.util.findActivity
 import su.afk.kemonos.domain.SelectedSite
 import su.afk.kemonos.profile.R
+import su.afk.kemonos.profile.presenter.login.LoginState.*
+import su.afk.kemonos.profile.presenter.login.LoginState.State
 import su.afk.kemonos.profile.presenter.login.util.loginPasswordErrorRes
 import su.afk.kemonos.profile.presenter.login.util.loginUsernameErrorRes
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun LoginScreen(
-    viewModel: LoginViewModel,
+    state: State,
+    effect: Flow<Effect>,
+    onEvent: (Event) -> Unit,
+    pickPassword: (android.app.Activity) -> Unit,
+    savePassword: suspend (android.app.Activity, String, String) -> Unit,
+    navigateAfterLogin: () -> Unit,
 ) {
-    val state by viewModel.state.collectAsStateWithLifecycle()
-
     val context = LocalContext.current
     val activity = remember(context) { context.findActivity() }
 
     LaunchedEffect(activity) {
-        if (activity != null) viewModel.requestSavedCredentials()
+        if (activity != null) onEvent(Event.RequestSavedCredentials)
     }
 
-    LaunchedEffect(viewModel, activity) {
-        viewModel.effect.collect { effect ->
+    LaunchedEffect(effect, activity) {
+        effect.collect { item ->
             val a = activity ?: return@collect
-            when (effect) {
-                LoginEffect.PickPassword -> viewModel.pickPassword(a)
-                is LoginEffect.SavePasswordAndNavigate -> {
+            when (item) {
+                Effect.PickPassword -> pickPassword(a)
+                is Effect.SavePasswordAndNavigate -> {
                     // дождаться системного UI
                     runCatching {
-                        viewModel.savePassword(a, effect.username, effect.password)
+                        savePassword(a, item.username, item.password)
                     }
                     // после этого можно уходить со страницы
-                    viewModel.navigateAfterLogin()
+                    navigateAfterLogin()
                 }
 
-                LoginEffect.NavigateToProfile -> viewModel.navigateAfterLogin()
+                Effect.NavigateToProfile -> navigateAfterLogin()
             }
         }
     }
@@ -103,7 +108,7 @@ internal fun LoginScreen(
                     /** Username */
                     OutlinedTextField(
                         value = state.username,
-                        onValueChange = viewModel::onUsernameChange,
+                        onValueChange = { onEvent(Event.UsernameChanged(it)) },
                         label = { Text(stringResource(R.string.login_username_label)) },
                         singleLine = true,
                         modifier = Modifier.fillMaxWidth(),
@@ -123,7 +128,7 @@ internal fun LoginScreen(
 
                     OutlinedTextField(
                         value = state.password,
-                        onValueChange = viewModel::onPasswordChange,
+                        onValueChange = { onEvent(Event.PasswordChanged(it)) },
                         label = { Text(stringResource(R.string.login_password_label)) },
                         singleLine = true,
                         modifier = Modifier.fillMaxWidth(),
@@ -167,7 +172,7 @@ internal fun LoginScreen(
 
                     /** Кнопка "Войти" */
                     Button(
-                        onClick = viewModel::onLoginClick,
+                        onClick = { onEvent(Event.LoginClick) },
                         modifier = Modifier.fillMaxWidth(),
                         enabled = !state.isLoading
                     ) {
@@ -188,7 +193,7 @@ internal fun LoginScreen(
 
             /** Register */
             TextButton(
-                onClick = viewModel::onNavigateToRegisterClick
+                onClick = { onEvent(Event.NavigateToRegisterClick) }
             ) {
                 Text(stringResource(R.string.login_button_register))
             }

@@ -1,4 +1,4 @@
-package su.afk.kemonos.commonscreen.domain
+package su.afk.kemonos.commonscreen.errorScreen.domain
 
 import androidx.navigation3.runtime.NavKey
 import su.afk.kemonos.commonscreen.navigator.CommonScreenDest

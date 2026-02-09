@@ -1,27 +1,40 @@
 package su.afk.kemonos.profile.presenter.login
 
+import su.afk.kemonos.common.presenter.baseViewModel.UiEffect
+import su.afk.kemonos.common.presenter.baseViewModel.UiEvent
+import su.afk.kemonos.common.presenter.baseViewModel.UiState
 import su.afk.kemonos.domain.SelectedSite
 import su.afk.kemonos.domain.models.ErrorItem
 import su.afk.kemonos.profile.domain.login.LoginPasswordErrorCode
 import su.afk.kemonos.profile.domain.login.LoginUsernameErrorCode
 
-internal data class LoginState(
-    val selectSite: SelectedSite = SelectedSite.K,
+internal class LoginState {
+    data class State(
+        val selectSite: SelectedSite = SelectedSite.K,
 
-    val isLoading: Boolean = false,
-    val error: ErrorItem? = null,
+        val isLoading: Boolean = false,
+        val error: ErrorItem? = null,
 
-    val username: String = "",
-    val password: String = "",
+        val username: String = "",
+        val password: String = "",
 
-    val usernameError: LoginUsernameErrorCode? = null,
-    val passwordError: LoginPasswordErrorCode? = null,
+        val usernameError: LoginUsernameErrorCode? = null,
+        val passwordError: LoginPasswordErrorCode? = null,
 
-    val filledFromCredentialManager: Boolean = false,
-)
+        val filledFromCredentialManager: Boolean = false,
+    ) : UiState
 
-sealed interface LoginEffect {
-    data object PickPassword : LoginEffect
-    data class SavePasswordAndNavigate(val username: String, val password: String) : LoginEffect
-    data object NavigateToProfile : LoginEffect
+    sealed interface Event : UiEvent {
+        data class UsernameChanged(val value: String) : Event
+        data class PasswordChanged(val value: String) : Event
+        data object LoginClick : Event
+        data object NavigateToRegisterClick : Event
+        data object RequestSavedCredentials : Event
+    }
+
+    sealed interface Effect : UiEffect {
+        data object PickPassword : Effect
+        data class SavePasswordAndNavigate(val username: String, val password: String) : Effect
+        data object NavigateToProfile : Effect
+    }
 }

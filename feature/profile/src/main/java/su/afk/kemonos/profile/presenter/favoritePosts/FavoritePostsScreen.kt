@@ -11,25 +11,28 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.paging.LoadState
 import androidx.paging.compose.collectAsLazyPagingItems
+import kotlinx.coroutines.flow.Flow
 import su.afk.kemonos.common.R
 import su.afk.kemonos.common.components.posts.PostsContentPaging
 import su.afk.kemonos.common.error.LocalErrorMapper
 import su.afk.kemonos.common.presenter.baseScreen.BaseScreen
 import su.afk.kemonos.common.presenter.baseScreen.TopBarScroll
+import su.afk.kemonos.profile.presenter.favoritePosts.FavoritePostsState.*
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-internal fun FavoritePostsScreen(viewModel: FavoritePostsViewModel) {
-    val state by viewModel.state.collectAsStateWithLifecycle()
+internal fun FavoritePostsScreen(
+    state: State,
+    onEvent: (Event) -> Unit,
+    effect: Flow<Effect>,
+) {
     val gridState = rememberSaveable(saver = LazyGridState.Saver) {
         LazyGridState()
     }
@@ -51,7 +54,7 @@ internal fun FavoritePostsScreen(viewModel: FavoritePostsViewModel) {
         topBar = {
             OutlinedTextField(
                 value = state.searchQuery,
-                onValueChange = viewModel::onSearchQueryChanged,
+                onValueChange = { onEvent(Event.SearchQueryChanged(it)) },
                 label = { Text(stringResource(R.string.search)) },
                 singleLine = true,
                 modifier = Modifier.fillMaxWidth().padding(bottom = 6.dp),
@@ -63,20 +66,20 @@ internal fun FavoritePostsScreen(viewModel: FavoritePostsViewModel) {
             )
         },
         isEmpty = !refreshing && pagingIsEmpty,
-        onRetry = viewModel::load,
+        onRetry = { onEvent(Event.Load()) },
     ) {
         PullToRefreshBox(
             state = pullState,
             isRefreshing = refreshing,
             onRefresh = {
-                viewModel.load(refresh = true)
+                onEvent(Event.Load(refresh = true))
                 posts.refresh()
             },
         ) {
             PostsContentPaging(
                 uiSettingModel = state.uiSettingModel,
                 posts = posts,
-                onPostClick = viewModel::navigateToPost,
+                onPostClick = { onEvent(Event.NavigateToPost(it)) },
                 gridState = gridState,
                 showFavCount = false,
                 currentTag = null,

@@ -8,13 +8,14 @@ import kotlinx.coroutines.launch
 import su.afk.kemonos.auth.ObserveAuthStateUseCase
 import su.afk.kemonos.common.error.IErrorHandlerUseCase
 import su.afk.kemonos.common.error.storage.RetryStorage
-import su.afk.kemonos.common.presenter.baseViewModel.BaseViewModel
+import su.afk.kemonos.common.presenter.baseViewModel.BaseViewModelNew
 import su.afk.kemonos.domain.SelectedSite
 import su.afk.kemonos.navigation.NavigationManager
 import su.afk.kemonos.navigation.storage.NavigationStorage
 import su.afk.kemonos.preferences.ui.IUiSettingUseCase
 import su.afk.kemonos.profile.data.FreshFavoriteArtistsUpdates
 import su.afk.kemonos.profile.navigation.AuthDest
+import su.afk.kemonos.profile.presenter.profile.ProfileState.*
 import su.afk.kemonos.profile.presenter.profile.delegate.LogoutDelegate
 import su.afk.kemonos.profile.utils.Const.KEY_SELECT_SITE
 import javax.inject.Inject
@@ -28,10 +29,29 @@ internal class ProfileViewModel @Inject constructor(
     private val uiSetting: IUiSettingUseCase,
     override val errorHandler: IErrorHandlerUseCase,
     override val retryStorage: RetryStorage,
-) : BaseViewModel<ProfileState>(ProfileState()) {
+) : BaseViewModelNew<State, Event, Effect>() {
+
+    override fun createInitialState(): State = State()
 
     override fun onRetry() {
         observeAuth()
+    }
+
+    override fun onEvent(event: Event) {
+        when (event) {
+            is Event.LogoutClick -> onLogoutClick(event.site)
+            Event.LogoutConfirm -> onLogoutConfirm()
+            Event.LogoutDismiss -> onLogoutDismiss()
+            is Event.LoginClick -> onLoginClick(event.site)
+            is Event.FavoriteProfilesNavigate -> onFavoriteProfilesNavigate(event.site)
+            is Event.FavoritePostNavigate -> onFavoritePostNavigate(event.site)
+            Event.NavigateToSettings -> navigateToSettings()
+            Event.KeysClick -> onKeysClick()
+            Event.ReviewDMsClick -> onReviewDMsClick()
+            Event.ExportFavoritesClick -> onExportFavoritesClick()
+            Event.ChangeUsernameClick -> onChangeUsernameClick()
+            Event.ChangePasswordClick -> onChangePasswordClick()
+        }
     }
 
     init {
@@ -73,54 +93,54 @@ internal class ProfileViewModel @Inject constructor(
     }
 
     /** Выйти */
-    fun onLogoutClick(site: SelectedSite) = logoutDelegate.onLogoutClick(
+    private fun onLogoutClick(site: SelectedSite) = logoutDelegate.onLogoutClick(
         site = site,
         updateState = { reducer -> setState(reducer) }
     )
 
-    fun onLogoutConfirm() = logoutDelegate.onLogoutConfirm(
+    private fun onLogoutConfirm() = logoutDelegate.onLogoutConfirm(
         scope = viewModelScope,
-        getState = { state.value },
+        getState = { currentState },
         updateState = { reducer -> setState(reducer) }
     )
 
-    fun onLogoutDismiss() = logoutDelegate.onLogoutDismiss(
+    private fun onLogoutDismiss() = logoutDelegate.onLogoutDismiss(
         updateState = { reducer -> setState(reducer) }
     )
 
     /** Логин */
-    fun onLoginClick(site: SelectedSite) {
+    private fun onLoginClick(site: SelectedSite) {
         navigationStorage.put(KEY_SELECT_SITE, site)
         navigationManager.navigate(AuthDest.Login)
     }
 
     /** Любимые профили */
-    fun onFavoriteProfilesNavigate(site: SelectedSite) {
+    private fun onFavoriteProfilesNavigate(site: SelectedSite) {
         navigationStorage.put(KEY_SELECT_SITE, site)
         navigationManager.navigate(AuthDest.FavoriteProfiles)
     }
 
     /** Любимые посты */
-    fun onFavoritePostNavigate(site: SelectedSite) {
+    private fun onFavoritePostNavigate(site: SelectedSite) {
         navigationStorage.put(KEY_SELECT_SITE, site)
         navigationManager.navigate(AuthDest.FavoritePosts)
     }
 
     /** Настройки */
-    fun navigateToSettings() = navigationManager.navigate(AuthDest.Setting)
+    private fun navigateToSettings() = navigationManager.navigate(AuthDest.Setting)
 
-    fun onKeysClick() {
+    private fun onKeysClick() {
     }
 
-    fun onReviewDMsClick() {
+    private fun onReviewDMsClick() {
     }
 
-    fun onExportFavoritesClick() {
+    private fun onExportFavoritesClick() {
     }
 
-    fun onChangeUsernameClick() {
+    private fun onChangeUsernameClick() {
     }
 
-    fun onChangePasswordClick() {
+    private fun onChangePasswordClick() {
     }
 }

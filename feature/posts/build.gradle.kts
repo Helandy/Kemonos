@@ -27,9 +27,7 @@ dependencies {
     implementation(libs.bundles.compose.core)
 
     implementation(libs.bundles.navigation3)
-
     implementation(libs.bundles.retrofit)
-
     implementation(libs.bundles.paging)
 
     implementation(project(":common"))

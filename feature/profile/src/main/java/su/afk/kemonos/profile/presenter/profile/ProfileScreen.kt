@@ -8,18 +8,18 @@ import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
 import su.afk.kemonos.common.presenter.baseScreen.BaseScreen
 import su.afk.kemonos.domain.SelectedSite
 import su.afk.kemonos.profile.R
+import su.afk.kemonos.profile.presenter.profile.ProfileState.*
 import su.afk.kemonos.profile.presenter.profile.views.LogoutDialog
 import su.afk.kemonos.profile.presenter.profile.views.SettingsButton
 import su.afk.kemonos.profile.presenter.profile.views.SitePage
@@ -27,10 +27,10 @@ import su.afk.kemonos.profile.presenter.profile.views.SitePage
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun ProfileScreen(
-    viewModel: ProfileViewModel,
+    state: State,
+    effect: Flow<Effect>,
+    onEvent: (Event) -> Unit,
 ) {
-    val state by viewModel.state.collectAsStateWithLifecycle()
-
     val pagerState = rememberPagerState(pageCount = { 2 })
     val scope = rememberCoroutineScope()
 
@@ -81,13 +81,13 @@ internal fun ProfileScreen(
                         login = state.coomerLogin,
                         site = SelectedSite.C,
                         updatedFavoritesCount = state.coomerUpdatedFavoritesCount,
-                        onLoginClick = { viewModel.onLoginClick(SelectedSite.C) },
-                        onLogoutClick = { viewModel.onLogoutClick(SelectedSite.C) },
+                        onLoginClick = { onEvent(Event.LoginClick(SelectedSite.C)) },
+                        onLogoutClick = { onEvent(Event.LogoutClick(SelectedSite.C)) },
                         onFavoriteProfiles = {
-                            viewModel.onFavoriteProfilesNavigate(SelectedSite.C)
+                            onEvent(Event.FavoriteProfilesNavigate(SelectedSite.C))
                         },
                         onFavoritePosts = {
-                            viewModel.onFavoritePostNavigate(SelectedSite.C)
+                            onEvent(Event.FavoritePostNavigate(SelectedSite.C))
                         }
                     )
 
@@ -98,28 +98,28 @@ internal fun ProfileScreen(
                         login = state.kemonoLogin,
                         site = SelectedSite.K,
                         updatedFavoritesCount = state.kemonoUpdatedFavoritesCount,
-                        onLoginClick = { viewModel.onLoginClick(SelectedSite.K) },
-                        onLogoutClick = { viewModel.onLogoutClick(SelectedSite.K) },
+                        onLoginClick = { onEvent(Event.LoginClick(SelectedSite.K)) },
+                        onLogoutClick = { onEvent(Event.LogoutClick(SelectedSite.K)) },
                         onFavoriteProfiles = {
-                            viewModel.onFavoriteProfilesNavigate(SelectedSite.K)
+                            onEvent(Event.FavoriteProfilesNavigate(SelectedSite.K))
                         },
                         onFavoritePosts = {
-                            viewModel.onFavoritePostNavigate(SelectedSite.K)
+                            onEvent(Event.FavoritePostNavigate(SelectedSite.K))
                         }
                     )
                 }
             }
 
             SettingsButton(
-                onClick = viewModel::navigateToSettings
+                onClick = { onEvent(Event.NavigateToSettings) }
             )
         }
 
         if (state.showLogoutConfirm) {
             LogoutDialog(
                 site = state.logoutSite,
-                onConfirm = viewModel::onLogoutConfirm,
-                onDismiss = viewModel::onLogoutDismiss
+                onConfirm = { onEvent(Event.LogoutConfirm) },
+                onDismiss = { onEvent(Event.LogoutDismiss) }
             )
         }
     }

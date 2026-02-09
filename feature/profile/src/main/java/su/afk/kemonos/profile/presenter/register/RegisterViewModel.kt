@@ -2,12 +2,10 @@ package su.afk.kemonos.profile.presenter.register
 
 import android.app.Activity
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 import su.afk.kemonos.common.error.IErrorHandlerUseCase
 import su.afk.kemonos.common.error.storage.RetryStorage
-import su.afk.kemonos.common.presenter.baseViewModel.BaseViewModel
+import su.afk.kemonos.common.presenter.baseViewModel.BaseViewModelNew
 import su.afk.kemonos.domain.SelectedSite
 import su.afk.kemonos.domain.models.ErrorItem
 import su.afk.kemonos.navigation.NavigationManager
@@ -16,6 +14,7 @@ import su.afk.kemonos.preferences.site.ISelectedSiteUseCase
 import su.afk.kemonos.profile.domain.register.RegisterResult
 import su.afk.kemonos.profile.domain.register.RegisterUseCase
 import su.afk.kemonos.profile.navigation.AuthDest
+import su.afk.kemonos.profile.presenter.register.RegisterState.*
 import su.afk.kemonos.profile.utils.AppCredentialStore
 import su.afk.kemonos.profile.utils.Const.KEY_SELECT_SITE
 import javax.inject.Inject
@@ -29,7 +28,9 @@ internal class RegisterViewModel @Inject constructor(
     private val credentialStore: AppCredentialStore,
     override val errorHandler: IErrorHandlerUseCase,
     override val retryStorage: RetryStorage,
-) : BaseViewModel<RegisterState>(RegisterState()) {
+) : BaseViewModelNew<State, Event, Effect>() {
+
+    override fun createInitialState(): State = State()
 
     private var pendingNavigateToLogin = false
 
@@ -58,84 +59,90 @@ internal class RegisterViewModel @Inject constructor(
         }
     }
 
-    fun onUsernameChange(value: String) {
-        setState {
-            copy(
-                username = value,
-                usernameError = null,
-            )
-        }
-    }
-
-    fun onPasswordChange(value: String) {
-        setState {
-            copy(
-                password = value,
-                passwordError = null,
-            )
-        }
-    }
-
-    fun onConfirmChange(value: String) {
-        setState {
-            copy(
-                confirm = value,
-                confirmError = null,
-            )
-        }
-    }
-
-    fun onRegisterClick() = viewModelScope.launch {
-        setState { copy(isLoading = true, error = null) }
-
-        when (val result = registerUseCase(
-            username = state.value.username,
-            password = state.value.password,
-            confirm = state.value.confirm
-        )) {
-            is RegisterResult.Success -> {
-                setState { copy(isLoading = false) }
-
-                pendingNavigateToLogin = true
-                _effect.trySend(RegisterEffect.SavePassword(state.value.username, state.value.password))
-            }
-
-            is RegisterResult.ValidationError -> {
+    override fun onEvent(event: Event) {
+        when (event) {
+            is Event.UsernameChanged -> {
                 setState {
                     copy(
-                        isLoading = false,
-                        usernameError = result.usernameError,
-                        passwordError = result.passwordError,
-                        confirmError = result.confirmError,
+                        username = event.value,
+                        usernameError = null,
                     )
                 }
             }
 
-            is RegisterResult.Error -> {
-                setState { copy(isLoading = false, error = result.error) }
+            is Event.PasswordChanged -> {
+                setState {
+                    copy(
+                        password = event.value,
+                        passwordError = null,
+                    )
+                }
+            }
+
+            is Event.ConfirmChanged -> {
+                setState {
+                    copy(
+                        confirm = event.value,
+                        confirmError = null,
+                    )
+                }
+            }
+
+            Event.RegisterClick -> onRegisterClick()
+            Event.NavigateToLoginClick -> onNavigateToLoginClick()
+            Event.PasswordSaveFinished -> onPasswordSaveFinished()
+        }
+    }
+
+    private fun onRegisterClick() {
+        viewModelScope.launch {
+            setState { copy(isLoading = true, error = null) }
+
+            when (val result = registerUseCase(
+                username = currentState.username,
+                password = currentState.password,
+                confirm = currentState.confirm
+            )) {
+                is RegisterResult.Success -> {
+                    setState { copy(isLoading = false) }
+
+                    pendingNavigateToLogin = true
+                    setEffect(Effect.SavePassword(currentState.username, currentState.password))
+                }
+
+                is RegisterResult.ValidationError -> {
+                    setState {
+                        copy(
+                            isLoading = false,
+                            usernameError = result.usernameError,
+                            passwordError = result.passwordError,
+                            confirmError = result.confirmError,
+                        )
+                    }
+                }
+
+                is RegisterResult.Error -> {
+                    setState { copy(isLoading = false, error = result.error) }
+                }
             }
         }
     }
 
-    /** навигация на логин  */
-    fun onNavigateToLoginClick() {
-        navigationStorage.put(KEY_SELECT_SITE, state.value.selectSite)
+    private fun onNavigateToLoginClick() {
+        navigationStorage.put(KEY_SELECT_SITE, currentState.selectSite)
         navigationManager.replace(AuthDest.Login)
     }
-
-    private val _effect = Channel<RegisterEffect>(Channel.BUFFERED)
-    val effect = _effect.receiveAsFlow()
 
     suspend fun savePassword(activity: Activity, username: String, password: String) {
         credentialStore.savePassword(activity, username, password)
     }
 
     /** Вызывается из UI когда сохранение (попытка) завершено */
-    fun onPasswordSaveFinished() {
+    private fun onPasswordSaveFinished() {
         if (!pendingNavigateToLogin) return
         pendingNavigateToLogin = false
 
-        navigationStorage.put(KEY_SELECT_SITE, state.value.selectSite)
+        navigationStorage.put(KEY_SELECT_SITE, currentState.selectSite)
         navigationManager.navigate(AuthDest.Login)
     }
 }

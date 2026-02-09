@@ -5,27 +5,28 @@ import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.lazy.grid.LazyGridState
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.paging.LoadState
 import androidx.paging.compose.collectAsLazyPagingItems
+import kotlinx.coroutines.flow.Flow
 import su.afk.kemonos.common.components.button.SiteToggleFab
 import su.afk.kemonos.common.components.posts.PostsContentPaging
 import su.afk.kemonos.common.presenter.baseScreen.BaseScreen
 import su.afk.kemonos.common.presenter.baseScreen.TopBarScroll
+import su.afk.kemonos.domain.SelectedSite
+import su.afk.kemonos.posts.presenter.pagePopularPosts.PopularPostsState.*
 import su.afk.kemonos.posts.presenter.pagePopularPosts.views.PopularPeriodsPanel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun PopularPostsScreen(
-    viewModel: PopularPostsViewModel
+    state: State,
+    effect: Flow<Effect>,
+    site: SelectedSite,
+    siteSwitching: Boolean,
+    onEvent: (Event) -> Unit,
 ) {
-    val state by viewModel.state.collectAsStateWithLifecycle()
-    val site by viewModel.site.collectAsStateWithLifecycle()
-    val siteSwitching by viewModel.siteSwitching.collectAsStateWithLifecycle()
-
     val posts = state.posts.collectAsLazyPagingItems()
 
     val isPageLoading = posts.loadState.refresh is LoadState.Loading
@@ -44,7 +45,7 @@ internal fun PopularPostsScreen(
             PopularPeriodsPanel(
                 state = state,
                 onSlotClick = { period, slot ->
-                    viewModel.onPeriodSlotClick(period, slot)
+                    onEvent(Event.PeriodSlotClick(period, slot))
                 }
             )
         },
@@ -52,7 +53,7 @@ internal fun PopularPostsScreen(
             SiteToggleFab(
                 enable = !isBusy,
                 selectedSite = site,
-                onToggleSite = viewModel::switchSite,
+                onToggleSite = { onEvent(Event.SwitchSite) },
             )
         },
         isLoading = isPageLoading,
@@ -62,7 +63,7 @@ internal fun PopularPostsScreen(
             posts = posts,
             gridState = gridState,
             currentTag = null,
-            onPostClick = viewModel::navigateToPost,
+            onPostClick = { onEvent(Event.NavigateToPost(it)) },
             onRetry = { posts.retry() },
             showFavCount = true
         )
