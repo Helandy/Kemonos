@@ -76,7 +76,6 @@ internal class GetFavoriteArtistsUseCase @Inject constructor(
 
     private suspend fun preloadFreshUpdatesIfNeeded() {
         if (preloaded) return
-        freshUpdatesStorage.clearExpired()
         val items = freshUpdatesStorage.getAllActive()
 
         freshUpdatesUseCase.clearAll()
