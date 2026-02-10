@@ -9,6 +9,7 @@ import su.afk.kemonos.storage.api.repository.creatorProfile.IStoreCreatorProfile
 import su.afk.kemonos.storage.api.repository.creators.IStoreCreatorsRepository
 import su.afk.kemonos.storage.api.repository.favorites.artist.IStoreFavoriteArtistsRepository
 import su.afk.kemonos.storage.api.repository.favorites.post.IStoreFavoritePostsRepository
+import su.afk.kemonos.storage.api.repository.favorites.updates.IFreshFavoriteArtistsUpdatesRepository
 import su.afk.kemonos.storage.api.repository.popular.IStoragePopularPostsRepository
 import su.afk.kemonos.storage.api.repository.post.IStoragePostStorageRepository
 import su.afk.kemonos.storage.api.repository.postsSearch.IStoragePostsSearchRepository
@@ -20,6 +21,7 @@ import su.afk.kemonos.storage.repository.creatorProfileCache.StoreCreatorProfile
 import su.afk.kemonos.storage.repository.creators.StoreCreatorsRepository
 import su.afk.kemonos.storage.repository.favorites.artist.StoreFavoriteArtistsRepository
 import su.afk.kemonos.storage.repository.favorites.post.StoreFavoritePostsRepository
+import su.afk.kemonos.storage.repository.favorites.updates.FreshFavoriteArtistsUpdatesRepository
 import su.afk.kemonos.storage.repository.popular.StoragePopularPostsRepository
 import su.afk.kemonos.storage.repository.post.StoragePostStorageRepository
 import su.afk.kemonos.storage.repository.postsSearch.StoragePostsSearchRepository
@@ -71,6 +73,12 @@ internal interface RepositoryModule {
     @Singleton
     @Binds
     fun bindStoreFavoriteArtistsRepository(impl: StoreFavoriteArtistsRepository): IStoreFavoriteArtistsRepository
+
+    @Singleton
+    @Binds
+    fun bindFreshFavoriteArtistsUpdatesRepository(
+        impl: FreshFavoriteArtistsUpdatesRepository
+    ): IFreshFavoriteArtistsUpdatesRepository
 
     @Singleton
     @Binds

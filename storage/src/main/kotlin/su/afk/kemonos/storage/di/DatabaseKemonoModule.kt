@@ -8,15 +8,13 @@ import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import su.afk.kemonos.storage.database.KemonoDatabase
-import su.afk.kemonos.storage.database.migrations.kemono.KEMONO_MIGRATION_2_3
-import su.afk.kemonos.storage.database.migrations.kemono.KemonoFrom3To4
-import su.afk.kemonos.storage.database.migrations.kemono.KemonoFrom4To5
-import su.afk.kemonos.storage.database.migrations.kemono.KemonoFrom5To6
+import su.afk.kemonos.storage.database.migrations.kemono.*
 import su.afk.kemonos.storage.entity.comments.dao.CommentsDao
 import su.afk.kemonos.storage.entity.creatorProfileCache.dao.CreatorProfileCacheDao
 import su.afk.kemonos.storage.entity.creators.dao.KemonoCreatorsDao
 import su.afk.kemonos.storage.entity.favorites.artist.FavoriteArtistsDao
 import su.afk.kemonos.storage.entity.favorites.post.FavoritePostsDao
+import su.afk.kemonos.storage.entity.favorites.updates.FreshFavoriteArtistUpdatesDao
 import su.afk.kemonos.storage.entity.popular.dao.KemonoPostsPopularCacheDao
 import su.afk.kemonos.storage.entity.post.dao.PostContentCacheDao
 import su.afk.kemonos.storage.entity.postsSearch.dao.KemonoPostsSearchCacheDao
@@ -34,7 +32,13 @@ internal object DatabaseKemonoModule {
     @Singleton
     fun provideKemonoDatabase(@ApplicationContext context: Context): KemonoDatabase =
         Room.databaseBuilder(context, KemonoDatabase::class.java, "kemono_db")
-            .addMigrations(KEMONO_MIGRATION_2_3, KemonoFrom3To4, KemonoFrom4To5, KemonoFrom5To6)
+            .addMigrations(
+                KEMONO_MIGRATION_2_3,
+                KemonoFrom3To4,
+                KemonoFrom4To5,
+                KemonoFrom5To6,
+                KemonoFrom6To7
+            )
             .build()
 
     @Provides
@@ -60,6 +64,10 @@ internal object DatabaseKemonoModule {
 
     @Provides
     fun provideFavoritePostsDao(db: KemonoDatabase): FavoritePostsDao = db.favoritePostsDao()
+
+    @Provides
+    fun provideFreshFavoriteArtistUpdatesDao(db: KemonoDatabase): FreshFavoriteArtistUpdatesDao =
+        db.freshFavoriteArtistUpdatesDao()
 
     @Provides
     fun provideCreatorProfileCacheDao(db: KemonoDatabase): CreatorProfileCacheDao = db.creatorProfileCacheDao()

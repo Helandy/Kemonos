@@ -20,6 +20,7 @@ import su.afk.kemonos.preferences.ui.IUiSettingUseCase
 import su.afk.kemonos.profile.api.domain.IGetFavoriteArtistsUseCase
 import su.afk.kemonos.profile.api.domain.favoriteProfiles.FavoriteSortedType
 import su.afk.kemonos.profile.domain.favorites.creator.GetFavoriteArtistsPagingUseCase
+import su.afk.kemonos.profile.domain.favorites.fresh.IFreshFavoriteArtistsUpdatesUseCase
 import su.afk.kemonos.profile.presenter.favoriteProfiles.FavoriteProfilesState.*
 import su.afk.kemonos.profile.utils.Const.KEY_SELECT_SITE
 import javax.inject.Inject
@@ -34,6 +35,7 @@ internal class FavoriteProfilesViewModel @Inject constructor(
     private val creatorProfileNavigator: ICreatorProfileNavigator,
     private val navigationStorage: NavigationStorage,
     private val uiSetting: IUiSettingUseCase,
+    private val freshUpdatesUseCase: IFreshFavoriteArtistsUpdatesUseCase,
     override val errorHandler: IErrorHandlerUseCase,
     override val retryStorage: RetryStorage,
 ) : BaseViewModelNew<State, Event, Effect>() {
@@ -127,7 +129,8 @@ internal class FavoriteProfilesViewModel @Inject constructor(
                 selectedSite = site,
                 selectedService = savedFilters.selectedService,
                 sortedType = restoredSortType,
-                sortAscending = savedFilters.sortAscending
+                sortAscending = savedFilters.sortAscending,
+                freshSet = freshUpdatesUseCase.get(site),
             )
         }
 
@@ -177,6 +180,7 @@ internal class FavoriteProfilesViewModel @Inject constructor(
         setState {
             copy(
                 services = listOf("Services") + services,
+                freshSet = freshUpdatesUseCase.get(currentState.selectedSite),
                 loading = false,
                 refreshing = false
             )

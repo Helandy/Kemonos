@@ -4,6 +4,7 @@ import su.afk.kemonos.domain.SelectedSite
 import su.afk.kemonos.storage.api.clear.IClearCacheStorageUseCase
 import su.afk.kemonos.storage.api.repository.comments.IStoreCommentsRepository
 import su.afk.kemonos.storage.api.repository.creatorProfile.IStoreCreatorProfileRepository
+import su.afk.kemonos.storage.api.repository.favorites.updates.IFreshFavoriteArtistsUpdatesRepository
 import su.afk.kemonos.storage.api.repository.media.IStoreMediaInfoRepository
 import su.afk.kemonos.storage.api.repository.popular.IStoragePopularPostsRepository
 import su.afk.kemonos.storage.api.repository.post.IStoragePostStorageRepository
@@ -23,6 +24,7 @@ internal class ClearCacheStorageUseCase @Inject constructor(
     private val creatorPostsCacheRepository: IStorageCreatorPostsRepository,
     private val storeTagsRepository: IStoreTagsRepository,
     private val storeVideoInfoRepository: IStoreMediaInfoRepository,
+    private val freshFavoriteArtistsUpdatesRepository: IFreshFavoriteArtistsUpdatesRepository,
 ) : IClearCacheStorageUseCase {
 
     override suspend fun clear() {
@@ -47,5 +49,7 @@ internal class ClearCacheStorageUseCase @Inject constructor(
         storeTagsRepository.clearIfExpired(SelectedSite.C)
         /** Чистка кэша информации о видео */
         storeVideoInfoRepository.clearCache()
+        /** Чистка кэша свежих авторов */
+        freshFavoriteArtistsUpdatesRepository.clearExpired()
     }
 }

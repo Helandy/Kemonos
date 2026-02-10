@@ -9,7 +9,7 @@ import su.afk.kemonos.main.navigation.MainDest
 import su.afk.kemonos.navigation.NavRegistrar
 import su.afk.kemonos.navigation.NavigationManager
 
-class MainRegistrar @Inject constructor() : NavRegistrar {
+class MainNavigatorRegister @Inject constructor() : NavRegistrar {
     override fun register(builder: EntryProviderScope<NavKey>, nav: NavigationManager) = with(builder) {
         entry<MainDest> {
             val viewModel = hiltViewModel<MainViewModel>()

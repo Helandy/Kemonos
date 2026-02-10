@@ -20,8 +20,7 @@ import su.afk.kemonos.common.presenter.baseScreen.BaseScreen
 import su.afk.kemonos.common.presenter.baseScreen.TopBarScroll
 import su.afk.kemonos.common.utilsUI.KemonosPreviewScreen
 import su.afk.kemonos.preferences.ui.CreatorViewMode
-import su.afk.kemonos.profile.data.FreshFavoriteArtistKey
-import su.afk.kemonos.profile.data.FreshFavoriteArtistsUpdates
+import su.afk.kemonos.profile.api.domain.favoriteProfiles.FreshFavoriteArtistKey
 import su.afk.kemonos.profile.presenter.favoriteProfiles.FavoriteProfilesState.*
 import su.afk.kemonos.profile.presenter.favoriteProfiles.views.favoriteProfilesSortOptions
 import su.afk.kemonos.profile.presenter.favoriteProfiles.views.uiDateBySort
@@ -95,8 +94,7 @@ internal fun FavoriteProfilesScreen(state: State, onEvent: (Event) -> Unit, effe
                     artist.uiDateBySort(state.sortedType)
                 },
                 isFreshProvider = { artist ->
-                    val freshSet = FreshFavoriteArtistsUpdates.get(state.selectedSite)
-                    freshSet.contains(
+                    state.freshSet.contains(
                         FreshFavoriteArtistKey(
                             name = artist.name,
                             service = artist.service,
