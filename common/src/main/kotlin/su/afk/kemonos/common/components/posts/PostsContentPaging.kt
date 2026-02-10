@@ -16,6 +16,7 @@ import su.afk.kemonos.preferences.ui.UiSettingModel
 @Composable
 fun PostsContentPaging(
     uiSettingModel: UiSettingModel,
+    postsViewMode: PostsViewMode,
     posts: LazyPagingItems<PostDomain>,
     gridState: LazyGridState,
     currentTag: Tag?,
@@ -25,7 +26,7 @@ fun PostsContentPaging(
 ) {
     val errorMapper = LocalErrorMapper.current
 
-    when (uiSettingModel.searchPostsViewMode) {
+    when (postsViewMode) {
         PostsViewMode.GRID -> {
             PostsGridPaging(
                 uiSettingModel = uiSettingModel,
@@ -59,7 +60,8 @@ fun PostsContentPaging(
             onRetry = onRetry
         )
         is LoadState.NotLoading -> {
-            if (posts.itemCount == 0 && currentTag == null) {
+            val appendFinished = (posts.loadState.append as? LoadState.NotLoading)?.endOfPaginationReached == true
+            if (appendFinished && posts.itemCount == 0 && currentTag == null) {
                 DefaultEmptyContent()
             }
         }

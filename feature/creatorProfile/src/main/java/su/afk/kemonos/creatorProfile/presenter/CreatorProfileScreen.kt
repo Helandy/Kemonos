@@ -5,7 +5,8 @@ import androidx.compose.foundation.lazy.grid.LazyGridState
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -26,7 +27,6 @@ import su.afk.kemonos.common.shared.view.SharedActionButton
 import su.afk.kemonos.common.toast.toast
 import su.afk.kemonos.common.utilsUI.KemonosPreviewScreen
 import su.afk.kemonos.creatorProfile.presenter.CreatorProfileState.*
-import su.afk.kemonos.creatorProfile.presenter.CreatorProfileState.State
 import su.afk.kemonos.creatorProfile.presenter.model.ProfileTab
 import su.afk.kemonos.creatorProfile.presenter.view.*
 import su.afk.kemonos.creatorProfile.presenter.view.discordProfile.DiscordProfilePlaceholder
@@ -45,6 +45,18 @@ internal fun CreatorScreen(state: State, onEvent: (Event) -> Unit, effect: Flow<
         LazyGridState()
     }
 
+    // При смене поиска/фильтров возвращаем список в начало.
+    LaunchedEffect(
+        state.searchText,
+        state.currentTag?.tag,
+        state.mediaFilter,
+        state.selectedTab
+    ) {
+        if (state.selectedTab == ProfileTab.POSTS) {
+            gridState.scrollToItem(0)
+        }
+    }
+
     LaunchedEffect(effect) {
         effect.collect { effect ->
             when (effect) {
@@ -57,28 +69,6 @@ internal fun CreatorScreen(state: State, onEvent: (Event) -> Unit, effect: Flow<
                 )
             }
         }
-    }
-
-    // todo вспомнить зачем оно тут
-    var lastIndex by remember { mutableIntStateOf(0) }
-    var lastOffset by remember { mutableIntStateOf(0) }
-    var headerVisible by remember { mutableStateOf(true) }
-
-    LaunchedEffect(gridState) {
-        snapshotFlow { gridState.firstVisibleItemIndex to gridState.firstVisibleItemScrollOffset }
-            .collect { (index, offset) ->
-                val threshold = 10
-                val scrollingDown = index > lastIndex || (index == lastIndex && offset - lastOffset > threshold)
-                val scrollingUp = index < lastIndex || (index == lastIndex && lastOffset - offset > threshold)
-
-                // правило:
-                // вниз -> скрываем, вверх -> показываем
-                if (scrollingDown) headerVisible = false
-                else if (scrollingUp) headerVisible = true
-
-                lastIndex = index
-                lastOffset = offset
-            }
     }
 
     val pullState = rememberPullToRefreshState()
@@ -146,7 +136,11 @@ internal fun CreatorScreen(state: State, onEvent: (Event) -> Unit, effect: Flow<
             }
         },
         isLoading = (state.loading || postsRefreshing) && !state.isDiscordProfile,
-        isEmpty = state.profile == null && !state.loading && !postsRefreshing,
+        isEmpty = state.profile == null &&
+                !state.loading &&
+                !postsRefreshing &&
+                state.searchText.isBlank() &&
+                !state.mediaFilter.isActive,
         onRetry = {
             onEvent(Event.Retry)
         }
@@ -185,6 +179,7 @@ private fun SelectedTab(
 ) {
     when (state.selectedTab) {
         ProfileTab.POSTS -> PostsContentPaging(
+            postsViewMode = state.uiSettingModel.profilePostsViewMode,
             uiSettingModel = state.uiSettingModel,
             posts = posts,
             gridState = gridState,

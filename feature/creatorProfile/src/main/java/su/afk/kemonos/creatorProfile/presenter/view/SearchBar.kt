@@ -37,6 +37,8 @@ fun SearchBar(
             onToggleHasImages = onToggleHasImages,
             label = stringResource(R.string.search),
             modifier = modifier,
+            bottomPadding = 2,
+            chipsTopPadding = 4,
             trailingIcon = {
                 IconButton(onClick = {
                     onClose()

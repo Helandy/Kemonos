@@ -22,13 +22,15 @@ fun PostsSearchBarWithMediaFilters(
     onToggleHasImages: () -> Unit,
     label: String,
     modifier: Modifier = Modifier,
+    bottomPadding: Int = 6,
+    chipsTopPadding: Int = 8,
     trailingIcon: @Composable (() -> Unit)? = null,
     onSearch: () -> Unit = {},
 ) {
     Column(
         modifier = modifier
             .fillMaxWidth()
-            .padding(bottom = 6.dp)
+            .padding(bottom = bottomPadding.dp)
     ) {
         OutlinedTextField(
             value = query,
@@ -46,7 +48,7 @@ fun PostsSearchBarWithMediaFilters(
             onToggleHasVideo = onToggleHasVideo,
             onToggleHasAttachments = onToggleHasAttachments,
             onToggleHasImages = onToggleHasImages,
-            modifier = Modifier.padding(top = 8.dp),
+            modifier = Modifier.padding(top = chipsTopPadding.dp),
         )
     }
 }

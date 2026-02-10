@@ -100,6 +100,7 @@ internal fun SearchPostsScreen(
     ) {
         /** Контент */
         PostsContentPaging(
+            postsViewMode = state.uiSettingModel.searchPostsViewMode,
             uiSettingModel = state.uiSettingModel,
             posts = posts,
             currentTag = null,

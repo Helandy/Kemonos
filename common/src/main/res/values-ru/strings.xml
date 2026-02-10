@@ -46,9 +46,9 @@
 
     <string name="search">Поиск…</string>
     <string name="close">Закрыть…</string>
-    <string name="post_filter_contains_video">Содержит видео</string>
-    <string name="post_filter_contains_attachments">Содержит вложения</string>
-    <string name="post_filter_contains_images">Содержит фото</string>
+    <string name="post_filter_contains_video">С видео</string>
+    <string name="post_filter_contains_attachments">С вложения</string>
+    <string name="post_filter_contains_images">С фото</string>
 
     <string name="next">Вперед</string>
     <string name="back">Назад</string>

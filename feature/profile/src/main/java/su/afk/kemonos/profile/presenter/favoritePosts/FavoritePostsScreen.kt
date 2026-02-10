@@ -70,6 +70,7 @@ internal fun FavoritePostsScreen(
             },
         ) {
             PostsContentPaging(
+                postsViewMode = state.uiSettingModel.favoritePostsViewMode,
                 uiSettingModel = state.uiSettingModel,
                 posts = posts,
                 onPostClick = { onEvent(Event.NavigateToPost(it)) },

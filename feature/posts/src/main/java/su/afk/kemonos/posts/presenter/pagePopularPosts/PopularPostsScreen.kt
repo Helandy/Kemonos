@@ -59,6 +59,7 @@ internal fun PopularPostsScreen(
         isLoading = isPageLoading,
     ) {
         PostsContentPaging(
+            postsViewMode = state.uiSettingModel.popularPostsViewMode,
             uiSettingModel = state.uiSettingModel,
             posts = posts,
             gridState = gridState,
