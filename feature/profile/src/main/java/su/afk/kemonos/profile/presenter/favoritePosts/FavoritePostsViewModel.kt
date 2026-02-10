@@ -1,11 +1,14 @@
 package su.afk.kemonos.profile.presenter.favoritePosts
 
 import androidx.paging.cachedIn
+import androidx.paging.filter
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
+import su.afk.kemonos.common.components.posts.filter.PostMediaFilter
+import su.afk.kemonos.common.components.posts.filter.matchesMediaFilter
 import su.afk.kemonos.common.error.IErrorHandlerUseCase
 import su.afk.kemonos.common.error.storage.RetryStorage
 import su.afk.kemonos.common.presenter.baseViewModel.BaseViewModelNew
@@ -38,6 +41,7 @@ internal class FavoritePostsViewModel @Inject constructor(
     override fun createInitialState(): State = State()
 
     private val searchQueryFlow = MutableStateFlow("")
+    private val mediaFilterFlow = MutableStateFlow(PostMediaFilter())
     private var observeSearchJob: Job? = null
 
     override fun onRetry() {
@@ -61,6 +65,9 @@ internal class FavoritePostsViewModel @Inject constructor(
     override fun onEvent(event: Event) {
         when (event) {
             is Event.SearchQueryChanged -> onSearchQueryChanged(event.query)
+            Event.ToggleHasVideo -> toggleHasVideo()
+            Event.ToggleHasAttachments -> toggleHasAttachments()
+            Event.ToggleHasImages -> toggleHasImages()
             is Event.Load -> load(event.refresh)
             is Event.NavigateToPost -> navigateToPost(event.post)
         }
@@ -75,17 +82,32 @@ internal class FavoritePostsViewModel @Inject constructor(
     private fun startObserveSearchOnce() {
         if (observeSearchJob != null) return
 
-        observeSearchJob = searchQueryFlow
-            .debounce(500L)
-            .map { it.trim() }
+        observeSearchJob = combine(
+            searchQueryFlow
+                .debounce(500L)
+                .map { it.trim() }
+                .distinctUntilChanged(),
+            mediaFilterFlow
+        ) { query, mediaFilter ->
+            query to mediaFilter
+        }
             .distinctUntilChanged()
-            .onEach { query ->
+            .onEach { (query, mediaFilter) ->
+                val pagingFlow = getFavoritePostsPagingUseCase(
+                    site = currentState.selectSite,
+                    query = query
+                )
                 setState {
                     copy(
-                        posts = getFavoritePostsPagingUseCase(
-                            site = currentState.selectSite,
-                            query = query
-                        ).cachedIn(viewModelScope)
+                        posts = if (mediaFilter.isActive) {
+                            pagingFlow.map { page ->
+                                page.filter { post ->
+                                    post.matchesMediaFilter(mediaFilter)
+                                }
+                            }.cachedIn(viewModelScope)
+                        } else {
+                            pagingFlow.cachedIn(viewModelScope)
+                        }
                     )
                 }
             }
@@ -132,4 +154,32 @@ internal class FavoritePostsViewModel @Inject constructor(
             )
         )
     }
+
+    private fun toggleHasVideo() {
+        val current = currentState.mediaFilter
+        val next = current.copy(hasVideo = !current.hasVideo)
+        mediaFilterFlow.value = next
+        setState {
+            copy(mediaFilter = next)
+        }
+    }
+
+    private fun toggleHasAttachments() {
+        val current = currentState.mediaFilter
+        val next = current.copy(hasAttachments = !current.hasAttachments)
+        mediaFilterFlow.value = next
+        setState {
+            copy(mediaFilter = next)
+        }
+    }
+
+    private fun toggleHasImages() {
+        val current = currentState.mediaFilter
+        val next = current.copy(hasImages = !current.hasImages)
+        mediaFilterFlow.value = next
+        setState {
+            copy(mediaFilter = next)
+        }
+    }
+
 }

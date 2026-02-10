@@ -43,7 +43,6 @@
     <string name="profile_favorites_title_kemono">Избранное Kemono</string>
     <string name="profile_favorites_profiles">Профили</string>
     <string name="profile_favorites_posts">Посты</string>
-
     <string name="profile_menu_keys">Ключи</string>
     <string name="profile_menu_review_dms">Проверить личные сообщения</string>
     <string name="profile_menu_export_favorites">Экспорт избранного</string>

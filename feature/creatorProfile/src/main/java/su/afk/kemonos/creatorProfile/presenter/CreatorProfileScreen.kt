@@ -106,6 +106,10 @@ internal fun CreatorScreen(state: State, onEvent: (Event) -> Unit, effect: Flow<
                     onSearchTextChange = {
                         onEvent(Event.SearchTextChanged(it))
                     },
+                    mediaFilter = state.mediaFilter,
+                    onToggleHasVideo = { onEvent(Event.ToggleHasVideo) },
+                    onToggleHasAttachments = { onEvent(Event.ToggleHasAttachments) },
+                    onToggleHasImages = { onEvent(Event.ToggleHasImages) },
                     visible = state.isSearchVisible,
                     onClose = {
                         onEvent(Event.CloseSearch)
