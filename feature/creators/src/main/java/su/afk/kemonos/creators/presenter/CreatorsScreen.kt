@@ -1,14 +1,8 @@
 package su.afk.kemonos.creators.presenter
 
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyListState
-import androidx.compose.foundation.lazy.grid.LazyGridState
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.rememberUpdatedState
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -25,7 +19,6 @@ import su.afk.kemonos.common.presenter.baseScreen.TopBarScroll
 import su.afk.kemonos.creators.presenter.CreatorsState.*
 import su.afk.kemonos.creators.presenter.model.creatorsSortOptions
 import su.afk.kemonos.domain.SelectedSite
-import su.afk.kemonos.preferences.ui.CreatorViewMode
 import su.afk.kemonos.preferences.ui.RandomButtonPlacement
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -50,24 +43,6 @@ internal fun CreatorsScreen(
     val isFirstPageLoading = refreshState is LoadState.Loading && pagingItems.itemCount == 0
 
     val isScreenLoading = isBusy || isFirstPageLoading
-
-    val listState = rememberSaveable(saver = LazyListState.Saver) { LazyListState() }
-    val gridState = rememberSaveable(saver = LazyGridState.Saver) { LazyGridState() }
-
-    val viewModeState by rememberUpdatedState(state.uiSettingModel.creatorsViewMode)
-
-    LaunchedEffect(effect) {
-        effect.collect { e ->
-            when (e) {
-                Effect.ScrollToTop -> {
-                    when (viewModeState) {
-                        CreatorViewMode.LIST -> listState.scrollToItem(0)
-                        CreatorViewMode.GRID -> gridState.scrollToItem(0)
-                    }
-                }
-            }
-        }
-    }
 
     val showRandomInSearch = state.uiSettingModel.randomButtonPlacement == RandomButtonPlacement.SEARCH_BAR
     val showRandomFab = state.uiSettingModel.randomButtonPlacement == RandomButtonPlacement.SCREEN
@@ -120,8 +95,6 @@ internal fun CreatorsScreen(
                 else
                     emptyList(),
             onCreatorClick = { onEvent(Event.CreatorClicked(it)) },
-            listState = listState,
-            gridState = gridState,
             expanded = state.randomExpanded,
             onClickRandomHeader = { onEvent(Event.ToggleRandomExpanded) },
         )

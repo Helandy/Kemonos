@@ -51,7 +51,5 @@ internal class CreatorsState {
         data object ToggleRandomExpanded : Event
     }
 
-    sealed interface Effect : UiEffect {
-        data object ScrollToTop : Effect
-    }
+    sealed interface Effect : UiEffect
 }

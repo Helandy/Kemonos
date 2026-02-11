@@ -46,7 +46,6 @@ internal class RandomListDelegate @Inject constructor(
                             randomSuggestionsLoading = false,
                         )
                     }
-                    setEffect(Effect.ScrollToTop)
                 }.onFailure {
                     setState { copy(randomSuggestionsLoading = false) }
                 }

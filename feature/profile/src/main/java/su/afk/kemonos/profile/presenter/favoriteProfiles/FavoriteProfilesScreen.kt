@@ -1,14 +1,10 @@
 package su.afk.kemonos.profile.presenter.favoriteProfiles
 
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.lazy.LazyListState
-import androidx.compose.foundation.lazy.grid.LazyGridState
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.paging.compose.collectAsLazyPagingItems
@@ -19,7 +15,6 @@ import su.afk.kemonos.common.components.searchBar.SearchBarNew
 import su.afk.kemonos.common.presenter.baseScreen.BaseScreen
 import su.afk.kemonos.common.presenter.baseScreen.TopBarScroll
 import su.afk.kemonos.common.utilsUI.KemonosPreviewScreen
-import su.afk.kemonos.preferences.ui.CreatorViewMode
 import su.afk.kemonos.profile.api.domain.favoriteProfiles.FreshFavoriteArtistKey
 import su.afk.kemonos.profile.presenter.favoriteProfiles.FavoriteProfilesState.*
 import su.afk.kemonos.profile.presenter.favoriteProfiles.views.favoriteProfilesSortOptions
@@ -31,22 +26,6 @@ internal fun FavoriteProfilesScreen(state: State, onEvent: (Event) -> Unit, effe
     val sortOptions = favoriteProfilesSortOptions()
     val pullState = rememberPullToRefreshState()
     val pagingItems = state.artistsPaged.collectAsLazyPagingItems()
-
-    val listState = rememberSaveable(saver = LazyListState.Saver) { LazyListState() }
-    val gridState = rememberSaveable(saver = LazyGridState.Saver) { LazyGridState() }
-
-    LaunchedEffect(effect) {
-        effect.collect { e ->
-            when (e) {
-                Effect.ScrollToTop -> {
-                    when (state.uiSettingModel.creatorsViewMode) {
-                        CreatorViewMode.LIST -> listState.scrollToItem(0)
-                        CreatorViewMode.GRID -> gridState.scrollToItem(0)
-                    }
-                }
-            }
-        }
-    }
 
     BaseScreen(
         contentPadding = PaddingValues(horizontal = 8.dp),
@@ -82,14 +61,12 @@ internal fun FavoriteProfilesScreen(state: State, onEvent: (Event) -> Unit, effe
         ) {
             CreatorsContentPaging(
                 dateMode = state.uiSettingModel.dateFormatMode,
-                viewMode = state.uiSettingModel.creatorsViewMode,
+                viewMode = state.uiSettingModel.creatorsFavoriteViewMode,
                 pagingItems = pagingItems,
                 randomItems = emptyList(),
                 onCreatorClick = { creator ->
                     onEvent(Event.CreatorClicked(creator = creator, isFresh = false))
                 },
-                listState = listState,
-                gridState = gridState,
                 updatedProvider = { artist ->
                     artist.uiDateBySort(state.sortedType)
                 },

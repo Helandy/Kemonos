@@ -46,7 +46,5 @@ internal class FavoriteProfilesState {
         data class CreatorClicked(val creator: FavoriteArtist, val isFresh: Boolean) : Event
     }
 
-    sealed interface Effect : UiEffect {
-        data object ScrollToTop : Effect
-    }
+    sealed interface Effect : UiEffect
 }
