@@ -16,6 +16,7 @@ import su.afk.kemonos.profile.presenter.setting.view.uiSetting.common.SectionSpa
 import su.afk.kemonos.profile.presenter.setting.view.uiSetting.common.SettingsSectionTitle
 import su.afk.kemonos.profile.presenter.setting.view.uiSetting.date.DateFormatRow
 import su.afk.kemonos.profile.presenter.setting.view.uiSetting.language.AppLanguageSettingsRow
+import su.afk.kemonos.profile.presenter.setting.view.uiSetting.language.openAppDeepLinksSettingsSafely
 import su.afk.kemonos.profile.presenter.setting.view.uiSetting.language.openAppLanguageSettingsSafely
 
 @Composable
@@ -37,6 +38,14 @@ internal fun GeneralSettingsSection(
         title = stringResource(R.string.settings_ui_app_language_title),
         subtitle = stringResource(R.string.settings_ui_app_language_subtitle),
         onClick = { context.openAppLanguageSettingsSafely() }
+    )
+
+    Spacer(Modifier.height(8.dp))
+
+    AppLanguageSettingsRow(
+        title = stringResource(R.string.settings_ui_deep_links_title),
+        subtitle = stringResource(R.string.settings_ui_deep_links_subtitle),
+        onClick = { context.openAppDeepLinksSettingsSafely() }
     )
 
     Spacer(Modifier.height(8.dp))

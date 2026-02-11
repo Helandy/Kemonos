@@ -43,6 +43,31 @@ internal fun Context.openAppLanguageSettingsSafely() {
     }
 }
 
+internal fun Context.openAppDeepLinksSettingsSafely() {
+    val candidates = buildList {
+        add(
+            Intent("android.settings.APP_OPEN_BY_DEFAULT_SETTINGS").apply {
+                data = Uri.fromParts("package", packageName, null)
+                putExtra("android.provider.extra.APP_PACKAGE", packageName)
+            }
+        )
+        add(
+            Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
+                data = Uri.fromParts("package", packageName, null)
+            }
+        )
+        add(Intent(Settings.ACTION_MANAGE_APPLICATIONS_SETTINGS))
+    }
+
+    val pm = packageManager
+    candidates.forEach { intent ->
+        if (intent.resolveActivity(pm) != null) {
+            val started = runCatching { startActivity(intent) }.isSuccess
+            if (started) return
+        }
+    }
+}
+
 @Composable
 internal fun AppLanguageSettingsRow(
     title: String,
