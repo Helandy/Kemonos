@@ -6,10 +6,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.DateRange
-import androidx.compose.material.icons.filled.MoreVert
-import androidx.compose.material.icons.filled.Search
-import androidx.compose.material.icons.filled.Share
+import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -39,6 +36,7 @@ fun CreatorHeader(
     showSearchButton: Boolean,
     showInfoButton: Boolean,
     onSearchClick: () -> Unit,
+    onOpenPlatformClick: (() -> Unit)? = null,
     onShareClick: (() -> Unit)? = null,
     onClickHeader: (() -> Unit)?,
 ) {
@@ -173,6 +171,22 @@ fun CreatorHeader(
                                 )
                             }
 
+                            onOpenPlatformClick?.let { onOpenPlatform ->
+                                DropdownMenuItem(
+                                    text = { Text(stringResource(R.string.open_platform_profile)) },
+                                    leadingIcon = {
+                                        Icon(
+                                            imageVector = Icons.Default.OpenInBrowser,
+                                            contentDescription = null
+                                        )
+                                    },
+                                    onClick = {
+                                        expanded = false
+                                        onOpenPlatform()
+                                    }
+                                )
+                            }
+
                             updated?.let { upd ->
                                 DropdownMenuItem(
                                     text = { Text(upd.toUiDateTime(dateMode)) },
@@ -207,6 +221,7 @@ private fun PreviewCreatorHeader() {
             showSearchButton = true,
             showInfoButton = true,
             onSearchClick = {},
+            onOpenPlatformClick = null,
             onShareClick = null,
             onClickHeader = {},
         )

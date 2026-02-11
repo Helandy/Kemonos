@@ -43,6 +43,7 @@
     <string name="saved">Сохранено</string>
 
     <string name="open_with">Открыть через…</string>
+    <string name="open_platform_profile">Ссылка на платформу</string>
     <string name="vlc_not_installed">VLC не установлен. Открываю через другое приложение…</string>
 
     <string name="search">Поиск…</string>

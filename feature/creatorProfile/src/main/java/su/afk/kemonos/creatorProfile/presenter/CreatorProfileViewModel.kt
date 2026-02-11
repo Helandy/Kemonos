@@ -60,6 +60,7 @@ internal class CreatorProfileViewModel @AssistedInject constructor(
 
             Event.Back -> navManager.back()
             Event.CopyProfileLink -> copyProfileLink()
+            is Event.OpenCreatorPlatformLink -> setEffect(Effect.OpenUrl(event.url))
 
             is Event.OpenImage -> navigationDelegate.navigateToOpenImage(event.url)
             is Event.OpenLinkProfile -> navigationDelegate.navigateToLinkProfile(event.link)

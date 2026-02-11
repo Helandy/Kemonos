@@ -75,6 +75,7 @@ internal class CreatorProfileState {
         /** навигация/шары */
         data object Back : Event
         data object CopyProfileLink : Event
+        data class OpenCreatorPlatformLink(val url: String) : Event
 
         data class OpenImage(val url: String) : Event
         data class OpenLinkProfile(val link: ProfileLink) : Event

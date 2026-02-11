@@ -6,6 +6,7 @@ import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
@@ -70,6 +71,15 @@ internal fun CreatorScreen(state: State, onEvent: (Event) -> Unit, effect: Flow<
                     showSearchButton = true,
                     showInfoButton = true,
                     onSearchClick = { onEvent(Event.ToggleSearch) },
+                    onOpenPlatformClick = remember(profile.service, profile.publicId, profile.id) {
+                        buildCreatorPlatformUrl(
+                            service = profile.service,
+                            publicId = profile.publicId,
+                            id = profile.id
+                        )
+                    }?.let { link ->
+                        { onEvent(Event.OpenCreatorPlatformLink(link)) }
+                    },
                     onShareClick = { onEvent(Event.CopyProfileLink) },
                     onClickHeader = null,
                 )
@@ -207,5 +217,23 @@ private fun PreviewCreatorScreen() {
             onEvent = {},
             effect = flowOf()
         )
+    }
+}
+
+private fun buildCreatorPlatformUrl(service: String, publicId: String?, id: String): String? {
+    val slug = publicId?.trim()?.removePrefix("@")?.ifBlank { null } ?: id.trim().ifBlank { return null }
+
+    return when (service.lowercase()) {
+        "patreon" -> "https://www.patreon.com/$slug"
+        "fanbox" -> "https://www.fanbox.cc/@$slug"
+        "onlyfans" -> "https://onlyfans.com/$slug"
+        "fansly" -> "https://fansly.com/$slug"
+        "candfans" -> "https://candfans.jp/$slug"
+        "boosty" -> "https://boosty.to/$slug"
+        "fantia" -> "https://fantia.jp/fanclubs/$slug"
+        "gumroad" -> "https://$slug.gumroad.com"
+        "subscribestar", "subscriblestar" -> "https://subscribestar.adult/$slug"
+        "dlsite", "dlslite" -> "https://www.dlsite.com/home/circle/profile/=/maker_id/$slug.html?locale=en_US"
+        else -> null
     }
 }
