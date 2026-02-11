@@ -18,6 +18,7 @@ internal fun LazyListScope.postAudioSection(
     onInfoRequested: (String) -> Unit,
     onPlay: (AttachmentDomain) -> Unit,
     onDownload: (AttachmentDomain) -> Unit,
+    showHeader: Boolean = true,
 ) {
     val audios = attachments.asSequence()
         .filter { isAudioFile(it.path) }
@@ -26,12 +27,14 @@ internal fun LazyListScope.postAudioSection(
 
     if (audios.isEmpty()) return
 
-    item(key = "audio_header") {
-        Text(
-            text = stringResource(R.string.audio_file),
-            style = MaterialTheme.typography.titleMedium,
-            modifier = Modifier.padding(start = 4.dp, top = 16.dp)
-        )
+    if (showHeader) {
+        item(key = "audio_header") {
+            Text(
+                text = stringResource(R.string.audio_file),
+                style = MaterialTheme.typography.titleMedium,
+                modifier = Modifier.padding(start = 4.dp, top = 16.dp)
+            )
+        }
     }
 
     items(

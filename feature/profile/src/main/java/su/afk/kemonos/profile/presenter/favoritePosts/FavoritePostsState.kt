@@ -3,6 +3,7 @@ package su.afk.kemonos.profile.presenter.favoritePosts
 import androidx.paging.PagingData
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
+import su.afk.kemonos.common.components.posts.filter.PostMediaFilter
 import su.afk.kemonos.common.presenter.baseViewModel.UiEffect
 import su.afk.kemonos.common.presenter.baseViewModel.UiEvent
 import su.afk.kemonos.common.presenter.baseViewModel.UiState
@@ -17,6 +18,7 @@ internal class FavoritePostsState {
         val uiSettingModel: UiSettingModel = UiSettingModel(),
 
         val searchQuery: String = "",
+        val mediaFilter: PostMediaFilter = PostMediaFilter(),
         val posts: Flow<PagingData<PostDomain>> = emptyFlow(),
     ) : UiState
 
@@ -24,6 +26,10 @@ internal class FavoritePostsState {
         data class SearchQueryChanged(val query: String) : Event
         data class Load(val refresh: Boolean = false) : Event
         data class NavigateToPost(val post: PostDomain) : Event
+
+        data object ToggleHasVideo : Event
+        data object ToggleHasAttachments : Event
+        data object ToggleHasImages : Event
     }
 
     sealed interface Effect : UiEffect

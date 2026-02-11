@@ -2,16 +2,13 @@ package su.afk.kemonos.posts.presenter.pageSearchPosts
 
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.grid.LazyGridState
-import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Casino
-import androidx.compose.material3.*
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -22,6 +19,7 @@ import su.afk.kemonos.common.R
 import su.afk.kemonos.common.components.button.RandomButton
 import su.afk.kemonos.common.components.button.SiteToggleFab
 import su.afk.kemonos.common.components.posts.PostsContentPaging
+import su.afk.kemonos.common.components.searchBar.PostsSearchBarWithMediaFilters
 import su.afk.kemonos.common.presenter.baseScreen.BaseScreen
 import su.afk.kemonos.common.presenter.baseScreen.TopBarScroll
 import su.afk.kemonos.domain.SelectedSite
@@ -37,15 +35,11 @@ internal fun SearchPostsScreen(
     siteSwitching: Boolean,
     onEvent: (Event) -> Unit,
 ) {
-
     val posts = state.posts.collectAsLazyPagingItems()
 
     val isPageLoading = posts.loadState.refresh is LoadState.Loading
     val isBusy = isPageLoading || siteSwitching
 
-    val gridState = rememberSaveable(saver = LazyGridState.Saver) {
-        LazyGridState()
-    }
     val focusManager = LocalFocusManager.current
 
     val placement = state.uiSettingModel.randomButtonPlacement
@@ -58,12 +52,15 @@ internal fun SearchPostsScreen(
         contentPadding = PaddingValues(horizontal = 8.dp),
         isScroll = false,
         topBar = {
-            OutlinedTextField(
-                value = state.searchQuery,
-                onValueChange = { onEvent(Event.SearchQueryChanged(it)) },
-                label = { Text(stringResource(R.string.search)) },
-                singleLine = true,
-                modifier = Modifier.fillMaxWidth().padding(bottom = 6.dp),
+            PostsSearchBarWithMediaFilters(
+                query = state.searchQuery,
+                onQueryChange = { onEvent(Event.SearchQueryChanged(it)) },
+                mediaFilter = state.mediaFilter,
+                onToggleHasVideo = { onEvent(Event.ToggleHasVideo) },
+                onToggleHasAttachments = { onEvent(Event.ToggleHasAttachments) },
+                onToggleHasImages = { onEvent(Event.ToggleHasImages) },
+                label = stringResource(R.string.search),
+                showMediaFiltersInfoTooltip = true,
                 trailingIcon = {
                     if (showRandomInSearchBar) {
                         IconButton(
@@ -78,11 +75,7 @@ internal fun SearchPostsScreen(
                         }
                     }
                 },
-                keyboardActions = KeyboardActions(
-                    onSearch = {
-                        focusManager.clearFocus()
-                    }
-                )
+                onSearch = { focusManager.clearFocus() }
             )
         },
         floatingActionButtonStart = {
@@ -103,12 +96,12 @@ internal fun SearchPostsScreen(
     ) {
         /** Контент */
         PostsContentPaging(
+            postsViewMode = state.uiSettingModel.searchPostsViewMode,
             uiSettingModel = state.uiSettingModel,
             posts = posts,
             currentTag = null,
             onPostClick = { onEvent(Event.NavigateToPost(it)) },
             onRetry = { posts.retry() },
-            gridState = gridState
         )
     }
 }

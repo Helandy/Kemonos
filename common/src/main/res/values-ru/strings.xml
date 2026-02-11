@@ -7,7 +7,7 @@
     <string name="video_screen_screen_rotation">Повернуть экран</string>
     <string name="info">Инфо</string>
     <string name="attachments_count">📎 %1$d влож.</string>
-    <string name="tags">Tags:</string>
+    <string name="tags">Тэги</string>
     <string name="empty_screen">Нет данных</string>
     <string name="attachment_section">📎 Вложения</string>
     <string name="comments_section">💬 Комментарии</string>
@@ -38,14 +38,24 @@
     <string name="profile_tab_dms">ЛС</string>
     <string name="profile_tab_links">Ссылки</string>
     <string name="random">Случайный</string>
+    <string name="share">Поделиться</string>
     <string name="save">Сохранить</string>
     <string name="saved">Сохранено</string>
 
     <string name="open_with">Открыть через…</string>
+    <string name="open_platform_profile">Ссылка на платформу</string>
     <string name="vlc_not_installed">VLC не установлен. Открываю через другое приложение…</string>
 
     <string name="search">Поиск…</string>
     <string name="close">Закрыть…</string>
+    <string name="post_filter_contains_video">С видео</string>
+    <string name="post_filter_contains_attachments">С вложения</string>
+    <string name="post_filter_contains_images">С фото</string>
+    <string name="posts_filter_local_info_tooltip">Фильтры работают локально, не в API. Больше фильтров может увеличить
+        число 429 ошибок.
+    </string>
+    <string name="show_preview_file_names">Показывать имена файлов</string>
+    <string name="hide_preview_file_names">Скрыть имена файлов</string>
 
     <string name="next">Вперед</string>
     <string name="back">Назад</string>

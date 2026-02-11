@@ -22,12 +22,18 @@ internal class StoreCreatorsRepository @Inject constructor(
 ) : IStoreCreatorsRepository {
 
     override suspend fun updateCreators(site: SelectedSite, creators: List<Creators>) {
+        if (creators.isEmpty()) {
+            updateCacheTimestamp(site)
+            return
+        }
+
+        val entities = creators.map { it.toEntity() }
         when (site) {
             SelectedSite.K -> {
-                kemonoDao.replaceAllChunked(creators.map { it.toEntity() })
+                kemonoDao.replaceAllChunked(entities)
             }
             SelectedSite.C -> {
-                coomerDao.replaceAllChunked(creators.map { it.toEntity() })
+                coomerDao.replaceAllChunked(entities)
             }
         }
         updateCacheTimestamp(site)

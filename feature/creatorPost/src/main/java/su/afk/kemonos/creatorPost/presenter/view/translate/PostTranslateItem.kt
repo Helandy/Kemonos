@@ -39,7 +39,7 @@ internal fun PostTranslateItem(
     modifier: Modifier = Modifier,
 ) {
     val clipboard = LocalClipboard.current
-    val tooltipState = rememberTooltipState()
+    val tooltipState = rememberTooltipState(isPersistent = true)
     val scope = rememberCoroutineScope()
 
     Column(modifier = modifier.fillMaxWidth()) {

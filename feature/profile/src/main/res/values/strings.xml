@@ -44,7 +44,6 @@
     <string name="profile_favorites_title_kemono">Favorites Kemono</string>
     <string name="profile_favorites_profiles">Profiles</string>
     <string name="profile_favorites_posts">Posts</string>
-
     <string name="profile_menu_keys">Keys</string>
     <string name="profile_menu_review_dms">Review DMs</string>
     <string name="profile_menu_export_favorites">Export favorites</string>
@@ -165,6 +164,9 @@
     <string name="settings_ui_date_format_title">Date format</string>
     <string name="settings_ui_app_language_title">App language</string>
     <string name="settings_ui_app_language_subtitle">Open Android language settings for this app</string>
+    <string name="settings_ui_deep_links_title">Deep links</string>
+    <string name="settings_ui_deep_links_subtitle">Open Android app settings, then enable “Open supported links”.
+    </string>
 
     <string name="settings_cache_sizes_title">Cache</string>
 

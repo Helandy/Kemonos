@@ -22,20 +22,24 @@ import su.afk.kemonos.domain.models.AttachmentDomain
 @Composable
 fun PostAttachmentsSection(
     attachments: List<AttachmentDomain>,
-    onAttachmentClick: (String) -> Unit
+    fallbackBaseUrl: String,
+    onAttachmentClick: (String) -> Unit,
+    showHeader: Boolean = true,
 ) {
     if (attachments.isEmpty()) return
 
-    Text(
-        stringResource(R.string.attachment_section),
-        style = MaterialTheme.typography.titleMedium,
-        color = MaterialTheme.colorScheme.onBackground,
-        modifier = Modifier.padding(start = 4.dp, top = 8.dp, end = 16.dp)
-    )
+    if (showHeader) {
+        Text(
+            stringResource(R.string.attachment_section),
+            style = MaterialTheme.typography.titleMedium,
+            color = MaterialTheme.colorScheme.onBackground,
+            modifier = Modifier.padding(start = 4.dp, top = 8.dp, end = 16.dp)
+        )
+    }
 
     Column {
         attachments.forEach { att ->
-            val url = att.buildDataUrl()
+            val url = att.buildDataUrl(fallbackBaseUrl)
 
             Row(
                 verticalAlignment = Alignment.CenterVertically,

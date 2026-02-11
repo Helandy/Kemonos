@@ -35,7 +35,6 @@ internal class CreatorsViewModel @Inject constructor(
     override val errorHandler: IErrorHandlerUseCase,
     override val retryStorage: RetryStorage,
 ) : SiteAwareBaseViewModelNew<State, Event, Effect>() {
-
     override fun createInitialState(): State = State()
 
     override fun onRetry() {
@@ -63,15 +62,13 @@ internal class CreatorsViewModel @Inject constructor(
     }
 
     init {
+        observeUiSetting()
         initSiteAware()
     }
 
-    private fun initAndReloadSite() {
-        observeUiSetting()
-
-        viewModelScope.launch {
-            setState { copy(loading = true) }
-
+    private suspend fun initAndReloadSite() {
+        setState { copy(loading = true) }
+        try {
             /** Проверка свежий ли кэш (если нет загружаем с сети) */
             checkFreshCache()
 
@@ -89,7 +86,7 @@ internal class CreatorsViewModel @Inject constructor(
 
             /** Подгрузка рандомных авторов */
             randomListDelegate.loadRandom(viewModelScope, currentState, ::setState, ::setEffect)
-
+        } finally {
             setState { copy(loading = false) }
         }
     }

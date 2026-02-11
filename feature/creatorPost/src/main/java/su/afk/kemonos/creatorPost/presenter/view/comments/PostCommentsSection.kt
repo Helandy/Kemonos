@@ -23,17 +23,20 @@ import su.afk.kemonos.preferences.ui.DateFormatMode
 internal fun LazyListScope.postCommentsSection(
     dateMode: DateFormatMode,
     commentDomains: List<CommentDomain>,
+    showHeader: Boolean = true,
 ) {
     if (commentDomains.isEmpty()) return
     if (commentDomains.firstOrNull()?.id.isNullOrBlank()) return
 
-    item(key = "comments_header") {
-        Text(
-            text = stringResource(R.string.comments_section),
-            style = MaterialTheme.typography.titleMedium,
-            color = MaterialTheme.colorScheme.onBackground,
-            modifier = Modifier.padding(vertical = 8.dp)
-        )
+    if (showHeader) {
+        item(key = "comments_header") {
+            Text(
+                text = stringResource(R.string.comments_section),
+                style = MaterialTheme.typography.titleMedium,
+                color = MaterialTheme.colorScheme.onBackground,
+                modifier = Modifier.padding(vertical = 8.dp)
+            )
+        }
     }
 
     items(

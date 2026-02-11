@@ -13,7 +13,8 @@ internal interface CoomerCreatorsDao {
     suspend fun clear()
 
     @Transaction
-    suspend fun replaceAllChunked(entities: List<CreatorsEntity>, chunkSize: Int = 2000) {
+    suspend fun replaceAllChunked(entities: List<CreatorsEntity>, chunkSize: Int = 5000) {
+        if (entities.isEmpty()) return
         clear()
         entities.chunked(chunkSize).forEach { insertServices(it) }
     }

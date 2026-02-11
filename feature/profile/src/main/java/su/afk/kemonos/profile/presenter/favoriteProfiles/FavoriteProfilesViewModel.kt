@@ -14,10 +14,13 @@ import su.afk.kemonos.domain.SelectedSite
 import su.afk.kemonos.domain.models.creator.FavoriteArtist
 import su.afk.kemonos.navigation.NavigationManager
 import su.afk.kemonos.navigation.storage.NavigationStorage
+import su.afk.kemonos.preferences.favoriteProfiles.IFavoriteProfilesFiltersUseCase
 import su.afk.kemonos.preferences.site.ISelectedSiteUseCase
 import su.afk.kemonos.preferences.ui.IUiSettingUseCase
 import su.afk.kemonos.profile.api.domain.IGetFavoriteArtistsUseCase
+import su.afk.kemonos.profile.api.domain.favoriteProfiles.FavoriteSortedType
 import su.afk.kemonos.profile.domain.favorites.creator.GetFavoriteArtistsPagingUseCase
+import su.afk.kemonos.profile.domain.favorites.fresh.IFreshFavoriteArtistsUpdatesUseCase
 import su.afk.kemonos.profile.presenter.favoriteProfiles.FavoriteProfilesState.*
 import su.afk.kemonos.profile.utils.Const.KEY_SELECT_SITE
 import javax.inject.Inject
@@ -27,10 +30,12 @@ internal class FavoriteProfilesViewModel @Inject constructor(
     private val getFavoriteArtistsUseCase: IGetFavoriteArtistsUseCase,
     private val getFavoriteArtistsPagingUseCase: GetFavoriteArtistsPagingUseCase,
     private val selectedSiteUseCase: ISelectedSiteUseCase,
+    private val favoriteProfilesFiltersUseCase: IFavoriteProfilesFiltersUseCase,
     private val navManager: NavigationManager,
     private val creatorProfileNavigator: ICreatorProfileNavigator,
     private val navigationStorage: NavigationStorage,
     private val uiSetting: IUiSettingUseCase,
+    private val freshUpdatesUseCase: IFreshFavoriteArtistsUpdatesUseCase,
     override val errorHandler: IErrorHandlerUseCase,
     override val retryStorage: RetryStorage,
 ) : BaseViewModelNew<State, Event, Effect>() {
@@ -60,12 +65,15 @@ internal class FavoriteProfilesViewModel @Inject constructor(
 
             is Event.SortSelected -> {
                 setState { copy(sortedType = event.value) }
+                saveSortedType(event.value)
                 requestPaging()
                 setEffect(Effect.ScrollToTop)
             }
 
             Event.ToggleSortOrder -> {
-                setState { copy(sortAscending = !sortAscending) }
+                val newSortAscending = !currentState.sortAscending
+                setState { copy(sortAscending = newSortAscending) }
+                saveSortAscending(newSortAscending)
                 requestPaging()
                 setEffect(Effect.ScrollToTop)
             }
@@ -111,7 +119,19 @@ internal class FavoriteProfilesViewModel @Inject constructor(
         selectedSiteUseCase.setSite(site)
         selectedSiteUseCase.selectedSite.first { it == site }
 
-        setState { copy(selectedSite = site) }
+        val savedFilters = favoriteProfilesFiltersUseCase.read(site)
+        val restoredSortType = runCatching {
+            enumValueOf<FavoriteSortedType>(savedFilters.sortedTypeName)
+        }.getOrDefault(FavoriteSortedType.NewPostsDate)
+        setState {
+            copy(
+                selectedSite = site,
+                selectedService = "Services",
+                sortedType = restoredSortType,
+                sortAscending = savedFilters.sortAscending,
+                freshSet = freshUpdatesUseCase.get(site),
+            )
+        }
 
         // 1) сначала обновляем БД сетью (если нужно)
         load(refresh = false)
@@ -159,10 +179,19 @@ internal class FavoriteProfilesViewModel @Inject constructor(
         setState {
             copy(
                 services = listOf("Services") + services,
+                freshSet = freshUpdatesUseCase.get(currentState.selectedSite),
                 loading = false,
                 refreshing = false
             )
         }
+    }
+
+    private fun saveSortedType(value: FavoriteSortedType) = viewModelScope.launch {
+        favoriteProfilesFiltersUseCase.setSortedTypeName(currentState.selectedSite, value.name)
+    }
+
+    private fun saveSortAscending(value: Boolean) = viewModelScope.launch {
+        favoriteProfilesFiltersUseCase.setSortAscending(currentState.selectedSite, value)
     }
 
     override fun onRetry() {
@@ -179,4 +208,3 @@ internal class FavoriteProfilesViewModel @Inject constructor(
         )
     }
 }
-

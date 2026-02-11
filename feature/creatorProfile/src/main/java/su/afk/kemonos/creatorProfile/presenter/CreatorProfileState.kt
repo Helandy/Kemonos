@@ -3,6 +3,7 @@ package su.afk.kemonos.creatorProfile.presenter
 import androidx.paging.PagingData
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
+import su.afk.kemonos.common.components.posts.filter.PostMediaFilter
 import su.afk.kemonos.common.presenter.baseViewModel.UiEffect
 import su.afk.kemonos.common.presenter.baseViewModel.UiEvent
 import su.afk.kemonos.common.presenter.baseViewModel.UiState
@@ -49,6 +50,7 @@ internal class CreatorProfileState {
 
         /** Поиск */
         val searchText: String = "",
+        val mediaFilter: PostMediaFilter = PostMediaFilter(),
         /** показывать меню поиска */
         val isSearchVisible: Boolean = false,
 
@@ -73,6 +75,7 @@ internal class CreatorProfileState {
         /** навигация/шары */
         data object Back : Event
         data object CopyProfileLink : Event
+        data class OpenCreatorPlatformLink(val url: String) : Event
 
         data class OpenImage(val url: String) : Event
         data class OpenLinkProfile(val link: ProfileLink) : Event
@@ -87,6 +90,11 @@ internal class CreatorProfileState {
         data object ToggleSearch : Event
         data object CloseSearch : Event
         data class SearchTextChanged(val text: String) : Event
+
+        /** Фильтры */
+        data object ToggleHasVideo : Event
+        data object ToggleHasAttachments : Event
+        data object ToggleHasImages : Event
 
         /** избранное */
         data object FavoriteClick : Event

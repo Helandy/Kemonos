@@ -1,12 +1,12 @@
 package su.afk.kemonos.creatorProfile.presenter
 
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.grid.LazyGridState
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
-import androidx.compose.runtime.*
-import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
@@ -22,11 +22,9 @@ import su.afk.kemonos.common.components.posts.PostsContentPaging
 import su.afk.kemonos.common.presenter.baseScreen.BaseScreen
 import su.afk.kemonos.common.presenter.baseScreen.TopBarScroll
 import su.afk.kemonos.common.shared.ShareActions
-import su.afk.kemonos.common.shared.view.SharedActionButton
 import su.afk.kemonos.common.toast.toast
 import su.afk.kemonos.common.utilsUI.KemonosPreviewScreen
 import su.afk.kemonos.creatorProfile.presenter.CreatorProfileState.*
-import su.afk.kemonos.creatorProfile.presenter.CreatorProfileState.State
 import su.afk.kemonos.creatorProfile.presenter.model.ProfileTab
 import su.afk.kemonos.creatorProfile.presenter.view.*
 import su.afk.kemonos.creatorProfile.presenter.view.discordProfile.DiscordProfilePlaceholder
@@ -41,9 +39,6 @@ internal fun CreatorScreen(state: State, onEvent: (Event) -> Unit, effect: Flow<
     val posts = state.profilePosts.collectAsLazyPagingItems()
 
     val postsRefreshing = posts.loadState.refresh is LoadState.Loading
-    val gridState = rememberSaveable(saver = LazyGridState.Saver) {
-        LazyGridState()
-    }
 
     LaunchedEffect(effect) {
         effect.collect { effect ->
@@ -57,28 +52,6 @@ internal fun CreatorScreen(state: State, onEvent: (Event) -> Unit, effect: Flow<
                 )
             }
         }
-    }
-
-    // todo вспомнить зачем оно тут
-    var lastIndex by remember { mutableIntStateOf(0) }
-    var lastOffset by remember { mutableIntStateOf(0) }
-    var headerVisible by remember { mutableStateOf(true) }
-
-    LaunchedEffect(gridState) {
-        snapshotFlow { gridState.firstVisibleItemIndex to gridState.firstVisibleItemScrollOffset }
-            .collect { (index, offset) ->
-                val threshold = 10
-                val scrollingDown = index > lastIndex || (index == lastIndex && offset - lastOffset > threshold)
-                val scrollingUp = index < lastIndex || (index == lastIndex && lastOffset - offset > threshold)
-
-                // правило:
-                // вниз -> скрываем, вверх -> показываем
-                if (scrollingDown) headerVisible = false
-                else if (scrollingUp) headerVisible = true
-
-                lastIndex = index
-                lastOffset = offset
-            }
     }
 
     val pullState = rememberPullToRefreshState()
@@ -98,6 +71,16 @@ internal fun CreatorScreen(state: State, onEvent: (Event) -> Unit, effect: Flow<
                     showSearchButton = true,
                     showInfoButton = true,
                     onSearchClick = { onEvent(Event.ToggleSearch) },
+                    onOpenPlatformClick = remember(profile.service, profile.publicId, profile.id) {
+                        buildCreatorPlatformUrl(
+                            service = profile.service,
+                            publicId = profile.publicId,
+                            id = profile.id
+                        )
+                    }?.let { link ->
+                        { onEvent(Event.OpenCreatorPlatformLink(link)) }
+                    },
+                    onShareClick = { onEvent(Event.CopyProfileLink) },
                     onClickHeader = null,
                 )
 
@@ -106,6 +89,10 @@ internal fun CreatorScreen(state: State, onEvent: (Event) -> Unit, effect: Flow<
                     onSearchTextChange = {
                         onEvent(Event.SearchTextChanged(it))
                     },
+                    mediaFilter = state.mediaFilter,
+                    onToggleHasVideo = { onEvent(Event.ToggleHasVideo) },
+                    onToggleHasAttachments = { onEvent(Event.ToggleHasAttachments) },
+                    onToggleHasImages = { onEvent(Event.ToggleHasImages) },
                     visible = state.isSearchVisible,
                     onClose = {
                         onEvent(Event.CloseSearch)
@@ -123,13 +110,6 @@ internal fun CreatorScreen(state: State, onEvent: (Event) -> Unit, effect: Flow<
                 )
         },
         contentModifier = Modifier.padding(horizontal = 8.dp),
-        floatingActionButtonStart = {
-            if (!state.loading) {
-                SharedActionButton(
-                    onClick = { onEvent(Event.CopyProfileLink) }
-                )
-            }
-        },
         floatingActionButtonEnd = {
             if (state.isFavoriteShowButton && state.loading.not()) {
                 FavoriteActionButton(
@@ -142,7 +122,11 @@ internal fun CreatorScreen(state: State, onEvent: (Event) -> Unit, effect: Flow<
             }
         },
         isLoading = (state.loading || postsRefreshing) && !state.isDiscordProfile,
-        isEmpty = state.profile == null && !state.loading && !postsRefreshing,
+        isEmpty = state.profile == null &&
+                !state.loading &&
+                !postsRefreshing &&
+                state.searchText.isBlank() &&
+                !state.mediaFilter.isActive,
         onRetry = {
             onEvent(Event.Retry)
         }
@@ -165,7 +149,6 @@ internal fun CreatorScreen(state: State, onEvent: (Event) -> Unit, effect: Flow<
                 state = state,
                 onEvent = onEvent,
                 posts = posts,
-                gridState = gridState,
             )
         }
     }
@@ -177,13 +160,12 @@ private fun SelectedTab(
     state: State,
     onEvent: (Event) -> Unit,
     posts: LazyPagingItems<PostDomain>,
-    gridState: LazyGridState,
 ) {
     when (state.selectedTab) {
         ProfileTab.POSTS -> PostsContentPaging(
+            postsViewMode = state.uiSettingModel.profilePostsViewMode,
             uiSettingModel = state.uiSettingModel,
             posts = posts,
-            gridState = gridState,
             currentTag = state.currentTag,
             onPostClick = {
                 onEvent(Event.OpenPost(it))
@@ -235,5 +217,23 @@ private fun PreviewCreatorScreen() {
             onEvent = {},
             effect = flowOf()
         )
+    }
+}
+
+private fun buildCreatorPlatformUrl(service: String, publicId: String?, id: String): String? {
+    val slug = publicId?.trim()?.removePrefix("@")?.ifBlank { null } ?: id.trim().ifBlank { return null }
+
+    return when (service.lowercase()) {
+        "patreon" -> "https://www.patreon.com/$slug"
+        "fanbox" -> "https://www.fanbox.cc/@$slug"
+        "onlyfans" -> "https://onlyfans.com/$slug"
+        "fansly" -> "https://fansly.com/$slug"
+        "candfans" -> "https://candfans.jp/$slug"
+        "boosty" -> "https://boosty.to/$slug"
+        "fantia" -> "https://fantia.jp/fanclubs/$slug"
+        "gumroad" -> "https://$slug.gumroad.com"
+        "subscribestar", "subscriblestar" -> "https://subscribestar.adult/$slug"
+        "dlsite", "dlslite" -> "https://www.dlsite.com/home/circle/profile/=/maker_id/$slug.html?locale=en_US"
+        else -> null
     }
 }

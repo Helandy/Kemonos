@@ -10,6 +10,7 @@ import su.afk.kemonos.domain.SelectedSite
 import su.afk.kemonos.domain.models.creator.FavoriteArtist
 import su.afk.kemonos.preferences.ui.UiSettingModel
 import su.afk.kemonos.profile.api.domain.favoriteProfiles.FavoriteSortedType
+import su.afk.kemonos.profile.api.domain.favoriteProfiles.FreshFavoriteArtistKey
 
 internal class FavoriteProfilesState {
     data class State(
@@ -27,6 +28,7 @@ internal class FavoriteProfilesState {
 
         /** Пейджинг-результаты из БД. */
         val artistsPaged: Flow<PagingData<FavoriteArtist>> = emptyFlow(),
+        val freshSet: Set<FreshFavoriteArtistKey> = emptySet(),
 
         val selectedSite: SelectedSite = SelectedSite.K,
         val uiSettingModel: UiSettingModel = UiSettingModel(),

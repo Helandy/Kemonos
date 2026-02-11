@@ -2,7 +2,7 @@ package su.afk.kemonos.profile.domain.favorites
 
 import su.afk.kemonos.domain.SelectedSite
 import su.afk.kemonos.domain.models.creator.FavoriteArtist
-import su.afk.kemonos.profile.data.FreshFavoriteArtistKey
+import su.afk.kemonos.profile.api.domain.favoriteProfiles.FreshFavoriteArtistKey
 import java.time.Instant
 import javax.inject.Inject
 
@@ -22,6 +22,8 @@ internal class ComputeFreshFavoriteArtistsUpdatesUseCase @Inject constructor(
         oldCache: List<FavoriteArtist>,
         network: List<FavoriteArtist>
     ): Set<FreshFavoriteArtistKey> {
+        if (oldCache.isEmpty()) return emptySet()
+
         val oldByKey: Map<String, FavoriteArtist> = oldCache.associateBy { keyOf(it) }
 
         return network.asSequence()

@@ -6,7 +6,7 @@
     <string name="video_screen_screen_rotation">Rotate screen</string>
     <string name="info">Info</string>
     <string name="attachments_count">📎 %1$d attach.</string>
-    <string name="tags">Tags:</string>
+    <string name="tags">Tags</string>
     <string name="empty_screen">No data</string>
     <string name="attachment_section">📎 Attachments</string>
     <string name="comments_section">💬 Comments</string>
@@ -38,14 +38,24 @@
     <string name="profile_tab_dms">DM</string>
     <string name="profile_tab_links">Links</string>
     <string name="random">Random</string>
+    <string name="share">Share</string>
     <string name="save">Save</string>
     <string name="saved">Saved</string>
 
     <string name="open_with">Open via…</string>
+    <string name="open_platform_profile">Platform Link</string>
     <string name="vlc_not_installed">VLC is not installed. Opening it through another application…</string>
 
     <string name="search">Search…</string>
     <string name="close">Close…</string>
+    <string name="post_filter_contains_video">Contains video</string>
+    <string name="post_filter_contains_attachments">Contains attachments</string>
+    <string name="post_filter_contains_images">Contains images</string>
+    <string name="posts_filter_local_info_tooltip">Filters work locally, not in API. More filtering can increase 429
+        errors.
+    </string>
+    <string name="show_preview_file_names">Show file names</string>
+    <string name="hide_preview_file_names">Hide file names</string>
 
     <string name="next">Next</string>
     <string name="back">Back</string>

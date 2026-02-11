@@ -1,26 +1,26 @@
 package su.afk.kemonos.creatorProfile.presenter.view
 
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.unit.dp
 import su.afk.kemonos.common.R
+import su.afk.kemonos.common.components.posts.filter.PostMediaFilter
+import su.afk.kemonos.common.components.searchBar.PostsSearchBarWithMediaFilters
 
 @Composable
 fun SearchBar(
     searchText: String,
     onSearchTextChange: (String) -> Unit,
+    mediaFilter: PostMediaFilter,
+    onToggleHasVideo: () -> Unit,
+    onToggleHasAttachments: () -> Unit,
+    onToggleHasImages: () -> Unit,
     visible: Boolean,
     onClose: () -> Unit,
     modifier: Modifier = Modifier
@@ -28,14 +28,17 @@ fun SearchBar(
     val focusManager = LocalFocusManager.current
 
     AnimatedVisibility(visible = visible) {
-        OutlinedTextField(
-            value = searchText,
-            onValueChange = onSearchTextChange,
-            label = { Text(stringResource(R.string.search)) },
-            singleLine = true,
-            modifier = modifier
-                .fillMaxWidth()
-                .padding(bottom = 4.dp),
+        PostsSearchBarWithMediaFilters(
+            query = searchText,
+            onQueryChange = onSearchTextChange,
+            mediaFilter = mediaFilter,
+            onToggleHasVideo = onToggleHasVideo,
+            onToggleHasAttachments = onToggleHasAttachments,
+            onToggleHasImages = onToggleHasImages,
+            label = stringResource(R.string.search),
+            modifier = modifier,
+            bottomPadding = 2,
+            chipsTopPadding = 4,
             trailingIcon = {
                 IconButton(onClick = {
                     onClose()
@@ -43,11 +46,7 @@ fun SearchBar(
                     Icon(Icons.Default.Close, contentDescription = stringResource(R.string.close))
                 }
             },
-            keyboardActions = KeyboardActions(
-                onSearch = {
-                    focusManager.clearFocus()
-                }
-            )
+            onSearch = { focusManager.clearFocus() }
         )
     }
 }

@@ -1,13 +1,16 @@
 package su.afk.kemonos.creatorProfile.presenter
 
 import androidx.paging.cachedIn
+import androidx.paging.filter
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
+import su.afk.kemonos.common.components.posts.filter.matchesMediaFilter
 import su.afk.kemonos.common.error.IErrorHandlerUseCase
 import su.afk.kemonos.common.error.storage.RetryStorage
 import su.afk.kemonos.common.error.toFavoriteToastBar
@@ -15,7 +18,6 @@ import su.afk.kemonos.common.presenter.baseViewModel.BaseViewModelNew
 import su.afk.kemonos.common.shared.ShareLinkBuilder
 import su.afk.kemonos.common.shared.model.ShareTarget
 import su.afk.kemonos.creatorProfile.api.IGetProfileUseCase
-import su.afk.kemonos.creatorProfile.api.domain.models.profileLinks.ProfileLink
 import su.afk.kemonos.creatorProfile.domain.paging.GetProfilePostsPagingUseCase
 import su.afk.kemonos.creatorProfile.navigation.CreatorDest
 import su.afk.kemonos.creatorProfile.presenter.CreatorProfileState.*
@@ -24,7 +26,6 @@ import su.afk.kemonos.creatorProfile.presenter.delegates.LoadingTabsContent
 import su.afk.kemonos.creatorProfile.presenter.delegates.NavigationDelegate
 import su.afk.kemonos.creatorProfile.presenter.model.ProfileTab
 import su.afk.kemonos.creatorProfile.util.Utils.queryKey
-import su.afk.kemonos.domain.models.PostDomain
 import su.afk.kemonos.domain.models.Tag
 import su.afk.kemonos.navigation.NavigationManager
 import su.afk.kemonos.preferences.GetKemonoRootUrlUseCase
@@ -59,6 +60,7 @@ internal class CreatorProfileViewModel @AssistedInject constructor(
 
             Event.Back -> navManager.back()
             Event.CopyProfileLink -> copyProfileLink()
+            is Event.OpenCreatorPlatformLink -> setEffect(Effect.OpenUrl(event.url))
 
             is Event.OpenImage -> navigationDelegate.navigateToOpenImage(event.url)
             is Event.OpenLinkProfile -> navigationDelegate.navigateToLinkProfile(event.link)
@@ -71,6 +73,10 @@ internal class CreatorProfileViewModel @AssistedInject constructor(
             Event.ToggleSearch -> setState { copy(isSearchVisible = !currentState.isSearchVisible) }
             Event.CloseSearch -> closeSearch()
             is Event.SearchTextChanged -> setSearchText(event.text)
+
+            Event.ToggleHasVideo -> toggleHasVideo()
+            Event.ToggleHasAttachments -> toggleHasAttachments()
+            Event.ToggleHasImages -> toggleHasImages()
 
             Event.FavoriteClick -> onFavoriteClick()
         }
@@ -151,14 +157,23 @@ internal class CreatorProfileViewModel @AssistedInject constructor(
 
     /** Загрузка постов на странице */
     fun loadProfileAndPosts() = viewModelScope.launch {
+        val pagingFlow = getProfilePostsPagingUseCase(
+            service = currentState.service,
+            id = currentState.id,
+            tag = currentState.currentTag?.tag,
+            search = currentState.searchText
+        )
+        val mediaFilter = currentState.mediaFilter
+
         setState {
             copy(
-                profilePosts = getProfilePostsPagingUseCase(
-                    service = currentState.service,
-                    id = currentState.id,
-                    tag = currentState.currentTag?.tag,
-                    search = currentState.searchText
-                ).cachedIn(viewModelScope),
+                profilePosts = if (mediaFilter.isActive) {
+                    pagingFlow.map { page ->
+                        page.filter { post -> post.matchesMediaFilter(mediaFilter) }
+                    }.cachedIn(viewModelScope)
+                } else {
+                    pagingFlow.cachedIn(viewModelScope)
+                },
                 loading = false,
             )
         }
@@ -264,13 +279,41 @@ internal class CreatorProfileViewModel @AssistedInject constructor(
     /** скрыть поиск */
     fun closeSearch() {
         searchJob?.cancel()
-        setState { copy(isSearchVisible = false, searchText = "") }
+        setState {
+            copy(
+                isSearchVisible = false,
+                searchText = "",
+                mediaFilter = mediaFilter.copy(
+                    hasVideo = false,
+                    hasAttachments = false,
+                    hasImages = false,
+                )
+            )
+        }
 
         loadProfileAndPosts()
     }
 
-    /** показать-скрыть поиск */
-    fun toggleSearch() = setState { copy(isSearchVisible = !currentState.isSearchVisible) }
+    private fun toggleHasVideo() {
+        setState {
+            copy(mediaFilter = mediaFilter.copy(hasVideo = !mediaFilter.hasVideo))
+        }
+        loadProfileAndPosts()
+    }
+
+    private fun toggleHasAttachments() {
+        setState {
+            copy(mediaFilter = mediaFilter.copy(hasAttachments = !mediaFilter.hasAttachments))
+        }
+        loadProfileAndPosts()
+    }
+
+    private fun toggleHasImages() {
+        setState {
+            copy(mediaFilter = mediaFilter.copy(hasImages = !mediaFilter.hasImages))
+        }
+        loadProfileAndPosts()
+    }
 
     /** избранное */
     fun onFavoriteClick() = viewModelScope.launch {
@@ -308,17 +351,6 @@ internal class CreatorProfileViewModel @AssistedInject constructor(
         setState { copy(isFavoriteShowButton = isShowAvailable) }
     }
 
-    /**  navigate to open funcard image */
-    fun navigateToOpenImage(originalUrl: String) = navigationDelegate.navigateToOpenImage(originalUrl)
-
-    /** navigate to Link Profile */
-    fun navigateToLinkProfile(creator: ProfileLink) = navigationDelegate.navigateToLinkProfile(creator)
-
-    /** Открытие поста */
-    fun navigateToPost(post: PostDomain) = navigationDelegate.navigateToPost(post)
-
-    fun parseError(t: Throwable) = errorHandler.parse(t)
-
     fun onPullRefresh() = viewModelScope.launch {
         val qk = queryKey(
             service = currentState.service,
@@ -343,4 +375,3 @@ internal class CreatorProfileViewModel @AssistedInject constructor(
         setEffect(Effect.CopyPostLink(url))
     }
 }
-

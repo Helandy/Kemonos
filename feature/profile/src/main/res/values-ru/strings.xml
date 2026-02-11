@@ -43,7 +43,6 @@
     <string name="profile_favorites_title_kemono">Избранное Kemono</string>
     <string name="profile_favorites_profiles">Профили</string>
     <string name="profile_favorites_posts">Посты</string>
-
     <string name="profile_menu_keys">Ключи</string>
     <string name="profile_menu_review_dms">Проверить личные сообщения</string>
     <string name="profile_menu_export_favorites">Экспорт избранного</string>
@@ -164,6 +163,10 @@
     <string name="settings_ui_date_format_title">Формат даты</string>
     <string name="settings_ui_app_language_title">Язык приложения</string>
     <string name="settings_ui_app_language_subtitle">Открыть настройки языка Android для этого приложения</string>
+    <string name="settings_ui_deep_links_title">Deep links</string>
+    <string name="settings_ui_deep_links_subtitle">Откройте настройки приложения Android и включите «Открывать
+        поддерживаемые ссылки».
+    </string>
 
     <string name="settings_cache_sizes_title">Кэш</string>
 

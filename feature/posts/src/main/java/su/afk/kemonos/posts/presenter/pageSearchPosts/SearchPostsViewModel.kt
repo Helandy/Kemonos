@@ -1,10 +1,13 @@
 package su.afk.kemonos.posts.presenter.pageSearchPosts
 
 import androidx.paging.cachedIn
+import androidx.paging.filter
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
+import su.afk.kemonos.common.components.posts.filter.PostMediaFilter
+import su.afk.kemonos.common.components.posts.filter.matchesMediaFilter
 import su.afk.kemonos.common.error.IErrorHandlerUseCase
 import su.afk.kemonos.common.error.storage.RetryStorage
 import su.afk.kemonos.common.presenter.changeSite.SiteAwareBaseViewModelNew
@@ -33,14 +36,20 @@ internal class SearchPostsViewModel @Inject constructor(
 
     /** Flow для текстового поиска */
     private val searchQueryFlow = MutableStateFlow("")
+    private val mediaFilterFlow = MutableStateFlow(PostMediaFilter())
 
     @OptIn(FlowPreview::class)
     private fun observeSearchQuery() = viewModelScope.launch {
-        searchQueryFlow
-            .debounce(2000L)
-            .distinctUntilChanged()
-            .collectLatest { query ->
-                requestPosts(query = query)
+        combine(
+            searchQueryFlow
+                .debounce(2000L)
+                .distinctUntilChanged(),
+            mediaFilterFlow
+        ) { query, mediaFilter ->
+            query to mediaFilter
+        }.distinctUntilChanged()
+            .collectLatest { (query, mediaFilter) ->
+                requestPosts(query = query, mediaFilter = mediaFilter)
             }
     }
 
@@ -61,7 +70,10 @@ internal class SearchPostsViewModel @Inject constructor(
 
     override fun onRetry() {
         viewModelScope.launch {
-            requestPosts(query = currentState.searchQuery)
+            requestPosts(
+                query = currentState.searchQuery,
+                mediaFilter = currentState.mediaFilter
+            )
         }
     }
 
@@ -69,12 +81,15 @@ internal class SearchPostsViewModel @Inject constructor(
         /** при смене сайта — сбросить поисковую строку и запросить заново */
         setState { copy(searchQuery = "") }
         searchQueryFlow.value = ""
-        requestPosts(query = "")
+        requestPosts(query = "", mediaFilter = currentState.mediaFilter)
     }
 
     override fun onEvent(event: Event) {
         when (event) {
             is Event.SearchQueryChanged -> onSearchQueryChanged(event.value)
+            Event.ToggleHasVideo -> toggleHasVideo()
+            Event.ToggleHasAttachments -> toggleHasAttachments()
+            Event.ToggleHasImages -> toggleHasImages()
             is Event.NavigateToPost -> navigateToPost(event.post)
             Event.RandomPost -> randomPost()
             Event.SwitchSite -> switchSite()
@@ -86,19 +101,53 @@ internal class SearchPostsViewModel @Inject constructor(
         searchQueryFlow.value = newQuery
     }
 
-    private fun requestPosts(query: String) {
+    private fun requestPosts(
+        query: String,
+        mediaFilter: PostMediaFilter,
+    ) {
         val search = query.trim().ifEmpty { null }
         val currentSite = site.value
 
+        val pagingFlow = getSearchPostsPagingUseCase(
+            site = currentSite,
+            tag = null,
+            search = search
+        )
+
         setState {
             copy(
-                posts = getSearchPostsPagingUseCase(
-                    site = currentSite,
-                    tag = null,
-                    search = search
-                ).cachedIn(viewModelScope)
+                posts = if (mediaFilter.isActive) {
+                    pagingFlow.map { page ->
+                        page.filter { post ->
+                            post.matchesMediaFilter(mediaFilter)
+                        }
+                    }.cachedIn(viewModelScope)
+                } else {
+                    pagingFlow.cachedIn(viewModelScope)
+                }
             )
         }
+    }
+
+    private fun toggleHasVideo() {
+        val current = currentState.mediaFilter
+        val next = current.copy(hasVideo = !current.hasVideo)
+        mediaFilterFlow.value = next
+        setState { copy(mediaFilter = next) }
+    }
+
+    private fun toggleHasAttachments() {
+        val current = currentState.mediaFilter
+        val next = current.copy(hasAttachments = !current.hasAttachments)
+        mediaFilterFlow.value = next
+        setState { copy(mediaFilter = next) }
+    }
+
+    private fun toggleHasImages() {
+        val current = currentState.mediaFilter
+        val next = current.copy(hasImages = !current.hasImages)
+        mediaFilterFlow.value = next
+        setState { copy(mediaFilter = next) }
     }
 
     private fun randomPost() = viewModelScope.launch {

@@ -13,7 +13,7 @@ import su.afk.kemonos.domain.SelectedSite
 import su.afk.kemonos.navigation.NavigationManager
 import su.afk.kemonos.navigation.storage.NavigationStorage
 import su.afk.kemonos.preferences.ui.IUiSettingUseCase
-import su.afk.kemonos.profile.data.FreshFavoriteArtistsUpdates
+import su.afk.kemonos.profile.domain.favorites.fresh.IFreshFavoriteArtistsUpdatesUseCase
 import su.afk.kemonos.profile.navigation.AuthDest
 import su.afk.kemonos.profile.presenter.profile.ProfileState.*
 import su.afk.kemonos.profile.presenter.profile.delegate.LogoutDelegate
@@ -27,6 +27,7 @@ internal class ProfileViewModel @Inject constructor(
     private val navigationStorage: NavigationStorage,
     private val logoutDelegate: LogoutDelegate,
     private val uiSetting: IUiSettingUseCase,
+    private val freshUpdatesUseCase: IFreshFavoriteArtistsUpdatesUseCase,
     override val errorHandler: IErrorHandlerUseCase,
     override val retryStorage: RetryStorage,
 ) : BaseViewModelNew<State, Event, Effect>() {
@@ -74,8 +75,8 @@ internal class ProfileViewModel @Inject constructor(
             val isKemono = auth.isKemonoAuthorized
             val isCoomer = auth.isCoomerAuthorized
 
-            val kCount = FreshFavoriteArtistsUpdates.get(SelectedSite.K).size
-            val cCount = FreshFavoriteArtistsUpdates.get(SelectedSite.C).size
+            val kCount = freshUpdatesUseCase.get(SelectedSite.K).size
+            val cCount = freshUpdatesUseCase.get(SelectedSite.C).size
 
             setState {
                 copy(
