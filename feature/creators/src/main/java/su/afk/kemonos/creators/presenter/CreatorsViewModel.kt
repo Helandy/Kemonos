@@ -80,8 +80,6 @@ internal class CreatorsViewModel @Inject constructor(
                 viewModelScope,
                 { state.value },
                 ::setState,
-                ::setEffect,
-                scrollToTop = false
             )
 
             /** Подгрузка рандомных авторов */
@@ -98,7 +96,6 @@ internal class CreatorsViewModel @Inject constructor(
                     scope = viewModelScope,
                     state = { state.value },
                     setState = ::setState,
-                    setEffect = ::setEffect,
                     query = event.value,
                 )
 
@@ -117,8 +114,6 @@ internal class CreatorsViewModel @Inject constructor(
                     scope = viewModelScope,
                     state = { state.value },
                     setState = ::setState,
-                    setEffect = ::setEffect,
-                    scrollToTop = true,
                 )
             }
 
@@ -129,8 +124,6 @@ internal class CreatorsViewModel @Inject constructor(
                     viewModelScope,
                     { state.value },
                     ::setState,
-                    ::setEffect,
-                    scrollToTop = true
                 )
             }
 
@@ -141,8 +134,6 @@ internal class CreatorsViewModel @Inject constructor(
                     viewModelScope,
                     { state.value },
                     ::setState,
-                    ::setEffect,
-                    scrollToTop = true
                 )
             }
 

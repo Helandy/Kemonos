@@ -10,7 +10,6 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import su.afk.kemonos.creators.domain.GetCreatorsPagedUseCase
-import su.afk.kemonos.creators.presenter.CreatorsState.Effect
 import su.afk.kemonos.creators.presenter.CreatorsState.State
 import su.afk.kemonos.domain.models.creator.Creators.Companion.toFavoriteArtistUi
 import su.afk.kemonos.domain.models.creator.FavoriteArtist
@@ -26,8 +25,6 @@ internal class CreatorsListDelegate @Inject constructor(
         scope: CoroutineScope,
         state: () -> State,
         setState: (State.() -> State) -> Unit,
-        setEffect: (Effect) -> Unit,
-        scrollToTop: Boolean,
     ) {
         val service = state().selectedService
         val searchQuery = state().searchQuery
@@ -50,15 +47,12 @@ internal class CreatorsListDelegate @Inject constructor(
                 creatorsPaged = flow,
             )
         }
-
-        if (scrollToTop) setEffect(Effect.ScrollToTop)
     }
 
     fun searchQuery(
         scope: CoroutineScope,
         state: () -> State,
         setState: (State.() -> State) -> Unit,
-        setEffect: (Effect) -> Unit,
         query: String,
         debounceMs: Long = 350L,
     ) {
@@ -68,14 +62,14 @@ internal class CreatorsListDelegate @Inject constructor(
 
         val queryTrimmed = query.trim()
         if (queryTrimmed.isEmpty()) {
-            creatorsFilterPaging(scope, state, setState, setEffect, scrollToTop = true)
+            creatorsFilterPaging(scope, state, setState)
             return
         }
 
         if (queryTrimmed.length < 2) return
         searchDebounceJob = scope.launch {
             delay(debounceMs)
-            creatorsFilterPaging(scope, state, setState, setEffect, scrollToTop = true)
+            creatorsFilterPaging(scope, state, setState)
         }
     }
 }

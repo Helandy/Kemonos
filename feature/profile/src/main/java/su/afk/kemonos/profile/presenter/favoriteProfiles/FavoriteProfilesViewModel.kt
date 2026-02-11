@@ -60,14 +60,12 @@ internal class FavoriteProfilesViewModel @Inject constructor(
             is Event.ServiceSelected -> {
                 setState { copy(selectedService = event.value) }
                 requestPaging()
-                setEffect(Effect.ScrollToTop)
             }
 
             is Event.SortSelected -> {
                 setState { copy(sortedType = event.value) }
                 saveSortedType(event.value)
                 requestPaging()
-                setEffect(Effect.ScrollToTop)
             }
 
             Event.ToggleSortOrder -> {
@@ -75,7 +73,6 @@ internal class FavoriteProfilesViewModel @Inject constructor(
                 setState { copy(sortAscending = newSortAscending) }
                 saveSortAscending(newSortAscending)
                 requestPaging()
-                setEffect(Effect.ScrollToTop)
             }
 
             Event.Refresh -> load(refresh = true)
@@ -108,7 +105,6 @@ internal class FavoriteProfilesViewModel @Inject constructor(
                 // важно: state.searchQuery должен совпадать с тем, что реально используем
                 setState { copy(searchQuery = q) }
                 requestPaging()
-                setEffect(Effect.ScrollToTop)
             }
             .launchIn(viewModelScope)
     }

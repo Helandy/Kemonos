@@ -3,10 +3,8 @@ package su.afk.kemonos.common.components.creator
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.GridItemSpan
-import androidx.compose.foundation.lazy.grid.LazyGridState
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.stringResource
@@ -27,8 +25,6 @@ fun CreatorsContentPaging(
     pagingItems: LazyPagingItems<FavoriteArtist>,
     randomItems: List<FavoriteArtist>,
     onCreatorClick: (FavoriteArtist) -> Unit,
-    listState: LazyListState,
-    gridState: LazyGridState,
     updatedProvider: ((FavoriteArtist) -> String?)? = null,
     isFreshProvider: ((FavoriteArtist) -> Boolean)? = null,
     expanded: Boolean? = null,
@@ -41,7 +37,6 @@ fun CreatorsContentPaging(
     when (viewMode) {
         CreatorViewMode.LIST -> {
             LazyColumn(
-                state = listState,
                 contentPadding = PaddingValues(bottom = 8.dp),
             ) {
                 randomCreatorsSection(
@@ -83,7 +78,6 @@ fun CreatorsContentPaging(
 
         CreatorViewMode.GRID -> {
             LazyVerticalGrid(
-                state = gridState,
                 columns = GridCells.Adaptive(minSize = 160.dp),
                 verticalArrangement = Arrangement.spacedBy(6.dp),
                 horizontalArrangement = Arrangement.spacedBy(6.dp),
