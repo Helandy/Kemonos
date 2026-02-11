@@ -22,7 +22,6 @@ import su.afk.kemonos.common.components.creator.header.CreatorHeader
 import su.afk.kemonos.common.di.LocalDomainResolver
 import su.afk.kemonos.common.presenter.baseScreen.BaseScreen
 import su.afk.kemonos.common.shared.ShareActions
-import su.afk.kemonos.common.shared.view.SharedActionButton
 import su.afk.kemonos.common.toast.limitForToast
 import su.afk.kemonos.common.toast.toast
 import su.afk.kemonos.common.util.buildDataUrl
@@ -90,13 +89,6 @@ internal fun CreatorPostScreen(state: State, onEvent: (Event) -> Unit, effect: F
     BaseScreen(
         contentModifier = Modifier.padding(horizontal = 4.dp),
         isScroll = false,
-        floatingActionButtonStart = {
-            if (!state.loading) {
-                SharedActionButton(
-                    onClick = { onEvent(Event.CopyPostLinkClicked) }
-                )
-            }
-        },
         floatingActionButtonEnd = {
             if (state.isFavoriteShowButton && state.loading.not()) {
                 FavoriteActionButton(
@@ -179,6 +171,7 @@ internal fun CreatorPostScreen(state: State, onEvent: (Event) -> Unit, effect: F
                     /** Заголовок поста */
                     PostTitleBlock(
                         title = post.title,
+                        onShareClick = { onEvent(Event.CopyPostLinkClicked) }
                     )
                 }
 
