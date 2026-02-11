@@ -65,6 +65,7 @@ internal fun SearchPostsScreen(
                 onToggleHasAttachments = { onEvent(Event.ToggleHasAttachments) },
                 onToggleHasImages = { onEvent(Event.ToggleHasImages) },
                 label = stringResource(R.string.search),
+                showMediaFiltersInfoTooltip = true,
                 trailingIcon = {
                     if (showRandomInSearchBar) {
                         IconButton(

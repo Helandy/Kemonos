@@ -49,6 +49,9 @@
     <string name="post_filter_contains_video">С видео</string>
     <string name="post_filter_contains_attachments">С вложения</string>
     <string name="post_filter_contains_images">С фото</string>
+    <string name="posts_filter_local_info_tooltip">Фильтры работают локально, не в API. Больше фильтров может увеличить
+        число 429 ошибок.
+    </string>
 
     <string name="next">Вперед</string>
     <string name="back">Назад</string>

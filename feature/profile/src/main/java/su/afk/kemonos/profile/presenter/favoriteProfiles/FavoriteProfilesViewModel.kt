@@ -59,7 +59,6 @@ internal class FavoriteProfilesViewModel @Inject constructor(
 
             is Event.ServiceSelected -> {
                 setState { copy(selectedService = event.value) }
-                saveSelectedService(event.value)
                 requestPaging()
                 setEffect(Effect.ScrollToTop)
             }
@@ -127,7 +126,7 @@ internal class FavoriteProfilesViewModel @Inject constructor(
         setState {
             copy(
                 selectedSite = site,
-                selectedService = savedFilters.selectedService,
+                selectedService = "Services",
                 sortedType = restoredSortType,
                 sortAscending = savedFilters.sortAscending,
                 freshSet = freshUpdatesUseCase.get(site),
@@ -185,10 +184,6 @@ internal class FavoriteProfilesViewModel @Inject constructor(
                 refreshing = false
             )
         }
-    }
-
-    private fun saveSelectedService(value: String) = viewModelScope.launch {
-        favoriteProfilesFiltersUseCase.setSelectedService(currentState.selectedSite, value)
     }
 
     private fun saveSortedType(value: FavoriteSortedType) = viewModelScope.launch {

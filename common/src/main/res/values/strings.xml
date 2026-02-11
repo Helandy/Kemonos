@@ -49,6 +49,9 @@
     <string name="post_filter_contains_video">Contains video</string>
     <string name="post_filter_contains_attachments">Contains attachments</string>
     <string name="post_filter_contains_images">Contains images</string>
+    <string name="posts_filter_local_info_tooltip">Filters work locally, not in API. More filtering can increase 429
+        errors.
+    </string>
 
     <string name="next">Next</string>
     <string name="back">Back</string>
