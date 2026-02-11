@@ -6,7 +6,7 @@
     <string name="video_screen_screen_rotation">Rotate screen</string>
     <string name="info">Info</string>
     <string name="attachments_count">📎 %1$d attach.</string>
-    <string name="tags">Tags:</string>
+    <string name="tags">Tags</string>
     <string name="empty_screen">No data</string>
     <string name="attachment_section">📎 Attachments</string>
     <string name="comments_section">💬 Comments</string>

@@ -1,15 +1,25 @@
 package su.afk.kemonos.creatorPost.presenter
 
+import android.content.Context
 import android.content.Intent
+import android.util.Log
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ExpandLess
+import androidx.compose.material.icons.filled.ExpandMore
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
@@ -25,6 +35,7 @@ import su.afk.kemonos.common.shared.ShareActions
 import su.afk.kemonos.common.toast.limitForToast
 import su.afk.kemonos.common.toast.toast
 import su.afk.kemonos.common.util.buildDataUrl
+import su.afk.kemonos.common.util.isAudioFile
 import su.afk.kemonos.common.util.openAudioExternally
 import su.afk.kemonos.common.utilsUI.KemonosPreviewScreen
 import su.afk.kemonos.creatorPost.presenter.CreatorPostState.*
@@ -52,6 +63,12 @@ internal fun CreatorPostScreen(state: State, onEvent: (Event) -> Unit, effect: F
     val context = LocalContext.current
     val resolver = LocalDomainResolver.current
     var showPreviewFileNames by rememberSaveable(state.postId) { mutableStateOf(false) }
+    var previewsExpanded by rememberSaveable(state.postId) { mutableStateOf(true) }
+    var videosExpanded by rememberSaveable(state.postId) { mutableStateOf(true) }
+    var audioExpanded by rememberSaveable(state.postId) { mutableStateOf(true) }
+    var tagsExpanded by rememberSaveable(state.postId) { mutableStateOf(true) }
+    var attachmentsExpanded by rememberSaveable(state.postId) { mutableStateOf(true) }
+    var commentsExpanded by rememberSaveable(state.postId) { mutableStateOf(true) }
 
     LaunchedEffect(effect) {
         effect.collect { effect ->
@@ -63,9 +80,7 @@ internal fun CreatorPostScreen(state: State, onEvent: (Event) -> Unit, effect: F
                 }
 
                 is Effect.OpenUrl -> {
-                    Intent(Intent.ACTION_VIEW, effect.url.toUri())
-                        .apply { flags = Intent.FLAG_ACTIVITY_NEW_TASK }
-                        .also(context::startActivity)
+                    context.openExternalUrlSafely(effect.url)
                 }
                 is Effect.OpenAudio -> openAudioExternally(context, effect.url, effect.name, effect.mime)
                 is Effect.DownloadToast -> {
@@ -109,6 +124,7 @@ internal fun CreatorPostScreen(state: State, onEvent: (Event) -> Unit, effect: F
         val blocks = state.contentBlocks.orEmpty()
 
         val imgBaseUrl = remember(post.service) { resolver.imageBaseUrlByService(post.service) }
+        val fallbackBaseUrl = remember(post.service) { resolver.baseUrlByService(post.service) }
 
         val uniquePreviews = remember(previews) {
             previews.distinctBy { p ->
@@ -119,6 +135,19 @@ internal fun CreatorPostScreen(state: State, onEvent: (Event) -> Unit, effect: F
                 }
             }
         }
+        val uniqueVideos = remember(state.post.videos) {
+            state.post.videos.distinctBy { "video:${it.server}:${it.path}" }
+        }
+        val uniqueAudios = remember(state.post.attachments) {
+            state.post.attachments
+                .asSequence()
+                .filter { isAudioFile(it.path) }
+                .distinctBy { "${it.server.orEmpty()}|${it.path}" }
+                .toList()
+        }
+        val hasComments = state.commentDomains.isNotEmpty() && !state.commentDomains.firstOrNull()?.id.isNullOrBlank()
+        val hasTags = !post.tags.isNullOrEmpty()
+        val hasAttachments = state.post.attachments.isNotEmpty()
 
         val canPrevPost = post.prevId != null
         val canNextPost = post.nextId != null
@@ -218,67 +247,137 @@ internal fun CreatorPostScreen(state: State, onEvent: (Event) -> Unit, effect: F
                     )
                 }
 
-                postPreviewsSection(
-                    uiSettingModel = state.uiSettingModel,
-                    previews = uniquePreviews,
-                    imgBaseUrl = imgBaseUrl,
-                    showNames = showPreviewFileNames,
-                    onOpenImage = { url -> onEvent(Event.OpenImage(url)) },
-                    onOpenUrl = { url -> onEvent(Event.OpenExternalUrl(url)) },
-                    download = { fullUrl, fileName ->
-                        onEvent(Event.Download(fullUrl, fileName))
-                    },
-                )
-
-                postVideosSection(
-                    uiSettingModel = state.uiSettingModel,
-                    videos = state.post.videos,
-                    videoThumbs = state.videoThumbs,
-                    requestThumb = { server, path ->
-                        onEvent(Event.VideoThumbRequested(server = server, path = path))
-                    },
-                    videoInfo = state.videoInfo,
-                    onVideoInfoRequested = { server, path ->
-                        onEvent(Event.VideoInfoRequested(server = server, path = path))
-                    },
-                    onDownload = { url, fileName ->
-                        onEvent(Event.Download(url, fileName))
+                if (uniquePreviews.isNotEmpty()) {
+                    item(key = "previews_toggle") {
+                        CollapsibleSectionHeader(
+                            title = stringResource(R.string.previews_title, uniquePreviews.size),
+                            expanded = previewsExpanded,
+                            onToggle = { previewsExpanded = !previewsExpanded }
+                        )
                     }
-                )
-
-                postAudioSection(
-                    attachments = state.post.attachments,
-                    audioInfo = state.audioInfo,
-                    onInfoRequested = { url -> onEvent(Event.AudioInfoRequested(url)) },
-                    onPlay = { att ->
-                        val url = att.buildDataUrl()
-                        onEvent(Event.PlayAudio(url, att.name))
-                    },
-                    onDownload = { att ->
-                        val url = att.buildDataUrl()
-                        onEvent(Event.Download(url, att.name))
+                    if (previewsExpanded) {
+                        postPreviewsSection(
+                            uiSettingModel = state.uiSettingModel,
+                            previews = uniquePreviews,
+                            imgBaseUrl = imgBaseUrl,
+                            showNames = showPreviewFileNames,
+                            onOpenImage = { url -> onEvent(Event.OpenImage(url)) },
+                            onOpenUrl = { url -> onEvent(Event.OpenExternalUrl(url)) },
+                            download = { fullUrl, fileName ->
+                                onEvent(Event.Download(fullUrl, fileName))
+                            },
+                        )
                     }
-                )
-
-                item(key = "tags") {
-                    TagsRow(tags = post.tags)
                 }
 
-                item(key = "attachments") {
-                    PostAttachmentsSection(
-                        attachments = state.post.attachments,
-                        onAttachmentClick = { url ->
-                            Intent(Intent.ACTION_VIEW, url.toUri())
-                                .apply { flags = Intent.FLAG_ACTIVITY_NEW_TASK }
-                                .also(context::startActivity)
+                if (uniqueVideos.isNotEmpty()) {
+                    item(key = "videos_toggle") {
+                        CollapsibleSectionHeader(
+                            title = stringResource(R.string.video_section),
+                            expanded = videosExpanded,
+                            onToggle = { videosExpanded = !videosExpanded }
+                        )
+                    }
+                    if (videosExpanded) {
+                        postVideosSection(
+                            uiSettingModel = state.uiSettingModel,
+                            videos = state.post.videos,
+                            videoThumbs = state.videoThumbs,
+                            requestThumb = { server, path ->
+                                onEvent(Event.VideoThumbRequested(server = server, path = path))
+                            },
+                            videoInfo = state.videoInfo,
+                            onVideoInfoRequested = { server, path ->
+                                onEvent(Event.VideoInfoRequested(server = server, path = path))
+                            },
+                            onDownload = { url, fileName ->
+                                onEvent(Event.Download(url, fileName))
+                            },
+                            showHeader = false,
+                        )
+                    }
+                }
+
+                if (uniqueAudios.isNotEmpty()) {
+                    item(key = "audio_toggle") {
+                        CollapsibleSectionHeader(
+                            title = stringResource(R.string.audio_file),
+                            expanded = audioExpanded,
+                            onToggle = { audioExpanded = !audioExpanded }
+                        )
+                    }
+                    if (audioExpanded) {
+                        postAudioSection(
+                            attachments = state.post.attachments,
+                            audioInfo = state.audioInfo,
+                            onInfoRequested = { url -> onEvent(Event.AudioInfoRequested(url)) },
+                            onPlay = { att ->
+                                val url = att.buildDataUrl(fallbackBaseUrl)
+                                onEvent(Event.PlayAudio(url, att.name))
+                            },
+                            onDownload = { att ->
+                                val url = att.buildDataUrl(fallbackBaseUrl)
+                                onEvent(Event.Download(url, att.name))
+                            },
+                            showHeader = false,
+                        )
+                    }
+                }
+
+                if (hasTags) {
+                    item(key = "tags_toggle") {
+                        CollapsibleSectionHeader(
+                            title = stringResource(R.string.tags),
+                            expanded = tagsExpanded,
+                            onToggle = { tagsExpanded = !tagsExpanded }
+                        )
+                    }
+                    if (tagsExpanded) {
+                        item(key = "tags") {
+                            TagsRow(tags = post.tags, showHeader = false)
                         }
-                    )
+                    }
                 }
 
-                postCommentsSection(
-                    dateMode = state.uiSettingModel.dateFormatMode,
-                    commentDomains = state.commentDomains
-                )
+                if (hasAttachments) {
+                    item(key = "attachments_toggle") {
+                        CollapsibleSectionHeader(
+                            title = stringResource(R.string.attachment_section),
+                            expanded = attachmentsExpanded,
+                            onToggle = { attachmentsExpanded = !attachmentsExpanded }
+                        )
+                    }
+                    if (attachmentsExpanded) {
+                        item(key = "attachments") {
+                            PostAttachmentsSection(
+                                attachments = state.post.attachments,
+                                fallbackBaseUrl = fallbackBaseUrl,
+                                onAttachmentClick = { url ->
+                                    Log.e("super", "url: $url")
+                                    context.openExternalUrlSafely(url)
+                                },
+                                showHeader = false,
+                            )
+                        }
+                    }
+                }
+
+                if (hasComments) {
+                    item(key = "comments_toggle") {
+                        CollapsibleSectionHeader(
+                            title = stringResource(R.string.comments_section),
+                            expanded = commentsExpanded,
+                            onToggle = { commentsExpanded = !commentsExpanded }
+                        )
+                    }
+                    if (commentsExpanded) {
+                        postCommentsSection(
+                            dateMode = state.uiSettingModel.dateFormatMode,
+                            commentDomains = state.commentDomains,
+                            showHeader = false,
+                        )
+                    }
+                }
 
                 item {
                     Spacer(Modifier.height(72.dp))
@@ -303,6 +402,44 @@ internal fun CreatorPostScreen(state: State, onEvent: (Event) -> Unit, effect: F
     }
 }
 
+private fun Context.openExternalUrlSafely(rawUrl: String) {
+    val trimmed = rawUrl.trim()
+    if (trimmed.isBlank() || trimmed.startsWith("/")) {
+        toast(getString(R.string.error_default))
+        return
+    }
+
+    val normalized = if (trimmed.startsWith("http://", ignoreCase = true) ||
+        trimmed.startsWith("https://", ignoreCase = true)
+    ) trimmed else "https://$trimmed"
+
+    val uri = runCatching { normalized.toUri() }.getOrNull()
+    if (uri == null) {
+        toast(getString(R.string.error_default))
+        return
+    }
+
+    val chromeIntent = Intent(Intent.ACTION_VIEW, uri).apply {
+        addCategory(Intent.CATEGORY_BROWSABLE)
+        setPackage("com.android.chrome")
+        addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+    }
+
+    runCatching { startActivity(chromeIntent) }
+        .onFailure {
+            val baseIntent = Intent(Intent.ACTION_VIEW, uri).apply {
+                addCategory(Intent.CATEGORY_BROWSABLE)
+                addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            }
+            val chooser = Intent.createChooser(baseIntent, getString(R.string.open_with)).apply {
+                addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            }
+
+            runCatching { startActivity(chooser) }
+                .onFailure { toast(getString(R.string.error_default)) }
+        }
+}
+
 @Preview("PreviewCreatorPostScreen")
 @Composable
 private fun PreviewCreatorPostScreen() {
@@ -311,6 +448,33 @@ private fun PreviewCreatorPostScreen() {
             state = State.default().copy(loading = false),
             onEvent = {},
             effect = emptyFlow()
+        )
+    }
+}
+
+@Composable
+private fun CollapsibleSectionHeader(
+    title: String,
+    expanded: Boolean,
+    onToggle: () -> Unit,
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable(onClick = onToggle)
+            .padding(horizontal = 4.dp, vertical = 8.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Text(
+            text = title,
+            style = MaterialTheme.typography.titleMedium,
+            modifier = Modifier.weight(1f)
+        )
+        Icon(
+            imageVector = if (expanded) Icons.Default.ExpandLess else Icons.Default.ExpandMore,
+            contentDescription = stringResource(
+                if (expanded) R.string.collapse else R.string.expand
+            )
         )
     }
 }

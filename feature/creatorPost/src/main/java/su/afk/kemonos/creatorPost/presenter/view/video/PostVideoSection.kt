@@ -21,18 +21,21 @@ internal fun LazyListScope.postVideosSection(
     videoThumbs: Map<String, VideoThumbState>,
     requestThumb: (server: String, path: String) -> Unit,
     onDownload: (url: String, fileName: String) -> Unit,
+    showHeader: Boolean = true,
 ) {
     val uniqueVideos = videos.distinctBy { v ->
         "video:${v.server}:${v.path}"
     }
     if (uniqueVideos.isEmpty()) return
 
-    item(key = "videos_header") {
-        Text(
-            text = stringResource(R.string.video_section),
-            style = MaterialTheme.typography.titleMedium,
-            modifier = Modifier.padding(start = 4.dp, top = 8.dp)
-        )
+    if (showHeader) {
+        item(key = "videos_header") {
+            Text(
+                text = stringResource(R.string.video_section),
+                style = MaterialTheme.typography.titleMedium,
+                modifier = Modifier.padding(start = 4.dp, top = 8.dp)
+            )
+        }
     }
 
     items(

@@ -7,7 +7,7 @@
     <string name="video_screen_screen_rotation">Повернуть экран</string>
     <string name="info">Инфо</string>
     <string name="attachments_count">📎 %1$d влож.</string>
-    <string name="tags">Tags:</string>
+    <string name="tags">Тэги</string>
     <string name="empty_screen">Нет данных</string>
     <string name="attachment_section">📎 Вложения</string>
     <string name="comments_section">💬 Комментарии</string>
