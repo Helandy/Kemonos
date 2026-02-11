@@ -23,7 +23,6 @@ import su.afk.kemonos.common.components.posts.PostsContentPaging
 import su.afk.kemonos.common.presenter.baseScreen.BaseScreen
 import su.afk.kemonos.common.presenter.baseScreen.TopBarScroll
 import su.afk.kemonos.common.shared.ShareActions
-import su.afk.kemonos.common.shared.view.SharedActionButton
 import su.afk.kemonos.common.toast.toast
 import su.afk.kemonos.common.utilsUI.KemonosPreviewScreen
 import su.afk.kemonos.creatorProfile.presenter.CreatorProfileState.*
@@ -88,6 +87,7 @@ internal fun CreatorScreen(state: State, onEvent: (Event) -> Unit, effect: Flow<
                     showSearchButton = true,
                     showInfoButton = true,
                     onSearchClick = { onEvent(Event.ToggleSearch) },
+                    onShareClick = { onEvent(Event.CopyProfileLink) },
                     onClickHeader = null,
                 )
 
@@ -117,13 +117,6 @@ internal fun CreatorScreen(state: State, onEvent: (Event) -> Unit, effect: Flow<
                 )
         },
         contentModifier = Modifier.padding(horizontal = 8.dp),
-        floatingActionButtonStart = {
-            if (!state.loading) {
-                SharedActionButton(
-                    onClick = { onEvent(Event.CopyProfileLink) }
-                )
-            }
-        },
         floatingActionButtonEnd = {
             if (state.isFavoriteShowButton && state.loading.not()) {
                 FavoriteActionButton(

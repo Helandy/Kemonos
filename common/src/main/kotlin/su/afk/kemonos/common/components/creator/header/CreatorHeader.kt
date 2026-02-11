@@ -6,8 +6,10 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Info
+import androidx.compose.material.icons.filled.DateRange
+import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.filled.Share
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -37,6 +39,7 @@ fun CreatorHeader(
     showSearchButton: Boolean,
     showInfoButton: Boolean,
     onSearchClick: () -> Unit,
+    onShareClick: (() -> Unit)? = null,
     onClickHeader: (() -> Unit)?,
 ) {
     val shape = RoundedCornerShape(12.dp)
@@ -144,8 +147,8 @@ fun CreatorHeader(
                     Box {
                         IconButton(onClick = { expanded = true }) {
                             Icon(
-                                imageVector = Icons.Default.Info,
-                                contentDescription = stringResource(R.string.info),
+                                imageVector = Icons.Default.MoreVert,
+                                contentDescription = null,
                                 tint = Color.White
                             )
                         }
@@ -154,9 +157,32 @@ fun CreatorHeader(
                             expanded = expanded,
                             onDismissRequest = { expanded = false }
                         ) {
+                            onShareClick?.let { onShare ->
+                                DropdownMenuItem(
+                                    text = { Text(stringResource(R.string.share)) },
+                                    leadingIcon = {
+                                        Icon(
+                                            imageVector = Icons.Default.Share,
+                                            contentDescription = null
+                                        )
+                                    },
+                                    onClick = {
+                                        expanded = false
+                                        onShare()
+                                    }
+                                )
+                            }
+
                             updated?.let { upd ->
                                 DropdownMenuItem(
-                                    text = { Text("📅 ${upd.toUiDateTime(dateMode)}") },
+                                    text = { Text(upd.toUiDateTime(dateMode)) },
+                                    leadingIcon = {
+                                        Icon(
+                                            imageVector = Icons.Default.DateRange,
+                                            contentDescription = null
+                                        )
+                                    },
+                                    enabled = false,
                                     onClick = {}
                                 )
                             }
@@ -181,6 +207,7 @@ private fun PreviewCreatorHeader() {
             showSearchButton = true,
             showInfoButton = true,
             onSearchClick = {},
+            onShareClick = null,
             onClickHeader = {},
         )
     }
