@@ -1,12 +1,10 @@
 package su.afk.kemonos.profile.presenter.favoritePosts
 
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.lazy.grid.LazyGridState
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -28,9 +26,6 @@ internal fun FavoritePostsScreen(
     onEvent: (Event) -> Unit,
     effect: Flow<Effect>,
 ) {
-    val gridState = rememberSaveable(saver = LazyGridState.Saver) {
-        LazyGridState()
-    }
     LocalErrorMapper.current
 
     val focusManager = LocalFocusManager.current
@@ -74,7 +69,6 @@ internal fun FavoritePostsScreen(
                 uiSettingModel = state.uiSettingModel,
                 posts = posts,
                 onPostClick = { onEvent(Event.NavigateToPost(it)) },
-                gridState = gridState,
                 showFavCount = false,
                 currentTag = null,
                 onRetry = { posts.refresh() },

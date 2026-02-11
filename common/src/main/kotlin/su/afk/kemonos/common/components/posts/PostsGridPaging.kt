@@ -6,6 +6,7 @@ import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyGridState
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.paging.LoadState
 import androidx.paging.compose.LazyPagingItems
 import su.afk.kemonos.common.components.posts.postCard.PostCard
@@ -22,11 +23,12 @@ internal fun PostsGridPaging(
     posts: LazyPagingItems<PostDomain>,
     postClick: (PostDomain) -> Unit,
     showFavCount: Boolean,
-    gridState: LazyGridState,
     appendLoadState: LoadState,
     onRetryAppend: () -> Unit,
     parseError: (Throwable) -> ErrorItem,
 ) {
+    val gridState = rememberSaveable(saver = LazyGridState.Saver) { LazyGridState() }
+
     LazyVerticalGrid(
         columns = GridCells.Adaptive(minSize = uiSettingModel.postsSize.toDp()),
         state = gridState,

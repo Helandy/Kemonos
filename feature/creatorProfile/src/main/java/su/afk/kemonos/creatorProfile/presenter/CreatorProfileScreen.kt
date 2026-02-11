@@ -1,13 +1,11 @@
 package su.afk.kemonos.creatorProfile.presenter
 
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.grid.LazyGridState
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
@@ -40,21 +38,6 @@ internal fun CreatorScreen(state: State, onEvent: (Event) -> Unit, effect: Flow<
     val posts = state.profilePosts.collectAsLazyPagingItems()
 
     val postsRefreshing = posts.loadState.refresh is LoadState.Loading
-    val gridState = rememberSaveable(saver = LazyGridState.Saver) {
-        LazyGridState()
-    }
-
-    // При смене поиска/фильтров возвращаем список в начало.
-    LaunchedEffect(
-        state.searchText,
-        state.currentTag?.tag,
-        state.mediaFilter,
-        state.selectedTab
-    ) {
-        if (state.selectedTab == ProfileTab.POSTS) {
-            gridState.scrollToItem(0)
-        }
-    }
 
     LaunchedEffect(effect) {
         effect.collect { effect ->
@@ -156,7 +139,6 @@ internal fun CreatorScreen(state: State, onEvent: (Event) -> Unit, effect: Flow<
                 state = state,
                 onEvent = onEvent,
                 posts = posts,
-                gridState = gridState,
             )
         }
     }
@@ -168,14 +150,12 @@ private fun SelectedTab(
     state: State,
     onEvent: (Event) -> Unit,
     posts: LazyPagingItems<PostDomain>,
-    gridState: LazyGridState,
 ) {
     when (state.selectedTab) {
         ProfileTab.POSTS -> PostsContentPaging(
             postsViewMode = state.uiSettingModel.profilePostsViewMode,
             uiSettingModel = state.uiSettingModel,
             posts = posts,
-            gridState = gridState,
             currentTag = state.currentTag,
             onPostClick = {
                 onEvent(Event.OpenPost(it))

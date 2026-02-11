@@ -1,6 +1,5 @@
 package su.afk.kemonos.common.components.posts
 
-import androidx.compose.foundation.lazy.grid.LazyGridState
 import androidx.compose.runtime.Composable
 import androidx.paging.LoadState
 import androidx.paging.compose.LazyPagingItems
@@ -18,7 +17,6 @@ fun PostsContentPaging(
     uiSettingModel: UiSettingModel,
     postsViewMode: PostsViewMode,
     posts: LazyPagingItems<PostDomain>,
-    gridState: LazyGridState,
     currentTag: Tag?,
     onPostClick: (PostDomain) -> Unit,
     onRetry: () -> Unit,
@@ -33,7 +31,6 @@ fun PostsContentPaging(
                 posts = posts,
                 postClick = onPostClick,
                 showFavCount = showFavCount,
-                gridState = gridState,
                 appendLoadState = posts.loadState.append,
                 onRetryAppend = { posts.retry() },
                 parseError = errorMapper::map

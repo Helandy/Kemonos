@@ -2,7 +2,6 @@ package su.afk.kemonos.posts.presenter.pageSearchPosts
 
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.lazy.grid.LazyGridState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Casino
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -10,7 +9,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -42,9 +40,6 @@ internal fun SearchPostsScreen(
     val isPageLoading = posts.loadState.refresh is LoadState.Loading
     val isBusy = isPageLoading || siteSwitching
 
-    val gridState = rememberSaveable(saver = LazyGridState.Saver) {
-        LazyGridState()
-    }
     val focusManager = LocalFocusManager.current
 
     val placement = state.uiSettingModel.randomButtonPlacement
@@ -107,7 +102,6 @@ internal fun SearchPostsScreen(
             currentTag = null,
             onPostClick = { onEvent(Event.NavigateToPost(it)) },
             onRetry = { posts.retry() },
-            gridState = gridState
         )
     }
 }

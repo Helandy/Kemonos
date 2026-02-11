@@ -1,10 +1,8 @@
 package su.afk.kemonos.posts.presenter.tagsSelect
 
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.lazy.grid.LazyGridState
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.unit.dp
 import androidx.paging.compose.collectAsLazyPagingItems
 import kotlinx.coroutines.flow.Flow
@@ -20,9 +18,6 @@ internal fun TagsPostsScreen(
     effect: Flow<Effect>,
 ) {
     val posts = state.posts.collectAsLazyPagingItems()
-    val gridState = rememberSaveable(saver = LazyGridState.Saver) {
-        LazyGridState()
-    }
 
     BaseScreen(
         isScroll = false,
@@ -33,7 +28,6 @@ internal fun TagsPostsScreen(
             postsViewMode = state.uiSettingModel.tagsPostsViewMode,
             uiSettingModel = state.uiSettingModel,
             posts = posts,
-            gridState = gridState,
             currentTag = null,
             onPostClick = { onEvent(Event.NavigateToPost(it)) },
             onRetry = { posts.retry() },
