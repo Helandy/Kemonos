@@ -171,6 +171,8 @@ internal fun CreatorPostScreen(state: State, onEvent: (Event) -> Unit, effect: F
                     /** Заголовок поста */
                     PostTitleBlock(
                         title = post.title,
+                        showPreviewNames = showPreviewFileNames,
+                        onTogglePreviewNames = { showPreviewFileNames = !showPreviewFileNames },
                         onShareClick = { onEvent(Event.CopyPostLinkClicked) }
                     )
                 }
@@ -221,7 +223,6 @@ internal fun CreatorPostScreen(state: State, onEvent: (Event) -> Unit, effect: F
                     previews = uniquePreviews,
                     imgBaseUrl = imgBaseUrl,
                     showNames = showPreviewFileNames,
-                    onTogglePreviewNames = { showPreviewFileNames = !showPreviewFileNames },
                     onOpenImage = { url -> onEvent(Event.OpenImage(url)) },
                     onOpenUrl = { url -> onEvent(Event.OpenExternalUrl(url)) },
                     download = { fullUrl, fileName ->

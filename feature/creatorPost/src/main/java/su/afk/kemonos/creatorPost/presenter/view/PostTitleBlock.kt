@@ -2,6 +2,8 @@ package su.afk.kemonos.creatorPost.presenter.view
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.outlined.Label
+import androidx.compose.material.icons.automirrored.outlined.TextSnippet
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Share
 import androidx.compose.material3.*
@@ -16,6 +18,8 @@ import su.afk.kemonos.common.R
 @Composable
 internal fun PostTitleBlock(
     title: String?,
+    showPreviewNames: Boolean,
+    onTogglePreviewNames: () -> Unit,
     onShareClick: () -> Unit,
 ) {
     var menuExpanded by remember { mutableStateOf(false) }
@@ -61,6 +65,31 @@ internal fun PostTitleBlock(
                     onClick = {
                         menuExpanded = false
                         onShareClick()
+                    }
+                )
+
+                DropdownMenuItem(
+                    text = {
+                        Text(
+                            stringResource(
+                                if (showPreviewNames) R.string.hide_preview_file_names
+                                else R.string.show_preview_file_names
+                            )
+                        )
+                    },
+                    leadingIcon = {
+                        Icon(
+                            imageVector = if (showPreviewNames) {
+                                Icons.AutoMirrored.Outlined.TextSnippet
+                            } else {
+                                Icons.AutoMirrored.Outlined.Label
+                            },
+                            contentDescription = null
+                        )
+                    },
+                    onClick = {
+                        menuExpanded = false
+                        onTogglePreviewNames()
                     }
                 )
             }

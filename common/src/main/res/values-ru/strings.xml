@@ -53,6 +53,8 @@
     <string name="posts_filter_local_info_tooltip">Фильтры работают локально, не в API. Больше фильтров может увеличить
         число 429 ошибок.
     </string>
+    <string name="show_preview_file_names">Показывать имена файлов</string>
+    <string name="hide_preview_file_names">Скрыть имена файлов</string>
 
     <string name="next">Вперед</string>
     <string name="back">Назад</string>
