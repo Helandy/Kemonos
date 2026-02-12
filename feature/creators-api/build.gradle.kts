@@ -9,7 +9,7 @@ java {
 }
 
 dependencies {
-    implementation(project(":core:domain"))
-
     implementation(libs.bundles.navigation3)
+
+    implementation(project(":core:domain"))
 }

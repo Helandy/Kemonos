@@ -143,17 +143,11 @@ internal class CreatorPostViewModel @AssistedInject constructor(
         val commentsDeferred = async { getCommentsUseCase(currentState.service, currentState.id, currentState.postId) }
 
         /** шапка профиля не всегда нужна */
-        val profileDeferred = if (currentState.showBarCreator) {
-            async {
-                getProfileUseCase(service = currentState.service, id = currentState.id)
-            }
-        } else {
-            null
-        }
+        val profileDeferred = async { getProfileUseCase(service = currentState.service, id = currentState.id) }
 
         val post = postDeferred.await()
         val comments = commentsDeferred.await()
-        val profile = profileDeferred?.await()
+        val profile = profileDeferred.await()
 
         val showButtonTranslate = post?.post?.content?.clearHtml()?.isNotBlank() ?: false
         val mediaRefs = post?.collectMediaRefsForDedup()

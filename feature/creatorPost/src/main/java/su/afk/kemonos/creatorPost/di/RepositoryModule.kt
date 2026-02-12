@@ -22,4 +22,8 @@ internal interface RepositoryModule {
     @Binds
     @Singleton
     fun bindPostRepository(impl: PostRepository): IPostRepository
+
+    @Binds
+    @Singleton
+    fun bindFileRepository(impl: FileRepository): IFileRepository
 }

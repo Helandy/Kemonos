@@ -83,7 +83,7 @@ internal class CreatorsViewModel @Inject constructor(
             )
 
             /** Подгрузка рандомных авторов */
-            randomListDelegate.loadRandom(viewModelScope, currentState, ::setState, ::setEffect)
+            randomListDelegate.loadRandom(currentState, ::setState)
         } finally {
             setState { copy(loading = false) }
         }
