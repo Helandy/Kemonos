@@ -6,6 +6,7 @@ import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import retrofit2.Retrofit
 import su.afk.kemonos.creatorPost.data.api.FavoritesPostApi
+import su.afk.kemonos.creatorPost.data.api.FileApi
 import su.afk.kemonos.creatorPost.data.api.PostsApi
 import javax.inject.Singleton
 
@@ -22,4 +23,9 @@ internal object NetworkModule {
     @Singleton
     fun providePostsApi(retrofit: Retrofit): PostsApi =
         retrofit.create(PostsApi::class.java)
+
+    @Provides
+    @Singleton
+    fun provideFileApi(retrofit: Retrofit): FileApi =
+        retrofit.create(FileApi::class.java)
 }
