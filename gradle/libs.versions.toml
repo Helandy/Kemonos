@@ -15,10 +15,10 @@ ksp = "2.3.4"
 # --- AndroidX
 androidxCore = "1.17.0"
 appcompat = "1.7.1"
-activityCompose = "1.12.3"
+activityCompose = "1.12.4"
 lifecycle = "2.10.0"
 datastore = "1.2.0"
-paging = "3.4.0"
+paging = "3.4.1"
 room = "2.8.4"
 securityCrypto = "1.1.0"
 credentials = "1.5.0"
@@ -26,7 +26,7 @@ credentials = "1.5.0"
 # --- Compose
 # Для BOM не задавать вручную версии для compose libs
 # foundation/material3/icons/etс должно подтягиваться BOM
-composeBom = "2026.01.01"
+composeBom = "2026.02.00"
 
 # --- DI
 hilt = "2.58"
@@ -52,11 +52,11 @@ accompanistSystemUiController = "0.36.0"
 multiplatformMarkdownRendererM3 = "0.39.2"
 
 # --- Navigation3
-navigation3 = "1.0.0"
+navigation3 = "1.0.1"
 material3AdaptiveNav3 = "1.0.0-alpha03"
 
 # --- Play Services
-playServicesCast = "22.2.0"
+playServicesCast = "22.3.0"
 
 # --- Translate
 translate = "17.0.3"
@@ -168,6 +168,13 @@ leakcanary-android = { module = "com.squareup.leakcanary:leakcanary-android", ve
 
 jsoup = { module = "org.jsoup:jsoup", version.ref = "jsoup" }
 re2j = { module = "com.google.re2j:re2j", version.ref = "re2j" }
+
+# --- Build logic (convention plugins classpath)
+gradle-plugin-android = { module = "com.android.tools.build:gradle", version.ref = "agp" }
+gradle-plugin-kotlin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
+gradle-plugin-kotlin-compose = { module = "org.jetbrains.kotlin.plugin.compose:org.jetbrains.kotlin.plugin.compose.gradle.plugin", version.ref = "kotlin" }
+gradle-plugin-hilt = { module = "com.google.dagger:hilt-android-gradle-plugin", version.ref = "hilt" }
+gradle-plugin-ksp = { module = "com.google.devtools.ksp:com.google.devtools.ksp.gradle.plugin", version.ref = "ksp" }
 [plugins]
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
 
