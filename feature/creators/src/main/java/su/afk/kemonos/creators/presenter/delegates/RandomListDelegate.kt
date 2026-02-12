@@ -1,9 +1,6 @@
 package su.afk.kemonos.creators.presenter.delegates
 
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.launch
 import su.afk.kemonos.creators.domain.GetCreatorsPagedUseCase
-import su.afk.kemonos.creators.presenter.CreatorsState.Effect
 import su.afk.kemonos.creators.presenter.CreatorsState.State
 import su.afk.kemonos.domain.models.creator.Creators.Companion.toFavoriteArtistUi
 import javax.inject.Inject
@@ -12,11 +9,9 @@ internal class RandomListDelegate @Inject constructor(
     private val getCreatorsPagedUseCase: GetCreatorsPagedUseCase,
 ) {
     /** Подгрузка рандомных авторов */
-    fun loadRandom(
-        scope: CoroutineScope,
+    suspend fun loadRandom(
         state: State,
         setState: (State.() -> State) -> Unit,
-        setEffect: (Effect) -> Unit,
     ) {
         val suggestEnabled = state.uiSettingModel.suggestRandomAuthors
 
@@ -31,24 +26,22 @@ internal class RandomListDelegate @Inject constructor(
         } else {
             val service = state.selectedService
 
-            scope.launch {
-                setState { copy(randomSuggestionsLoading = true) }
+            setState { copy(randomSuggestionsLoading = true) }
 
-                runCatching {
-                    getCreatorsPagedUseCase.getRandomCreatorsFromStorage(service = service, limit = 50)
-                }.onSuccess { list ->
-                    val mapped = list.map { it.toFavoriteArtistUi() }
+            runCatching {
+                getCreatorsPagedUseCase.getRandomCreatorsFromStorage(service = service, limit = 50)
+            }.onSuccess { list ->
+                val mapped = list.map { it.toFavoriteArtistUi() }
 
-                    setState {
-                        copy(
-                            randomSuggestions = mapped,
-                            randomSuggestionsFiltered = mapped,
-                            randomSuggestionsLoading = false,
-                        )
-                    }
-                }.onFailure {
-                    setState { copy(randomSuggestionsLoading = false) }
+                setState {
+                    copy(
+                        randomSuggestions = mapped,
+                        randomSuggestionsFiltered = mapped,
+                        randomSuggestionsLoading = false,
+                    )
                 }
+            }.onFailure {
+                setState { copy(randomSuggestionsLoading = false) }
             }
         }
     }
