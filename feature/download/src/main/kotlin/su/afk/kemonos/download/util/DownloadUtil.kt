@@ -6,10 +6,11 @@ import android.os.Environment
 import androidx.core.net.toUri
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.runBlocking
 import su.afk.kemonos.download.api.IDownloadUtil
 import su.afk.kemonos.preferences.ui.DownloadFolderMode
 import su.afk.kemonos.preferences.ui.IUiSettingUseCase
+import su.afk.kemonos.storage.api.repository.download.ITrackedDownloadsRepository
+import su.afk.kemonos.storage.api.repository.download.TrackedDownload
 import javax.inject.Inject
 
 private const val APP_DOWNLOAD_DIR = "Kemonos"
@@ -23,9 +24,10 @@ private const val MAX_TITLE_DIR_LEN = 32
 internal class DownloadUtil @Inject constructor(
     @ApplicationContext private val context: Context,
     private val uiSetting: IUiSettingUseCase,
+    private val trackedDownloadsRepository: ITrackedDownloadsRepository,
 ) : IDownloadUtil {
 
-    override fun enqueueSystemDownload(
+    override suspend fun enqueueSystemDownload(
         url: String,
         fileName: String?,
         service: String?,
@@ -33,9 +35,9 @@ internal class DownloadUtil @Inject constructor(
         postId: String?,
         postTitle: String?,
     ): Long {
-        val settings = runBlocking { uiSetting.prefs.first() }
+        val settings = uiSetting.prefs.first()
 
-        val dm = context.getSystemService(Context.DOWNLOAD_SERVICE) as DownloadManager
+        val downloadManager = context.getSystemService(Context.DOWNLOAD_SERVICE) as DownloadManager
 
         val request = DownloadManager.Request(url.toUri())
             .setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED)
@@ -62,7 +64,22 @@ internal class DownloadUtil @Inject constructor(
             "$subDir/$safeName"
         )
 
-        return dm.enqueue(request)
+        val id = downloadManager.enqueue(request)
+
+        trackedDownloadsRepository.upsert(
+            TrackedDownload(
+                downloadId = id,
+                url = url,
+                fileName = fileName,
+                service = service,
+                creatorName = creatorName,
+                postId = postId,
+                postTitle = postTitle,
+                createdAtMs = System.currentTimeMillis(),
+            )
+        )
+
+        return id
     }
 }
 

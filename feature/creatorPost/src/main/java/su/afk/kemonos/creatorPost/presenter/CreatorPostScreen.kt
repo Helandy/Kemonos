@@ -3,7 +3,6 @@ package su.afk.kemonos.creatorPost.presenter
 import android.content.ClipData
 import android.content.Context
 import android.content.Intent
-import android.util.Log
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -360,7 +359,6 @@ internal fun CreatorPostScreen(state: State, onEvent: (Event) -> Unit, effect: F
                                 attachments = state.post.attachments,
                                 fallbackBaseUrl = fallbackBaseUrl,
                                 onAttachmentClick = { url ->
-                                    Log.e("super", "url: $url")
                                     context.openExternalUrlSafely(url)
                                 },
                                 showHeader = false,

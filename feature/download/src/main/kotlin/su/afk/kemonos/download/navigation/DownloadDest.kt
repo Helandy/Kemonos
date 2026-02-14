@@ -4,10 +4,6 @@ import androidx.navigation3.runtime.NavKey
 import kotlinx.serialization.Serializable
 
 object DownloadDest {
-
     @Serializable
-    data class Download(
-        val domain: String,
-        val url: String,
-    ) : NavKey
+    data object Downloads : NavKey
 }

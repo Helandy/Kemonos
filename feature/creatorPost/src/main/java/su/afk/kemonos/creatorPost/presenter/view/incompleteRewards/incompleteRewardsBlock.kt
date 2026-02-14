@@ -1,6 +1,5 @@
 package su.afk.kemonos.creatorPost.presenter.view.incompleteRewards
 
-import android.util.Log
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -14,7 +13,6 @@ import su.afk.kemonos.domain.models.IncompleteRewards
 @Composable
 internal fun incompleteRewardsBlock(rewards: IncompleteRewards) {
 
-    Log.e("super", "rewards $rewards")
     val missingParts = listOfNotNull(
         rewards.mediaCount?.let { "$it media" },
         rewards.photoCount?.let { "$it photos" },

@@ -48,6 +48,7 @@
     <string name="profile_menu_export_favorites">Export favorites</string>
     <string name="profile_menu_change_username">Change username</string>
     <string name="profile_menu_change_password">Change password</string>
+    <string name="profile_downloads">Downloads</string>
 
     <string name="profile_error_not_authorized">You are not authorized</string>
     <string name="profile_not_logged_in_message">

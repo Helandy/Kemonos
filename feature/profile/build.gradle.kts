@@ -36,4 +36,5 @@ dependencies {
 
     implementation(project(":feature:creatorProfile-api"))
     implementation(project(":feature:creatorPost-api"))
+    implementation(project(":feature:download-api"))
 }

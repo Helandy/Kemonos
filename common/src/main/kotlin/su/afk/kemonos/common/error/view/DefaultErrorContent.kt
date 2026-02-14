@@ -3,7 +3,6 @@ package su.afk.kemonos.common.error.view
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
-import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -25,7 +24,6 @@ fun DefaultErrorContent(
     onRetry: () -> Unit,
     onBack: (() -> Unit)? = null,
 ) {
-    Log.e("super", "ErrorContent: $errorItem")
     val context = LocalContext.current
     var showDetails by remember { mutableStateOf(false) }
 

@@ -4,7 +4,7 @@ interface IDownloadUtil {
     /**
      * @return id задачи в DownloadManager (можно использовать для трекинга/проверки)
      */
-    fun enqueueSystemDownload(
+    suspend fun enqueueSystemDownload(
         url: String,
         fileName: String?,
         service: String? = null,

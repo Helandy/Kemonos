@@ -5,6 +5,8 @@ import dagger.Module
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import su.afk.kemonos.download.api.IDownloadUtil
+import su.afk.kemonos.download.data.DownloadManagerDataSource
+import su.afk.kemonos.download.data.DownloadManagerDataSourceImpl
 import su.afk.kemonos.download.util.DownloadUtil
 import javax.inject.Singleton
 
@@ -15,4 +17,8 @@ internal interface DownloadModule {
     @Binds
     @Singleton
     fun bindDownloadUtil(impl: DownloadUtil): IDownloadUtil
+
+    @Binds
+    @Singleton
+    fun bindDownloadManagerDataSource(impl: DownloadManagerDataSourceImpl): DownloadManagerDataSource
 }

@@ -12,6 +12,7 @@ import su.afk.kemonos.storage.database.migrations.kemono.*
 import su.afk.kemonos.storage.entity.comments.dao.CommentsDao
 import su.afk.kemonos.storage.entity.creatorProfileCache.dao.CreatorProfileCacheDao
 import su.afk.kemonos.storage.entity.creators.dao.KemonoCreatorsDao
+import su.afk.kemonos.storage.entity.download.dao.DownloadTaskDao
 import su.afk.kemonos.storage.entity.favorites.artist.FavoriteArtistsDao
 import su.afk.kemonos.storage.entity.favorites.post.FavoritePostsDao
 import su.afk.kemonos.storage.entity.favorites.updates.FreshFavoriteArtistUpdatesDao
@@ -37,7 +38,8 @@ internal object DatabaseKemonoModule {
                 KemonoFrom3To4,
                 KemonoFrom4To5,
                 KemonoFrom5To6,
-                KemonoFrom6To7
+                KemonoFrom6To7,
+                KemonoFrom7To8
             )
             .build()
 
@@ -80,4 +82,7 @@ internal object DatabaseKemonoModule {
 
     @Provides
     fun providePostsPopularCacheDao(db: KemonoDatabase): KemonoPostsPopularCacheDao = db.postsPopularCacheDao()
+
+    @Provides
+    fun provideDownloadTaskDao(db: KemonoDatabase): DownloadTaskDao = db.downloadTaskDao()
 }

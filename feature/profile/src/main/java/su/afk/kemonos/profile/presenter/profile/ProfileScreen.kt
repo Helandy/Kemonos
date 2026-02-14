@@ -20,6 +20,7 @@ import su.afk.kemonos.common.presenter.baseScreen.BaseScreen
 import su.afk.kemonos.domain.SelectedSite
 import su.afk.kemonos.profile.R
 import su.afk.kemonos.profile.presenter.profile.ProfileState.*
+import su.afk.kemonos.profile.presenter.profile.views.DownloadsButton
 import su.afk.kemonos.profile.presenter.profile.views.LogoutDialog
 import su.afk.kemonos.profile.presenter.profile.views.SettingsButton
 import su.afk.kemonos.profile.presenter.profile.views.SitePage
@@ -109,6 +110,10 @@ internal fun ProfileScreen(
                     )
                 }
             }
+
+            DownloadsButton(
+                onClick = { onEvent(Event.NavigateToDownloads) }
+            )
 
             SettingsButton(
                 onClick = { onEvent(Event.NavigateToSettings) }

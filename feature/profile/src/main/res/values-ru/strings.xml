@@ -47,6 +47,7 @@
     <string name="profile_menu_export_favorites">Экспорт избранного</string>
     <string name="profile_menu_change_username">Сменить имя пользователя</string>
     <string name="profile_menu_change_password">Сменить пароль</string>
+    <string name="profile_downloads">Загрузки</string>
 
     <string name="profile_error_not_authorized">Вы не авторизованы</string>
 

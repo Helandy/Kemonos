@@ -3,7 +3,6 @@ package su.afk.kemonos.deepLink.utils
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
-import android.util.Log
 import androidx.core.net.toUri
 
 private const val CHROME_PKG = "com.android.chrome"
@@ -27,7 +26,6 @@ fun openUrlPreferChrome(
     }
 
     val uri: Uri = runCatching { normalized.toUri() }.getOrElse {
-        Log.e("openUrlPreferChrome", "Bad url: $rawUrl", it)
         return
     }
 
@@ -40,7 +38,6 @@ fun openUrlPreferChrome(
     runCatching {
         context.startActivity(chromeIntent)
     }.getOrElse { e ->
-        Log.e("openUrlPreferChrome", "Chrome failed, fallback to chooser. url=$normalized", e)
 
         val base = Intent(Intent.ACTION_VIEW, uri).apply {
             addCategory(Intent.CATEGORY_BROWSABLE)
@@ -52,6 +49,7 @@ fun openUrlPreferChrome(
         }
 
         runCatching { context.startActivity(chooser) }
-            .onFailure { ee -> Log.e("openUrlPreferChrome", "Chooser failed. url=$normalized", ee) }
+            .onFailure { ee ->
+            }
     }
 }

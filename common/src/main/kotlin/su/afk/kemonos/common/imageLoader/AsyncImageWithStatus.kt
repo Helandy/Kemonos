@@ -1,6 +1,5 @@
 package su.afk.kemonos.common.imageLoader
 
-import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -97,7 +96,6 @@ fun AsyncImageWithStatus(
 
             is AsyncImagePainter.State.Error -> {
                 val t = (state as AsyncImagePainter.State.Error).result.throwable
-                Log.e("AsyncImageWithStatus", "Image load error", t)
 
                 val msg = errorText?.invoke(t) ?: (t?.localizedMessage ?: "Error loading")
                 Box(
