@@ -7,6 +7,7 @@ import kotlinx.coroutines.flow.onEach
 import su.afk.kemonos.common.error.IErrorHandlerUseCase
 import su.afk.kemonos.common.error.storage.RetryStorage
 import su.afk.kemonos.common.presenter.baseViewModel.BaseViewModelNew
+import su.afk.kemonos.navigation.NavigationManager
 import su.afk.kemonos.preferences.GetCoomerRootUrlUseCase
 import su.afk.kemonos.preferences.GetKemonoRootUrlUseCase
 import su.afk.kemonos.preferences.ui.IUiSettingUseCase
@@ -30,6 +31,7 @@ internal class SettingViewModel @Inject constructor(
     private val uiPrefsDelegate: SettingUiPreferencesDelegate,
     private val apiDelegate: SettingApiDelegate,
     private val cacheDelegate: SettingCacheDelegate,
+    private val navManager: NavigationManager,
     override val errorHandler: IErrorHandlerUseCase,
     override val retryStorage: RetryStorage
 ) : BaseViewModelNew<State, Event, Effect>() {
@@ -38,6 +40,8 @@ internal class SettingViewModel @Inject constructor(
 
     override fun onEvent(event: Event) {
         when (event) {
+            Event.Back -> navManager.back()
+
             is Event.ChangeViewSetting ->
                 uiPrefsDelegate.handle(event, viewModelScope)
 
