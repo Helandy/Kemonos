@@ -72,7 +72,7 @@ internal fun MainScreen(
                 TextButton(
                     onClick = { onEvent(Event.CrashReportSaveToDevice) }
                 ) {
-                    Text(stringResource(R.string.crash_report_dialog_save))
+                    Text(stringResource(R.string.save))
                 }
             },
             dismissButton = {

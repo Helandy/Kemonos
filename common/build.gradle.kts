@@ -6,6 +6,7 @@ plugins {
     alias(libs.plugins.hilt)
 }
 
+// todo не лучший модуль, разобрать его на core
 android {
     namespace = "su.afk.kemonos.common"
     compileSdk = libs.versions.compileSdk.get().toInt()

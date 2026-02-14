@@ -94,7 +94,7 @@ internal fun RegisterScreen(
                     OutlinedTextField(
                         value = state.username,
                         onValueChange = { onEvent(Event.UsernameChanged(it)) },
-                        label = { Text(stringResource(R.string.register_username_label)) },
+                        label = { Text(stringResource(R.string.login_username_label)) },
                         singleLine = true,
                         modifier = Modifier.fillMaxWidth(),
                         isError = state.usernameError != null,
@@ -108,7 +108,7 @@ internal fun RegisterScreen(
                     OutlinedTextField(
                         value = state.password,
                         onValueChange = { onEvent(Event.PasswordChanged(it)) },
-                        label = { Text(stringResource(R.string.register_password_label)) },
+                        label = { Text(stringResource(R.string.login_password_label)) },
                         visualTransformation = PasswordVisualTransformation(),
                         singleLine = true,
                         modifier = Modifier.fillMaxWidth(),

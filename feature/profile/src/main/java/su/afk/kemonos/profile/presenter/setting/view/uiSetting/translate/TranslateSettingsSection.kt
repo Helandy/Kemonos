@@ -19,7 +19,7 @@ internal fun TranslateSettingsSection(
     onTranslateLanguageTag: (String) -> Unit,
 ) {
     SectionSpacer()
-    SettingsSectionTitle(text = stringResource(R.string.settings_translate_section_title))
+    SettingsSectionTitle(text = stringResource(R.string.settings_translate_title))
     Spacer(Modifier.height(6.dp))
 
     TranslateTargetRow(

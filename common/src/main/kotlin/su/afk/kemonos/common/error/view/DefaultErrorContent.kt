@@ -55,7 +55,7 @@ fun DefaultErrorContent(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(
-                text = errorItem.title.ifBlank { stringResource(R.string.error_screen) },
+                text = errorItem.title.ifBlank { stringResource(R.string.err_title_generic) },
                 style = MaterialTheme.typography.titleLarge,
                 color = MaterialTheme.colorScheme.error
             )

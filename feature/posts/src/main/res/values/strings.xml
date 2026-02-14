@@ -1,7 +1,5 @@
 <resources>
-    <string name="posts_tab_search">Search</string>
     <string name="posts_tab_popular">Popular</string>
-    <string name="posts_tab_tags">Tags</string>
 
     <string name="popular_period_day">Day</string>
     <string name="popular_period_week">Week</string>
