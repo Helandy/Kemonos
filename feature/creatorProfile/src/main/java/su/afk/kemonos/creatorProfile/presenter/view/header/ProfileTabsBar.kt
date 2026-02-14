@@ -1,4 +1,4 @@
-package su.afk.kemonos.creatorProfile.presenter.view
+package su.afk.kemonos.creatorProfile.presenter.view.header
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll

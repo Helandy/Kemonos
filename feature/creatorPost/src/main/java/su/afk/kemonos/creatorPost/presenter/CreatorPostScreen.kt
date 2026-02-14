@@ -183,14 +183,9 @@ internal fun CreatorPostScreen(state: State, onEvent: (Event) -> Unit, effect: F
                     /** Шапка автора */
                     if (state.showBarCreator && profile != null) {
                         CreatorHeader(
-                            dateMode = state.uiSettingModel.dateFormatMode,
                             service = profile.service,
                             creatorId = profile.id,
                             creatorName = profile.name,
-                            updated = profile.updated,
-                            showSearchButton = false,
-                            showInfoButton = false,
-                            onSearchClick = {},
                             onClickHeader = { onEvent(Event.CreatorHeaderClicked) }
                         )
                     }

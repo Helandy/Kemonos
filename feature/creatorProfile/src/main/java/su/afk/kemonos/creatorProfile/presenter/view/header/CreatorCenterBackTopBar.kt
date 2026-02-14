@@ -1,4 +1,4 @@
-package su.afk.kemonos.creatorProfile.presenter.view
+package su.afk.kemonos.creatorProfile.presenter.view.header
 
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.material.icons.Icons
@@ -13,15 +13,18 @@ import su.afk.kemonos.common.R
 internal fun CreatorCenterBackTopBar(
     title: String,
     onBack: () -> Unit,
+    showTitle: Boolean = true,
     scrollBehavior: TopAppBarScrollBehavior? = null,
     actions: @Composable RowScope.() -> Unit = {},
 ) {
     CenterAlignedTopAppBar(
         title = {
-            Text(
-                text = title,
-                style = MaterialTheme.typography.titleLarge
-            )
+            if (showTitle && title.isNotBlank()) {
+                Text(
+                    text = title,
+                    style = MaterialTheme.typography.titleLarge
+                )
+            }
         },
         navigationIcon = {
             IconButton(onClick = onBack) {
