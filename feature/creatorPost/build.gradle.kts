@@ -20,6 +20,7 @@ dependencies {
     implementation(project(":core:auth"))
     implementation(project(":core:network"))
     implementation(project(":core:preferences"))
+    implementation(project(":core:ui"))
 
     implementation(project(":feature:creatorPost-api"))
     implementation(project(":storage-api"))

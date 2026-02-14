@@ -14,6 +14,7 @@ dependencies {
     implementation(project(":core:navigation"))
     implementation(project(":core:model"))
 
+    implementation(project(":core:ui"))
     implementation(project(":core:auth"))
     implementation(project(":core:preferences"))
     implementation(project(":core:network"))

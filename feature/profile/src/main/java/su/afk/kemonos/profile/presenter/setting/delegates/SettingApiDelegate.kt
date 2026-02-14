@@ -6,9 +6,9 @@ import su.afk.kemonos.common.error.IErrorHandlerUseCase
 import su.afk.kemonos.preferences.siteUrl.ISetBaseUrlsUseCase
 import su.afk.kemonos.profile.presenter.setting.SettingState.Event
 import su.afk.kemonos.profile.presenter.setting.SettingState.State
-import su.afk.kemonos.utils.buildBaseUrl
-import su.afk.kemonos.utils.normalizeDomain
-import su.afk.kemonos.utils.toRootUrl
+import su.afk.kemonos.utils.url.buildBaseUrl
+import su.afk.kemonos.utils.url.normalizeDomain
+import su.afk.kemonos.utils.url.toRootUrl
 import javax.inject.Inject
 
 internal class SettingApiDelegate @Inject constructor(

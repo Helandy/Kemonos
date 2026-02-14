@@ -10,7 +10,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import su.afk.kemonos.domain.SelectedSite
-import su.afk.kemonos.utils.normalizeBaseUrl
+import su.afk.kemonos.utils.url.normalizeBaseUrl
 import javax.inject.Inject
 import javax.inject.Named
 import javax.inject.Singleton

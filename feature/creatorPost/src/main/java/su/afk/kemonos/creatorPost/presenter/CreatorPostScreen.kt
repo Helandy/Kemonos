@@ -36,7 +36,6 @@ import su.afk.kemonos.common.components.creator.header.CreatorHeader
 import su.afk.kemonos.common.di.LocalDomainResolver
 import su.afk.kemonos.common.presenter.baseScreen.BaseScreen
 import su.afk.kemonos.common.shared.ShareActions
-import su.afk.kemonos.common.toast.toast
 import su.afk.kemonos.common.util.buildDataUrl
 import su.afk.kemonos.common.util.isAudioFile
 import su.afk.kemonos.common.util.openAudioExternally
@@ -58,30 +57,8 @@ import su.afk.kemonos.creatorPost.presenter.view.swipe.rememberTikTokSwipeState
 import su.afk.kemonos.creatorPost.presenter.view.translate.PostTranslateItem
 import su.afk.kemonos.creatorPost.presenter.view.translate.openGoogleTranslate
 import su.afk.kemonos.creatorPost.presenter.view.video.postVideosSection
-import kotlin.Boolean
-import kotlin.OptIn
-import kotlin.String
-import kotlin.Unit
-import kotlin.apply
-import kotlin.collections.asSequence
-import kotlin.collections.distinctBy
-import kotlin.collections.firstOrNull
-import kotlin.collections.isNotEmpty
-import kotlin.collections.isNullOrEmpty
-import kotlin.collections.orEmpty
+import su.afk.kemonos.ui.toast.toast
 import kotlin.math.roundToInt
-import kotlin.onFailure
-import kotlin.runCatching
-import kotlin.sequences.distinctBy
-import kotlin.sequences.filter
-import kotlin.sequences.toList
-import kotlin.takeIf
-import kotlin.text.isBlank
-import kotlin.text.isNotBlank
-import kotlin.text.isNullOrBlank
-import kotlin.text.orEmpty
-import kotlin.text.startsWith
-import kotlin.text.trim
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

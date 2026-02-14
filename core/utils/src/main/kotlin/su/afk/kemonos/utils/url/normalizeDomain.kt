@@ -1,4 +1,4 @@
-package su.afk.kemonos.utils
+package su.afk.kemonos.utils.url
 
 fun normalizeDomain(baseUrl: String): String =
     baseUrl.trim()

@@ -19,7 +19,7 @@ import su.afk.kemonos.profile.presenter.setting.SettingState.*
 import su.afk.kemonos.profile.presenter.setting.delegates.SettingApiDelegate
 import su.afk.kemonos.profile.presenter.setting.delegates.SettingCacheDelegate
 import su.afk.kemonos.profile.presenter.setting.delegates.SettingUiPreferencesDelegate
-import su.afk.kemonos.utils.normalizeDomain
+import su.afk.kemonos.utils.url.normalizeDomain
 import javax.inject.Inject
 
 @HiltViewModel
