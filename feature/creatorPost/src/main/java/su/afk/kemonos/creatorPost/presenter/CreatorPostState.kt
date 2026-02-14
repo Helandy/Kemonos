@@ -72,6 +72,7 @@ internal class CreatorPostState {
 
     sealed interface Event : UiEvent {
         data object Retry : Event
+        data object Back : Event
 
         data object CopyPostLinkClicked : Event
         data object FavoriteClicked : Event

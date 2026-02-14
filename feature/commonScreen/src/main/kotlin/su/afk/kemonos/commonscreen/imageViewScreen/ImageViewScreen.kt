@@ -40,6 +40,7 @@ import su.afk.kemonos.domain.models.ErrorItem
 import kotlin.math.abs
 import kotlin.math.roundToInt
 
+// todo добавить и сюда кнопку назад плавующую слева сверху
 @Composable
 internal fun ImageViewScreen(state: ImageViewState.State, onEvent: (Event) -> Unit, effect: Flow<Effect>) {
     val minScale: Float = 1f

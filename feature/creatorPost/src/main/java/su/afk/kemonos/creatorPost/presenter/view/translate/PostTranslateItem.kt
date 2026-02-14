@@ -28,7 +28,6 @@ internal fun PostTranslateItem(
     edited: String?,
     added: String?,
     showButtonTranslate: Boolean,
-    body: String,
 
     expanded: Boolean,
     loading: Boolean,
@@ -81,23 +80,6 @@ internal fun PostTranslateItem(
                     } else {
                         Text(stringResource(if (expanded) R.string.translate_hide else R.string.translate_show))
                     }
-                }
-
-                Spacer(Modifier.width(4.dp))
-
-                IconButton(
-                    onClick = {
-                        scope.launch {
-                            val clip = ClipData.newPlainText("post", body)
-                            clipboard.setClipEntry(ClipEntry(clip))
-                        }
-                    }
-                ) {
-                    Icon(
-                        imageVector = Icons.Outlined.ContentCopy,
-                        contentDescription = stringResource(R.string.copy),
-                        tint = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
                 }
             }
         }

@@ -10,6 +10,10 @@ internal class NavigateDelegates @Inject constructor(
     private val creatorProfileNavigator: ICreatorProfileNavigator,
     private val imageViewNavigator: IImageViewNavigator,
 ) {
+    fun navigateBack() {
+        navManager.back()
+    }
+
     /** навиагция на профиль автора */
     suspend fun navigateToCreatorProfile(id: String, service: String) {
         navManager.navigate(

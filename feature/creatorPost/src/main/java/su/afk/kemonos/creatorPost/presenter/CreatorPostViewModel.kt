@@ -96,6 +96,7 @@ internal class CreatorPostViewModel @AssistedInject constructor(
     override fun onEvent(event: Event) {
         when (event) {
             Event.Retry -> loadingPost()
+            Event.Back -> navigateDelegates.navigateBack()
 
             Event.CopyPostLinkClicked -> copyPostLink()
             Event.FavoriteClicked -> onFavoriteClick()

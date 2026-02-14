@@ -1,5 +1,6 @@
 package su.afk.kemonos.creatorPost.presenter
 
+import android.content.ClipData
 import android.content.Context
 import android.content.Intent
 import android.util.Log
@@ -18,6 +19,8 @@ import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.ClipEntry
+import androidx.compose.ui.platform.LocalClipboard
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -26,6 +29,7 @@ import androidx.compose.ui.unit.dp
 import androidx.core.net.toUri
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
+import kotlinx.coroutines.launch
 import su.afk.kemonos.common.R
 import su.afk.kemonos.common.components.button.FavoriteActionButton
 import su.afk.kemonos.common.components.creator.header.CreatorHeader
@@ -61,6 +65,8 @@ import kotlin.math.roundToInt
 @Composable
 internal fun CreatorPostScreen(state: State, onEvent: (Event) -> Unit, effect: Flow<Effect>) {
     val context = LocalContext.current
+    val clipboard = LocalClipboard.current
+    val scope = rememberCoroutineScope()
     val resolver = LocalDomainResolver.current
     var showPreviewFileNames by rememberSaveable(state.postId) { mutableStateOf(false) }
     var previewsExpanded by rememberSaveable(state.postId) { mutableStateOf(true) }
@@ -174,6 +180,8 @@ internal fun CreatorPostScreen(state: State, onEvent: (Event) -> Unit, effect: F
                 .fillMaxSize()
                 .then(swipe.modifier)
         ) {
+            val showCreatorHeader = state.showBarCreator && profile != null
+
             LazyColumn(
                 state = listState,
                 modifier = Modifier.fillMaxSize()
@@ -181,7 +189,7 @@ internal fun CreatorPostScreen(state: State, onEvent: (Event) -> Unit, effect: F
             ) {
                 item(key = "HeaderBlock") {
                     /** Шапка автора */
-                    if (state.showBarCreator && profile != null) {
+                    if (showCreatorHeader) {
                         CreatorHeader(
                             service = profile.service,
                             creatorId = profile.id,
@@ -197,7 +205,14 @@ internal fun CreatorPostScreen(state: State, onEvent: (Event) -> Unit, effect: F
                         title = post.title,
                         showPreviewNames = showPreviewFileNames,
                         onTogglePreviewNames = { showPreviewFileNames = !showPreviewFileNames },
-                        onShareClick = { onEvent(Event.CopyPostLinkClicked) }
+                        onShareClick = { onEvent(Event.CopyPostLinkClicked) },
+                        onCopyOriginalClick = {
+                            scope.launch {
+                                val clip = ClipData.newPlainText("post", post.content.orEmpty())
+                                clipboard.setClipEntry(ClipEntry(clip))
+                            }
+                        },
+                        onBackClick = { onEvent(Event.Back) }
                     )
                 }
 
@@ -207,8 +222,6 @@ internal fun CreatorPostScreen(state: State, onEvent: (Event) -> Unit, effect: F
                         published = post.published,
                         edited = post.edited,
                         added = post.added,
-                        body = post.content.orEmpty(),
-
                         expanded = state.translateExpanded,
                         loading = state.translateLoading,
                         translated = state.translateText,

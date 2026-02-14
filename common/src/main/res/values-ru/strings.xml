@@ -109,6 +109,7 @@
 
     <string name="retry">Повторить</string>
     <string name="copy">Скопировать</string>
+    <string name="copy_original_text">Скопировать текст</string>
     <string name="copied">Скопировано</string>
     <string name="details">Детали</string>
     <string name="hide_details">Скрыть детали</string>

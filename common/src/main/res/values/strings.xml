@@ -110,6 +110,7 @@
 
     <string name="retry">Retry</string>
     <string name="copy">Copy</string>
+    <string name="copy_original_text">Copy text</string>
     <string name="copied">Copied</string>
     <string name="details">Details</string>
     <string name="hide_details">Hide details</string>
