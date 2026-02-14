@@ -10,7 +10,7 @@ dependencies {
 
     implementation(project(":common"))
     implementation(project(":core:navigation"))
-    implementation(project(":core:domain"))
+    implementation(project(":core:model"))
 
     implementation(project(":feature:commonScreen-api"))
 }

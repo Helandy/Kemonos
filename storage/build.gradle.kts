@@ -16,8 +16,8 @@ dependencies {
     implementation(libs.bundles.datastore)
 
     implementation(project(":storage-api"))
+    implementation(project(":core:model"))
 
-    implementation(project(":core:domain"))
     implementation(project(":core:preferences"))
     implementation(project(":core:utils"))
     implementation(project(":common"))

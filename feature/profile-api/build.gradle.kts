@@ -12,7 +12,6 @@ java {
 dependencies {
     implementation(libs.bundles.navigation3)
     implementation(libs.bundles.serialization.json)
-
-    implementation(project(":core:domain"))
+    implementation(project(":core:model"))
 
 }

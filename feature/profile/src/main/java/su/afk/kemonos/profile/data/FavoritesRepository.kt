@@ -1,6 +1,6 @@
 package su.afk.kemonos.profile.data
 
-import su.afk.kemonos.common.data.dto.PostUnifiedDto.Companion.toDomain
+import su.afk.kemonos.data.dto.PostUnifiedDto.Companion.toDomain
 import su.afk.kemonos.domain.SelectedSite
 import su.afk.kemonos.domain.models.PostDomain
 import su.afk.kemonos.domain.models.creator.FavoriteArtist

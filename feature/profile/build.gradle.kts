@@ -24,8 +24,8 @@ dependencies {
     implementation(project(":common"))
     implementation(project(":core:navigation"))
     implementation(project(":core:deepLink"))
+    implementation(project(":core:model"))
 
-    implementation(project(":core:domain"))
     implementation(project(":core:auth"))
     implementation(project(":core:network"))
     implementation(project(":core:preferences"))

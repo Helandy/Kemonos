@@ -6,9 +6,8 @@ plugins {
     alias(libs.plugins.hilt)
 }
 
-// todo не лучший модуль, разобрать его на core
 android {
-    namespace = "su.afk.kemonos.common"
+    namespace = "su.afk.kemonos.ui"
     compileSdk = libs.versions.compileSdk.get().toInt()
 
     defaultConfig {

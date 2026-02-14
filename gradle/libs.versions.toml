@@ -71,13 +71,10 @@ leakcanaryAndroid = "2.14"
 [libraries]
 # --- Base AndroidX
 androidx-core-ktx = { module = "androidx.core:core-ktx", version.ref = "androidxCore" }
-androidx-appcompat = { module = "androidx.appcompat:appcompat", version.ref = "appcompat" }
 
 # --- Lifecycle
-androidx-lifecycle-runtime-ktx = { module = "androidx.lifecycle:lifecycle-runtime-ktx", version.ref = "lifecycle" }
 androidx-lifecycle-runtime-compose = { module = "androidx.lifecycle:lifecycle-runtime-compose", version.ref = "lifecycle" }
 androidx-lifecycle-viewmodel-ktx = { module = "androidx.lifecycle:lifecycle-viewmodel-ktx", version.ref = "lifecycle" }
-androidx-lifecycle-viewmodel-savedstate = { module = "androidx.lifecycle:lifecycle-viewmodel-savedstate", version.ref = "lifecycle" }
 
 # --- credentials
 androidx-credentials = { module = "androidx.credentials:credentials", version.ref = "credentials" }

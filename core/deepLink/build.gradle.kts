@@ -26,8 +26,8 @@ dependencies {
     ksp(libs.dagger.hilt.compiler)
 
     implementation(libs.bundles.navigation3)
+    implementation(project(":core:model"))
 
-    implementation(project(":core:domain"))
     implementation(project(":core:navigation"))
 
     implementation(project(":feature:creatorProfile-api"))

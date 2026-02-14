@@ -14,6 +14,7 @@ val hiltBundle = libs.findBundle("hilt").get()
 val composeBom = libs.findLibrary("androidx-compose-bom").get()
 val composeCoreBundle = libs.findBundle("compose-core").get()
 val navigation3Bundle = libs.findBundle("navigation3").get()
+val lifecycleBundle = libs.findBundle("lifecycle").get()
 
 fun DependencyHandlerScope.implementation(dep: Any) = add("implementation", dep)
 fun DependencyHandlerScope.ksp(dep: Any) = add("ksp", dep)
@@ -43,5 +44,6 @@ dependencies {
     // Compose + navigation baseline for feature screens.
     implementation(platform(composeBom))
     implementation(composeCoreBundle)
+    implementation(lifecycleBundle)
     implementation(navigation3Bundle)
 }

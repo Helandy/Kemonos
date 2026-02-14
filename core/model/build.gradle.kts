@@ -11,4 +11,5 @@ java {
 
 dependencies {
     implementation(libs.bundles.serialization.json)
+    implementation(libs.gson)
 }

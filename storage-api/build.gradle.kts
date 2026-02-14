@@ -19,7 +19,7 @@ android {
 
 dependencies {
     implementation(libs.bundles.paging)
-    implementation(project(":core:domain"))
+    implementation(project(":core:model"))
 
     implementation(project(":feature:creatorPost-api"))
     implementation(project(":feature:creatorProfile-api"))

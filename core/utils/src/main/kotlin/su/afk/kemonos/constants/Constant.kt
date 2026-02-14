@@ -1,4 +1,4 @@
-package su.afk.kemonos.common.constants
+package su.afk.kemonos.constants
 
 object Constant {
     const val COIL_DISK_DIR_NAME = "image_cache"

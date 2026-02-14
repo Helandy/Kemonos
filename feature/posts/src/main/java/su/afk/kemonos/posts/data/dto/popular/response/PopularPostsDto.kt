@@ -1,8 +1,8 @@
 package su.afk.kemonos.posts.data.dto.popular.response
 
 import com.google.gson.annotations.SerializedName
-import su.afk.kemonos.common.data.dto.PostUnifiedDto
-import su.afk.kemonos.common.data.dto.PostUnifiedDto.Companion.toDomain
+import su.afk.kemonos.data.dto.PostUnifiedDto
+import su.afk.kemonos.data.dto.PostUnifiedDto.Companion.toDomain
 import su.afk.kemonos.posts.api.popular.PopularInfo
 import su.afk.kemonos.posts.api.popular.PopularNavigationDates
 import su.afk.kemonos.posts.api.popular.PopularPosts

@@ -14,7 +14,7 @@ import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
-import su.afk.kemonos.common.constants.Constant.VIDEO_FRAMES_DIR_NAME
+import su.afk.kemonos.constants.Constant.VIDEO_FRAMES_DIR_NAME
 import su.afk.kemonos.preferences.ui.UiSettingKey.PREVIEW_VIDEO_SIZE_MB
 import su.afk.kemonos.storage.api.videoPreview.IVideoFrameCache
 import java.io.File
