@@ -82,7 +82,6 @@ internal class CreatorPostState {
         data object ToggleTranslate : Event
 
         data class OpenImage(val originalUrl: String) : Event
-        data class OpenExternalUrl(val url: String) : Event
 
         data class Download(val url: String, val fileName: String?) : Event
 
@@ -106,8 +105,6 @@ internal class CreatorPostState {
         ) : Effect
 
         data class DownloadToast(val fileName: String) : Effect
-
-        data class OpenUrl(val url: String) : Effect
 
         data class OpenAudio(val url: String, val name: String?, val mime: String) : Effect
     }

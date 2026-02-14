@@ -1,6 +1,5 @@
 package su.afk.kemonos.creatorPost.presenter.view.preview
 
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -12,7 +11,6 @@ import su.afk.kemonos.domain.models.PreviewDomain
 @Composable
 fun EmbedPreviewItem(
     preview: PreviewDomain,
-    onEmbedClick: (String) -> Unit,
 ) {
     preview.url?.let { url ->
         Text(
@@ -20,7 +18,6 @@ fun EmbedPreviewItem(
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.primary,
             modifier = Modifier
-                .clickable { onEmbedClick(url) }
                 .padding(vertical = 8.dp)
         )
         Text(

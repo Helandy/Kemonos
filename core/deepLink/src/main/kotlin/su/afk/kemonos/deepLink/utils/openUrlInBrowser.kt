@@ -5,11 +5,8 @@ import android.content.Intent
 import android.net.Uri
 import androidx.core.net.toUri
 
-private const val CHROME_PKG = "com.android.chrome"
-
-// todo в будущем добавить настройку выбора браузера по умолчанию
 /**
- * Открыть ссылку в Chrome, а если Chrome недоступен — показать chooser.
+ * Открыть ссылку в браузере по умолчанию, а если недоступно — показать chooser.
  */
 fun openUrlPreferChrome(
     context: Context,
@@ -29,15 +26,14 @@ fun openUrlPreferChrome(
         return
     }
 
-    val chromeIntent = Intent(Intent.ACTION_VIEW, uri).apply {
+    val defaultBrowserIntent = Intent(Intent.ACTION_VIEW, uri).apply {
         addCategory(Intent.CATEGORY_BROWSABLE)
-        setPackage(CHROME_PKG)
         addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
     }
 
     runCatching {
-        context.startActivity(chromeIntent)
-    }.getOrElse { e ->
+        context.startActivity(defaultBrowserIntent)
+    }.getOrElse {
 
         val base = Intent(Intent.ACTION_VIEW, uri).apply {
             addCategory(Intent.CATEGORY_BROWSABLE)
@@ -49,7 +45,6 @@ fun openUrlPreferChrome(
         }
 
         runCatching { context.startActivity(chooser) }
-            .onFailure { ee ->
-            }
+            .onFailure {}
     }
 }

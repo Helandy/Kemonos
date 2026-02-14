@@ -1,8 +1,6 @@
 package su.afk.kemonos.creatorPost.presenter
 
 import android.content.ClipData
-import android.content.Context
-import android.content.Intent
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -25,7 +23,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
-import androidx.core.net.toUri
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.launch
@@ -81,10 +78,6 @@ internal fun CreatorPostScreen(state: State, onEvent: (Event) -> Unit, effect: F
                 is Effect.CopyPostLink -> ShareActions.copyToClipboard(context, "Post link", effect.message)
                 is Effect.OpenGoogleTranslate -> {
                     openGoogleTranslate(context, effect.text, effect.targetLangTag)
-                }
-
-                is Effect.OpenUrl -> {
-                    context.openExternalUrlSafely(effect.url)
                 }
                 is Effect.OpenAudio -> openAudioExternally(context, effect.url, effect.name, effect.mime)
                 is Effect.DownloadToast -> {
@@ -268,7 +261,6 @@ internal fun CreatorPostScreen(state: State, onEvent: (Event) -> Unit, effect: F
                             imgBaseUrl = imgBaseUrl,
                             showNames = showPreviewFileNames,
                             onOpenImage = { url -> onEvent(Event.OpenImage(url)) },
-                            onOpenUrl = { url -> onEvent(Event.OpenExternalUrl(url)) },
                             download = { fullUrl, fileName ->
                                 onEvent(Event.Download(fullUrl, fileName))
                             },
@@ -358,8 +350,8 @@ internal fun CreatorPostScreen(state: State, onEvent: (Event) -> Unit, effect: F
                             PostAttachmentsSection(
                                 attachments = state.post.attachments,
                                 fallbackBaseUrl = fallbackBaseUrl,
-                                onAttachmentClick = { url ->
-                                    context.openExternalUrlSafely(url)
+                                onAttachmentClick = { url, fileName ->
+                                    onEvent(Event.Download(url, fileName))
                                 },
                                 showHeader = false,
                             )
@@ -405,44 +397,6 @@ internal fun CreatorPostScreen(state: State, onEvent: (Event) -> Unit, effect: F
             }
         }
     }
-}
-
-private fun Context.openExternalUrlSafely(rawUrl: String) {
-    val trimmed = rawUrl.trim()
-    if (trimmed.isBlank() || trimmed.startsWith("/")) {
-        toast(getString(R.string.error_default))
-        return
-    }
-
-    val normalized = if (trimmed.startsWith("http://", ignoreCase = true) ||
-        trimmed.startsWith("https://", ignoreCase = true)
-    ) trimmed else "https://$trimmed"
-
-    val uri = runCatching { normalized.toUri() }.getOrNull()
-    if (uri == null) {
-        toast(getString(R.string.error_default))
-        return
-    }
-
-    val chromeIntent = Intent(Intent.ACTION_VIEW, uri).apply {
-        addCategory(Intent.CATEGORY_BROWSABLE)
-        setPackage("com.android.chrome")
-        addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-    }
-
-    runCatching { startActivity(chromeIntent) }
-        .onFailure {
-            val baseIntent = Intent(Intent.ACTION_VIEW, uri).apply {
-                addCategory(Intent.CATEGORY_BROWSABLE)
-                addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-            }
-            val chooser = Intent.createChooser(baseIntent, getString(R.string.open_with)).apply {
-                addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-            }
-
-            runCatching { startActivity(chooser) }
-                .onFailure { toast(getString(R.string.error_default)) }
-        }
 }
 
 @Preview("PreviewCreatorPostScreen")
