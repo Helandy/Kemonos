@@ -25,6 +25,8 @@ internal class LoginState {
     ) : UiState
 
     sealed interface Event : UiEvent {
+        data object Back : Event
+
         data class UsernameChanged(val value: String) : Event
         data class PasswordChanged(val value: String) : Event
         data object LoginClick : Event

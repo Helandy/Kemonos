@@ -11,12 +11,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.flow.Flow
 import su.afk.kemonos.common.R.drawable
 import su.afk.kemonos.common.presenter.baseScreen.BaseScreen
+import su.afk.kemonos.common.presenter.baseScreen.CenterBackTopBar
 import su.afk.kemonos.common.util.findActivity
 import su.afk.kemonos.domain.SelectedSite
 import su.afk.kemonos.profile.R
@@ -53,6 +53,13 @@ internal fun RegisterScreen(
         isLoading = state.isLoading,
         contentAlignment = Alignment.Center,
         contentPadding = PaddingValues(24.dp),
+        customTopBar = { scrollBehavior ->
+            CenterBackTopBar(
+                title = stringResource(R.string.register_title),
+                onBack = { onEvent(Event.Back) },
+                scrollBehavior = scrollBehavior,
+            )
+        },
     ) {
         Column(
             modifier = Modifier.fillMaxWidth(),
@@ -68,13 +75,6 @@ internal fun RegisterScreen(
                 contentDescription = null,
                 modifier = Modifier.size(72.dp)
                     .padding(bottom = 12.dp),
-            )
-
-            /** Заголовок */
-            Text(
-                text = stringResource(R.string.register_title),
-                style = MaterialTheme.typography.headlineMedium,
-                fontWeight = FontWeight.SemiBold
             )
 
             Spacer(Modifier.height(12.dp))
