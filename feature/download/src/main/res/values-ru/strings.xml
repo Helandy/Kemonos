@@ -1,0 +1,9 @@
+<resources>
+    <string name="downloads_title">Загрузки</string>
+    <string name="downloads_empty">В Kemonos еще нет запущенных загрузок.</string>
+    <string name="downloads_status">Статус</string>
+    <string name="downloads_error">Ошибка</string>
+    <string name="downloads_size">Размер</string>
+    <string name="downloads_speed">Скорость</string>
+    <string name="downloads_updated">Обновлено</string>
+</resources>
