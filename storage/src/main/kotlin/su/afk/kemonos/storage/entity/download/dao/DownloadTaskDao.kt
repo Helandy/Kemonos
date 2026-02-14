@@ -14,4 +14,22 @@ internal interface DownloadTaskDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun upsert(item: DownloadTaskEntity)
+
+    @Query(
+        """
+        UPDATE tracked_downloads
+        SET lastStatus = :lastStatus,
+            lastReason = :lastReason,
+            lastErrorLabel = :lastErrorLabel,
+            lastSeenAtMs = :lastSeenAtMs
+        WHERE downloadId = :downloadId
+        """
+    )
+    suspend fun updateRuntimeState(
+        downloadId: Long,
+        lastStatus: Int?,
+        lastReason: Int?,
+        lastErrorLabel: String?,
+        lastSeenAtMs: Long?,
+    )
 }

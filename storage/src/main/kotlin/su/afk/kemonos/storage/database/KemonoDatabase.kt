@@ -62,7 +62,7 @@ import su.afk.kemonos.storage.entity.video.dao.VideoInfoDao
 
         DownloadTaskEntity::class,
     ],
-    version = 8,
+    version = 9,
     exportSchema = false
 )
 @TypeConverters(SelectedSiteConverters::class)

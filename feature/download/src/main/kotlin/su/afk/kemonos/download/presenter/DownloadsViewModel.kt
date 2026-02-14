@@ -27,6 +27,7 @@ internal class DownloadsViewModel @Inject constructor(
 ) : BaseViewModelNew<DownloadsState.State, DownloadsState.Event, DownloadsState.Effect>() {
     private val refreshMutex = Mutex()
     private val speedMap = mutableMapOf<Long, SpeedPoint>()
+    private val lastSnapshots = mutableMapOf<Long, DownloadSnapshot>()
     private var tracked: List<TrackedDownload> = emptyList()
 
     override fun createInitialState(): DownloadsState.State = DownloadsState.State()
@@ -38,36 +39,45 @@ internal class DownloadsViewModel @Inject constructor(
     }
 
     override fun onRetry() {
-        refreshNow()
+        refreshAllNow()
     }
 
     init {
         viewModelScope.launch {
             trackedDownloadsRepository.observeAll().collect { items ->
                 tracked = items
-                refreshNow()
+                refreshAllNow()
             }
         }
 
         viewModelScope.launch {
             while (isActive) {
                 delay(POLL_INTERVAL_MS)
-                refreshNow()
+                refreshActiveNow()
             }
         }
     }
 
-    private fun refreshNow() {
+    private fun refreshAllNow() {
         viewModelScope.launch {
             refreshMutex.withLock {
-                refreshInternal()
+                refreshInternal(onlyActive = false)
             }
         }
     }
 
-    private fun refreshInternal() {
+    private fun refreshActiveNow() {
+        viewModelScope.launch {
+            refreshMutex.withLock {
+                refreshInternal(onlyActive = true)
+            }
+        }
+    }
+
+    private suspend fun refreshInternal(onlyActive: Boolean) {
         if (tracked.isEmpty()) {
             speedMap.clear()
+            lastSnapshots.clear()
             setState {
                 copy(
                     isLoading = false,
@@ -78,12 +88,29 @@ internal class DownloadsViewModel @Inject constructor(
             return
         }
 
-        val snapshots = downloadManagerDataSource.querySnapshots(tracked.map { it.downloadId })
+        val trackedIds = tracked.map { it.downloadId }
+        speedMap.keys.retainAll(trackedIds.toSet())
+        lastSnapshots.keys.retainAll(trackedIds.toSet())
+
+        val idsForQuery = if (onlyActive) {
+            trackedIds.filter { id -> lastSnapshots[id]?.status.isActiveStatus() }
+        } else {
+            trackedIds
+        }
+
+        val snapshots = if (idsForQuery.isNotEmpty()) {
+            downloadManagerDataSource.querySnapshots(idsForQuery)
+        } else {
+            emptyMap()
+        }
+        if (snapshots.isNotEmpty()) {
+            lastSnapshots.putAll(snapshots)
+        }
+
         val nowMs = System.currentTimeMillis()
-        speedMap.keys.retainAll(tracked.map { it.downloadId }.toSet())
 
         val uiItems = tracked.map { item ->
-            val snapshot = snapshots[item.downloadId]
+            val snapshot = lastSnapshots[item.downloadId]
             val speed = calcSpeed(item.downloadId, snapshot, nowMs)
             DownloadUiItem.from(
                 tracked = item,
@@ -92,6 +119,8 @@ internal class DownloadsViewModel @Inject constructor(
             )
         }
 
+        persistFailedItems(uiItems = uiItems, seenAtMs = nowMs)
+
         setState {
             copy(
                 isLoading = false,
@@ -99,6 +128,31 @@ internal class DownloadsViewModel @Inject constructor(
                 lastUpdatedMs = nowMs,
             )
         }
+    }
+
+    private suspend fun persistFailedItems(
+        uiItems: List<DownloadUiItem>,
+        seenAtMs: Long,
+    ) {
+        val trackedById = tracked.associateBy { it.downloadId }
+        uiItems.asSequence()
+            .filter { it.status == DownloadManager.STATUS_FAILED }
+            .forEach { item ->
+                val current = trackedById[item.downloadId]
+                val statusChanged = current?.lastStatus != item.status
+                val reasonChanged = current?.lastReason != item.reasonCode
+                val labelChanged = current?.lastErrorLabel != item.reasonLabel
+
+                if (statusChanged || reasonChanged || labelChanged) {
+                    trackedDownloadsRepository.updateRuntimeState(
+                        downloadId = item.downloadId,
+                        lastStatus = item.status,
+                        lastReason = item.reasonCode,
+                        lastErrorLabel = item.reasonLabel,
+                        lastSeenAtMs = seenAtMs,
+                    )
+                }
+            }
     }
 
     private fun calcSpeed(id: Long, snapshot: DownloadSnapshot?, nowMs: Long): Long {
@@ -123,3 +177,8 @@ private data class SpeedPoint(
 )
 
 private const val POLL_INTERVAL_MS = 1000L
+
+private fun Int?.isActiveStatus(): Boolean =
+    this == DownloadManager.STATUS_PENDING ||
+            this == DownloadManager.STATUS_RUNNING ||
+            this == DownloadManager.STATUS_PAUSED

@@ -9,4 +9,8 @@ data class TrackedDownload(
     val postId: String?,
     val postTitle: String?,
     val createdAtMs: Long,
+    val lastStatus: Int? = null,
+    val lastReason: Int? = null,
+    val lastErrorLabel: String? = null,
+    val lastSeenAtMs: Long? = null,
 )

@@ -29,27 +29,28 @@ internal class DownloadManagerDataSourceImpl @Inject constructor(
 
     override fun querySnapshots(ids: List<Long>): Map<Long, DownloadManagerSnapshot> {
         if (ids.isEmpty()) return emptyMap()
-        val query = DownloadManager.Query().setFilterById(*ids.toLongArray())
-        val cursor = downloadManager.query(query)
-
-        return cursor.use { c ->
-            buildMap {
-                while (c.moveToNext()) {
-                    val id = c.getLongByName(DownloadManager.COLUMN_ID)
-                    put(
-                        id,
-                        DownloadManagerSnapshot(
-                            title = c.getStringByName(DownloadManager.COLUMN_TITLE),
-                            status = c.getIntByName(DownloadManager.COLUMN_STATUS),
-                            reason = c.getIntByName(DownloadManager.COLUMN_REASON),
-                            bytesDownloaded = c.getLongByName(DownloadManager.COLUMN_BYTES_DOWNLOADED_SO_FAR),
-                            totalBytes = c.getLongByName(DownloadManager.COLUMN_TOTAL_SIZE_BYTES),
-                            mediaType = c.getStringByName(DownloadManager.COLUMN_MEDIA_TYPE),
-                            remoteUri = c.getStringByName(DownloadManager.COLUMN_URI),
-                            localUri = c.getStringByName(DownloadManager.COLUMN_LOCAL_URI),
-                            lastModifiedMs = c.getLongByName(DownloadManager.COLUMN_LAST_MODIFIED_TIMESTAMP),
+        return buildMap {
+            ids.distinct().chunked(QUERY_BATCH_SIZE).forEach { batch ->
+                val query = DownloadManager.Query().setFilterById(*batch.toLongArray())
+                val cursor = downloadManager.query(query)
+                cursor.use { c ->
+                    while (c.moveToNext()) {
+                        val id = c.getLongByName(DownloadManager.COLUMN_ID)
+                        put(
+                            id,
+                            DownloadManagerSnapshot(
+                                title = c.getStringByName(DownloadManager.COLUMN_TITLE),
+                                status = c.getIntByName(DownloadManager.COLUMN_STATUS),
+                                reason = c.getIntByName(DownloadManager.COLUMN_REASON),
+                                bytesDownloaded = c.getLongByName(DownloadManager.COLUMN_BYTES_DOWNLOADED_SO_FAR),
+                                totalBytes = c.getLongByName(DownloadManager.COLUMN_TOTAL_SIZE_BYTES),
+                                mediaType = c.getStringByName(DownloadManager.COLUMN_MEDIA_TYPE),
+                                remoteUri = c.getStringByName(DownloadManager.COLUMN_URI),
+                                localUri = c.getStringByName(DownloadManager.COLUMN_LOCAL_URI),
+                                lastModifiedMs = c.getLongByName(DownloadManager.COLUMN_LAST_MODIFIED_TIMESTAMP),
+                            )
                         )
-                    )
+                    }
                 }
             }
         }
@@ -73,3 +74,5 @@ private fun Cursor.getIntByName(name: String): Int {
     if (index < 0 || isNull(index)) return -1
     return getInt(index)
 }
+
+private const val QUERY_BATCH_SIZE = 300

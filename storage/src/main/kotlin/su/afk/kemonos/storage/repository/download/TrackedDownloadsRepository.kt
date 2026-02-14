@@ -17,6 +17,22 @@ internal class TrackedDownloadsRepository @Inject constructor(
     override suspend fun upsert(item: TrackedDownload) {
         dao.upsert(item.toEntity())
     }
+
+    override suspend fun updateRuntimeState(
+        downloadId: Long,
+        lastStatus: Int?,
+        lastReason: Int?,
+        lastErrorLabel: String?,
+        lastSeenAtMs: Long?,
+    ) {
+        dao.updateRuntimeState(
+            downloadId = downloadId,
+            lastStatus = lastStatus,
+            lastReason = lastReason,
+            lastErrorLabel = lastErrorLabel,
+            lastSeenAtMs = lastSeenAtMs,
+        )
+    }
 }
 
 private fun toDomain(item: DownloadTaskEntity): TrackedDownload =
@@ -29,6 +45,10 @@ private fun toDomain(item: DownloadTaskEntity): TrackedDownload =
         postId = item.postId,
         postTitle = item.postTitle,
         createdAtMs = item.createdAtMs,
+        lastStatus = item.lastStatus,
+        lastReason = item.lastReason,
+        lastErrorLabel = item.lastErrorLabel,
+        lastSeenAtMs = item.lastSeenAtMs,
     )
 
 private fun TrackedDownload.toEntity(): DownloadTaskEntity =
@@ -41,4 +61,8 @@ private fun TrackedDownload.toEntity(): DownloadTaskEntity =
         postId = postId,
         postTitle = postTitle,
         createdAtMs = createdAtMs,
+        lastStatus = lastStatus,
+        lastReason = lastReason,
+        lastErrorLabel = lastErrorLabel,
+        lastSeenAtMs = lastSeenAtMs,
     )
