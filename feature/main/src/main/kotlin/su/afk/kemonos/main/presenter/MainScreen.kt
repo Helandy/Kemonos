@@ -26,6 +26,7 @@ import su.afk.kemonos.main.presenter.MainState.Event
 import su.afk.kemonos.main.presenter.view.*
 import java.io.File
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun MainScreen(
     state: MainState.State,

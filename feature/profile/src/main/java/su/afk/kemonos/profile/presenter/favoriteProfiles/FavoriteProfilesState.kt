@@ -35,6 +35,8 @@ internal class FavoriteProfilesState {
     ) : UiState
 
     sealed interface Event : UiEvent {
+        data object Back : Event
+
         data class QueryChanged(val value: String) : Event
         data class ServiceSelected(val value: String) : Event
         data class SortSelected(val value: FavoriteSortedType) : Event

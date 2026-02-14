@@ -1,10 +1,13 @@
 package su.afk.kemonos.profile.presenter.favoriteProfiles
 
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.paging.compose.collectAsLazyPagingItems
@@ -13,8 +16,10 @@ import kotlinx.coroutines.flow.emptyFlow
 import su.afk.kemonos.common.components.creator.CreatorsContentPaging
 import su.afk.kemonos.common.components.searchBar.SearchBarNew
 import su.afk.kemonos.common.presenter.baseScreen.BaseScreen
+import su.afk.kemonos.common.presenter.baseScreen.CenterBackTopBar
 import su.afk.kemonos.common.presenter.baseScreen.TopBarScroll
 import su.afk.kemonos.common.utilsUI.KemonosPreviewScreen
+import su.afk.kemonos.profile.R
 import su.afk.kemonos.profile.api.domain.favoriteProfiles.FreshFavoriteArtistKey
 import su.afk.kemonos.profile.presenter.favoriteProfiles.FavoriteProfilesState.*
 import su.afk.kemonos.profile.presenter.favoriteProfiles.views.favoriteProfilesSortOptions
@@ -31,27 +36,34 @@ internal fun FavoriteProfilesScreen(state: State, onEvent: (Event) -> Unit, effe
         contentPadding = PaddingValues(horizontal = 8.dp),
         isScroll = false,
         topBarScroll = TopBarScroll.EnterAlways,
-        topBar = {
-            SearchBarNew(
-                query = state.searchQuery,
-                onQueryChange = { onEvent(Event.QueryChanged(it)) },
-
-                services = state.services,
-                selectedService = state.selectedService,
-                onServiceSelect = { onEvent(Event.ServiceSelected(it)) },
-
-                sortOptions = sortOptions,
-                selectedSort = state.sortedType,
-                onSortMethodSelect = { onEvent(Event.SortSelected(it)) },
-
-                isAscending = state.sortAscending,
-                onToggleAscending = { onEvent(Event.ToggleSortOrder) },
+        customTopBar = { scrollBehavior ->
+            CenterBackTopBar(
+                title = stringResource(R.string.favorite_profiles_title),
+                onBack = { onEvent(Event.Back) },
+                scrollBehavior = scrollBehavior,
             )
         },
         isLoading = state.loading,
         onRetry = { onEvent(Event.Retry) },
     ) {
+        SearchBarNew(
+            query = state.searchQuery,
+            onQueryChange = { onEvent(Event.QueryChanged(it)) },
+
+            services = state.services,
+            selectedService = state.selectedService,
+            onServiceSelect = { onEvent(Event.ServiceSelected(it)) },
+
+            sortOptions = sortOptions,
+            selectedSort = state.sortedType,
+            onSortMethodSelect = { onEvent(Event.SortSelected(it)) },
+
+            isAscending = state.sortAscending,
+            onToggleAscending = { onEvent(Event.ToggleSortOrder) },
+        )
+
         PullToRefreshBox(
+            modifier = Modifier.fillMaxSize(),
             state = pullState,
             isRefreshing = state.refreshing,
             onRefresh = {

@@ -52,6 +52,8 @@ internal class FavoriteProfilesViewModel @Inject constructor(
 
     override fun onEvent(event: Event) {
         when (event) {
+            Event.Back -> navManager.back()
+
             is Event.QueryChanged -> {
                 setState { copy(searchQuery = event.value) }
                 searchQueryFlow.value = event.value
