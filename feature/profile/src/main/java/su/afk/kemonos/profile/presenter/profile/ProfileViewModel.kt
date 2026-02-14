@@ -10,6 +10,7 @@ import su.afk.kemonos.common.error.IErrorHandlerUseCase
 import su.afk.kemonos.common.error.storage.RetryStorage
 import su.afk.kemonos.common.presenter.baseViewModel.BaseViewModelNew
 import su.afk.kemonos.domain.SelectedSite
+import su.afk.kemonos.download.api.IDownloadNavigator
 import su.afk.kemonos.navigation.NavigationManager
 import su.afk.kemonos.navigation.storage.NavigationStorage
 import su.afk.kemonos.preferences.ui.IUiSettingUseCase
@@ -25,6 +26,7 @@ internal class ProfileViewModel @Inject constructor(
     private val observeAuthStateUseCase: ObserveAuthStateUseCase,
     private val navigationManager: NavigationManager,
     private val navigationStorage: NavigationStorage,
+    private val downloadNavigator: IDownloadNavigator,
     private val logoutDelegate: LogoutDelegate,
     private val uiSetting: IUiSettingUseCase,
     private val freshUpdatesUseCase: IFreshFavoriteArtistsUpdatesUseCase,
@@ -46,6 +48,7 @@ internal class ProfileViewModel @Inject constructor(
             is Event.LoginClick -> onLoginClick(event.site)
             is Event.FavoriteProfilesNavigate -> onFavoriteProfilesNavigate(event.site)
             is Event.FavoritePostNavigate -> onFavoritePostNavigate(event.site)
+            Event.NavigateToDownloads -> navigateToDownloads()
             Event.NavigateToSettings -> navigateToSettings()
             Event.KeysClick -> onKeysClick()
             Event.ReviewDMsClick -> onReviewDMsClick()
@@ -129,6 +132,8 @@ internal class ProfileViewModel @Inject constructor(
 
     /** Настройки */
     private fun navigateToSettings() = navigationManager.navigate(AuthDest.Setting)
+
+    private fun navigateToDownloads() = navigationManager.navigate(downloadNavigator.getDownloadsDest())
 
     private fun onKeysClick() {
     }

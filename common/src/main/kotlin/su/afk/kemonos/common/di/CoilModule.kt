@@ -19,9 +19,9 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
 import okhttp3.OkHttpClient
-import su.afk.kemonos.common.constants.Constant.COIL_DISK_DIR_NAME
 import su.afk.kemonos.common.imageLoader.imageProgress.ImageProgressStore
 import su.afk.kemonos.common.imageLoader.imageProgress.ProgressInterceptor
+import su.afk.kemonos.constants.Constant.COIL_DISK_DIR_NAME
 import su.afk.kemonos.preferences.ui.UiSettingKey.COIL_CACHE_SIZE_MB
 import javax.inject.Qualifier
 import javax.inject.Singleton

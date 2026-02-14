@@ -18,8 +18,8 @@ import su.afk.kemonos.navigation.NavigationManager
 import su.afk.kemonos.preferences.siteUrl.ISetBaseUrlsUseCase
 import su.afk.kemonos.preferences.ui.IUiSettingUseCase
 import su.afk.kemonos.storage.api.clear.IClearCacheStorageUseCase
-import su.afk.kemonos.utils.buildBaseUrl
-import su.afk.kemonos.utils.normalizeDomain
+import su.afk.kemonos.utils.url.buildBaseUrl
+import su.afk.kemonos.utils.url.normalizeDomain
 import javax.inject.Inject
 
 @HiltViewModel

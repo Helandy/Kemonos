@@ -30,8 +30,8 @@ dependencies {
     implementation(libs.bundles.compose.core)
 
     implementation(libs.bundles.navigation3)
+    implementation(project(":core:model"))
 
-    implementation(project(":core:domain"))
     implementation(project(":feature:main-api"))
     implementation(project(":feature:posts-api"))
     implementation(project(":feature:creators-api"))

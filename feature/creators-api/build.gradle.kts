@@ -10,6 +10,5 @@ java {
 
 dependencies {
     implementation(libs.bundles.navigation3)
-
-    implementation(project(":core:domain"))
+    implementation(project(":core:model"))
 }

@@ -6,9 +6,13 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.*
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -21,28 +25,19 @@ import androidx.compose.ui.unit.dp
 import su.afk.kemonos.common.R
 import su.afk.kemonos.common.di.LocalDomainResolver
 import su.afk.kemonos.common.imageLoader.AsyncImageWithStatus
-import su.afk.kemonos.common.util.toUiDateTime
 import su.afk.kemonos.common.utilsUI.KemonosPreviewScreen
 import su.afk.kemonos.common.utilsUI.getColorForFavorites
-import su.afk.kemonos.preferences.ui.DateFormatMode
 
 @Composable
 fun CreatorHeader(
-    dateMode: DateFormatMode,
     service: String,
     creatorId: String,
     creatorName: String,
-    updated: String?,
-    showSearchButton: Boolean,
-    showInfoButton: Boolean,
-    onSearchClick: () -> Unit,
-    onOpenPlatformClick: (() -> Unit)? = null,
-    onShareClick: (() -> Unit)? = null,
-    onClickHeader: (() -> Unit)?,
+    onBackClick: (() -> Unit)? = null,
+    onClickHeader: (() -> Unit)? = null,
 ) {
     val shape = RoundedCornerShape(12.dp)
     val avatarSize = 54.dp
-    var expanded by remember { mutableStateOf(false) }
 
     val resolver = LocalDomainResolver.current
     val imgBaseUrl = remember(service) { resolver.imageBaseUrlByService(service) }
@@ -84,6 +79,16 @@ fun CreatorHeader(
                 modifier = headerModifier,
                 verticalAlignment = Alignment.CenterVertically
             ) {
+                if (onBackClick != null) {
+                    IconButton(onClick = onBackClick) {
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription = stringResource(R.string.back),
+                            tint = Color.White
+                        )
+                    }
+                }
+
                 AsyncImageWithStatus(
                     model = "$imgBaseUrl/icons/${service}/${creatorId}",
                     contentDescription = creatorName,
@@ -126,84 +131,6 @@ fun CreatorHeader(
                     }
                 }
             }
-
-            if (showInfoButton) {
-                Row(
-                    modifier = Modifier.wrapContentSize(),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    if (showSearchButton) {
-                        IconButton(onClick = onSearchClick) {
-                            Icon(
-                                imageVector = Icons.Default.Search,
-                                contentDescription = stringResource(R.string.search),
-                                tint = Color.White
-                            )
-                        }
-                    }
-
-                    Box {
-                        IconButton(onClick = { expanded = true }) {
-                            Icon(
-                                imageVector = Icons.Default.MoreVert,
-                                contentDescription = null,
-                                tint = Color.White
-                            )
-                        }
-
-                        DropdownMenu(
-                            expanded = expanded,
-                            onDismissRequest = { expanded = false }
-                        ) {
-                            onShareClick?.let { onShare ->
-                                DropdownMenuItem(
-                                    text = { Text(stringResource(R.string.share)) },
-                                    leadingIcon = {
-                                        Icon(
-                                            imageVector = Icons.Default.Share,
-                                            contentDescription = null
-                                        )
-                                    },
-                                    onClick = {
-                                        expanded = false
-                                        onShare()
-                                    }
-                                )
-                            }
-
-                            onOpenPlatformClick?.let { onOpenPlatform ->
-                                DropdownMenuItem(
-                                    text = { Text(stringResource(R.string.open_platform_profile)) },
-                                    leadingIcon = {
-                                        Icon(
-                                            imageVector = Icons.Default.OpenInBrowser,
-                                            contentDescription = null
-                                        )
-                                    },
-                                    onClick = {
-                                        expanded = false
-                                        onOpenPlatform()
-                                    }
-                                )
-                            }
-
-                            updated?.let { upd ->
-                                DropdownMenuItem(
-                                    text = { Text(upd.toUiDateTime(dateMode)) },
-                                    leadingIcon = {
-                                        Icon(
-                                            imageVector = Icons.Default.DateRange,
-                                            contentDescription = null
-                                        )
-                                    },
-                                    enabled = false,
-                                    onClick = {}
-                                )
-                            }
-                        }
-                    }
-                }
-            }
         }
     }
 }
@@ -213,16 +140,10 @@ fun CreatorHeader(
 private fun PreviewCreatorHeader() {
     KemonosPreviewScreen {
         CreatorHeader(
-            dateMode = DateFormatMode.DD_MM_YYYY,
             service = "creator",
             creatorId = "creator",
             creatorName = "creator",
-            updated = null,
-            showSearchButton = true,
-            showInfoButton = true,
-            onSearchClick = {},
-            onOpenPlatformClick = null,
-            onShareClick = null,
+            onBackClick = {},
             onClickHeader = {},
         )
     }

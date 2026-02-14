@@ -31,6 +31,7 @@ fun BaseScreen(
 
     /** top */
     topBar: (@Composable ColumnScope.() -> Unit)? = null,
+    customTopBar: (@Composable (TopAppBarScrollBehavior?) -> Unit)? = null,
     topBarScroll: TopBarScroll = TopBarScroll.None,
     topBarWindowInsets: WindowInsets = TopAppBarDefaults.windowInsets,
 
@@ -78,12 +79,16 @@ fun BaseScreen(
                 else it
             },
         topBar = {
-            topBar?.let { slot ->
-                StandardTopBar(
-                    content = { slot() },
-                    scrollBehavior = scrollBehavior,
-                    topBarWindowInsets = topBarWindowInsets
-                )
+            if (customTopBar != null) {
+                customTopBar(scrollBehavior)
+            } else {
+                topBar?.let { slot ->
+                    StandardTopBar(
+                        content = { slot() },
+                        scrollBehavior = scrollBehavior,
+                        topBarWindowInsets = topBarWindowInsets
+                    )
+                }
             }
         },
 

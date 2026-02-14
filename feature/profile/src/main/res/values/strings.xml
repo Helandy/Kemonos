@@ -2,14 +2,11 @@
 
     <!-- Titles & labels -->
     <string name="register_title">Sign Up</string>
-    <string name="register_username_label">Username</string>
-    <string name="register_password_label">Password</string>
     <string name="register_confirm_label">Confirm password</string>
     <string name="register_button_create">Create account</string>
     <string name="register_button_back">Back</string>
 
     <!-- Field validation errors -->
-    <string name="register_username_empty">Enter a username</string>
     <string name="register_password_too_short">Minimum password length is 6 characters</string>
     <string name="register_confirm_not_equal">Passwords do not match</string>
 
@@ -20,12 +17,12 @@
 
     <!-- Login -->
     <string name="login_title">Login</string>
-    <string name="login_username_label">User name</string>
+    <string name="login_username_label">Username</string>
     <string name="login_password_label">Password</string>
     <string name="login_button_sign_in">Log in</string>
     <string name="login_button_register">Registration</string>
 
-    <string name="login_username_empty">Enter the user name</string>
+    <string name="login_username_empty">Enter a username</string>
     <string name="login_password_empty">Enter the password</string>
 
     <string name="login_error_network">Problems with the Internet. Try again later.</string>
@@ -44,19 +41,19 @@
     <string name="profile_favorites_title_kemono">Favorites Kemono</string>
     <string name="profile_favorites_profiles">Profiles</string>
     <string name="profile_favorites_posts">Posts</string>
+    <string name="favorite_profiles_title">Favorite profiles</string>
+    <string name="favorite_posts_title">Favorite posts</string>
     <string name="profile_menu_keys">Keys</string>
     <string name="profile_menu_review_dms">Review DMs</string>
     <string name="profile_menu_export_favorites">Export favorites</string>
     <string name="profile_menu_change_username">Change username</string>
     <string name="profile_menu_change_password">Change password</string>
+    <string name="profile_downloads">Downloads</string>
 
     <string name="profile_error_not_authorized">You are not authorized</string>
     <string name="profile_not_logged_in_message">
         You are not logged in. Log in to see your profile details and favorites.
     </string>
-    <string name="profile_login_button">Log in</string>
-
-
     <!-- favoriteProfiles   -->
     <string name="sort_new_posts_date">Post date</string>
     <string name="sort_faved_date">Favorited</string>
@@ -156,7 +153,6 @@
     <!-- UI Settings sections -->
     <string name="settings_debug_title">Debug</string>
     <string name="settings_ui_general_title">General</string>
-    <string name="settings_translate_section_title">Translation</string>
     <string name="settings_random_section_title">Random</string>
     <string name="settings_view_modes_section_title">View modes</string>
 

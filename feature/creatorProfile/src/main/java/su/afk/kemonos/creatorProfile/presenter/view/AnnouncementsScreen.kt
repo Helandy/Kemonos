@@ -128,7 +128,7 @@ fun AnnouncementCard(
             ) {
                 Spacer(modifier = Modifier.weight(1f))
                 Text(
-                    text = stringResource(R.string.dm_added, announcement.added.toUiDateTime(dateMode)),
+                    text = stringResource(R.string.fancard_added, announcement.added.toUiDateTime(dateMode)),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )

@@ -67,7 +67,7 @@ internal fun PostPreview(
                     contentScale = ContentScale.Crop
                 )
             } else {
-                PreviewPlaceholder(text = stringResource(R.string.video_file))
+                PreviewPlaceholder(text = stringResource(R.string.video_section))
             }
         }
 

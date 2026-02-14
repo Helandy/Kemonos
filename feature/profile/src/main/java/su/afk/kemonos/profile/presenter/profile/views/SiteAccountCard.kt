@@ -78,7 +78,7 @@ internal fun SiteAccountCard(
                     onClick = onLoginClick,
                     modifier = Modifier.fillMaxWidth()
                 ) {
-                    Text(text = stringResource(R.string.profile_login_button))
+                    Text(text = stringResource(R.string.login_button_sign_in))
                 }
             }
         }

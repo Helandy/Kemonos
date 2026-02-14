@@ -26,8 +26,8 @@ dependencies {
     implementation(libs.bundles.hilt)
 
     implementation(libs.bundles.retrofit)
+    implementation(project(":core:model"))
 
-    implementation(project(":core:domain"))
     implementation(project(":core:auth"))
     implementation(project(":core:preferences"))
     implementation(project(":core:utils"))

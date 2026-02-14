@@ -1,0 +1,9 @@
+<resources>
+    <string name="downloads_title">Downloads</string>
+    <string name="downloads_empty">No downloads started from Kemonos yet.</string>
+    <string name="downloads_status">Status</string>
+    <string name="downloads_error">Error</string>
+    <string name="downloads_size">Size</string>
+    <string name="downloads_speed">Speed</string>
+    <string name="downloads_updated">Updated</string>
+</resources>

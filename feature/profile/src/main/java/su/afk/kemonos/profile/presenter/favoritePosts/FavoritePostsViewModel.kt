@@ -64,6 +64,7 @@ internal class FavoritePostsViewModel @Inject constructor(
 
     override fun onEvent(event: Event) {
         when (event) {
+            Event.Back -> navManager.back()
             is Event.SearchQueryChanged -> onSearchQueryChanged(event.query)
             Event.ToggleHasVideo -> toggleHasVideo()
             Event.ToggleHasAttachments -> toggleHasAttachments()

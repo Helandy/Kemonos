@@ -8,7 +8,7 @@ import su.afk.kemonos.profile.domain.register.UsernameErrorCode
 
 @StringRes
 internal fun usernameErrorRes(code: UsernameErrorCode) = when (code) {
-    UsernameErrorCode.EMPTY -> R.string.register_username_empty
+    UsernameErrorCode.EMPTY -> R.string.login_username_empty
 }
 
 @StringRes

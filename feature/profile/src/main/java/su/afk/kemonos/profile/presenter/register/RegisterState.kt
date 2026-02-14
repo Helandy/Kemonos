@@ -26,6 +26,8 @@ internal class RegisterState {
     ) : UiState
 
     sealed interface Event : UiEvent {
+        data object Back : Event
+
         data class UsernameChanged(val value: String) : Event
         data class PasswordChanged(val value: String) : Event
         data class ConfirmChanged(val value: String) : Event

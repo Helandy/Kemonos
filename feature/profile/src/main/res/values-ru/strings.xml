@@ -2,14 +2,11 @@
 
     <!-- Заголовки и поля -->
     <string name="register_title">Регистрация</string>
-    <string name="register_username_label">Имя пользователя</string>
-    <string name="register_password_label">Пароль</string>
     <string name="register_confirm_label">Подтверждение пароля</string>
     <string name="register_button_create">Создать аккаунт</string>
     <string name="register_button_back">Назад</string>
 
     <!-- Ошибки валидации -->
-    <string name="register_username_empty">Введите имя пользователя</string>
     <string name="register_password_too_short">Минимальная длина пароля — 6 символов</string>
     <string name="register_confirm_not_equal">Пароли не совпадают</string>
 
@@ -43,20 +40,20 @@
     <string name="profile_favorites_title_kemono">Избранное Kemono</string>
     <string name="profile_favorites_profiles">Профили</string>
     <string name="profile_favorites_posts">Посты</string>
+    <string name="favorite_profiles_title">Избранные профили</string>
+    <string name="favorite_posts_title">Избранные посты</string>
     <string name="profile_menu_keys">Ключи</string>
     <string name="profile_menu_review_dms">Проверить личные сообщения</string>
     <string name="profile_menu_export_favorites">Экспорт избранного</string>
     <string name="profile_menu_change_username">Сменить имя пользователя</string>
     <string name="profile_menu_change_password">Сменить пароль</string>
+    <string name="profile_downloads">Загрузки</string>
 
     <string name="profile_error_not_authorized">Вы не авторизованы</string>
 
     <string name="profile_not_logged_in_message">
         Вы не авторизованы. Войдите, чтобы видеть подробности профиля и избранное.
     </string>
-    <string name="profile_login_button">Войти</string>
-
-
     <!-- favoriteProfiles   -->
     <string name="sort_new_posts_date">Дата поста</string>
     <string name="sort_faved_date">В избранное</string>
@@ -156,7 +153,6 @@
 
     <string name="settings_debug_title">Debug</string>
     <string name="settings_ui_general_title">Общие</string>
-    <string name="settings_translate_section_title">Перевод</string>
     <string name="settings_random_section_title">Случайное</string>
     <string name="settings_view_modes_section_title">Отображение</string>
 

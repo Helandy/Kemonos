@@ -23,7 +23,7 @@ import su.afk.kemonos.domain.models.AttachmentDomain
 fun PostAttachmentsSection(
     attachments: List<AttachmentDomain>,
     fallbackBaseUrl: String,
-    onAttachmentClick: (String) -> Unit,
+    onAttachmentClick: (url: String, fileName: String?) -> Unit,
     showHeader: Boolean = true,
 ) {
     if (attachments.isEmpty()) return
@@ -45,7 +45,7 @@ fun PostAttachmentsSection(
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .clickable { onAttachmentClick(url) }
+                    .clickable { onAttachmentClick(url, att.name) }
                     .padding(vertical = 4.dp)
             ) {
                 Icon(

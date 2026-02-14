@@ -1,5 +1,6 @@
 package su.afk.kemonos.creatorProfile.presenter
 
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
@@ -17,19 +18,21 @@ import androidx.paging.compose.collectAsLazyPagingItems
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
 import su.afk.kemonos.common.components.button.FavoriteActionButton
-import su.afk.kemonos.common.components.creator.header.CreatorHeader
 import su.afk.kemonos.common.components.posts.PostsContentPaging
 import su.afk.kemonos.common.presenter.baseScreen.BaseScreen
 import su.afk.kemonos.common.presenter.baseScreen.TopBarScroll
 import su.afk.kemonos.common.shared.ShareActions
-import su.afk.kemonos.common.toast.toast
 import su.afk.kemonos.common.utilsUI.KemonosPreviewScreen
 import su.afk.kemonos.creatorProfile.presenter.CreatorProfileState.*
 import su.afk.kemonos.creatorProfile.presenter.model.ProfileTab
 import su.afk.kemonos.creatorProfile.presenter.view.*
 import su.afk.kemonos.creatorProfile.presenter.view.discordProfile.DiscordProfilePlaceholder
-import su.afk.kemonos.deepLink.utils.openUrlPreferChrome
+import su.afk.kemonos.creatorProfile.presenter.view.header.CreatorScreenTopBar
+import su.afk.kemonos.creatorProfile.presenter.view.header.ProfileTabsBar
+import su.afk.kemonos.deepLink.utils.openUrlInBrowser
 import su.afk.kemonos.domain.models.PostDomain
+import su.afk.kemonos.ui.toast.toast
+import su.afk.kemonos.utils.creator.buildCreatorPlatformUrl
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -43,7 +46,7 @@ internal fun CreatorScreen(state: State, onEvent: (Event) -> Unit, effect: Flow<
     LaunchedEffect(effect) {
         effect.collect { effect ->
             when (effect) {
-                is Effect.OpenUrl -> openUrlPreferChrome(context, effect.url)
+                is Effect.OpenUrl -> openUrlInBrowser(context, effect.url)
                 is Effect.ShowToast -> context.toast(effect.message)
                 is Effect.CopyPostLink -> ShareActions.copyToClipboard(
                     context,
@@ -56,58 +59,30 @@ internal fun CreatorScreen(state: State, onEvent: (Event) -> Unit, effect: Flow<
 
     val pullState = rememberPullToRefreshState()
     val refreshing = (postsRefreshing || state.loading) && !state.isDiscordProfile
+    val platformUrl = remember(profile?.service, profile?.publicId, profile?.id) {
+        profile?.let {
+            buildCreatorPlatformUrl(
+                service = it.service,
+                publicId = it.publicId,
+                id = it.id
+            )
+        }
+    }
 
     BaseScreen(
         isScroll = false,
         topBarScroll = TopBarScroll.EnterAlways,
-        topBar = {
-            if (profile == null) return@BaseScreen
-                CreatorHeader(
-                    dateMode = state.uiSettingModel.dateFormatMode,
-                    service = profile.service,
-                    creatorId = profile.id,
-                    creatorName = profile.name,
-                    updated = profile.updated,
-                    showSearchButton = true,
-                    showInfoButton = true,
-                    onSearchClick = { onEvent(Event.ToggleSearch) },
-                    onOpenPlatformClick = remember(profile.service, profile.publicId, profile.id) {
-                        buildCreatorPlatformUrl(
-                            service = profile.service,
-                            publicId = profile.publicId,
-                            id = profile.id
-                        )
-                    }?.let { link ->
-                        { onEvent(Event.OpenCreatorPlatformLink(link)) }
-                    },
-                    onShareClick = { onEvent(Event.CopyProfileLink) },
-                    onClickHeader = null,
-                )
-
-                SearchBar(
-                    searchText = state.searchText,
-                    onSearchTextChange = {
-                        onEvent(Event.SearchTextChanged(it))
-                    },
-                    mediaFilter = state.mediaFilter,
-                    onToggleHasVideo = { onEvent(Event.ToggleHasVideo) },
-                    onToggleHasAttachments = { onEvent(Event.ToggleHasAttachments) },
-                    onToggleHasImages = { onEvent(Event.ToggleHasImages) },
-                    visible = state.isSearchVisible,
-                    onClose = {
-                        onEvent(Event.CloseSearch)
-                    }
-                )
-
-                ProfileTabsBar(
-                    tabs = state.showTabs,
-                    selectedTab = state.selectedTab,
-                    onTabSelected = { tab ->
-                        onEvent(Event.TabChanged(tab))
-                    },
-                    currentTag = state.currentTag,
-                    onTagClear = { onEvent(Event.ClearTag) }
-                )
+        customTopBar = { scrollBehavior ->
+            CreatorScreenTopBar(
+                profile = profile,
+                dateFormatMode = state.uiSettingModel.dateFormatMode,
+                platformUrl = platformUrl,
+                scrollBehavior = scrollBehavior,
+                onBack = { onEvent(Event.Back) },
+                onToggleSearch = { onEvent(Event.ToggleSearch) },
+                onShare = { onEvent(Event.CopyProfileLink) },
+                onOpenPlatform = { onEvent(Event.OpenCreatorPlatformLink(it)) },
+            )
         },
         contentModifier = Modifier.padding(horizontal = 8.dp),
         floatingActionButtonEnd = {
@@ -140,7 +115,33 @@ internal fun CreatorScreen(state: State, onEvent: (Event) -> Unit, effect: Flow<
 
         if (profile == null) return@BaseScreen
 
+        ProfileTabsBar(
+            tabs = state.showTabs,
+            selectedTab = state.selectedTab,
+            onTabSelected = { tab ->
+                onEvent(Event.TabChanged(tab))
+            },
+            currentTag = state.currentTag,
+            onTagClear = { onEvent(Event.ClearTag) }
+        )
+
+        SearchBar(
+            searchText = state.searchText,
+            onSearchTextChange = {
+                onEvent(Event.SearchTextChanged(it))
+            },
+            mediaFilter = state.mediaFilter,
+            onToggleHasVideo = { onEvent(Event.ToggleHasVideo) },
+            onToggleHasAttachments = { onEvent(Event.ToggleHasAttachments) },
+            onToggleHasImages = { onEvent(Event.ToggleHasImages) },
+            visible = state.isSearchVisible,
+            onClose = {
+                onEvent(Event.CloseSearch)
+            }
+        )
+
         PullToRefreshBox(
+            modifier = Modifier.fillMaxSize(),
             state = pullState,
             isRefreshing = refreshing,
             onRefresh = { onEvent(Event.PullRefresh) }
@@ -217,23 +218,5 @@ private fun PreviewCreatorScreen() {
             onEvent = {},
             effect = flowOf()
         )
-    }
-}
-
-private fun buildCreatorPlatformUrl(service: String, publicId: String?, id: String): String? {
-    val slug = publicId?.trim()?.removePrefix("@")?.ifBlank { null } ?: id.trim().ifBlank { return null }
-
-    return when (service.lowercase()) {
-        "patreon" -> "https://www.patreon.com/$slug"
-        "fanbox" -> "https://www.fanbox.cc/@$slug"
-        "onlyfans" -> "https://onlyfans.com/$slug"
-        "fansly" -> "https://fansly.com/$slug"
-        "candfans" -> "https://candfans.jp/$slug"
-        "boosty" -> "https://boosty.to/$slug"
-        "fantia" -> "https://fantia.jp/fanclubs/$slug"
-        "gumroad" -> "https://$slug.gumroad.com"
-        "subscribestar", "subscriblestar" -> "https://subscribestar.adult/$slug"
-        "dlsite", "dlslite" -> "https://www.dlsite.com/home/circle/profile/=/maker_id/$slug.html?locale=en_US"
-        else -> null
     }
 }

@@ -1,6 +1,6 @@
 package su.afk.kemonos.preferences
 
-import su.afk.kemonos.utils.toRootUrl
+import su.afk.kemonos.utils.url.toRootUrl
 import javax.inject.Inject
 import javax.inject.Singleton
 

@@ -12,7 +12,7 @@ dependencies {
 
     implementation(project(":common"))
     implementation(project(":core:navigation"))
-    implementation(project(":core:domain"))
+    implementation(project(":core:model"))
     implementation(project(":core:preferences"))
     implementation(project(":core:network"))
     implementation(project(":storage-api"))

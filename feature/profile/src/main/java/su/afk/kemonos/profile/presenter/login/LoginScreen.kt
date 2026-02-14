@@ -12,7 +12,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
@@ -20,6 +19,7 @@ import kotlinx.coroutines.flow.Flow
 import su.afk.kemonos.common.R.drawable.coomer_logo
 import su.afk.kemonos.common.R.drawable.kemono_logo
 import su.afk.kemonos.common.presenter.baseScreen.BaseScreen
+import su.afk.kemonos.common.presenter.baseScreen.CenterBackTopBar
 import su.afk.kemonos.common.util.findActivity
 import su.afk.kemonos.domain.SelectedSite
 import su.afk.kemonos.profile.R
@@ -70,6 +70,13 @@ internal fun LoginScreen(
         isLoading = state.isLoading,
         contentAlignment = Alignment.Center,
         contentPadding = PaddingValues(24.dp),
+        customTopBar = { scrollBehavior ->
+            CenterBackTopBar(
+                title = stringResource(R.string.login_title),
+                onBack = { onEvent(Event.Back) },
+                scrollBehavior = scrollBehavior,
+            )
+        },
     ) {
         Column(
             modifier = Modifier.fillMaxWidth(),
@@ -87,11 +94,6 @@ internal fun LoginScreen(
                     .padding(bottom = 12.dp),
             )
 
-            Text(
-                text = stringResource(R.string.login_title),
-                style = MaterialTheme.typography.headlineMedium,
-                fontWeight = FontWeight.SemiBold
-            )
             Spacer(Modifier.height(12.dp))
 
             /** Карточка логина */

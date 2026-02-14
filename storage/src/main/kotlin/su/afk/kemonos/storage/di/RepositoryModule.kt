@@ -7,6 +7,7 @@ import dagger.hilt.components.SingletonComponent
 import su.afk.kemonos.storage.api.repository.comments.IStoreCommentsRepository
 import su.afk.kemonos.storage.api.repository.creatorProfile.IStoreCreatorProfileRepository
 import su.afk.kemonos.storage.api.repository.creators.IStoreCreatorsRepository
+import su.afk.kemonos.storage.api.repository.download.ITrackedDownloadsRepository
 import su.afk.kemonos.storage.api.repository.favorites.artist.IStoreFavoriteArtistsRepository
 import su.afk.kemonos.storage.api.repository.favorites.post.IStoreFavoritePostsRepository
 import su.afk.kemonos.storage.api.repository.favorites.updates.IFreshFavoriteArtistsUpdatesRepository
@@ -19,6 +20,7 @@ import su.afk.kemonos.storage.api.repository.tags.IStoreTagsRepository
 import su.afk.kemonos.storage.repository.comments.StoreCommentsRepository
 import su.afk.kemonos.storage.repository.creatorProfileCache.StoreCreatorProfileRepository
 import su.afk.kemonos.storage.repository.creators.StoreCreatorsRepository
+import su.afk.kemonos.storage.repository.download.TrackedDownloadsRepository
 import su.afk.kemonos.storage.repository.favorites.artist.StoreFavoriteArtistsRepository
 import su.afk.kemonos.storage.repository.favorites.post.StoreFavoritePostsRepository
 import su.afk.kemonos.storage.repository.favorites.updates.FreshFavoriteArtistsUpdatesRepository
@@ -83,4 +85,8 @@ internal interface RepositoryModule {
     @Singleton
     @Binds
     fun bindStoreCreatorProfileCacheRepository(impl: StoreCreatorProfileRepository): IStoreCreatorProfileRepository
+
+    @Singleton
+    @Binds
+    fun bindTrackedDownloadsRepository(impl: TrackedDownloadsRepository): ITrackedDownloadsRepository
 }

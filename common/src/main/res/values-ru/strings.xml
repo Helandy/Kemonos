@@ -12,7 +12,6 @@
     <string name="attachment_section">📎 Вложения</string>
     <string name="comments_section">💬 Комментарии</string>
     <string name="video_section">🎬 Видео</string>
-    <string name="video_file">🎬 Видео</string>
     <string name="audio_file">🎵 Аудио</string>
     <string name="video_loading_section">Загрузка превью…</string>
     <string name="loading">Загрузка…</string>
@@ -28,13 +27,11 @@
 
     <string name="dm_empty">Нет сообщений</string>
     <string name="announcements_empty">Нет объявлений</string>
-    <string name="dm_added">Добавлено: %1$s</string>
     <string name="dm_published">Опубликовано: %1$s</string>
 
     <string name="profile_tab_posts">Посты</string>
     <string name="profile_tab_announcements">Анонсы</string>
     <string name="profile_tab_fancard">Фанкард</string>
-    <string name="profile_tab_tags">Тэги</string>
     <string name="profile_tab_dms">ЛС</string>
     <string name="profile_tab_links">Ссылки</string>
     <string name="random">Случайный</string>
@@ -65,7 +62,6 @@
     <string name="error_default">
         Что-то пошло не так, попробуйте ещё раз или используйте VPN.
     </string>
-    <string name="common_retry">Повторить</string>
     <string name="common_error_loading">Не удалось загрузить</string>
 
     <!-- App update   -->
@@ -111,9 +107,9 @@
     <string name="err_title_http_generic">HTTP ошибка (%1$d)</string>
     <string name="err_msg_http_generic">Ошибка запроса. Попробуй ещё раз.</string>
 
-    <string name="error_screen">Ошибка</string>
     <string name="retry">Повторить</string>
     <string name="copy">Скопировать</string>
+    <string name="copy_original_text">Скопировать текст</string>
     <string name="copied">Скопировано</string>
     <string name="details">Детали</string>
     <string name="hide_details">Скрыть детали</string>
@@ -133,7 +129,6 @@
 
     <string name="main_api_unavailable_title">API недоступно</string>
     <string name="main_api_error_code">Код: %1$d</string>
-    <string name="main_api_error_message">Сообщение: %1$s</string>
 
     <string name="main_api_current_urls_title">Текущие адреса в настройках:</string>
     <string name="main_api_current_urls_value">Kemono: %1$s\nCoomer: %2$s</string>
@@ -193,7 +188,6 @@
         отчёт об ошибке?
     </string>
     <string name="crash_report_dialog_send">Отправить</string>
-    <string name="crash_report_dialog_save">Сохранить</string>
     <string name="crash_report_dialog_later">Позже</string>
     <string name="crash_report_dialog_delete">Удалить</string>
     <string name="crash_report_chooser_title">Отправить отчёт</string>

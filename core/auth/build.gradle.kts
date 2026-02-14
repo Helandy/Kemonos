@@ -26,7 +26,7 @@ dependencies {
     implementation(libs.bundles.serialization.json)
     implementation(libs.bundles.datastore)
     implementation(libs.androidx.security.crypto)
+    implementation(project(":core:model"))
 
-    implementation(project(":core:domain"))
     implementation(project(":feature:profile-api"))
 }

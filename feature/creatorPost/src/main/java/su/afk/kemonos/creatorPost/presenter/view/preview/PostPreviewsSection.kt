@@ -11,7 +11,6 @@ internal fun LazyListScope.postPreviewsSection(
     imgBaseUrl: String,
     showNames: Boolean,
     onOpenImage: (String) -> Unit,
-    onOpenUrl: (String) -> Unit,
     download: (url: String, fileName: String) -> Unit,
 ) {
     val uniquePreviews = previews.distinctBy { it.previewKey() }
@@ -33,7 +32,6 @@ internal fun LazyListScope.postPreviewsSection(
 
             "embed" -> EmbedPreviewItem(
                 preview = preview,
-                onEmbedClick = onOpenUrl
             )
         }
     }

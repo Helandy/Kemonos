@@ -3,16 +3,12 @@ package su.afk.kemonos.deepLink.utils
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
-import android.util.Log
 import androidx.core.net.toUri
 
-private const val CHROME_PKG = "com.android.chrome"
-
-// todo в будущем добавить настройку выбора браузера по умолчанию
 /**
- * Открыть ссылку в Chrome, а если Chrome недоступен — показать chooser.
+ * Открыть ссылку в браузере по умолчанию, а если недоступно — показать chooser.
  */
-fun openUrlPreferChrome(
+fun openUrlInBrowser(
     context: Context,
     rawUrl: String,
     chooserTitle: String = "Open in browser",
@@ -27,20 +23,17 @@ fun openUrlPreferChrome(
     }
 
     val uri: Uri = runCatching { normalized.toUri() }.getOrElse {
-        Log.e("openUrlPreferChrome", "Bad url: $rawUrl", it)
         return
     }
 
-    val chromeIntent = Intent(Intent.ACTION_VIEW, uri).apply {
+    val defaultBrowserIntent = Intent(Intent.ACTION_VIEW, uri).apply {
         addCategory(Intent.CATEGORY_BROWSABLE)
-        setPackage(CHROME_PKG)
         addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
     }
 
     runCatching {
-        context.startActivity(chromeIntent)
-    }.getOrElse { e ->
-        Log.e("openUrlPreferChrome", "Chrome failed, fallback to chooser. url=$normalized", e)
+        context.startActivity(defaultBrowserIntent)
+    }.getOrElse {
 
         val base = Intent(Intent.ACTION_VIEW, uri).apply {
             addCategory(Intent.CATEGORY_BROWSABLE)
@@ -52,6 +45,6 @@ fun openUrlPreferChrome(
         }
 
         runCatching { context.startActivity(chooser) }
-            .onFailure { ee -> Log.e("openUrlPreferChrome", "Chooser failed. url=$normalized", ee) }
+            .onFailure {}
     }
 }

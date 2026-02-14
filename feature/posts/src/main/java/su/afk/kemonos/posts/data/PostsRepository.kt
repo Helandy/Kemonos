@@ -1,6 +1,6 @@
 package su.afk.kemonos.posts.data
 
-import su.afk.kemonos.common.data.dto.PostUnifiedDto.Companion.toDomain
+import su.afk.kemonos.data.dto.PostUnifiedDto.Companion.toDomain
 import su.afk.kemonos.domain.SelectedSite
 import su.afk.kemonos.domain.models.PostDomain
 import su.afk.kemonos.network.util.call

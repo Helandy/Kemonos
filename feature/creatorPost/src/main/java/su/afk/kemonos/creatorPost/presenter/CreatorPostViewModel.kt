@@ -32,7 +32,6 @@ import su.afk.kemonos.creatorPost.domain.useCase.GetPostUseCase
 import su.afk.kemonos.creatorPost.navigation.CreatorPostDest
 import su.afk.kemonos.creatorPost.presenter.CreatorPostState.*
 import su.afk.kemonos.creatorPost.presenter.CreatorPostState.Effect.OpenAudio
-import su.afk.kemonos.creatorPost.presenter.CreatorPostState.Effect.OpenUrl
 import su.afk.kemonos.creatorPost.presenter.delegates.LikeDelegate
 import su.afk.kemonos.creatorPost.presenter.delegates.MediaMetaDelegate
 import su.afk.kemonos.creatorPost.presenter.delegates.NavigateDelegates
@@ -96,6 +95,7 @@ internal class CreatorPostViewModel @AssistedInject constructor(
     override fun onEvent(event: Event) {
         when (event) {
             Event.Retry -> loadingPost()
+            Event.Back -> navigateDelegates.navigateBack()
 
             Event.CopyPostLinkClicked -> copyPostLink()
             Event.FavoriteClicked -> onFavoriteClick()
@@ -107,8 +107,6 @@ internal class CreatorPostViewModel @AssistedInject constructor(
             is Event.OpenImage -> navigateOpenImage(event.originalUrl)
 
             is Event.Download -> download(event.url, event.fileName)
-
-            is Event.OpenExternalUrl -> setEffect(OpenUrl(event.url))
 
             is Event.VideoThumbRequested -> requestVideoMeta(event.server, event.path)
             is Event.VideoInfoRequested -> requestVideoMeta(event.server, event.path)
@@ -307,17 +305,19 @@ internal class CreatorPostViewModel @AssistedInject constructor(
     }
 
     fun download(url: String, fileName: String?) {
-        downloadUtil.enqueueSystemDownload(
-            url = url,
-            fileName = fileName,
-            service = currentState.service,
-            creatorName = currentState.profile?.name,
-            postId = currentState.postId,
-            postTitle = currentState.post?.post?.title
-        )
-        setEffect(
-            Effect.DownloadToast(fileName.orEmpty())
-        )
+        viewModelScope.launch {
+            downloadUtil.enqueueSystemDownload(
+                url = url,
+                fileName = fileName,
+                service = currentState.service,
+                creatorName = currentState.profile?.name,
+                postId = currentState.postId,
+                postTitle = currentState.post?.post?.title
+            )
+            setEffect(
+                Effect.DownloadToast(fileName.orEmpty())
+            )
+        }
     }
 
     fun onToggleTranslate() {

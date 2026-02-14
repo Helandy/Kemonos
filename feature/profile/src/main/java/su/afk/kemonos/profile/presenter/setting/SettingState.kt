@@ -43,6 +43,8 @@ internal class SettingState {
     ) : UiState
 
     sealed interface Event : UiEvent {
+        data object Back : Event
+
         sealed interface ChangeViewSetting : Event {
             data class SkipApiCheckOnLogin(val value: Boolean) : ChangeViewSetting
 

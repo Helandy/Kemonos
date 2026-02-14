@@ -23,6 +23,8 @@ internal class FavoritePostsState {
     ) : UiState
 
     sealed interface Event : UiEvent {
+        data object Back : Event
+
         data class SearchQueryChanged(val query: String) : Event
         data class Load(val refresh: Boolean = false) : Event
         data class NavigateToPost(val post: PostDomain) : Event

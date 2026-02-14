@@ -34,6 +34,7 @@ internal class ProfileState {
         data class LoginClick(val site: SelectedSite) : Event
         data class FavoriteProfilesNavigate(val site: SelectedSite) : Event
         data class FavoritePostNavigate(val site: SelectedSite) : Event
+        data object NavigateToDownloads : Event
         data object NavigateToSettings : Event
         data object KeysClick : Event
         data object ReviewDMsClick : Event

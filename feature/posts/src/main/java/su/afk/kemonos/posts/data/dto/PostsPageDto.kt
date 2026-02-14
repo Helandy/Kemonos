@@ -1,7 +1,7 @@
 package su.afk.kemonos.posts.data.dto
 
 import com.google.gson.annotations.SerializedName
-import su.afk.kemonos.common.data.dto.PostUnifiedDto
+import su.afk.kemonos.data.dto.PostUnifiedDto
 
 internal data class PostsDto(
     @SerializedName("count")

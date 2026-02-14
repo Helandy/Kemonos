@@ -13,5 +13,5 @@ dependencies {
 
     implementation(project(":core:navigation"))
     implementation(project(":common"))
-    implementation(project(":core:domain"))
+    implementation(project(":core:model"))
 }

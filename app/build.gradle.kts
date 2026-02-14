@@ -80,14 +80,15 @@ dependencies {
 
     implementation(libs.bundles.navigation3)
     implementation(libs.bundles.coil)
+    implementation(libs.bundles.lifecycle)
 
     implementation(project(":common"))
     implementation(project(":core:navigation"))
 
     implementation(project(":feature:commonScreen-api"))
     implementation(project(":feature:commonScreen"))
+    implementation(project(":core:model"))
 
-    implementation(project(":core:domain"))
     implementation(project(":core:auth"))
     implementation(project(":core:network"))
     implementation(project(":core:deepLink"))

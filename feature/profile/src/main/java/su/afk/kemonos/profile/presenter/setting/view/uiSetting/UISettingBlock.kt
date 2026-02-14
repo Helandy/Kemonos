@@ -20,7 +20,7 @@ import su.afk.kemonos.profile.presenter.setting.view.uiSetting.viewSettings.View
 @Composable
 internal fun UISettingBlock(
     state: State,
-    onEvent: (Event) -> Unit
+    onEvent: (Event) -> Unit,
 ) {
     val ui = state.uiSettingModel
 

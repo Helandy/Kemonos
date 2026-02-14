@@ -6,6 +6,7 @@ plugins {
     alias(libs.plugins.hilt)
 }
 
+// todo не лучший модуль, разобрать его на core
 android {
     namespace = "su.afk.kemonos.common"
     compileSdk = libs.versions.compileSdk.get().toInt()
@@ -45,9 +46,10 @@ dependencies {
     debugImplementation(libs.bundles.compose.debug)
 
     implementation(project(":core:navigation"))
-    implementation(project(":core:domain"))
+    implementation(project(":core:model"))
     implementation(project(":core:network"))
     implementation(project(":core:preferences"))
+    implementation(project(":core:utils"))
     implementation(project(":storage-api"))
     implementation(project(":feature:appUpdate-api"))
     implementation(project(":feature:commonScreen-api"))

@@ -61,6 +61,8 @@ internal class LoginViewModel @Inject constructor(
 
     override fun onEvent(event: Event) {
         when (event) {
+            Event.Back -> navigationManager.back()
+
             is Event.UsernameChanged -> {
                 setState {
                     copy(

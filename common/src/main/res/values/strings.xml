@@ -11,7 +11,6 @@
     <string name="attachment_section">📎 Attachments</string>
     <string name="comments_section">💬 Comments</string>
     <string name="video_section">🎬 Video</string>
-    <string name="video_file">🎬 Video</string>
     <string name="audio_file">🎵 Audio</string>
     <string name="video_loading_section">Loading preview…</string>
     <string name="loading">Loading…</string>
@@ -28,13 +27,11 @@
 
     <string name="dm_empty">No messages</string>
     <string name="announcements_empty">No announcements</string>
-    <string name="dm_added">Added: %1$s</string>
     <string name="dm_published">Published: %1$s</string>
 
     <string name="profile_tab_posts">Posts</string>
     <string name="profile_tab_announcements">Announcements</string>
     <string name="profile_tab_fancard">Fancard</string>
-    <string name="profile_tab_tags">Tags</string>
     <string name="profile_tab_dms">DM</string>
     <string name="profile_tab_links">Links</string>
     <string name="random">Random</string>
@@ -65,7 +62,6 @@
     <string name="error_default">
         Something went wrong, please try again or use a VPN.
     </string>
-    <string name="common_retry">Retry</string>
     <string name="common_error_loading">Error loading</string>
 
     <!-- App update   -->
@@ -112,9 +108,9 @@
     <string name="err_title_http_generic">HTTP error (%1$d)</string>
     <string name="err_msg_http_generic">Request failed. Please try again.</string>
 
-    <string name="error_screen">Error</string>
     <string name="retry">Retry</string>
     <string name="copy">Copy</string>
+    <string name="copy_original_text">Copy text</string>
     <string name="copied">Copied</string>
     <string name="details">Details</string>
     <string name="hide_details">Hide details</string>
@@ -135,7 +131,6 @@
 
     <string name="main_api_unavailable_title">API is unavailable</string>
     <string name="main_api_error_code">Code: %1$d</string>
-    <string name="main_api_error_message">Message: %1$s</string>
 
     <string name="main_api_current_urls_title">Current URLs in settings:</string>
     <string name="main_api_current_urls_value">Kemono: %1$s\nCoomer: %2$s</string>
@@ -197,7 +192,6 @@
         send a crash report?
     </string>
     <string name="crash_report_dialog_send">Send</string>
-    <string name="crash_report_dialog_save">Save</string>
     <string name="crash_report_dialog_later">Later</string>
     <string name="crash_report_dialog_delete">Delete</string>
     <string name="crash_report_chooser_title">Send crash report</string>

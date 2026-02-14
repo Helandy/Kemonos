@@ -1,13 +1,13 @@
 package su.afk.kemonos.creatorPost.data.dto.profilePost
 
 import com.google.gson.annotations.SerializedName
-import su.afk.kemonos.common.data.dto.AttachmentDto
-import su.afk.kemonos.common.data.dto.AttachmentDto.Companion.toDomain
-import su.afk.kemonos.common.data.dto.PostUnifiedDto
-import su.afk.kemonos.common.data.dto.PostUnifiedDto.Companion.toDomain
 import su.afk.kemonos.creatorPost.api.domain.model.PostContentDomain
 import su.afk.kemonos.creatorPost.data.dto.profilePost.PreviewDto.Companion.toDomain
 import su.afk.kemonos.creatorPost.data.dto.profilePost.VideoDto.Companion.toDomain
+import su.afk.kemonos.data.dto.AttachmentDto
+import su.afk.kemonos.data.dto.AttachmentDto.Companion.toDomain
+import su.afk.kemonos.data.dto.PostUnifiedDto
+import su.afk.kemonos.data.dto.PostUnifiedDto.Companion.toDomain
 import su.afk.kemonos.domain.models.PreviewDomain
 import su.afk.kemonos.domain.models.VideoDomain
 
