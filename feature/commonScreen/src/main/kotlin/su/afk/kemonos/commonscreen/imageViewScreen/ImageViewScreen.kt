@@ -5,10 +5,9 @@ import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.gestures.rememberTransformableState
 import androidx.compose.foundation.gestures.transformable
 import androidx.compose.foundation.layout.*
-import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.ProgressIndicatorDefaults
-import androidx.compose.material3.Text
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -40,7 +39,6 @@ import su.afk.kemonos.domain.models.ErrorItem
 import kotlin.math.abs
 import kotlin.math.roundToInt
 
-// todo добавить и сюда кнопку назад плавующую слева сверху
 @Composable
 internal fun ImageViewScreen(state: ImageViewState.State, onEvent: (Event) -> Unit, effect: Flow<Effect>) {
     val minScale: Float = 1f
@@ -225,6 +223,18 @@ internal fun ImageViewScreen(state: ImageViewState.State, onEvent: (Event) -> Un
                         onRetry = { onEvent(Event.Retry) }
                     )
                 }
+            )
+        }
+
+        IconButton(
+            onClick = { onEvent(Event.Back) },
+            modifier = Modifier
+                .align(Alignment.TopStart)
+                .statusBarsPadding()
+        ) {
+            Icon(
+                imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                contentDescription = stringResource(R.string.back),
             )
         }
     }
