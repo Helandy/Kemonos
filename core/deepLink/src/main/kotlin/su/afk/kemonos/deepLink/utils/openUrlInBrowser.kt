@@ -8,7 +8,7 @@ import androidx.core.net.toUri
 /**
  * Открыть ссылку в браузере по умолчанию, а если недоступно — показать chooser.
  */
-fun openUrlPreferChrome(
+fun openUrlInBrowser(
     context: Context,
     rawUrl: String,
     chooserTitle: String = "Open in browser",

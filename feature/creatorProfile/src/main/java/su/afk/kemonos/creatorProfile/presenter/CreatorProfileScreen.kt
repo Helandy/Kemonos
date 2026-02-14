@@ -29,7 +29,7 @@ import su.afk.kemonos.creatorProfile.presenter.view.*
 import su.afk.kemonos.creatorProfile.presenter.view.discordProfile.DiscordProfilePlaceholder
 import su.afk.kemonos.creatorProfile.presenter.view.header.CreatorScreenTopBar
 import su.afk.kemonos.creatorProfile.presenter.view.header.ProfileTabsBar
-import su.afk.kemonos.deepLink.utils.openUrlPreferChrome
+import su.afk.kemonos.deepLink.utils.openUrlInBrowser
 import su.afk.kemonos.domain.models.PostDomain
 import su.afk.kemonos.ui.toast.toast
 import su.afk.kemonos.utils.creator.buildCreatorPlatformUrl
@@ -46,7 +46,7 @@ internal fun CreatorScreen(state: State, onEvent: (Event) -> Unit, effect: Flow<
     LaunchedEffect(effect) {
         effect.collect { effect ->
             when (effect) {
-                is Effect.OpenUrl -> openUrlPreferChrome(context, effect.url)
+                is Effect.OpenUrl -> openUrlInBrowser(context, effect.url)
                 is Effect.ShowToast -> context.toast(effect.message)
                 is Effect.CopyPostLink -> ShareActions.copyToClipboard(
                     context,

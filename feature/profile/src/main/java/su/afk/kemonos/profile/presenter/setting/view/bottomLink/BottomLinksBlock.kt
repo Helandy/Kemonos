@@ -14,7 +14,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import su.afk.kemonos.common.utilsUI.KemonosPreviewScreen
-import su.afk.kemonos.deepLink.utils.openUrlPreferChrome
+import su.afk.kemonos.deepLink.utils.openUrlInBrowser
 import su.afk.kemonos.profile.BuildConfig
 import su.afk.kemonos.profile.R
 
@@ -37,7 +37,7 @@ internal fun BottomLinksBlock(
             horizontalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             OutlinedButton(
-                onClick = { if (kemonoUrl.isNotBlank()) openUrlPreferChrome(context, kemonoUrl) },
+                onClick = { if (kemonoUrl.isNotBlank()) openUrlInBrowser(context, kemonoUrl) },
                 modifier = Modifier.weight(1f),
                 enabled = kemonoUrl.isNotBlank()
             ) {
@@ -49,7 +49,7 @@ internal fun BottomLinksBlock(
             }
 
             OutlinedButton(
-                onClick = { if (coomerUrl.isNotBlank()) openUrlPreferChrome(context, coomerUrl) },
+                onClick = { if (coomerUrl.isNotBlank()) openUrlInBrowser(context, coomerUrl) },
                 modifier = Modifier.weight(1f),
                 enabled = coomerUrl.isNotBlank()
             ) {
