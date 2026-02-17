@@ -20,9 +20,9 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import su.afk.kemonos.common.R
-import su.afk.kemonos.common.imageLoader.AsyncImageWithStatus
 import su.afk.kemonos.domain.models.PreviewDomain
+import su.afk.kemonos.ui.R
+import su.afk.kemonos.ui.imageLoader.AsyncImageWithStatus
 import java.net.URLEncoder
 import kotlin.math.abs
 

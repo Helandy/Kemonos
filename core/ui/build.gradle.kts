@@ -24,10 +24,7 @@ dependencies {
     ksp(libs.dagger.hilt.compiler)
     implementation(libs.bundles.hilt)
 
-    implementation(libs.bundles.retrofit)
-    implementation(libs.bundles.serialization.json)
-
-    implementation(libs.bundles.navigation3)
+    implementation(libs.okhttp)
 
     implementation(libs.bundles.paging)
 
@@ -44,11 +41,10 @@ dependencies {
 
     debugImplementation(libs.bundles.compose.debug)
 
-    implementation(project(":core:navigation"))
     implementation(project(":core:model"))
-    implementation(project(":core:network"))
     implementation(project(":core:preferences"))
-    implementation(project(":core:utils"))
+    implementation(project(":core:error"))
+
     implementation(project(":storage-api"))
     implementation(project(":feature:appUpdate-api"))
     implementation(project(":feature:commonScreen-api"))

@@ -9,16 +9,14 @@ android {
 dependencies {
     debugImplementation(libs.bundles.compose.debug)
 
-
-    implementation(project(":common"))
     implementation(project(":core:navigation"))
     implementation(project(":core:model"))
-
     implementation(project(":core:ui"))
     implementation(project(":core:auth"))
     implementation(project(":core:preferences"))
     implementation(project(":core:network"))
     implementation(project(":core:utils"))
+    implementation(project(":core:error"))
 
     implementation(project(":feature:main-api"))
     implementation(project(":feature:posts-api"))

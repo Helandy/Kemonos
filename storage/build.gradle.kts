@@ -20,7 +20,7 @@ dependencies {
 
     implementation(project(":core:preferences"))
     implementation(project(":core:utils"))
-    implementation(project(":common"))
+
 
     implementation(project(":feature:creatorPost-api"))
     implementation(project(":feature:creatorProfile-api"))

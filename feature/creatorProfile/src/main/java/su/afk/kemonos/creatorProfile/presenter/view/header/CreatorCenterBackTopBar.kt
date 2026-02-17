@@ -6,7 +6,7 @@ import androidx.compose.material.icons.automirrored.rounded.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.stringResource
-import su.afk.kemonos.common.R
+import su.afk.kemonos.ui.R
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

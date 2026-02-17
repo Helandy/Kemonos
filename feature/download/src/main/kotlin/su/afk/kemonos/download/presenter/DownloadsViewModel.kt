@@ -7,14 +7,14 @@ import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
-import su.afk.kemonos.common.error.IErrorHandlerUseCase
-import su.afk.kemonos.common.error.storage.RetryStorage
-import su.afk.kemonos.common.presenter.baseViewModel.BaseViewModelNew
 import su.afk.kemonos.download.data.DownloadManagerDataSource
 import su.afk.kemonos.download.presenter.model.DownloadUiItem
+import su.afk.kemonos.error.error.IErrorHandlerUseCase
+import su.afk.kemonos.error.error.storage.RetryStorage
 import su.afk.kemonos.navigation.NavigationManager
 import su.afk.kemonos.storage.api.repository.download.ITrackedDownloadsRepository
 import su.afk.kemonos.storage.api.repository.download.TrackedDownload
+import su.afk.kemonos.ui.presenter.baseViewModel.BaseViewModelNew
 import javax.inject.Inject
 
 @HiltViewModel

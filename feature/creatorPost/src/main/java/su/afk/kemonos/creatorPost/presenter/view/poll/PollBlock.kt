@@ -7,9 +7,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import su.afk.kemonos.common.util.toUiDateTime
 import su.afk.kemonos.domain.models.PollDomain
 import su.afk.kemonos.preferences.ui.DateFormatMode
+import su.afk.kemonos.ui.date.toUiDateTime
 import kotlin.math.roundToInt
 
 @Composable

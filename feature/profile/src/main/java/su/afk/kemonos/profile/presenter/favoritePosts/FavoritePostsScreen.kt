@@ -15,15 +15,15 @@ import androidx.paging.LoadState
 import androidx.paging.compose.collectAsLazyPagingItems
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
-import su.afk.kemonos.common.R
-import su.afk.kemonos.common.components.posts.PostsContentPaging
-import su.afk.kemonos.common.components.searchBar.PostsSearchBarWithMediaFilters
-import su.afk.kemonos.common.error.LocalErrorMapper
-import su.afk.kemonos.common.presenter.baseScreen.BaseScreen
-import su.afk.kemonos.common.presenter.baseScreen.CenterBackTopBar
-import su.afk.kemonos.common.presenter.baseScreen.TopBarScroll
-import su.afk.kemonos.common.utilsUI.KemonosPreviewScreen
+import su.afk.kemonos.error.error.LocalErrorMapper
 import su.afk.kemonos.profile.presenter.favoritePosts.FavoritePostsState.*
+import su.afk.kemonos.ui.R
+import su.afk.kemonos.ui.components.posts.PostsContentPaging
+import su.afk.kemonos.ui.components.searchBar.PostsSearchBarWithMediaFilters
+import su.afk.kemonos.ui.presenter.baseScreen.BaseScreen
+import su.afk.kemonos.ui.presenter.baseScreen.CenterBackTopBar
+import su.afk.kemonos.ui.presenter.baseScreen.TopBarScroll
+import su.afk.kemonos.ui.preview.KemonosPreviewScreen
 import su.afk.kemonos.profile.R as ProfileR
 
 @OptIn(ExperimentalMaterial3Api::class)

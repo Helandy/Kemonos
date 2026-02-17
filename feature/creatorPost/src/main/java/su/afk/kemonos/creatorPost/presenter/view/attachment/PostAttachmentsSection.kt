@@ -15,9 +15,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import su.afk.kemonos.common.R
-import su.afk.kemonos.common.util.buildDataUrl
+import su.afk.kemonos.ui.R
 import su.afk.kemonos.domain.models.AttachmentDomain
+import su.afk.kemonos.utils.url.buildContentUrlToDataSite
 
 @Composable
 fun PostAttachmentsSection(
@@ -39,7 +39,7 @@ fun PostAttachmentsSection(
 
     Column {
         attachments.forEach { att ->
-            val url = att.buildDataUrl(fallbackBaseUrl)
+            val url = att.buildContentUrlToDataSite(fallbackBaseUrl)
 
             Row(
                 verticalAlignment = Alignment.CenterVertically,

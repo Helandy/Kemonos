@@ -15,10 +15,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import su.afk.kemonos.common.R
-import su.afk.kemonos.common.util.toUiDateTime
 import su.afk.kemonos.creatorProfile.api.domain.models.profileDms.Dm
 import su.afk.kemonos.preferences.ui.DateFormatMode
+import su.afk.kemonos.ui.R
+import su.afk.kemonos.ui.date.toUiDateTime
 import java.time.LocalDateTime
 
 @Composable

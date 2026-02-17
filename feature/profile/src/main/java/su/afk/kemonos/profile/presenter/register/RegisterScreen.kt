@@ -14,16 +14,16 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.flow.Flow
-import su.afk.kemonos.common.R.drawable
-import su.afk.kemonos.common.presenter.baseScreen.BaseScreen
-import su.afk.kemonos.common.presenter.baseScreen.CenterBackTopBar
-import su.afk.kemonos.common.util.findActivity
 import su.afk.kemonos.domain.SelectedSite
 import su.afk.kemonos.profile.R
 import su.afk.kemonos.profile.presenter.register.RegisterState.*
 import su.afk.kemonos.profile.presenter.register.util.confirmErrorRes
 import su.afk.kemonos.profile.presenter.register.util.passwordErrorRes
 import su.afk.kemonos.profile.presenter.register.util.usernameErrorRes
+import su.afk.kemonos.ui.R.drawable
+import su.afk.kemonos.ui.presenter.baseScreen.BaseScreen
+import su.afk.kemonos.ui.presenter.baseScreen.CenterBackTopBar
+import su.afk.kemonos.ui.uiUtils.findActivity
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

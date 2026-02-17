@@ -1,11 +1,11 @@
 package su.afk.kemonos.profile.presenter.setting
 
-import su.afk.kemonos.common.presenter.baseViewModel.UiEffect
-import su.afk.kemonos.common.presenter.baseViewModel.UiEvent
-import su.afk.kemonos.common.presenter.baseViewModel.UiState
 import su.afk.kemonos.domain.SelectedSite
 import su.afk.kemonos.preferences.model.CacheTimeUi
 import su.afk.kemonos.preferences.ui.*
+import su.afk.kemonos.ui.presenter.baseViewModel.UiEffect
+import su.afk.kemonos.ui.presenter.baseViewModel.UiEvent
+import su.afk.kemonos.ui.presenter.baseViewModel.UiState
 
 internal class SettingState {
     data class State(

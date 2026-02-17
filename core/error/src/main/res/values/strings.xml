@@ -1,0 +1,51 @@
+<resources>
+    <string name="back">Back</string>
+
+    <string name="err_title_generic">Error</string>
+    <string name="err_msg_generic">Something went wrong. Please try again.</string>
+
+    <string name="err_title_no_connection">No connection</string>
+    <string name="err_msg_no_connection">Check your internet connection and try again.</string>
+
+    <string name="err_title_timeout">Request timed out</string>
+    <string name="err_msg_timeout">The server is taking too long to respond. Please try again.</string>
+
+    <string name="err_title_unauthorized">Unauthorized</string>
+    <string name="err_msg_unauthorized">Please sign in again.</string>
+
+    <string name="err_title_forbidden">Forbidden</string>
+    <string name="err_msg_forbidden">You don't have permission to perform this action.</string>
+
+    <string name="err_title_not_found">Not found</string>
+    <string name="err_msg_not_found">The requested resource was not found.</string>
+
+    <string name="err_title_too_many_requests">Too many requests</string>
+    <string name="err_msg_too_many_requests">You are being rate-limited. Please wait and try again.</string>
+
+    <string name="err_title_server_error">Server error</string>
+    <string name="err_msg_server_error">The server encountered an error. Please try again later.</string>
+
+    <string name="err_title_bad_gateway_502">Bad gateway (502)</string>
+    <string name="err_msg_bad_gateway_502">The server returned 502. Please try again later.</string>
+
+    <string name="err_title_service_unavailable_503">Service unavailable (503)</string>
+    <string name="err_msg_service_unavailable_503">The service is temporarily unavailable. Please try again later.
+    </string>
+
+    <string name="err_title_gateway_timeout_504">Gateway timeout (504)</string>
+    <string name="err_msg_gateway_timeout_504">The server didn't respond in time. Please try again later.</string>
+
+    <string name="err_title_http_generic">HTTP error (%1$d)</string>
+    <string name="err_msg_http_generic">Request failed. Please try again.</string>
+
+    <string name="retry">Retry</string>
+    <string name="copy">Copy</string>
+    <string name="details">Details</string>
+    <string name="hide_details">Hide details</string>
+
+    <string name="error_http_code">HTTP: %1$s</string>
+    <string name="error_method">Method: %1$s</string>
+    <string name="error_url">URL: %1$s</string>
+    <string name="error_request_id">Request ID: %1$s</string>
+    <string name="error_body">Body:\n%1$s</string>
+</resources>

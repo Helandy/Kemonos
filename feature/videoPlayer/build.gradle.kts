@@ -12,6 +12,6 @@ dependencies {
     implementation(libs.bundles.media3)
 
     implementation(project(":core:navigation"))
-    implementation(project(":common"))
+
     implementation(project(":core:model"))
 }

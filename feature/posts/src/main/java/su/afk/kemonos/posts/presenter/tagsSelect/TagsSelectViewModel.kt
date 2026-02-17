@@ -6,10 +6,9 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
-import su.afk.kemonos.common.error.IErrorHandlerUseCase
-import su.afk.kemonos.common.error.storage.RetryStorage
-import su.afk.kemonos.common.presenter.baseViewModel.BaseViewModelNew
 import su.afk.kemonos.domain.models.PostDomain
+import su.afk.kemonos.error.error.IErrorHandlerUseCase
+import su.afk.kemonos.error.error.storage.RetryStorage
 import su.afk.kemonos.navigation.storage.NavigationStorage
 import su.afk.kemonos.posts.domain.pagingSearch.GetSearchPostsPagingUseCase
 import su.afk.kemonos.posts.presenter.common.NavigateToPostDelegate
@@ -17,6 +16,7 @@ import su.afk.kemonos.posts.presenter.tagsSelect.TagsSelectState.*
 import su.afk.kemonos.posts.presenter.util.Const.KEY_SELECTED_TAG
 import su.afk.kemonos.preferences.site.ISelectedSiteUseCase
 import su.afk.kemonos.preferences.ui.IUiSettingUseCase
+import su.afk.kemonos.ui.presenter.baseViewModel.BaseViewModelNew
 import javax.inject.Inject
 
 @HiltViewModel

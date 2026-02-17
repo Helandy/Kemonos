@@ -26,16 +26,6 @@ import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.launch
-import su.afk.kemonos.common.R
-import su.afk.kemonos.common.components.button.FavoriteActionButton
-import su.afk.kemonos.common.components.creator.header.CreatorHeader
-import su.afk.kemonos.common.di.LocalDomainResolver
-import su.afk.kemonos.common.presenter.baseScreen.BaseScreen
-import su.afk.kemonos.common.shared.ShareActions
-import su.afk.kemonos.common.util.buildDataUrl
-import su.afk.kemonos.common.util.isAudioFile
-import su.afk.kemonos.common.util.openAudioExternally
-import su.afk.kemonos.common.utilsUI.KemonosPreviewScreen
 import su.afk.kemonos.creatorPost.presenter.CreatorPostState.*
 import su.afk.kemonos.creatorPost.presenter.CreatorPostState.State
 import su.afk.kemonos.creatorPost.presenter.view.PostTitleBlock
@@ -53,7 +43,17 @@ import su.afk.kemonos.creatorPost.presenter.view.swipe.rememberTikTokSwipeState
 import su.afk.kemonos.creatorPost.presenter.view.translate.PostTranslateItem
 import su.afk.kemonos.creatorPost.presenter.view.translate.openGoogleTranslate
 import su.afk.kemonos.creatorPost.presenter.view.video.postVideosSection
+import su.afk.kemonos.preferences.domainResolver.LocalDomainResolver
+import su.afk.kemonos.ui.R
+import su.afk.kemonos.ui.components.button.FavoriteActionButton
+import su.afk.kemonos.ui.components.creator.header.CreatorHeader
+import su.afk.kemonos.ui.presenter.baseScreen.BaseScreen
+import su.afk.kemonos.ui.preview.KemonosPreviewScreen
+import su.afk.kemonos.ui.shared.ShareActions
 import su.afk.kemonos.ui.toast.toast
+import su.afk.kemonos.ui.uiUtils.format.isAudioFile
+import su.afk.kemonos.ui.uiUtils.format.openAudioExternally
+import su.afk.kemonos.utils.url.buildContentUrlToDataSite
 import kotlin.math.roundToInt
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -310,11 +310,11 @@ internal fun CreatorPostScreen(state: State, onEvent: (Event) -> Unit, effect: F
                             audioInfo = state.audioInfo,
                             onInfoRequested = { url -> onEvent(Event.AudioInfoRequested(url)) },
                             onPlay = { att ->
-                                val url = att.buildDataUrl(fallbackBaseUrl)
+                                val url = att.buildContentUrlToDataSite(fallbackBaseUrl)
                                 onEvent(Event.PlayAudio(url, att.name))
                             },
                             onDownload = { att ->
-                                val url = att.buildDataUrl(fallbackBaseUrl)
+                                val url = att.buildContentUrlToDataSite(fallbackBaseUrl)
                                 onEvent(Event.Download(url, att.name))
                             },
                             showHeader = false,

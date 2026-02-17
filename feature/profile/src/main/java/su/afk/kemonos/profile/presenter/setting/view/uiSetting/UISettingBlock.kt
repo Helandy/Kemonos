@@ -3,7 +3,6 @@ package su.afk.kemonos.profile.presenter.setting.view.uiSetting
 import androidx.compose.foundation.layout.Column
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
-import su.afk.kemonos.common.utilsUI.KemonosPreviewScreen
 import su.afk.kemonos.profile.BuildConfig
 import su.afk.kemonos.profile.presenter.setting.SettingState.Event
 import su.afk.kemonos.profile.presenter.setting.SettingState.State
@@ -16,6 +15,7 @@ import su.afk.kemonos.profile.presenter.setting.view.uiSetting.download.Download
 import su.afk.kemonos.profile.presenter.setting.view.uiSetting.general.GeneralSettingsSection
 import su.afk.kemonos.profile.presenter.setting.view.uiSetting.translate.TranslateSettingsSection
 import su.afk.kemonos.profile.presenter.setting.view.uiSetting.viewSettings.ViewSettingsSection
+import su.afk.kemonos.ui.preview.KemonosPreviewScreen
 
 @Composable
 internal fun UISettingBlock(

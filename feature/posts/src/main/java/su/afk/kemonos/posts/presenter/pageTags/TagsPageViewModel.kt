@@ -2,10 +2,9 @@ package su.afk.kemonos.posts.presenter.pageTags
 
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
-import su.afk.kemonos.common.error.IErrorHandlerUseCase
-import su.afk.kemonos.common.error.storage.RetryStorage
-import su.afk.kemonos.common.presenter.changeSite.SiteAwareBaseViewModelNew
 import su.afk.kemonos.domain.SelectedSite
+import su.afk.kemonos.error.error.IErrorHandlerUseCase
+import su.afk.kemonos.error.error.storage.RetryStorage
 import su.afk.kemonos.navigation.NavigationManager
 import su.afk.kemonos.navigation.storage.NavigationStorage
 import su.afk.kemonos.posts.api.tags.Tags
@@ -14,6 +13,7 @@ import su.afk.kemonos.posts.navigation.PostsDest
 import su.afk.kemonos.posts.presenter.pageTags.TagsPageState.*
 import su.afk.kemonos.posts.presenter.util.Const.KEY_SELECTED_TAG
 import su.afk.kemonos.preferences.site.ISelectedSiteUseCase
+import su.afk.kemonos.ui.presenter.changeSite.SiteAwareBaseViewModelNew
 import javax.inject.Inject
 
 @HiltViewModel

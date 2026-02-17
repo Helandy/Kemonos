@@ -7,7 +7,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import su.afk.kemonos.common.R
+import su.afk.kemonos.ui.R
 
 @Composable
 internal fun MainSuccess() {

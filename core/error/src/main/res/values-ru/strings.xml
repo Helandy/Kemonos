@@ -1,0 +1,50 @@
+<resources>
+    <string name="back">Назад</string>
+
+    <string name="err_title_generic">Ошибка</string>
+    <string name="err_msg_generic">Что-то пошло не так. Попробуй ещё раз.</string>
+
+    <string name="err_title_no_connection">Нет соединения</string>
+    <string name="err_msg_no_connection">Проверь интернет и попробуй снова.</string>
+
+    <string name="err_title_timeout">Слишком долго отвечает</string>
+    <string name="err_msg_timeout">Похоже, сервер тормозит. Попробуй ещё раз.</string>
+
+    <string name="err_title_unauthorized">Не авторизован</string>
+    <string name="err_msg_unauthorized">Нужно войти заново.</string>
+
+    <string name="err_title_forbidden">Доступ запрещён</string>
+    <string name="err_msg_forbidden">У тебя нет прав на это действие.</string>
+
+    <string name="err_title_not_found">Не найдено</string>
+    <string name="err_msg_not_found">Ресурс не найден.</string>
+
+    <string name="err_title_too_many_requests">Слишком много запросов</string>
+    <string name="err_msg_too_many_requests">Сервис ограничил частоту запросов. Подожди немного и повтори.</string>
+
+    <string name="err_title_server_error">Ошибка сервера</string>
+    <string name="err_msg_server_error">На сервере произошла ошибка. Попробуй позже.</string>
+
+    <string name="err_title_bad_gateway_502">Плохой шлюз (502)</string>
+    <string name="err_msg_bad_gateway_502">Сервер сейчас отдаёт 502. Попробуй позже.</string>
+
+    <string name="err_title_service_unavailable_503">Сервис недоступен (503)</string>
+    <string name="err_msg_service_unavailable_503">Сервис временно недоступен. Попробуй позже.</string>
+
+    <string name="err_title_gateway_timeout_504">Шлюз не ответил (504)</string>
+    <string name="err_msg_gateway_timeout_504">Сервер не ответил вовремя. Попробуй позже.</string>
+
+    <string name="err_title_http_generic">HTTP ошибка (%1$d)</string>
+    <string name="err_msg_http_generic">Ошибка запроса. Попробуй ещё раз.</string>
+
+    <string name="retry">Повторить</string>
+    <string name="copy">Скопировать</string>
+    <string name="details">Детали</string>
+    <string name="hide_details">Скрыть детали</string>
+
+    <string name="error_http_code">HTTP: %1$s</string>
+    <string name="error_method">Метод: %1$s</string>
+    <string name="error_url">URL: %1$s</string>
+    <string name="error_request_id">Request ID: %1$s</string>
+    <string name="error_body">Тело:\n%1$s</string>
+</resources>

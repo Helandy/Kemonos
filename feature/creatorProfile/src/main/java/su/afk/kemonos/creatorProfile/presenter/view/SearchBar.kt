@@ -9,9 +9,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
-import su.afk.kemonos.common.R
-import su.afk.kemonos.common.components.posts.filter.PostMediaFilter
-import su.afk.kemonos.common.components.searchBar.PostsSearchBarWithMediaFilters
+import su.afk.kemonos.ui.R
+import su.afk.kemonos.ui.components.posts.filter.PostMediaFilter
+import su.afk.kemonos.ui.components.searchBar.PostsSearchBarWithMediaFilters
 
 @Composable
 fun SearchBar(

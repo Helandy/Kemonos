@@ -8,9 +8,10 @@ android {
 dependencies {
     implementation(libs.bundles.coil)
 
-    implementation(project(":common"))
     implementation(project(":core:navigation"))
     implementation(project(":core:model"))
+    implementation(project(":core:ui"))
+    implementation(project(":core:error"))
 
     implementation(project(":feature:commonScreen-api"))
 }

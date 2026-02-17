@@ -14,11 +14,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import su.afk.kemonos.common.R
-import su.afk.kemonos.common.presenter.androidView.clearHtml
-import su.afk.kemonos.common.util.toUiDateTime
 import su.afk.kemonos.creatorPost.api.domain.model.CommentDomain
 import su.afk.kemonos.preferences.ui.DateFormatMode
+import su.afk.kemonos.ui.R
+import su.afk.kemonos.ui.date.toUiDateTime
+import su.afk.kemonos.ui.presenter.androidView.clearHtml
 
 internal fun LazyListScope.postCommentsSection(
     dateMode: DateFormatMode,

@@ -1,8 +1,8 @@
 package su.afk.kemonos.posts.data
 
-import su.afk.kemonos.common.error.IErrorHandlerUseCase
 import su.afk.kemonos.domain.SelectedSite
 import su.afk.kemonos.domain.models.ErrorItem
+import su.afk.kemonos.error.error.IErrorHandlerUseCase
 import su.afk.kemonos.posts.api.apiCheck.ApiCheckForAllSitesResult
 import su.afk.kemonos.posts.api.apiCheck.SingleSiteCheck
 import su.afk.kemonos.posts.data.api.PostsApi

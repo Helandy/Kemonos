@@ -13,7 +13,7 @@ dependencies {
     implementation(libs.bundles.coil)
     implementation(libs.bundles.retrofit)
 
-    implementation(project(":common"))
+
     implementation(project(":core:navigation"))
     implementation(project(":core:model"))
 
@@ -21,6 +21,8 @@ dependencies {
     implementation(project(":core:network"))
     implementation(project(":core:preferences"))
     implementation(project(":core:ui"))
+    implementation(project(":core:utils"))
+    implementation(project(":core:error"))
 
     implementation(project(":feature:creatorPost-api"))
     implementation(project(":storage-api"))

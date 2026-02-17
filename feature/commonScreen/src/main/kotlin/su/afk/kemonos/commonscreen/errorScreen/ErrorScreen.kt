@@ -3,8 +3,8 @@ package su.afk.kemonos.commonscreen.errorScreen
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable
 import kotlinx.coroutines.flow.Flow
-import su.afk.kemonos.common.presenter.baseScreen.BaseScreen
 import su.afk.kemonos.commonscreen.errorScreen.ErrorScreenState.*
+import su.afk.kemonos.ui.presenter.baseScreen.BaseScreen
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

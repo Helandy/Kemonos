@@ -6,12 +6,11 @@ import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
-import su.afk.kemonos.common.error.IErrorHandlerUseCase
-import su.afk.kemonos.common.error.storage.RetryStorage
-import su.afk.kemonos.common.presenter.baseViewModel.BaseViewModelNew
 import su.afk.kemonos.creatorProfile.api.ICreatorProfileNavigator
 import su.afk.kemonos.domain.SelectedSite
 import su.afk.kemonos.domain.models.creator.FavoriteArtist
+import su.afk.kemonos.error.error.IErrorHandlerUseCase
+import su.afk.kemonos.error.error.storage.RetryStorage
 import su.afk.kemonos.navigation.NavigationManager
 import su.afk.kemonos.navigation.storage.NavigationStorage
 import su.afk.kemonos.preferences.favoriteProfiles.IFavoriteProfilesFiltersUseCase
@@ -23,6 +22,7 @@ import su.afk.kemonos.profile.domain.favorites.creator.GetFavoriteArtistsPagingU
 import su.afk.kemonos.profile.domain.favorites.fresh.IFreshFavoriteArtistsUpdatesUseCase
 import su.afk.kemonos.profile.presenter.favoriteProfiles.FavoriteProfilesState.*
 import su.afk.kemonos.profile.utils.Const.KEY_SELECT_SITE
+import su.afk.kemonos.ui.presenter.baseViewModel.BaseViewModelNew
 import javax.inject.Inject
 
 @HiltViewModel

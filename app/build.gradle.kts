@@ -82,17 +82,19 @@ dependencies {
     implementation(libs.bundles.coil)
     implementation(libs.bundles.lifecycle)
 
-    implementation(project(":common"))
     implementation(project(":core:navigation"))
 
-    implementation(project(":feature:commonScreen-api"))
-    implementation(project(":feature:commonScreen"))
     implementation(project(":core:model"))
-
     implementation(project(":core:auth"))
     implementation(project(":core:network"))
     implementation(project(":core:deepLink"))
     implementation(project(":core:preferences"))
+    implementation(project(":core:ui"))
+    implementation(project(":core:utils"))
+    implementation(project(":core:error"))
+
+    implementation(project(":feature:commonScreen-api"))
+    implementation(project(":feature:commonScreen"))
 
     implementation(project(":storage-api"))
     implementation(project(":storage"))

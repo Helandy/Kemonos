@@ -15,16 +15,16 @@ import androidx.compose.ui.unit.dp
 import androidx.paging.LoadState
 import androidx.paging.compose.collectAsLazyPagingItems
 import kotlinx.coroutines.flow.Flow
-import su.afk.kemonos.common.R
-import su.afk.kemonos.common.components.button.RandomButton
-import su.afk.kemonos.common.components.button.SiteToggleFab
-import su.afk.kemonos.common.components.posts.PostsContentPaging
-import su.afk.kemonos.common.components.searchBar.PostsSearchBarWithMediaFilters
-import su.afk.kemonos.common.presenter.baseScreen.BaseScreen
-import su.afk.kemonos.common.presenter.baseScreen.TopBarScroll
 import su.afk.kemonos.domain.SelectedSite
 import su.afk.kemonos.posts.presenter.pageSearchPosts.SearchPostsState.*
 import su.afk.kemonos.preferences.ui.RandomButtonPlacement
+import su.afk.kemonos.ui.R
+import su.afk.kemonos.ui.components.button.RandomButton
+import su.afk.kemonos.ui.components.button.SiteToggleFab
+import su.afk.kemonos.ui.components.posts.PostsContentPaging
+import su.afk.kemonos.ui.components.searchBar.PostsSearchBarWithMediaFilters
+import su.afk.kemonos.ui.presenter.baseScreen.BaseScreen
+import su.afk.kemonos.ui.presenter.baseScreen.TopBarScroll
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

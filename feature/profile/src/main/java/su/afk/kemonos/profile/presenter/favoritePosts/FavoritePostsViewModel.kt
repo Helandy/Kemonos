@@ -7,14 +7,11 @@ import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
-import su.afk.kemonos.common.components.posts.filter.PostMediaFilter
-import su.afk.kemonos.common.components.posts.filter.matchesMediaFilter
-import su.afk.kemonos.common.error.IErrorHandlerUseCase
-import su.afk.kemonos.common.error.storage.RetryStorage
-import su.afk.kemonos.common.presenter.baseViewModel.BaseViewModelNew
 import su.afk.kemonos.creatorPost.api.ICreatorPostNavigator
 import su.afk.kemonos.domain.SelectedSite
 import su.afk.kemonos.domain.models.PostDomain
+import su.afk.kemonos.error.error.IErrorHandlerUseCase
+import su.afk.kemonos.error.error.storage.RetryStorage
 import su.afk.kemonos.navigation.NavigationManager
 import su.afk.kemonos.navigation.storage.NavigationStorage
 import su.afk.kemonos.preferences.site.ISelectedSiteUseCase
@@ -23,6 +20,9 @@ import su.afk.kemonos.profile.domain.favorites.GetFavoritePostsUseCase
 import su.afk.kemonos.profile.domain.favorites.posts.GetFavoritePostsPagingUseCase
 import su.afk.kemonos.profile.presenter.favoritePosts.FavoritePostsState.*
 import su.afk.kemonos.profile.utils.Const.KEY_SELECT_SITE
+import su.afk.kemonos.ui.components.posts.filter.PostMediaFilter
+import su.afk.kemonos.ui.components.posts.filter.matchesMediaFilter
+import su.afk.kemonos.ui.presenter.baseViewModel.BaseViewModelNew
 import javax.inject.Inject
 
 @HiltViewModel

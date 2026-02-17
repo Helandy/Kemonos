@@ -15,10 +15,10 @@ import androidx.compose.ui.unit.dp
 import coil3.ImageLoader
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import su.afk.kemonos.common.imageLoader.LocalAppImageLoader
 import su.afk.kemonos.profile.R
 import su.afk.kemonos.profile.presenter.setting.view.uiSetting.common.SectionSpacer
 import su.afk.kemonos.profile.presenter.setting.view.uiSetting.common.SettingsSectionTitle
+import su.afk.kemonos.ui.imageLoader.LocalAppImageLoader
 import java.io.File
 import kotlin.math.roundToInt
 

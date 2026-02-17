@@ -7,11 +7,11 @@ import androidx.compose.material3.Text
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import su.afk.kemonos.common.R
 import su.afk.kemonos.creatorPost.domain.model.media.MediaInfoState
 import su.afk.kemonos.creatorPost.domain.model.video.VideoThumbState
 import su.afk.kemonos.domain.models.VideoDomain
 import su.afk.kemonos.preferences.ui.UiSettingModel
+import su.afk.kemonos.ui.R
 
 internal fun LazyListScope.postVideosSection(
     uiSettingModel: UiSettingModel,

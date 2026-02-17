@@ -22,12 +22,12 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import su.afk.kemonos.common.R
-import su.afk.kemonos.common.imageLoader.AsyncImageWithStatus
-import su.afk.kemonos.common.video.openVideoExternally
 import su.afk.kemonos.creatorPost.domain.model.media.MediaInfoState
 import su.afk.kemonos.creatorPost.domain.model.video.VideoThumbState
 import su.afk.kemonos.domain.models.VideoDomain
+import su.afk.kemonos.ui.R
+import su.afk.kemonos.ui.imageLoader.AsyncImageWithStatus
+import su.afk.kemonos.ui.video.openVideoExternally
 import kotlin.math.roundToInt
 
 /**

@@ -9,10 +9,10 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import su.afk.kemonos.common.R
-import su.afk.kemonos.common.components.input.BaseUrlDomainField
-import su.afk.kemonos.common.utilsUI.KemonosPreviewScreen
 import su.afk.kemonos.profile.presenter.setting.SettingState.State
+import su.afk.kemonos.ui.R
+import su.afk.kemonos.ui.components.input.BaseUrlDomainField
+import su.afk.kemonos.ui.preview.KemonosPreviewScreen
 
 @Composable
 internal fun ApiSettingsBlock(

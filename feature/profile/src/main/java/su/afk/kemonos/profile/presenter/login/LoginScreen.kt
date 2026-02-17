@@ -16,17 +16,17 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.flow.Flow
-import su.afk.kemonos.common.R.drawable.coomer_logo
-import su.afk.kemonos.common.R.drawable.kemono_logo
-import su.afk.kemonos.common.presenter.baseScreen.BaseScreen
-import su.afk.kemonos.common.presenter.baseScreen.CenterBackTopBar
-import su.afk.kemonos.common.util.findActivity
 import su.afk.kemonos.domain.SelectedSite
 import su.afk.kemonos.profile.R
 import su.afk.kemonos.profile.presenter.login.LoginState.*
 import su.afk.kemonos.profile.presenter.login.LoginState.State
 import su.afk.kemonos.profile.presenter.login.util.loginPasswordErrorRes
 import su.afk.kemonos.profile.presenter.login.util.loginUsernameErrorRes
+import su.afk.kemonos.ui.R.drawable.coomer_logo
+import su.afk.kemonos.ui.R.drawable.kemono_logo
+import su.afk.kemonos.ui.presenter.baseScreen.BaseScreen
+import su.afk.kemonos.ui.presenter.baseScreen.CenterBackTopBar
+import su.afk.kemonos.ui.uiUtils.findActivity
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

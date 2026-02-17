@@ -2,9 +2,9 @@ package su.afk.kemonos.creators.presenter.model
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.stringResource
-import su.afk.kemonos.common.R
-import su.afk.kemonos.common.components.searchBar.SortOption
 import su.afk.kemonos.domain.models.creator.CreatorsSort
+import su.afk.kemonos.ui.R
+import su.afk.kemonos.ui.components.searchBar.SortOption
 
 @Composable
 fun creatorsSortOptions(): List<SortOption<CreatorsSort>> = listOf(

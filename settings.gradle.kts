@@ -23,8 +23,6 @@ dependencyResolutionManagement {
 rootProject.name = "Kemonos"
 include(":app")
 
-include(":common")
-
 include(":feature:commonScreen-api")
 include(":feature:commonScreen")
 
@@ -36,6 +34,7 @@ include(":core:preferences")
 include(":core:navigation")
 include(":core:utils")
 include(":core:ui")
+include(":core:error")
 
 include(":storage-api")
 include(":storage")

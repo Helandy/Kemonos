@@ -1,15 +1,15 @@
 package su.afk.kemonos.creatorPost.presenter
 
-import su.afk.kemonos.common.presenter.androidView.model.PostBlock
-import su.afk.kemonos.common.presenter.baseViewModel.UiEffect
-import su.afk.kemonos.common.presenter.baseViewModel.UiEvent
-import su.afk.kemonos.common.presenter.baseViewModel.UiState
 import su.afk.kemonos.creatorPost.api.domain.model.CommentDomain
 import su.afk.kemonos.creatorPost.api.domain.model.PostContentDomain
 import su.afk.kemonos.creatorPost.domain.model.media.MediaInfoState
 import su.afk.kemonos.creatorPost.domain.model.video.VideoThumbState
 import su.afk.kemonos.domain.models.Profile
 import su.afk.kemonos.preferences.ui.UiSettingModel
+import su.afk.kemonos.ui.presenter.androidView.model.PostBlock
+import su.afk.kemonos.ui.presenter.baseViewModel.UiEffect
+import su.afk.kemonos.ui.presenter.baseViewModel.UiEvent
+import su.afk.kemonos.ui.presenter.baseViewModel.UiState
 
 internal class CreatorPostState {
     data class State(

@@ -17,12 +17,6 @@ import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
-import su.afk.kemonos.common.components.button.FavoriteActionButton
-import su.afk.kemonos.common.components.posts.PostsContentPaging
-import su.afk.kemonos.common.presenter.baseScreen.BaseScreen
-import su.afk.kemonos.common.presenter.baseScreen.TopBarScroll
-import su.afk.kemonos.common.shared.ShareActions
-import su.afk.kemonos.common.utilsUI.KemonosPreviewScreen
 import su.afk.kemonos.creatorProfile.presenter.CreatorProfileState.*
 import su.afk.kemonos.creatorProfile.presenter.model.ProfileTab
 import su.afk.kemonos.creatorProfile.presenter.view.*
@@ -31,6 +25,12 @@ import su.afk.kemonos.creatorProfile.presenter.view.header.CreatorScreenTopBar
 import su.afk.kemonos.creatorProfile.presenter.view.header.ProfileTabsBar
 import su.afk.kemonos.deepLink.utils.openUrlInBrowser
 import su.afk.kemonos.domain.models.PostDomain
+import su.afk.kemonos.ui.components.button.FavoriteActionButton
+import su.afk.kemonos.ui.components.posts.PostsContentPaging
+import su.afk.kemonos.ui.presenter.baseScreen.BaseScreen
+import su.afk.kemonos.ui.presenter.baseScreen.TopBarScroll
+import su.afk.kemonos.ui.preview.KemonosPreviewScreen
+import su.afk.kemonos.ui.shared.ShareActions
 import su.afk.kemonos.ui.toast.toast
 import su.afk.kemonos.utils.creator.buildCreatorPlatformUrl
 

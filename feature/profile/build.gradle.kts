@@ -21,7 +21,6 @@ dependencies {
     implementation(libs.bundles.androidx.credentials)
     implementation(libs.bundles.paging)
 
-    implementation(project(":common"))
     implementation(project(":core:navigation"))
     implementation(project(":core:deepLink"))
     implementation(project(":core:model"))
@@ -30,10 +29,11 @@ dependencies {
     implementation(project(":core:network"))
     implementation(project(":core:preferences"))
     implementation(project(":core:utils"))
+    implementation(project(":core:ui"))
+    implementation(project(":core:error"))
+
     implementation(project(":storage-api"))
-
     implementation(project(":feature:profile-api"))
-
     implementation(project(":feature:creatorProfile-api"))
     implementation(project(":feature:creatorPost-api"))
     implementation(project(":feature:download-api"))

@@ -1,7 +1,7 @@
 package su.afk.kemonos.creatorProfile.presenter.model
 
 import androidx.annotation.StringRes
-import su.afk.kemonos.common.R
+import su.afk.kemonos.ui.R
 
 internal enum class ProfileTab(@StringRes val labelRes: Int) {
     POSTS(R.string.profile_tab_posts),

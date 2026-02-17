@@ -28,14 +28,14 @@ import coil3.request.CachePolicy
 import coil3.request.ImageRequest
 import coil3.size.Precision
 import kotlinx.coroutines.flow.Flow
-import su.afk.kemonos.common.R
-import su.afk.kemonos.common.error.view.DefaultErrorContent
-import su.afk.kemonos.common.imageLoader.LocalAppImageLoader
-import su.afk.kemonos.common.imageLoader.imageProgress.IMAGE_PROGRESS_REQUEST_ID_HEADER
-import su.afk.kemonos.common.util.formatBytes
 import su.afk.kemonos.commonscreen.imageViewScreen.ImageViewState.Effect
 import su.afk.kemonos.commonscreen.imageViewScreen.ImageViewState.Event
 import su.afk.kemonos.domain.models.ErrorItem
+import su.afk.kemonos.error.error.view.DefaultErrorContent
+import su.afk.kemonos.ui.R
+import su.afk.kemonos.ui.imageLoader.LocalAppImageLoader
+import su.afk.kemonos.ui.imageLoader.imageProgress.IMAGE_PROGRESS_REQUEST_ID_HEADER
+import su.afk.kemonos.ui.uiUtils.size.formatBytes
 import kotlin.math.abs
 import kotlin.math.roundToInt
 

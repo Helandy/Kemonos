@@ -30,5 +30,4 @@ dependencies {
 
     implementation(project(":core:auth"))
     implementation(project(":core:preferences"))
-    implementation(project(":core:utils"))
 }
