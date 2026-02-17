@@ -1,9 +1,9 @@
 package su.afk.kemonos.commonscreen.errorScreen
 
-import su.afk.kemonos.common.presenter.baseViewModel.UiEffect
-import su.afk.kemonos.common.presenter.baseViewModel.UiEvent
-import su.afk.kemonos.common.presenter.baseViewModel.UiState
 import su.afk.kemonos.domain.models.ErrorItem
+import su.afk.kemonos.ui.presenter.baseViewModel.UiEffect
+import su.afk.kemonos.ui.presenter.baseViewModel.UiEvent
+import su.afk.kemonos.ui.presenter.baseViewModel.UiState
 
 internal class ErrorScreenState {
 

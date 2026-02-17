@@ -17,12 +17,12 @@ import androidx.core.net.toUri
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
 import su.afk.kemonos.app.update.api.model.AppUpdateInfo
-import su.afk.kemonos.common.R
-import su.afk.kemonos.common.presenter.baseScreen.BaseScreen
 import su.afk.kemonos.domain.models.ErrorItem
 import su.afk.kemonos.main.presenter.MainState.Effect
 import su.afk.kemonos.main.presenter.MainState.Event
 import su.afk.kemonos.main.presenter.view.*
+import su.afk.kemonos.ui.R
+import su.afk.kemonos.ui.presenter.baseScreen.BaseScreen
 import su.afk.kemonos.ui.toast.toast
 import java.io.File
 

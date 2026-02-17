@@ -4,11 +4,9 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import su.afk.kemonos.app.update.api.model.AppUpdateInfo
-import su.afk.kemonos.common.crash.ICrashReportManager
-import su.afk.kemonos.common.error.IErrorHandlerUseCase
-import su.afk.kemonos.common.error.storage.RetryStorage
-import su.afk.kemonos.common.presenter.baseViewModel.BaseViewModelNew
 import su.afk.kemonos.domain.SelectedSite
+import su.afk.kemonos.error.error.IErrorHandlerUseCase
+import su.afk.kemonos.error.error.storage.RetryStorage
 import su.afk.kemonos.main.domain.CheckAuthForAllSitesUseCase
 import su.afk.kemonos.main.presenter.MainState.*
 import su.afk.kemonos.main.presenter.delegates.ApiCheckDelegate
@@ -18,6 +16,8 @@ import su.afk.kemonos.navigation.NavigationManager
 import su.afk.kemonos.preferences.siteUrl.ISetBaseUrlsUseCase
 import su.afk.kemonos.preferences.ui.IUiSettingUseCase
 import su.afk.kemonos.storage.api.clear.IClearCacheStorageUseCase
+import su.afk.kemonos.ui.crash.ICrashReportManager
+import su.afk.kemonos.ui.presenter.baseViewModel.BaseViewModelNew
 import su.afk.kemonos.utils.url.buildBaseUrl
 import su.afk.kemonos.utils.url.normalizeDomain
 import javax.inject.Inject

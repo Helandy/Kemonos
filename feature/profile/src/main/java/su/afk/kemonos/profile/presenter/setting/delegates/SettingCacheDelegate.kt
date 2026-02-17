@@ -2,8 +2,8 @@ package su.afk.kemonos.profile.presenter.setting.delegates
 
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
-import su.afk.kemonos.common.error.IErrorHandlerUseCase
 import su.afk.kemonos.domain.SelectedSite
+import su.afk.kemonos.error.error.IErrorHandlerUseCase
 import su.afk.kemonos.profile.presenter.setting.SettingState.Event.CacheClearAction
 import su.afk.kemonos.profile.presenter.setting.SettingState.State
 import su.afk.kemonos.storage.api.repository.creatorProfile.IStoreCreatorProfileRepository

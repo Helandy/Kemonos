@@ -2,7 +2,7 @@ package su.afk.kemonos.posts.presenter.pager.model
 
 import androidx.annotation.StringRes
 import su.afk.kemonos.posts.R
-import su.afk.kemonos.common.R as CommonR
+import su.afk.kemonos.ui.R as CommonR
 
 internal sealed class PostsPage(
     @StringRes val titleRes: Int,

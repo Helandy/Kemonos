@@ -10,11 +10,11 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import su.afk.kemonos.common.R
-import su.afk.kemonos.common.components.creator.header.CreatorHeader
-import su.afk.kemonos.common.util.toUiDateTime
 import su.afk.kemonos.domain.models.Profile
 import su.afk.kemonos.preferences.ui.DateFormatMode
+import su.afk.kemonos.ui.R
+import su.afk.kemonos.ui.components.creator.header.CreatorHeader
+import su.afk.kemonos.ui.date.toUiDateTime
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

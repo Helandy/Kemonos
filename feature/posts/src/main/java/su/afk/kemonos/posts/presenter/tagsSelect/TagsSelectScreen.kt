@@ -6,9 +6,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.unit.dp
 import androidx.paging.compose.collectAsLazyPagingItems
 import kotlinx.coroutines.flow.Flow
-import su.afk.kemonos.common.components.posts.PostsContentPaging
-import su.afk.kemonos.common.presenter.baseScreen.BaseScreen
 import su.afk.kemonos.posts.presenter.tagsSelect.TagsSelectState.*
+import su.afk.kemonos.ui.components.posts.PostsContentPaging
+import su.afk.kemonos.ui.presenter.baseScreen.BaseScreen
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

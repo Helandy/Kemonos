@@ -1,10 +1,10 @@
 package su.afk.kemonos.posts.presenter.pager
 
 import dagger.hilt.android.lifecycle.HiltViewModel
-import su.afk.kemonos.common.error.IErrorHandlerUseCase
-import su.afk.kemonos.common.error.storage.RetryStorage
-import su.afk.kemonos.common.presenter.baseViewModel.BaseViewModelNew
+import su.afk.kemonos.error.error.IErrorHandlerUseCase
+import su.afk.kemonos.error.error.storage.RetryStorage
 import su.afk.kemonos.posts.presenter.pager.model.PostsPage
+import su.afk.kemonos.ui.presenter.baseViewModel.BaseViewModelNew
 import javax.inject.Inject
 
 @HiltViewModel

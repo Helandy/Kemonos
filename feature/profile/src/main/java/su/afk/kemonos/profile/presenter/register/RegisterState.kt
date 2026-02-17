@@ -1,13 +1,13 @@
 package su.afk.kemonos.profile.presenter.register
 
-import su.afk.kemonos.common.presenter.baseViewModel.UiEffect
-import su.afk.kemonos.common.presenter.baseViewModel.UiEvent
-import su.afk.kemonos.common.presenter.baseViewModel.UiState
 import su.afk.kemonos.domain.SelectedSite
 import su.afk.kemonos.domain.models.ErrorItem
 import su.afk.kemonos.profile.domain.register.ConfirmErrorCode
 import su.afk.kemonos.profile.domain.register.PasswordErrorCode
 import su.afk.kemonos.profile.domain.register.UsernameErrorCode
+import su.afk.kemonos.ui.presenter.baseViewModel.UiEffect
+import su.afk.kemonos.ui.presenter.baseViewModel.UiEvent
+import su.afk.kemonos.ui.presenter.baseViewModel.UiState
 
 internal class RegisterState {
     data class State(

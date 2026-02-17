@@ -1,11 +1,11 @@
 package su.afk.kemonos.profile.presenter.profile
 
-import su.afk.kemonos.common.presenter.baseViewModel.UiEffect
-import su.afk.kemonos.common.presenter.baseViewModel.UiEvent
-import su.afk.kemonos.common.presenter.baseViewModel.UiState
 import su.afk.kemonos.domain.SelectedSite
 import su.afk.kemonos.preferences.ui.UiSettingModel
 import su.afk.kemonos.profile.api.model.Login
+import su.afk.kemonos.ui.presenter.baseViewModel.UiEffect
+import su.afk.kemonos.ui.presenter.baseViewModel.UiEvent
+import su.afk.kemonos.ui.presenter.baseViewModel.UiState
 
 internal class ProfileState {
     data class State(

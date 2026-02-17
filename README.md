@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="common/src/main/res/drawable/kemono_logo.png" width="140" alt="Kemonos Android app logo"/>
+  <img src="core/ui/src/main/res/drawable/kemono_logo.png" width="140" alt="Kemonos Android app logo"/>
 </p>
 
 <h1 align="center">Kemonos</h1>

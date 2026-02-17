@@ -2,7 +2,7 @@ package su.afk.kemonos.profile.presenter.setting.delegates
 
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
-import su.afk.kemonos.common.error.IErrorHandlerUseCase
+import su.afk.kemonos.error.error.IErrorHandlerUseCase
 import su.afk.kemonos.preferences.siteUrl.ISetBaseUrlsUseCase
 import su.afk.kemonos.profile.presenter.setting.SettingState.Event
 import su.afk.kemonos.profile.presenter.setting.SettingState.State

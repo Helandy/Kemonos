@@ -14,7 +14,6 @@ dependencies {
     implementation(libs.bundles.paging)
     implementation(libs.bundles.coil)
 
-    implementation(project(":common"))
     implementation(project(":core:navigation"))
     implementation(project(":core:model"))
 
@@ -24,6 +23,7 @@ dependencies {
     implementation(project(":core:network"))
     implementation(project(":core:preferences"))
     implementation(project(":core:deepLink"))
+    implementation(project(":core:error"))
 
     implementation(project(":feature:creatorProfile-api"))
     implementation(project(":storage-api"))

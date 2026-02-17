@@ -5,9 +5,6 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
-import su.afk.kemonos.common.error.IErrorHandlerUseCase
-import su.afk.kemonos.common.error.storage.RetryStorage
-import su.afk.kemonos.common.presenter.changeSite.SiteAwareBaseViewModelNew
 import su.afk.kemonos.creatorProfile.api.ICreatorProfileNavigator
 import su.afk.kemonos.creators.domain.GetCreatorsPagedUseCase
 import su.afk.kemonos.creators.domain.RandomCreatorUseCase
@@ -17,9 +14,12 @@ import su.afk.kemonos.creators.presenter.delegates.RandomListDelegate
 import su.afk.kemonos.domain.SelectedSite
 import su.afk.kemonos.domain.models.creator.CreatorsSort
 import su.afk.kemonos.domain.models.creator.FavoriteArtist
+import su.afk.kemonos.error.error.IErrorHandlerUseCase
+import su.afk.kemonos.error.error.storage.RetryStorage
 import su.afk.kemonos.navigation.NavigationManager
 import su.afk.kemonos.preferences.site.ISelectedSiteUseCase
 import su.afk.kemonos.preferences.ui.IUiSettingUseCase
+import su.afk.kemonos.ui.presenter.changeSite.SiteAwareBaseViewModelNew
 import javax.inject.Inject
 
 @HiltViewModel

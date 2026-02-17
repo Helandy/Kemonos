@@ -3,14 +3,14 @@ package su.afk.kemonos.profile.presenter.favoriteProfiles
 import androidx.paging.PagingData
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
-import su.afk.kemonos.common.presenter.baseViewModel.UiEffect
-import su.afk.kemonos.common.presenter.baseViewModel.UiEvent
-import su.afk.kemonos.common.presenter.baseViewModel.UiState
 import su.afk.kemonos.domain.SelectedSite
 import su.afk.kemonos.domain.models.creator.FavoriteArtist
 import su.afk.kemonos.preferences.ui.UiSettingModel
 import su.afk.kemonos.profile.api.domain.favoriteProfiles.FavoriteSortedType
 import su.afk.kemonos.profile.api.domain.favoriteProfiles.FreshFavoriteArtistKey
+import su.afk.kemonos.ui.presenter.baseViewModel.UiEffect
+import su.afk.kemonos.ui.presenter.baseViewModel.UiEvent
+import su.afk.kemonos.ui.presenter.baseViewModel.UiState
 
 internal class FavoriteProfilesState {
     data class State(

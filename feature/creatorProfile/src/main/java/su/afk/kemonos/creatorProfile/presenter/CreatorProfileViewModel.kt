@@ -10,13 +10,6 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
-import su.afk.kemonos.common.components.posts.filter.matchesMediaFilter
-import su.afk.kemonos.common.error.IErrorHandlerUseCase
-import su.afk.kemonos.common.error.storage.RetryStorage
-import su.afk.kemonos.common.error.toFavoriteToastBar
-import su.afk.kemonos.common.presenter.baseViewModel.BaseViewModelNew
-import su.afk.kemonos.common.shared.ShareLinkBuilder
-import su.afk.kemonos.common.shared.model.ShareTarget
 import su.afk.kemonos.creatorProfile.api.IGetProfileUseCase
 import su.afk.kemonos.creatorProfile.domain.paging.GetProfilePostsPagingUseCase
 import su.afk.kemonos.creatorProfile.navigation.CreatorDest
@@ -27,11 +20,18 @@ import su.afk.kemonos.creatorProfile.presenter.delegates.NavigationDelegate
 import su.afk.kemonos.creatorProfile.presenter.model.ProfileTab
 import su.afk.kemonos.creatorProfile.util.Utils.queryKey
 import su.afk.kemonos.domain.models.Tag
+import su.afk.kemonos.error.error.IErrorHandlerUseCase
+import su.afk.kemonos.error.error.storage.RetryStorage
+import su.afk.kemonos.error.error.toFavoriteToastBar
 import su.afk.kemonos.navigation.NavigationManager
 import su.afk.kemonos.preferences.GetKemonoRootUrlUseCase
 import su.afk.kemonos.preferences.IGetCurrentSiteRootUrlUseCase
 import su.afk.kemonos.preferences.ui.IUiSettingUseCase
 import su.afk.kemonos.storage.api.repository.profilePosts.IStorageCreatorPostsRepository
+import su.afk.kemonos.ui.components.posts.filter.matchesMediaFilter
+import su.afk.kemonos.ui.presenter.baseViewModel.BaseViewModelNew
+import su.afk.kemonos.ui.shared.ShareLinkBuilder
+import su.afk.kemonos.ui.shared.model.ShareTarget
 
 internal class CreatorProfileViewModel @AssistedInject constructor(
     @Assisted private val dest: CreatorDest.CreatorProfile,

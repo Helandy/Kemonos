@@ -1,0 +1,39 @@
+package su.afk.kemonos.ui.presenter.baseScreen
+
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.rounded.ArrowBack
+import androidx.compose.material3.*
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.res.stringResource
+import su.afk.kemonos.ui.R
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun CenterBackTopBar(
+    title: String,
+    onBack: () -> Unit,
+    scrollBehavior: TopAppBarScrollBehavior? = null,
+) {
+    CenterAlignedTopAppBar(
+        title = {
+            Text(
+                text = title,
+                style = MaterialTheme.typography.titleLarge
+            )
+        },
+        navigationIcon = {
+            IconButton(onClick = onBack) {
+                Icon(
+                    imageVector = Icons.AutoMirrored.Rounded.ArrowBack,
+                    contentDescription = stringResource(R.string.back),
+                )
+            }
+        },
+        scrollBehavior = scrollBehavior,
+        windowInsets = TopAppBarDefaults.windowInsets,
+        colors = TopAppBarDefaults.topAppBarColors(
+            containerColor = MaterialTheme.colorScheme.surface,
+            scrolledContainerColor = MaterialTheme.colorScheme.surface
+        )
+    )
+}

@@ -11,8 +11,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
-import su.afk.kemonos.common.util.normalizeForFolder
 import su.afk.kemonos.preferences.ui.DownloadFolderMode
+import su.afk.kemonos.utils.download.normalizeForFolder
 
 private data class PathExample(
     val template: String,

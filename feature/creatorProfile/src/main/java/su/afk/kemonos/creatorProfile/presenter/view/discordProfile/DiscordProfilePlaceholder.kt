@@ -11,8 +11,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import su.afk.kemonos.common.R
-import su.afk.kemonos.common.presenter.baseScreen.BaseScreen
+import su.afk.kemonos.ui.R
+import su.afk.kemonos.ui.presenter.baseScreen.BaseScreen
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

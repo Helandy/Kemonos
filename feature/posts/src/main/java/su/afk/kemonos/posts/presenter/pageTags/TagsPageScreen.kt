@@ -20,13 +20,13 @@ import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.flow.Flow
-import su.afk.kemonos.common.R
-import su.afk.kemonos.common.components.button.SiteToggleFab
-import su.afk.kemonos.common.presenter.baseScreen.BaseScreen
-import su.afk.kemonos.common.presenter.baseScreen.TopBarScroll
 import su.afk.kemonos.domain.SelectedSite
 import su.afk.kemonos.posts.api.tags.Tags
 import su.afk.kemonos.posts.presenter.pageTags.TagsPageState.*
+import su.afk.kemonos.ui.R
+import su.afk.kemonos.ui.components.button.SiteToggleFab
+import su.afk.kemonos.ui.presenter.baseScreen.BaseScreen
+import su.afk.kemonos.ui.presenter.baseScreen.TopBarScroll
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

@@ -4,10 +4,10 @@ import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
-import su.afk.kemonos.preferences.DomainResolver
 import su.afk.kemonos.preferences.GetCoomerRootUrlUseCase
 import su.afk.kemonos.preferences.GetKemonoRootUrlUseCase
-import su.afk.kemonos.preferences.IDomainResolver
+import su.afk.kemonos.preferences.domainResolver.DomainResolver
+import su.afk.kemonos.preferences.domainResolver.IDomainResolver
 import javax.inject.Singleton
 
 @Module

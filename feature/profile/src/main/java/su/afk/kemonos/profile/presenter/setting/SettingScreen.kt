@@ -12,10 +12,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
-import su.afk.kemonos.common.presenter.baseScreen.BaseScreen
-import su.afk.kemonos.common.presenter.baseScreen.CenterBackTopBar
-import su.afk.kemonos.common.presenter.baseScreen.TopBarScroll
-import su.afk.kemonos.common.utilsUI.KemonosPreviewScreen
 import su.afk.kemonos.profile.R
 import su.afk.kemonos.profile.presenter.setting.SettingState.*
 import su.afk.kemonos.profile.presenter.setting.view.apiSetting.ApiSettingsBlock
@@ -23,6 +19,10 @@ import su.afk.kemonos.profile.presenter.setting.view.bottomLink.BottomLinksBlock
 import su.afk.kemonos.profile.presenter.setting.view.cache.CacheSettingsBlock
 import su.afk.kemonos.profile.presenter.setting.view.faq.FaqBlock
 import su.afk.kemonos.profile.presenter.setting.view.uiSetting.UISettingBlock
+import su.afk.kemonos.ui.presenter.baseScreen.BaseScreen
+import su.afk.kemonos.ui.presenter.baseScreen.CenterBackTopBar
+import su.afk.kemonos.ui.presenter.baseScreen.TopBarScroll
+import su.afk.kemonos.ui.preview.KemonosPreviewScreen
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

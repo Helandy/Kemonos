@@ -9,11 +9,12 @@ dependencies {
     implementation(libs.bundles.retrofit)
     implementation(libs.bundles.paging)
 
-    implementation(project(":common"))
     implementation(project(":core:navigation"))
     implementation(project(":core:model"))
     implementation(project(":core:preferences"))
     implementation(project(":core:network"))
+    implementation(project(":core:ui"))
+    implementation(project(":core:error"))
 
     implementation(project(":feature:posts-api"))
     implementation(project(":feature:creatorPost-api"))

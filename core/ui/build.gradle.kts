@@ -49,6 +49,8 @@ dependencies {
     implementation(project(":core:network"))
     implementation(project(":core:preferences"))
     implementation(project(":core:utils"))
+    implementation(project(":core:error"))
+
     implementation(project(":storage-api"))
     implementation(project(":feature:appUpdate-api"))
     implementation(project(":feature:commonScreen-api"))

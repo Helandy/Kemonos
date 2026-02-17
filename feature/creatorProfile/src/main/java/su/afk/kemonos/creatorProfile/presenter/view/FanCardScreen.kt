@@ -17,11 +17,11 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import su.afk.kemonos.common.R
-import su.afk.kemonos.common.imageLoader.AsyncImageWithStatus
-import su.afk.kemonos.common.util.toUiDateTime
 import su.afk.kemonos.creatorProfile.api.domain.models.profileFanCards.ProfileFanCard
 import su.afk.kemonos.preferences.ui.DateFormatMode
+import su.afk.kemonos.ui.R
+import su.afk.kemonos.ui.date.toUiDateTime
+import su.afk.kemonos.ui.imageLoader.AsyncImageWithStatus
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable

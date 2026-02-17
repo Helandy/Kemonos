@@ -10,13 +10,14 @@ dependencies {
     implementation(libs.bundles.paging)
     implementation(libs.bundles.retrofit)
 
-    implementation(project(":common"))
     implementation(project(":core:navigation"))
     implementation(project(":core:model"))
     implementation(project(":core:preferences"))
     implementation(project(":core:network"))
+    implementation(project(":core:ui"))
+    implementation(project(":core:error"))
+
     implementation(project(":storage-api"))
     implementation(project(":feature:creators-api"))
-
     implementation(project(":feature:creatorProfile-api"))
 }

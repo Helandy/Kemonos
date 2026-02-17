@@ -16,7 +16,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
-import su.afk.kemonos.common.presenter.baseScreen.BaseScreen
 import su.afk.kemonos.domain.SelectedSite
 import su.afk.kemonos.profile.R
 import su.afk.kemonos.profile.presenter.profile.ProfileState.*
@@ -24,6 +23,7 @@ import su.afk.kemonos.profile.presenter.profile.views.DownloadsButton
 import su.afk.kemonos.profile.presenter.profile.views.LogoutDialog
 import su.afk.kemonos.profile.presenter.profile.views.SettingsButton
 import su.afk.kemonos.profile.presenter.profile.views.SitePage
+import su.afk.kemonos.ui.presenter.baseScreen.BaseScreen
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

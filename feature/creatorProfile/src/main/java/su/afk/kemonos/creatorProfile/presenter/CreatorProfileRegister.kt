@@ -8,11 +8,11 @@ import androidx.navigation3.runtime.EntryProviderScope
 import androidx.navigation3.runtime.NavKey
 import dagger.hilt.android.EntryPointAccessors
 import jakarta.inject.Inject
-import su.afk.kemonos.common.presenter.baseViewModel.ScreenNavigator
 import su.afk.kemonos.creatorProfile.di.CreatorProfileVmFactoryEntryPoint
 import su.afk.kemonos.creatorProfile.navigation.CreatorDest
 import su.afk.kemonos.navigation.NavRegistrar
 import su.afk.kemonos.navigation.NavigationManager
+import su.afk.kemonos.ui.presenter.baseViewModel.ScreenNavigator
 
 class CreatorProfileRegister @Inject constructor() : NavRegistrar {
     override fun register(builder: EntryProviderScope<NavKey>, nav: NavigationManager) = with(builder) {

@@ -3,15 +3,15 @@ package su.afk.kemonos.posts.presenter.pagePopularPosts
 import androidx.paging.PagingData
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
-import su.afk.kemonos.common.presenter.baseViewModel.UiEffect
-import su.afk.kemonos.common.presenter.baseViewModel.UiEvent
-import su.afk.kemonos.common.presenter.baseViewModel.UiState
 import su.afk.kemonos.domain.models.PostDomain
 import su.afk.kemonos.posts.api.popular.PopularInfo
 import su.afk.kemonos.posts.api.popular.PopularProps
 import su.afk.kemonos.posts.domain.model.popular.Period
 import su.afk.kemonos.posts.domain.model.popular.PopularNavSlot
 import su.afk.kemonos.preferences.ui.UiSettingModel
+import su.afk.kemonos.ui.presenter.baseViewModel.UiEffect
+import su.afk.kemonos.ui.presenter.baseViewModel.UiEvent
+import su.afk.kemonos.ui.presenter.baseViewModel.UiState
 
 internal class PopularPostsState {
     data class State(

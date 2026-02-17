@@ -3,11 +3,11 @@ package su.afk.kemonos.commonscreen.errorScreen
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
-import su.afk.kemonos.common.error.IErrorHandlerUseCase
-import su.afk.kemonos.common.error.storage.RetryStorage
-import su.afk.kemonos.common.presenter.baseViewModel.BaseViewModelNew
 import su.afk.kemonos.commonscreen.navigator.CommonScreenDest
+import su.afk.kemonos.error.error.IErrorHandlerUseCase
+import su.afk.kemonos.error.error.storage.RetryStorage
 import su.afk.kemonos.navigation.NavigationManager
+import su.afk.kemonos.ui.presenter.baseViewModel.BaseViewModelNew
 
 internal class ErrorViewModel @AssistedInject constructor(
     @Assisted private val dest: CommonScreenDest.ErrorNavigatorDest,

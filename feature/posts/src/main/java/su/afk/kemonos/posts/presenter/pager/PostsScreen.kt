@@ -11,8 +11,6 @@ import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.distinctUntilChanged
-import su.afk.kemonos.common.presenter.baseScreen.BaseScreen
-import su.afk.kemonos.common.presenter.baseScreen.TopBarScroll
 import su.afk.kemonos.posts.presenter.pagePopularPosts.PopularPostsNavigation
 import su.afk.kemonos.posts.presenter.pageSearchPosts.SearchPostsNavigation
 import su.afk.kemonos.posts.presenter.pageTags.TagsPageNavigation
@@ -20,6 +18,8 @@ import su.afk.kemonos.posts.presenter.pager.PostsPagerState.*
 import su.afk.kemonos.posts.presenter.pager.model.ALL_POSTS_PAGES
 import su.afk.kemonos.posts.presenter.pager.model.PostsPage
 import su.afk.kemonos.posts.presenter.pager.views.PagerTabs
+import su.afk.kemonos.ui.presenter.baseScreen.BaseScreen
+import su.afk.kemonos.ui.presenter.baseScreen.TopBarScroll
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

@@ -10,19 +10,6 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import su.afk.kemonos.common.error.IErrorHandlerUseCase
-import su.afk.kemonos.common.error.storage.RetryStorage
-import su.afk.kemonos.common.error.toFavoriteToastBar
-import su.afk.kemonos.common.presenter.androidView.cleanDuplicatedMediaFromContent
-import su.afk.kemonos.common.presenter.androidView.clearHtml
-import su.afk.kemonos.common.presenter.androidView.htmlToBlocks
-import su.afk.kemonos.common.presenter.baseViewModel.BaseViewModelNew
-import su.afk.kemonos.common.shared.ShareLinkBuilder
-import su.afk.kemonos.common.shared.model.ShareTarget
-import su.afk.kemonos.common.translate.TextTranslator
-import su.afk.kemonos.common.translate.preprocessForTranslation
-import su.afk.kemonos.common.util.audioMimeType
-import su.afk.kemonos.common.util.buildFileUrl
 import su.afk.kemonos.creatorPost.api.domain.model.PostContentDomain
 import su.afk.kemonos.creatorPost.domain.model.media.MediaInfoState
 import su.afk.kemonos.creatorPost.domain.model.video.VideoThumbState
@@ -37,9 +24,22 @@ import su.afk.kemonos.creatorPost.presenter.delegates.MediaMetaDelegate
 import su.afk.kemonos.creatorPost.presenter.delegates.NavigateDelegates
 import su.afk.kemonos.creatorProfile.api.IGetProfileUseCase
 import su.afk.kemonos.download.api.IDownloadUtil
+import su.afk.kemonos.error.error.IErrorHandlerUseCase
+import su.afk.kemonos.error.error.storage.RetryStorage
+import su.afk.kemonos.error.error.toFavoriteToastBar
 import su.afk.kemonos.preferences.IGetCurrentSiteRootUrlUseCase
 import su.afk.kemonos.preferences.ui.IUiSettingUseCase
 import su.afk.kemonos.preferences.ui.TranslateTarget
+import su.afk.kemonos.ui.presenter.androidView.cleanDuplicatedMediaFromContent
+import su.afk.kemonos.ui.presenter.androidView.clearHtml
+import su.afk.kemonos.ui.presenter.androidView.htmlToBlocks
+import su.afk.kemonos.ui.presenter.baseViewModel.BaseViewModelNew
+import su.afk.kemonos.ui.shared.ShareLinkBuilder
+import su.afk.kemonos.ui.shared.model.ShareTarget
+import su.afk.kemonos.ui.translate.TextTranslator
+import su.afk.kemonos.ui.translate.preprocessForTranslation
+import su.afk.kemonos.ui.uiUtils.format.audioMimeType
+import su.afk.kemonos.ui.uiUtils.format.buildFileUrl
 
 internal class CreatorPostViewModel @AssistedInject constructor(
     @Assisted private val dest: CreatorPostDest.CreatorPost,

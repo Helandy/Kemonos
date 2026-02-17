@@ -13,17 +13,17 @@ import androidx.compose.ui.unit.dp
 import androidx.paging.compose.collectAsLazyPagingItems
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
-import su.afk.kemonos.common.components.creator.CreatorsContentPaging
-import su.afk.kemonos.common.components.searchBar.SearchBarNew
-import su.afk.kemonos.common.presenter.baseScreen.BaseScreen
-import su.afk.kemonos.common.presenter.baseScreen.CenterBackTopBar
-import su.afk.kemonos.common.presenter.baseScreen.TopBarScroll
-import su.afk.kemonos.common.utilsUI.KemonosPreviewScreen
 import su.afk.kemonos.profile.R
 import su.afk.kemonos.profile.api.domain.favoriteProfiles.FreshFavoriteArtistKey
 import su.afk.kemonos.profile.presenter.favoriteProfiles.FavoriteProfilesState.*
 import su.afk.kemonos.profile.presenter.favoriteProfiles.views.favoriteProfilesSortOptions
 import su.afk.kemonos.profile.presenter.favoriteProfiles.views.uiDateBySort
+import su.afk.kemonos.ui.components.creator.CreatorsContentPaging
+import su.afk.kemonos.ui.components.searchBar.SearchBarNew
+import su.afk.kemonos.ui.presenter.baseScreen.BaseScreen
+import su.afk.kemonos.ui.presenter.baseScreen.CenterBackTopBar
+import su.afk.kemonos.ui.presenter.baseScreen.TopBarScroll
+import su.afk.kemonos.ui.preview.KemonosPreviewScreen
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
