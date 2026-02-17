@@ -26,7 +26,6 @@ dependencies {
     ksp(libs.dagger.hilt.compiler)
 
     implementation(libs.bundles.navigation3)
-    implementation(project(":core:model"))
 
     implementation(project(":core:navigation"))
 

@@ -26,31 +26,14 @@ dependencies {
 
     implementation(libs.bundles.retrofit)
     implementation(libs.bundles.serialization.json)
-
     implementation(libs.bundles.navigation3)
-
-    implementation(libs.bundles.paging)
-
-    implementation(libs.multiplatform.markdown.renderer.m3)
 
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.bundles.compose.core)
-
-    implementation(libs.bundles.datastore)
-
-    implementation(libs.bundles.coil)
-    implementation(libs.bundles.translate)
-    implementation(libs.bundles.jsoup)
 
     debugImplementation(libs.bundles.compose.debug)
 
     implementation(project(":core:navigation"))
     implementation(project(":core:model"))
-    implementation(project(":core:network"))
-    implementation(project(":core:preferences"))
-    implementation(project(":core:utils"))
-
-    implementation(project(":storage-api"))
-    implementation(project(":feature:appUpdate-api"))
     implementation(project(":feature:commonScreen-api"))
 }
