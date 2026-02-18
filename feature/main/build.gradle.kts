@@ -7,8 +7,6 @@ android {
 }
 
 dependencies {
-    debugImplementation(libs.bundles.compose.debug)
-
     implementation(project(":core:navigation"))
     implementation(project(":core:model"))
     implementation(project(":core:ui"))

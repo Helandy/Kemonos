@@ -20,6 +20,10 @@ internal class TrackedDownloadsRepository @Inject constructor(
         dao.upsert(mapper.toEntity(item))
     }
 
+    override suspend fun delete(downloadId: Long) {
+        dao.delete(downloadId)
+    }
+
     override suspend fun clearCache() {
         val oldDate = System.currentTimeMillis() - TTL_60_DAYS
         dao.clearOlderThan(oldDate)

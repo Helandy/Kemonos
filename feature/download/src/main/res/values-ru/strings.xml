@@ -6,4 +6,8 @@
     <string name="downloads_size">Размер</string>
     <string name="downloads_speed">Скорость</string>
     <string name="downloads_updated">Обновлено</string>
+    <string name="downloads_action_pause">Пауза</string>
+    <string name="downloads_action_start">Старт</string>
+    <string name="downloads_action_stop">Стоп</string>
+    <string name="downloads_action_restart">Перезапуск</string>
 </resources>

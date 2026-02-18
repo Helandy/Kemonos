@@ -7,6 +7,8 @@ interface ITrackedDownloadsRepository {
 
     suspend fun upsert(item: TrackedDownload)
 
+    suspend fun delete(downloadId: Long)
+
     suspend fun clearCache()
 
     suspend fun updateRuntimeState(
