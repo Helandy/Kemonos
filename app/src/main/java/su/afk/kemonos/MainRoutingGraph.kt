@@ -40,6 +40,7 @@ class MainRoutingGraph @Inject constructor(
         KemonosTheme {
             val inTabs = navManager.startAppBackStack.isEmpty()
             Scaffold(
+                modifier = Modifier,
                 contentWindowInsets = WindowInsets(0),
                 containerColor = MaterialTheme.colorScheme.background,
                 bottomBar = {
