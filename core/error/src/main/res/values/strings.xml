@@ -14,7 +14,7 @@
     <string name="err_msg_unauthorized">Please sign in again.</string>
 
     <string name="err_title_forbidden">Forbidden</string>
-    <string name="err_msg_forbidden">You don't have permission to perform this action.</string>
+    <string name="err_msg_forbidden">You do not have permission to perform this action.</string>
 
     <string name="err_title_not_found">Not found</string>
     <string name="err_msg_not_found">The requested resource was not found.</string>
@@ -33,7 +33,7 @@
     </string>
 
     <string name="err_title_gateway_timeout_504">Gateway timeout (504)</string>
-    <string name="err_msg_gateway_timeout_504">The server didn't respond in time. Please try again later.</string>
+    <string name="err_msg_gateway_timeout_504">The server did not respond in time. Please try again later.</string>
 
     <string name="err_title_http_generic">HTTP error (%1$d)</string>
     <string name="err_msg_http_generic">Request failed. Please try again.</string>
