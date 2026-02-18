@@ -1,8 +1,6 @@
 package su.afk.kemonos
 
-import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
@@ -38,11 +36,18 @@ class MainRoutingGraph @Inject constructor(
     @Composable
     fun MainGraph() {
         KemonosTheme {
+            val inTabs = navManager.startAppBackStack.isEmpty()
             Scaffold(
+                modifier = if (inTabs) {
+                    Modifier.windowInsetsPadding(
+                        WindowInsets.safeDrawing.only(WindowInsetsSides.Bottom)
+                    )
+                } else {
+                    Modifier
+                },
                 contentWindowInsets = WindowInsets(0),
                 containerColor = MaterialTheme.colorScheme.background,
                 bottomBar = {
-                    val inTabs = navManager.startAppBackStack.isEmpty()
                     if (inTabs) {
                         BottomNavigationBar(
                             currentTab = navManager.currentTab,
