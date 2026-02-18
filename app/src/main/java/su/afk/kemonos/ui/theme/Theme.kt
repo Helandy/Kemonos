@@ -44,4 +44,3 @@ fun KemonosTheme(
         content = content
     )
 }
-

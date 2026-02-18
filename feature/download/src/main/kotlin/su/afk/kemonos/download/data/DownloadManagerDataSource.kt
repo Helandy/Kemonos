@@ -8,6 +8,7 @@ import javax.inject.Inject
 
 internal interface DownloadManagerDataSource {
     fun querySnapshots(ids: List<Long>): Map<Long, DownloadManagerSnapshot>
+    fun remove(id: Long): Int
 }
 
 internal data class DownloadManagerSnapshot(
@@ -55,6 +56,8 @@ internal class DownloadManagerDataSourceImpl @Inject constructor(
             }
         }
     }
+
+    override fun remove(id: Long): Int = downloadManager.remove(id)
 }
 
 private fun Cursor.getStringByName(name: String): String? {

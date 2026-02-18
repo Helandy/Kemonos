@@ -6,6 +6,7 @@ import java.time.LocalDateTime
 import java.time.OffsetDateTime
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
+import java.util.*
 
 /**
  * 2025-06-24T03:04:27.561458
@@ -65,4 +66,16 @@ fun Long.toUiDateTime(
 ): String {
     val dt = LocalDateTime.ofInstant(Instant.ofEpochMilli(this), zoneId)
     return dt.format(outputFormatter(mode))
+}
+
+fun Long.toUiDateTimeWithTime(
+    mode: DateFormatMode,
+    zoneId: ZoneId = ZoneId.systemDefault(),
+    locale: Locale = Locale.getDefault(),
+): String {
+    val datePart = toUiDateTime(mode = mode, zoneId = zoneId)
+    val timePart = LocalDateTime.ofInstant(Instant.ofEpochMilli(this), zoneId)
+        .toLocalTime()
+        .format(DateTimeFormatter.ofPattern("HH:mm:ss", locale))
+    return "$datePart $timePart"
 }

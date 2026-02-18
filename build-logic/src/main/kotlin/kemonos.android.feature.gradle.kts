@@ -15,6 +15,7 @@ val composeBom = libs.findLibrary("androidx-compose-bom").get()
 val composeCoreBundle = libs.findBundle("compose-core").get()
 val navigation3Bundle = libs.findBundle("navigation3").get()
 val lifecycleBundle = libs.findBundle("lifecycle").get()
+val composeDebugBundle = libs.findBundle("compose-debug").get()
 
 fun DependencyHandlerScope.implementation(dep: Any) = add("implementation", dep)
 fun DependencyHandlerScope.ksp(dep: Any) = add("ksp", dep)
@@ -46,4 +47,6 @@ dependencies {
     implementation(composeCoreBundle)
     implementation(lifecycleBundle)
     implementation(navigation3Bundle)
+
+    debugImplementation(composeDebugBundle)
 }

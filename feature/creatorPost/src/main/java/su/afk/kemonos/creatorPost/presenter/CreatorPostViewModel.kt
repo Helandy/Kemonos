@@ -22,12 +22,14 @@ import su.afk.kemonos.creatorPost.presenter.CreatorPostState.Effect.OpenAudio
 import su.afk.kemonos.creatorPost.presenter.delegates.LikeDelegate
 import su.afk.kemonos.creatorPost.presenter.delegates.MediaMetaDelegate
 import su.afk.kemonos.creatorPost.presenter.delegates.NavigateDelegates
+import su.afk.kemonos.creatorPost.presenter.helper.collectDownloadAllItems
 import su.afk.kemonos.creatorProfile.api.IGetProfileUseCase
 import su.afk.kemonos.download.api.IDownloadUtil
 import su.afk.kemonos.error.error.IErrorHandlerUseCase
 import su.afk.kemonos.error.error.storage.RetryStorage
 import su.afk.kemonos.error.error.toFavoriteToastBar
 import su.afk.kemonos.preferences.IGetCurrentSiteRootUrlUseCase
+import su.afk.kemonos.preferences.domainResolver.IDomainResolver
 import su.afk.kemonos.preferences.ui.IUiSettingUseCase
 import su.afk.kemonos.preferences.ui.TranslateTarget
 import su.afk.kemonos.ui.presenter.androidView.cleanDuplicatedMediaFromContent
@@ -47,6 +49,7 @@ internal class CreatorPostViewModel @AssistedInject constructor(
     private val getPostUseCase: GetPostUseCase,
     private val getProfileUseCase: IGetProfileUseCase,
     private val getCurrentSiteRootUrlUseCase: IGetCurrentSiteRootUrlUseCase,
+    private val domainResolver: IDomainResolver,
     private val getMediaMetaUseCase: GetMediaMetaUseCase,
     private val likeDelegate: LikeDelegate,
     private val navigateDelegates: NavigateDelegates,
@@ -107,6 +110,7 @@ internal class CreatorPostViewModel @AssistedInject constructor(
             is Event.OpenImage -> navigateOpenImage(event.originalUrl)
 
             is Event.Download -> download(event.url, event.fileName)
+            Event.DownloadAllClicked -> downloadAll()
 
             is Event.VideoThumbRequested -> requestVideoMeta(event.server, event.path)
             is Event.VideoInfoRequested -> requestVideoMeta(event.server, event.path)
@@ -306,18 +310,33 @@ internal class CreatorPostViewModel @AssistedInject constructor(
 
     fun download(url: String, fileName: String?) {
         viewModelScope.launch {
-            downloadUtil.enqueueSystemDownload(
-                url = url,
-                fileName = fileName,
-                service = currentState.service,
-                creatorName = currentState.profile?.name,
-                postId = currentState.postId,
-                postTitle = currentState.post?.post?.title
-            )
-            setEffect(
-                Effect.DownloadToast(fileName.orEmpty())
-            )
+            enqueueDownload(url = url, fileName = fileName)
         }
+    }
+
+    private fun downloadAll() {
+        val post = currentState.post ?: return
+        val fallbackBaseUrl = domainResolver.baseUrlByService(currentState.service)
+        val allItems = post.collectDownloadAllItems(fallbackBaseUrl = fallbackBaseUrl)
+        if (allItems.isEmpty()) return
+
+        viewModelScope.launch {
+            allItems.forEach { item ->
+                enqueueDownload(url = item.url, fileName = item.fileName)
+            }
+        }
+    }
+
+    private suspend fun enqueueDownload(url: String, fileName: String?) {
+        downloadUtil.enqueueSystemDownload(
+            url = url,
+            fileName = fileName,
+            service = currentState.service,
+            creatorName = currentState.profile?.name,
+            postId = currentState.postId,
+            postTitle = currentState.post?.post?.title
+        )
+        setEffect(Effect.DownloadToast(fileName.orEmpty()))
     }
 
     fun onToggleTranslate() {

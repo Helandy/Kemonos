@@ -13,10 +13,9 @@ class DownloadsNavigatorRegister @Inject constructor() : NavRegistrar {
     override fun register(builder: EntryProviderScope<NavKey>, nav: NavigationManager) = with(builder) {
         entry<DownloadDest.Downloads> {
             val viewModel = hiltViewModel<DownloadsViewModel>()
-            ScreenNavigator(viewModel) { state, effect, event ->
+            ScreenNavigator(viewModel) { state, _, event ->
                 DownloadsScreen(
                     state = state,
-                    effect = effect,
                     onEvent = event,
                 )
             }

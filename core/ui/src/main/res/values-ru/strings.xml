@@ -146,6 +146,7 @@
     <string name="expand">Развернуть</string>
     <string name="collapse">Свернуть</string>
     <string name="download">Скачать</string>
+    <string name="download_all">Скачать все</string>
 
     <string name="discord_profile_not_supported_title">
         Профили Discord сейчас не поддерживаются

@@ -150,6 +150,7 @@
     <string name="expand">Expand</string>
     <string name="collapse">Collapse</string>
     <string name="download">Download</string>
+    <string name="download_all">Download all</string>
 
     <string name="discord_profile_not_supported_title">
         Discord profiles are not supported yet

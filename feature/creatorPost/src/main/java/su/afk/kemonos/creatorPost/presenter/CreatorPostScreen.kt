@@ -196,6 +196,7 @@ internal fun CreatorPostScreen(state: State, onEvent: (Event) -> Unit, effect: F
                         title = post.title,
                         showPreviewNames = showPreviewFileNames,
                         onTogglePreviewNames = { showPreviewFileNames = !showPreviewFileNames },
+                        onDownloadAllClick = { onEvent(Event.DownloadAllClicked) },
                         onShareClick = { onEvent(Event.CopyPostLinkClicked) },
                         onCopyOriginalClick = {
                             scope.launch {

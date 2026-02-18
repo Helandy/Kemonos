@@ -58,7 +58,7 @@ enum class PostsSize {
 
     companion object {
         fun PostsSize.toDp() = when (this) {
-            SMALL -> 100.dp
+            SMALL -> 110.dp
             MEDIUM -> 150.dp
             LARGE -> 200.dp
         }

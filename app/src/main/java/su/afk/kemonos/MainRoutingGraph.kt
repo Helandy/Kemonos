@@ -38,11 +38,12 @@ class MainRoutingGraph @Inject constructor(
     @Composable
     fun MainGraph() {
         KemonosTheme {
+            val inTabs = navManager.startAppBackStack.isEmpty()
             Scaffold(
+                modifier = Modifier,
                 contentWindowInsets = WindowInsets(0),
                 containerColor = MaterialTheme.colorScheme.background,
                 bottomBar = {
-                    val inTabs = navManager.startAppBackStack.isEmpty()
                     if (inTabs) {
                         BottomNavigationBar(
                             currentTab = navManager.currentTab,

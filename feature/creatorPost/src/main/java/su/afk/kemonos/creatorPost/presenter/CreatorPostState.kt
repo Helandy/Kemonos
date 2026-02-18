@@ -84,6 +84,7 @@ internal class CreatorPostState {
         data class OpenImage(val originalUrl: String) : Event
 
         data class Download(val url: String, val fileName: String?) : Event
+        data object DownloadAllClicked : Event
 
         data class VideoThumbRequested(val server: String, val path: String) : Event
         data class VideoInfoRequested(val server: String, val path: String) : Event
