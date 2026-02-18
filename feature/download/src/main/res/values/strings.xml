@@ -1,7 +1,15 @@
 <resources>
     <string name="downloads_title">Downloads</string>
     <string name="downloads_empty">No downloads started from Kemonos yet.</string>
+    <string name="downloads_empty_filtered">No downloads for selected status.</string>
     <string name="downloads_status">Status</string>
+    <string name="downloads_filter_all">All</string>
+    <string name="downloads_filter_pending">Pending</string>
+    <string name="downloads_filter_running">Running</string>
+    <string name="downloads_filter_paused">Paused</string>
+    <string name="downloads_filter_completed">Completed</string>
+    <string name="downloads_filter_failed">Failed</string>
+    <string name="downloads_filter_stopped">Stopped</string>
     <string name="downloads_error">Error</string>
     <string name="downloads_size">Size</string>
     <string name="downloads_speed">Speed</string>

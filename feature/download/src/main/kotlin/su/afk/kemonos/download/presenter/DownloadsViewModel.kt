@@ -20,6 +20,7 @@ import su.afk.kemonos.preferences.ui.IUiSettingUseCase
 import su.afk.kemonos.storage.api.repository.download.ITrackedDownloadsRepository
 import su.afk.kemonos.storage.api.repository.download.TrackedDownload
 import su.afk.kemonos.ui.presenter.baseViewModel.BaseViewModelNew
+import su.afk.kemonos.ui.presenter.baseViewModel.UiEffect
 import javax.inject.Inject
 
 @HiltViewModel
@@ -31,7 +32,7 @@ internal class DownloadsViewModel @Inject constructor(
     private val navigationManager: NavigationManager,
     override val errorHandler: IErrorHandlerUseCase,
     override val retryStorage: RetryStorage,
-) : BaseViewModelNew<DownloadsState.State, DownloadsState.Event, DownloadsState.Effect>() {
+) : BaseViewModelNew<DownloadsState.State, DownloadsState.Event, UiEffect>() {
     private val refreshMutex = Mutex()
     private val speedMap = mutableMapOf<Long, SpeedPoint>()
     private val lastSnapshots = mutableMapOf<Long, DownloadSnapshot>()
@@ -42,6 +43,7 @@ internal class DownloadsViewModel @Inject constructor(
     override fun onEvent(event: DownloadsState.Event) {
         when (event) {
             DownloadsState.Event.BackClick -> navigationManager.back()
+            is DownloadsState.Event.SelectFilter -> setState { copy(selectedFilter = event.filter) }
             is DownloadsState.Event.PauseDownload -> pauseDownload(event.downloadId)
             is DownloadsState.Event.StartDownload -> startDownload(event.downloadId)
             is DownloadsState.Event.StopDownload -> stopDownload(event.downloadId)

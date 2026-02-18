@@ -20,7 +20,7 @@ private val BottomBarHeight: Dp = 48.dp
 private val BottomBarIconSize: Dp = 20.dp
 
 @Composable
-fun BottomNavigationBar(
+internal fun BottomNavigationBar(
     currentTab: BottomTab,
     onTabClick: (BottomTab) -> Unit
 ) {

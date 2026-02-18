@@ -20,6 +20,8 @@ internal data class DownloadUiItem(
     val lastModifiedMs: Long?,
 ) {
     companion object {
+        const val STATUS_REMOVED = -1
+
         fun from(
             tracked: TrackedDownload,
             snapshot: DownloadManagerSnapshot?,
@@ -29,7 +31,7 @@ internal data class DownloadUiItem(
                 return DownloadUiItem(
                     downloadId = tracked.downloadId,
                     title = tracked.fileName ?: "download-${tracked.downloadId}",
-                    status = -1,
+                    status = STATUS_REMOVED,
                     statusLabel = "Removed from DownloadManager",
                     reasonCode = null,
                     reasonLabel = null,

@@ -1,7 +1,15 @@
 <resources>
     <string name="downloads_title">Загрузки</string>
     <string name="downloads_empty">В Kemonos еще нет запущенных загрузок.</string>
+    <string name="downloads_empty_filtered">Нет загрузок с выбранным статусом.</string>
     <string name="downloads_status">Статус</string>
+    <string name="downloads_filter_all">Все</string>
+    <string name="downloads_filter_pending">В очереди</string>
+    <string name="downloads_filter_running">Загружается</string>
+    <string name="downloads_filter_paused">Пауза</string>
+    <string name="downloads_filter_completed">Завершено</string>
+    <string name="downloads_filter_failed">Ошибка</string>
+    <string name="downloads_filter_stopped">Остановлено</string>
     <string name="downloads_error">Ошибка</string>
     <string name="downloads_size">Размер</string>
     <string name="downloads_speed">Скорость</string>

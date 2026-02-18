@@ -7,11 +7,12 @@ import android.content.Intent
 import android.net.Uri
 import android.provider.DocumentsContract
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.outlined.ArrowBack
 import androidx.compose.material.icons.outlined.FolderOpen
 import androidx.compose.material.icons.outlined.Link
 import androidx.compose.material3.*
@@ -21,11 +22,12 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import kotlinx.coroutines.flow.Flow
 import su.afk.kemonos.download.R
 import su.afk.kemonos.download.presenter.model.DownloadUiItem
 import su.afk.kemonos.preferences.ui.DateFormatMode
 import su.afk.kemonos.ui.date.toUiDateTimeWithTime
+import su.afk.kemonos.ui.presenter.baseScreen.BaseScreen
+import su.afk.kemonos.ui.presenter.baseScreen.CenterBackTopBar
 import su.afk.kemonos.ui.shared.ShareActions
 import java.io.File
 import kotlin.math.ln
@@ -35,71 +37,97 @@ import kotlin.math.pow
 @Composable
 internal fun DownloadsScreen(
     state: DownloadsState.State,
-    effect: Flow<DownloadsState.Effect>,
     onEvent: (DownloadsState.Event) -> Unit,
 ) {
-    effect
-    Scaffold(
-        topBar = {
-            TopAppBar(
-                title = { Text(stringResource(R.string.downloads_title)) },
-                navigationIcon = {
-                    IconButton(onClick = { onEvent(DownloadsState.Event.BackClick) }) {
-                        Icon(imageVector = Icons.AutoMirrored.Outlined.ArrowBack, contentDescription = null)
-                    }
-                }
+    val filteredItems = state.items.filter { state.selectedFilter.matches(it.status) }
+
+    BaseScreen(
+        isScroll = false,
+        isLoading = state.isLoading,
+        customTopBar = { scrollBehavior ->
+            CenterBackTopBar(
+                title = stringResource(R.string.downloads_title),
+                onBack = { onEvent(DownloadsState.Event.BackClick) },
+                scrollBehavior = scrollBehavior,
             )
-        }
-    ) { padding ->
-        when {
-            state.isLoading -> {
-                Column(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(padding),
-                    verticalArrangement = Arrangement.Center
-                ) {
-                    CircularProgressIndicator(modifier = Modifier.padding(horizontal = 16.dp))
-                }
-            }
+        },
+    ) {
+        DownloadStatusFilterChips(
+            selectedFilter = state.selectedFilter,
+            onFilterSelected = { onEvent(DownloadsState.Event.SelectFilter(it)) },
+        )
 
-            state.items.isEmpty() -> {
-                Column(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(padding)
-                        .padding(16.dp),
-                ) {
-                    Text(
-                        text = stringResource(R.string.downloads_empty),
-                        style = MaterialTheme.typography.bodyLarge,
+        if (filteredItems.isEmpty()) {
+            Column(
+                modifier = Modifier
+                    .weight(1f)
+                    .fillMaxWidth()
+                    .padding(16.dp),
+            ) {
+                Text(
+                    text = if (state.items.isEmpty()) {
+                        stringResource(R.string.downloads_empty)
+                    } else {
+                        stringResource(R.string.downloads_empty_filtered)
+                    },
+                    style = MaterialTheme.typography.bodyLarge,
+                )
+            }
+        } else {
+            LazyColumn(
+                modifier = Modifier
+                    .weight(1f)
+                    .fillMaxWidth(),
+                contentPadding = PaddingValues(12.dp),
+                verticalArrangement = Arrangement.spacedBy(8.dp),
+            ) {
+                items(
+                    items = filteredItems,
+                    key = { it.downloadId },
+                ) { item ->
+                    DownloadItemCard(
+                        item = item,
+                        dateFormatMode = state.uiSettingModel.dateFormatMode,
+                        onStop = { onEvent(DownloadsState.Event.StopDownload(item.downloadId)) },
+                        onRestart = { onEvent(DownloadsState.Event.RestartDownload(item.downloadId)) },
                     )
-                }
-            }
-
-            else -> {
-                LazyColumn(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(padding),
-                    contentPadding = PaddingValues(12.dp),
-                    verticalArrangement = Arrangement.spacedBy(8.dp),
-                ) {
-                    items(
-                        items = state.items,
-                        key = { it.downloadId },
-                    ) { item ->
-                        DownloadItemCard(
-                            item = item,
-                            dateFormatMode = state.uiSettingModel.dateFormatMode,
-                            onStop = { onEvent(DownloadsState.Event.StopDownload(item.downloadId)) },
-                            onRestart = { onEvent(DownloadsState.Event.RestartDownload(item.downloadId)) },
-                        )
-                    }
                 }
             }
         }
     }
+}
+
+@Composable
+private fun DownloadStatusFilterChips(
+    selectedFilter: DownloadStatusFilter,
+    onFilterSelected: (DownloadStatusFilter) -> Unit,
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .horizontalScroll(rememberScrollState())
+            .padding(horizontal = 12.dp, vertical = 8.dp),
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
+    ) {
+        DownloadStatusFilter.values().forEach { filter ->
+            FilterChip(
+                selected = selectedFilter == filter,
+                onClick = { onFilterSelected(filter) },
+                label = { Text(text = filter.toLabel()) },
+            )
+        }
+    }
+}
+
+@Composable
+private fun DownloadStatusFilter.toLabel(): String = when (this) {
+    DownloadStatusFilter.ALL -> stringResource(R.string.downloads_filter_all)
+    DownloadStatusFilter.PENDING -> stringResource(R.string.downloads_filter_pending)
+    DownloadStatusFilter.RUNNING -> stringResource(R.string.downloads_filter_running)
+    DownloadStatusFilter.PAUSED -> stringResource(R.string.downloads_filter_paused)
+    DownloadStatusFilter.COMPLETED -> stringResource(R.string.downloads_filter_completed)
+    DownloadStatusFilter.FAILED -> stringResource(R.string.downloads_filter_failed)
+    DownloadStatusFilter.STOPPED -> stringResource(R.string.downloads_filter_stopped)
 }
 
 @Composable
@@ -140,7 +168,7 @@ private fun DownloadItemCard(
             }
 
             val isCompleted = item.status == DownloadManager.STATUS_SUCCESSFUL
-            val isStopped = item.status == -1
+            val isStopped = item.status == DownloadUiItem.STATUS_REMOVED
             if (isCompleted) {
                 val completedSize = if (item.totalBytes > 0L) item.totalBytes else item.bytesDownloaded
                 Text(text = "${stringResource(R.string.downloads_size)}: ${formatBytes(completedSize)}")
