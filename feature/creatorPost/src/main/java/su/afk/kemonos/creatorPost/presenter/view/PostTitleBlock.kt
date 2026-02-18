@@ -5,6 +5,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.outlined.Label
 import androidx.compose.material.icons.automirrored.outlined.TextSnippet
+import androidx.compose.material.icons.filled.Download
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Share
 import androidx.compose.material.icons.outlined.ContentCopy
@@ -23,6 +24,7 @@ internal fun PostTitleBlock(
     title: String?,
     showPreviewNames: Boolean,
     onTogglePreviewNames: () -> Unit,
+    onDownloadAllClick: () -> Unit,
     onShareClick: () -> Unit,
     onCopyOriginalClick: () -> Unit,
     onBackClick: () -> Unit,
@@ -77,6 +79,20 @@ internal fun PostTitleBlock(
                     onClick = {
                         menuExpanded = false
                         onShareClick()
+                    }
+                )
+
+                DropdownMenuItem(
+                    text = { Text(stringResource(R.string.download_all)) },
+                    leadingIcon = {
+                        Icon(
+                            imageVector = Icons.Default.Download,
+                            contentDescription = null
+                        )
+                    },
+                    onClick = {
+                        menuExpanded = false
+                        onDownloadAllClick()
                     }
                 )
 
