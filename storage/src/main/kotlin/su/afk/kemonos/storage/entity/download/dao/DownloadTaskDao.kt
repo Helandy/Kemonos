@@ -15,6 +15,9 @@ internal interface DownloadTaskDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun upsert(item: DownloadTaskEntity)
 
+    @Query("DELETE FROM tracked_downloads WHERE createdAtMs < :thresholdMs")
+    suspend fun clearOlderThan(thresholdMs: Long)
+
     @Query(
         """
         UPDATE tracked_downloads
