@@ -1,6 +1,5 @@
 package su.afk.kemonos.presenter.bottomBar
 
-import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
@@ -9,6 +8,7 @@ import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.Groups
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
+import androidx.compose.material3.NavigationBarDefaults
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -16,7 +16,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import su.afk.kemonos.navigation.tab.BottomTab
 
-private val BottomBarHeight: Dp = 48.dp
+private val BottomBarHeight: Dp = 64.dp
 private val BottomBarIconSize: Dp = 20.dp
 
 @Composable
@@ -32,7 +32,7 @@ internal fun BottomNavigationBar(
 
     NavigationBar(
         modifier = Modifier.height(BottomBarHeight),
-        windowInsets = WindowInsets(0)
+        windowInsets = NavigationBarDefaults.windowInsets
     ) {
         items.forEach { (tab, icon) ->
             val selected = tab == currentTab
