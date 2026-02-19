@@ -9,6 +9,7 @@ import coil3.disk.directory
 import coil3.gif.GifDecoder
 import coil3.memory.MemoryCache
 import coil3.network.okhttp.OkHttpNetworkFetcherFactory
+import coil3.request.CachePolicy
 import coil3.request.crossfade
 import dagger.Module
 import dagger.Provides
@@ -29,6 +30,10 @@ import javax.inject.Singleton
 @Qualifier
 @Retention(AnnotationRetention.BINARY)
 annotation class CoilOkHttp
+
+@Qualifier
+@Retention(AnnotationRetention.BINARY)
+annotation class ImageViewCoil
 
 @Module
 @InstallIn(SingletonComponent::class)
@@ -65,7 +70,7 @@ object CoilModule {
             .crossfade(true)
             .memoryCache {
                 MemoryCache.Builder()
-                    .maxSizePercent(appContext, 0.20)
+                    .maxSizePercent(appContext, 0.15)
                     .build()
             }
             .diskCache {
@@ -76,6 +81,28 @@ object CoilModule {
             }
             .build()
     }
+
+    @Provides
+    @Singleton
+    @ImageViewCoil
+    fun provideImageViewImageLoader(
+        @ApplicationContext appContext: Context,
+        @CoilOkHttp okHttpClient: OkHttpClient,
+    ): ImageLoader = ImageLoader.Builder(appContext)
+        .components {
+            add(GifDecoder.Factory())
+            add(OkHttpNetworkFetcherFactory(okHttpClient))
+        }
+        .crossfade(true)
+        .memoryCache {
+            MemoryCache.Builder()
+                .maxSizePercent(appContext, 0.15)
+                .build()
+        }
+        .memoryCachePolicy(CachePolicy.ENABLED)
+        .diskCache(null)
+        .diskCachePolicy(CachePolicy.DISABLED)
+        .build()
 
 
     private const val DEFAULT_COIL_CACHE_MB = 300

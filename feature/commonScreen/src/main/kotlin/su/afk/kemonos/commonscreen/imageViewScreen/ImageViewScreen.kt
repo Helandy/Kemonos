@@ -22,6 +22,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
+import coil3.ImageLoader
 import coil3.compose.SubcomposeAsyncImage
 import coil3.compose.SubcomposeAsyncImageContent
 import coil3.network.NetworkHeaders
@@ -35,14 +36,18 @@ import su.afk.kemonos.commonscreen.imageViewScreen.ImageViewState.Event
 import su.afk.kemonos.domain.models.ErrorItem
 import su.afk.kemonos.error.error.view.DefaultErrorContent
 import su.afk.kemonos.ui.R
-import su.afk.kemonos.ui.imageLoader.LocalAppImageLoader
 import su.afk.kemonos.ui.imageLoader.imageProgress.IMAGE_PROGRESS_REQUEST_ID_HEADER
 import su.afk.kemonos.ui.uiUtils.size.formatBytes
 import kotlin.math.abs
 import kotlin.math.roundToInt
 
 @Composable
-internal fun ImageViewScreen(state: ImageViewState.State, onEvent: (Event) -> Unit, effect: Flow<Effect>) {
+internal fun ImageViewScreen(
+    state: ImageViewState.State,
+    onEvent: (Event) -> Unit,
+    effect: Flow<Effect>,
+    imageLoader: ImageLoader,
+) {
     val minScale: Float = 1f
     val maxScale: Float = 4f
     val doubleTapScale: Float = 3f
@@ -106,7 +111,6 @@ internal fun ImageViewScreen(state: ImageViewState.State, onEvent: (Event) -> Un
 
     /** Coil ImageLoader */
     val context = LocalContext.current
-    val imageLoader = LocalAppImageLoader.current
 
     val headers = remember(state.requestId, state.reloadKey) {
         NetworkHeaders.Builder()
@@ -129,7 +133,8 @@ internal fun ImageViewScreen(state: ImageViewState.State, onEvent: (Event) -> Un
             .data(state.imageUrl)
             .size(rw, rh)
             .precision(Precision.EXACT)
-            .diskCachePolicy(CachePolicy.ENABLED)
+            .memoryCachePolicy(CachePolicy.ENABLED)
+            .diskCachePolicy(CachePolicy.DISABLED)
             .httpHeaders(headers)
             .build()
     }
