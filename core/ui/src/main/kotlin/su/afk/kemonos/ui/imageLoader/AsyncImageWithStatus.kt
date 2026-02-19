@@ -13,7 +13,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Size
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -97,7 +96,7 @@ fun AsyncImageWithStatus(
             is AsyncImagePainter.State.Error -> {
                 val t = (state as AsyncImagePainter.State.Error).result.throwable
 
-                val msg = errorText?.invoke(t) ?: (t?.localizedMessage ?: "Error loading")
+                val msg = errorText?.invoke(t) ?: (t.localizedMessage ?: "Error loading")
                 Box(
                     Modifier
                         .matchParentSize()
@@ -107,7 +106,7 @@ fun AsyncImageWithStatus(
                 ) {
                     Text(
                         msg,
-                        color = Color.Red,
+                        color = MaterialTheme.colorScheme.error,
                         style = MaterialTheme.typography.bodyMedium,
                         textAlign = TextAlign.Center
                     )

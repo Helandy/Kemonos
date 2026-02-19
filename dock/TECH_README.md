@@ -1,205 +1,219 @@
-# Modularization learning journey
+# Kemonos: Technical Structure and Stack
 
-This document describes the modularization strategy used in Kemonos.
-If you want theory first, use the official Android guidance on modularization:
-[https://developer.android.com/topic/modularization](https://developer.android.com/topic/modularization).
+This document describes the current module structure and the core technologies used in the project.
 
-**IMPORTANT:** Dependency direction matters more than module count. Keep feature boundaries clean and avoid accidental
-coupling via `impl -> impl` links.
+## Current Module Diagram
 
-## Module types
+Source of truth: `settings.gradle.kts`.
 
 ```mermaid
 graph TB
+  app[":app"]:::app
+
   subgraph core[":core"]
-    direction TB
-    core_auth["auth"]:::android-library
-    core_deeplink["deepLink"]:::android-library
-    core_domain["domain"]:::jvm-library
-    core_navigation["navigation"]:::android-library
-    core_network["network"]:::android-library
-    core_preferences["preferences"]:::android-library
-    core_utils["utils"]:::jvm-library
+    core_model[":core:model"]:::jvm
+    core_utils[":core:utils"]:::jvm
+    core_auth[":core:auth"]:::android
+    core_network[":core:network"]:::android
+    core_deepLink[":core:deepLink"]:::android
+    core_preferences[":core:preferences"]:::android
+    core_navigation[":core:navigation"]:::android
+    core_ui[":core:ui"]:::android
+    core_error[":core:error"]:::android
   end
 
-  subgraph feature_api[":feature:* - api"]
-    direction TB
-    f_main_api["main-api"]:::jvm-library
-    f_posts_api["posts-api"]:::jvm-library
-    f_profile_api["profile-api"]:::jvm-library
-    f_creatorprofile_api["creatorProfile-api"]:::jvm-library
-    f_creatorpost_api["creatorPost-api"]:::jvm-library
-    f_creators_api["creators-api"]:::jvm-library
-    f_common_api["commonScreen-api"]:::jvm-library
-    f_appupdate_api["appUpdate-api"]:::jvm-library
-    f_download_api["download-api"]:::jvm-library
-    f_videoplayer_api["videoPlayer-api"]:::jvm-library
+  subgraph storage["Storage"]
+    storage_api[":storage-api"]:::android
+    storage_impl[":storage"]:::feature
   end
 
-  subgraph feature_impl[":feature:* - impl"]
-    direction TB
-    f_main["main"]:::android-feature
-    f_posts["posts"]:::android-feature
-    f_profile["profile"]:::android-feature
-    f_creatorprofile["creatorProfile"]:::android-feature
-    f_creatorpost["creatorPost"]:::android-feature
-    f_creators["creators"]:::android-feature
-    f_common["commonScreen"]:::android-feature
-    f_appupdate["appUpdate"]:::android-feature
-    f_download["download"]:::android-feature
-    f_videoplayer["videoPlayer"]:::android-feature
+  subgraph feature_api[":feature:*:api"]
+    api_common[":feature:commonScreen-api"]:::jvm
+    api_creators[":feature:creators-api"]:::jvm
+    api_creatorProfile[":feature:creatorProfile-api"]:::jvm
+    api_creatorPost[":feature:creatorPost-api"]:::jvm
+    api_posts[":feature:posts-api"]:::jvm
+    api_profile[":feature:profile-api"]:::jvm
+    api_appUpdate[":feature:appUpdate-api"]:::jvm
+    api_download[":feature:download-api"]:::jvm
+    api_main[":feature:main-api"]:::jvm
+    api_videoPlayer[":feature:videoPlayer-api"]:::jvm
   end
 
-  subgraph shared["Shared"]
-    direction TB
-    common["common"]:::android-library
-    storage_api["storage-api"]:::android-library
-    storage["storage"]:::android-feature
+  subgraph feature_impl[":feature:* (impl)"]
+    f_common[":feature:commonScreen"]:::feature
+    f_creators[":feature:creators"]:::feature
+    f_creatorProfile[":feature:creatorProfile"]:::feature
+    f_creatorPost[":feature:creatorPost"]:::feature
+    f_posts[":feature:posts"]:::feature
+    f_profile[":feature:profile"]:::feature
+    f_appUpdate[":feature:appUpdate"]:::feature
+    f_download[":feature:download"]:::feature
+    f_main[":feature:main"]:::feature
+    f_videoPlayer[":feature:videoPlayer"]:::feature
   end
 
-  app["app"]:::android-application
+  app --> core_auth
+  app --> core_network
+  app --> core_deepLink
+  app --> core_preferences
+  app --> core_navigation
+  app --> core_ui
+  app --> core_error
+  app --> core_model
+  app --> core_utils
+  app --> storage_api
+  app --> storage_impl
 
-  app -.-> f_main
-  app -.-> f_posts
-  app -.-> f_profile
-  app -.-> f_creatorprofile
-  app -.-> f_creatorpost
-  app -.-> f_creators
-  app -.-> f_common
-  app -.-> f_appupdate
-  app -.-> f_download
-  app -.-> storage
+  app --> f_common
+  app --> f_creators
+  app --> f_creatorProfile
+  app --> f_creatorPost
+  app --> f_posts
+  app --> f_profile
+  app --> f_appUpdate
+  app --> f_download
+  app --> f_main
 
-  f_main -.-> f_main_api
-  f_posts -.-> f_posts_api
-  f_profile -.-> f_profile_api
-  f_creatorprofile -.-> f_creatorprofile_api
-  f_creatorpost -.-> f_creatorpost_api
-  f_creators -.-> f_creators_api
-  f_common -.-> f_common_api
-  f_appupdate -.-> f_appupdate_api
-  f_download -.-> f_download_api
+  f_common --> api_common
+  f_creators --> api_creators
+  f_creatorProfile --> api_creatorProfile
+  f_creatorPost --> api_creatorPost
+  f_posts --> api_posts
+  f_profile --> api_profile
+  f_appUpdate --> api_appUpdate
+  f_download --> api_download
+  f_main --> api_main
+  f_videoPlayer --> api_videoPlayer
 
-  f_main -.-> storage_api
-  f_posts -.-> storage_api
-  f_profile -.-> storage_api
-  f_creatorprofile -.-> storage_api
-  f_creatorpost -.-> storage_api
-  f_creators -.-> storage_api
-  storage -.-> storage_api
+  storage_impl --> storage_api
 
-  core_network -.-> core_auth
-  core_network -.-> core_preferences
-  core_network -.-> core_utils
-  core_preferences -.-> core_auth
-  core_preferences -.-> core_utils
+  core_auth --> core_model
+  core_network --> core_model
+  core_deepLink --> core_model
+  core_preferences --> core_model
+  core_navigation --> core_model
+  core_ui --> core_model
+  core_error --> core_model
+  core_utils --> core_model
+  storage_api --> core_model
 
-  core_auth -.-> core_domain
-  core_deeplink -.-> core_domain
-  core_navigation -.-> core_domain
-  core_network -.-> core_domain
-  core_preferences -.-> core_domain
-  core_utils -.-> core_domain
-
-  storage_api -.-> core_domain
-  f_main_api -.-> core_domain
-  f_posts_api -.-> core_domain
-  f_profile_api -.-> core_domain
-  f_creatorprofile_api -.-> core_domain
-  f_creatorpost_api -.-> core_domain
-  f_creators_api -.-> core_domain
-  f_common_api -.-> core_domain
-
-  common -.-> core_navigation
-  common -.-> core_network
-  common -.-> core_preferences
-  common -.-> storage_api
-
-classDef android-application fill:#CAFFBF,stroke:#000,stroke-width:2px,color:#000;
-classDef android-feature fill:#FFD6A5,stroke:#000,stroke-width:2px,color:#000;
-classDef android-library fill:#9BF6FF,stroke:#000,stroke-width:2px,color:#000;
-classDef jvm-library fill:#BDB2FF,stroke:#000,stroke-width:2px,color:#000;
+  classDef app fill:#CAFFBF,stroke:#000,stroke-width:2px,color:#000;
+  classDef feature fill:#FFD6A5,stroke:#000,stroke-width:2px,color:#000;
+  classDef android fill:#9BF6FF,stroke:#000,stroke-width:2px,color:#000;
+  classDef jvm fill:#BDB2FF,stroke:#000,stroke-width:2px,color:#000;
 ```
 
-<details><summary>📋 Graph legend</summary>
+## Module Types
 
-```mermaid
-graph TB
-  application:::android-application -. implementation .-> feature:::android-feature
-  feature -. implementation .-> api:::jvm-library
-  library:::android-library -- implementation --> jvm:::jvm-library
+- `:app` - Android application module, entry point, and root dependency composition.
+- `:feature:*:api` - JVM modules with contracts (interfaces, models, navigation keys).
+- `:feature:*` - Android feature implementation modules (UI, use-cases, wiring, DI).
+- `:core:*` - reusable cross-feature infrastructure.
+- `:storage-api` - API/contracts for the storage layer.
+- `:storage` - storage implementation (Room, DataStore, cache, DAO, use-cases).
 
-classDef android-application fill:#CAFFBF,stroke:#000,stroke-width:2px,color:#000;
-classDef android-feature fill:#FFD6A5,stroke:#000,stroke-width:2px,color:#000;
-classDef android-library fill:#9BF6FF,stroke:#000,stroke-width:2px,color:#000;
-classDef jvm-library fill:#BDB2FF,stroke:#000,stroke-width:2px,color:#000;
-```
+## Dependency Rules
 
-</details>
+- `feature impl -> feature api` is allowed.
+- `feature impl -> feature impl` is not allowed.
+- `feature api` must not depend on `feature impl`.
+- `core` and `storage` must not depend on feature implementation modules.
+- Shared application models are centralized in `:core:model`.
 
-**Top tip:** keep all cross-feature navigation contracts in `feature:*:api` modules.
+## Technologies
 
-The Kemonos app contains the following types of modules:
+### Platform and Build
 
-### The `app` module
+- Android Gradle Plugin `8.12.3`
+- Gradle Version Catalog (`gradle/libs.versions.toml`)
+- Kotlin `2.3.10`
+- Java toolchain `21`
+- KSP `2.3.4`
+- Convention plugins in `build-logic` (including `kemonos.android.feature`)
 
-This module wires the application together: app lifecycle, root DI setup, and top-level navigation shell.  
-Good examples: `MainActivity`, `App` (`KemonosApp.kt`), bottom bar and routing setup.
+### UI
 
-### Feature modules
+- Jetpack Compose + Compose BOM `2026.02.00`
+- Material 3
+- Navigation 3 (`androidx.navigation3` + adaptive)
+- Coil 3 (`coil-compose`, `gif`, `video`, `network-okhttp`)
+- Accompanist System UI Controller
+- Markdown renderer (`multiplatform-markdown-renderer-m3`)
 
-Each feature is split into two Gradle modules:
+### DI and Architecture Tooling
 
-- `api` contains contracts used by other modules (navigation keys, models, interfaces).
-- `impl` (actual feature module without `-api` suffix) contains UI, ViewModels, repositories/use cases, and wiring.
+- Hilt (`com.google.dagger:hilt-android` + KSP compiler)
+- AndroidX Hilt Navigation Compose
+- Lifecycle (`runtime-compose`, `viewmodel-ktx`)
 
-Rules used in this project:
+### Data and Storage
 
-- `feature:*` (impl) can depend on `feature:*:api`, but should not depend on other feature impl modules.
-- `feature:*:api` should stay lightweight and not depend on feature impl modules.
-- Both can depend on required `core:*` modules.
+- Room (`runtime`, `ktx`, `paging`, compiler via KSP)
+- DataStore Preferences
+- Kotlin Serialization JSON
+- Gson
 
-### Core modules
+### Networking and Parsing
 
-Reusable cross-feature infrastructure:
+- Retrofit 3
+- OkHttp 5 (+ logging-interceptor)
+- Jsoup
+- RE2J
 
-- `:core:domain` and `:core:utils` are JVM-only foundations.
-- Android core modules (`auth`, `network`, `preferences`, `navigation`, `deepLink`) provide platform-aware services.
+### Media and Integrations
 
-Core modules should not depend on feature impl modules.
+- AndroidX Media3 (ExoPlayer + UI)
+- Google Play Services Cast
+- ML Kit Translate + Language ID
 
-### Shared modules
+### Security
 
-- `:common` contains shared UI/components/helpers used by many features.
-- `:storage-api` contains storage contracts.
-- `:storage` contains storage implementation and database-related logic.
+- AndroidX Security Crypto
 
-## Examples
+### Testing and Debugging
 
-| Name                     | Responsibilities                                                                          | Key classes and examples                                                                           |
-|--------------------------|-------------------------------------------------------------------------------------------|----------------------------------------------------------------------------------------------------|
-| `app`                    | App entrypoint, activity lifecycle, root-level navigation and composition of all modules. | `MainActivity`, `App` (`app/src/main/java/su/afk/kemonos/di/KemonosApp.kt`), `BottomNavigationBar` |
-| `feature:posts-api`      | Public contracts for posts feature used by other modules.                                 | API contracts and models from `feature/posts-api`                                                  |
-| `feature:posts`          | Posts screen logic: paging, repositories, ViewModels, navigation registration.            | `PostsPagerViewModel`, `PostsApi`, `PostsRepository`, `PostsPagerNavigator`                        |
-| `feature:creatorProfile` | Creator profile flow: profile data, paging, related use cases.                            | `GetProfileUseCase`, `ProfileRepository`, `ProfilePostsPagingSource`                               |
-| `core:network`           | Network stack, interceptors, base URL strategy, Hilt wiring.                              | `NetworkModule`, `ReplaceBaseUrlInterceptor`, `SwitchingBaseUrlProvider`                           |
-| `core:preferences`       | Local preferences and URL/site settings use cases.                                        | `UrlPrefs`, `DomainResolver`, `SelectedSiteUseCase`                                                |
-| `core:navigation`        | Navigation primitives and registrations shared by features.                               | `NavigationManager`, `NavRegistrar`, `AppNavHost`                                                  |
-| `common`                 | Reusable UI and error/paging/image helpers.                                               | `ErrorHandlerUseCaseImpl`, `RetryStorage`, `AsyncImageWithStatus`                                  |
-| `storage`                | Room entities/DAO/repositories and cache use cases.                                       | `ClearCacheStorageUseCase`, `VideoFrameCacheImpl`, `ProfileDao`                                    |
+- JUnit4
+- AndroidX JUnit
+- Espresso
+- LeakCanary (debug)
 
-## Dependency graphs
+## Module List (Current)
 
-Right now this repository has a single high-level technical graph in this file (`TECH_README.md`).
-If needed, we can extend it with per-module README graphs (`app/README.md`, `feature/*/README.md`, etc.) and keep them
-updated via CI.
+### App
 
-## Further considerations
+- `:app`
 
-This structure is a practical balance: enough modularity for independent feature work, but without excessive
-fragmentation.
-As the app grows, likely next steps are:
+### Core
 
-1. Split very large feature impl modules by domain slices.
-2. Move heavy shared logic out of `common` into narrower `core:*` modules.
-3. Add automated dependency checks (forbidden edges like `feature impl -> feature impl`).
+- `:core:model`
+- `:core:utils`
+- `:core:auth`
+- `:core:network`
+- `:core:deepLink`
+- `:core:preferences`
+- `:core:navigation`
+- `:core:ui`
+- `:core:error`
+
+### Storage
+
+- `:storage-api`
+- `:storage`
+
+### Features
+
+- `:feature:commonScreen-api`, `:feature:commonScreen`
+- `:feature:creators-api`, `:feature:creators`
+- `:feature:creatorProfile-api`, `:feature:creatorProfile`
+- `:feature:creatorPost-api`, `:feature:creatorPost`
+- `:feature:posts-api`, `:feature:posts`
+- `:feature:profile-api`, `:feature:profile`
+- `:feature:appUpdate-api`, `:feature:appUpdate`
+- `:feature:download-api`, `:feature:download`
+- `:feature:main-api`, `:feature:main`
+- `:feature:videoPlayer-api`, `:feature:videoPlayer`
+
+## Note
+
+If `settings.gradle.kts` or the stack in `gradle/libs.versions.toml` changes, update this document in the same PR.

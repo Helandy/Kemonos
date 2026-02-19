@@ -24,6 +24,7 @@ import su.afk.kemonos.creatorPost.presenter.delegates.MediaMetaDelegate
 import su.afk.kemonos.creatorPost.presenter.delegates.NavigateDelegates
 import su.afk.kemonos.creatorPost.presenter.helper.collectDownloadAllItems
 import su.afk.kemonos.creatorProfile.api.IGetProfileUseCase
+import su.afk.kemonos.domain.models.PreviewDomain
 import su.afk.kemonos.download.api.IDownloadUtil
 import su.afk.kemonos.error.error.IErrorHandlerUseCase
 import su.afk.kemonos.error.error.storage.RetryStorage
@@ -35,6 +36,7 @@ import su.afk.kemonos.preferences.ui.TranslateTarget
 import su.afk.kemonos.ui.presenter.androidView.cleanDuplicatedMediaFromContent
 import su.afk.kemonos.ui.presenter.androidView.clearHtml
 import su.afk.kemonos.ui.presenter.androidView.htmlToBlocks
+import su.afk.kemonos.ui.presenter.androidView.model.PostBlock
 import su.afk.kemonos.ui.presenter.baseViewModel.BaseViewModelNew
 import su.afk.kemonos.ui.shared.ShareLinkBuilder
 import su.afk.kemonos.ui.shared.model.ShareTarget
@@ -42,6 +44,7 @@ import su.afk.kemonos.ui.translate.TextTranslator
 import su.afk.kemonos.ui.translate.preprocessForTranslation
 import su.afk.kemonos.ui.uiUtils.format.audioMimeType
 import su.afk.kemonos.ui.uiUtils.format.buildFileUrl
+import java.net.URLEncoder
 
 internal class CreatorPostViewModel @AssistedInject constructor(
     @Assisted private val dest: CreatorPostDest.CreatorPost,
@@ -293,7 +296,16 @@ internal class CreatorPostViewModel @AssistedInject constructor(
         }
     }
 
-    fun navigateOpenImage(originalUrl: String) = navigateDelegates.navigateOpenImage(originalUrl)
+    fun navigateOpenImage(originalUrl: String) {
+        val imageUrls = collectImageGalleryUrls(selectedUrl = originalUrl)
+        val selectedIndex = imageUrls.indexOf(originalUrl).takeIf { it >= 0 }
+
+        navigateDelegates.navigateOpenImage(
+            originalUrl = originalUrl,
+            imageUrls = imageUrls,
+            selectedIndex = selectedIndex,
+        )
+    }
 
     /** Копирование в буфер */
     fun copyPostLink() {
@@ -386,6 +398,33 @@ internal class CreatorPostViewModel @AssistedInject constructor(
                 }
             }
         }
+    }
+
+    private fun collectImageGalleryUrls(selectedUrl: String): List<String> {
+        val contentImages = currentState.contentBlocks
+            .orEmpty()
+            .mapNotNull { block -> (block as? PostBlock.Image)?.url }
+            .filter { it.isNotBlank() }
+
+        val previewImages = currentState.post
+            ?.previews
+            .orEmpty()
+            .asSequence()
+            .filter { it.type == "thumbnail" }
+            .mapNotNull(::buildPreviewFullUrl)
+            .toList()
+
+        val merged = (contentImages + previewImages).distinct()
+        return if (selectedUrl in merged) merged else (listOf(selectedUrl) + merged).distinct()
+    }
+
+    private fun buildPreviewFullUrl(preview: PreviewDomain): String? {
+        val server = preview.server ?: return null
+        val path = preview.path ?: return null
+        val name = preview.name ?: return null
+
+        val encodedName = URLEncoder.encode(name, "UTF-8")
+        return "$server/data$path?f=$encodedName"
     }
 
     fun PostContentDomain.collectMediaRefsForDedup(): List<String> = buildList {

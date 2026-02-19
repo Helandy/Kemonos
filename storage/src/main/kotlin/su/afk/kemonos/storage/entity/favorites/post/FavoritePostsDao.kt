@@ -53,6 +53,7 @@ interface FavoritePostsDao {
         site, id, userId, service,
         NULL AS title, NULL AS content, NULL AS added, NULL AS published, NULL AS edited,
         NULL AS incompleteRewardsJson,
+        NULL AS pollJson,
         NULL AS fileName, NULL AS filePath, NULL AS attachmentsJson, NULL AS tagsJson,
         NULL AS nextId, NULL AS prevId, NULL AS favedSeq, NULL AS favCount,
         '' AS substring,

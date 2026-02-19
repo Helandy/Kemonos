@@ -24,10 +24,16 @@ internal class NavigateDelegates @Inject constructor(
         )
     }
 
-    fun navigateOpenImage(originalUrl: String) {
+    fun navigateOpenImage(
+        originalUrl: String,
+        imageUrls: List<String> = emptyList(),
+        selectedIndex: Int? = null,
+    ) {
         navManager.navigate(
             imageViewNavigator(
                 imageUrl = originalUrl,
+                imageUrls = imageUrls,
+                selectedIndex = selectedIndex,
             )
         )
     }
