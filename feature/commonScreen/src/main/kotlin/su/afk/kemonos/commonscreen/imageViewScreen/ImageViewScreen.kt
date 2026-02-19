@@ -268,11 +268,14 @@ internal fun ImageViewScreen(
             ) {
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier.padding(horizontal = 4.dp, vertical = 2.dp),
+                    modifier = Modifier.padding(horizontal = 8.dp, vertical = 6.dp),
                 ) {
                     IconButton(
                         onClick = { onEvent(Event.PrevImage) },
                         enabled = canGoPrev,
+                        modifier = Modifier
+                            .width(72.dp)
+                            .height(52.dp),
                     ) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.KeyboardArrowLeft,
@@ -283,12 +286,15 @@ internal fun ImageViewScreen(
                     Text(
                         text = "${state.selectedIndex + 1} / ${state.imageUrls.size}",
                         style = MaterialTheme.typography.labelLarge,
-                        modifier = Modifier.padding(horizontal = 8.dp),
+                        modifier = Modifier.padding(horizontal = 24.dp),
                     )
 
                     IconButton(
                         onClick = { onEvent(Event.NextImage) },
                         enabled = canGoNext,
+                        modifier = Modifier
+                            .width(72.dp)
+                            .height(52.dp),
                     ) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
