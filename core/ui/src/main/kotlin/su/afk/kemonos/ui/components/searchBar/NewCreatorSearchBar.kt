@@ -108,6 +108,16 @@ fun <T> SearchBarNew(
                             modifier = Modifier.fillMaxWidth()
                         )
                     },
+                    trailingIcon = {
+                        Icon(
+                            imageVector = if (serviceMenuExpanded) {
+                                Icons.Default.ArrowUpward
+                            } else {
+                                Icons.Default.ArrowDownward
+                            },
+                            contentDescription = null
+                        )
+                    },
                     modifier = Modifier
                         .fillMaxWidth()
                         .onGloballyPositioned { coordinates ->
@@ -152,6 +162,16 @@ fun <T> SearchBarNew(
                             text = selectedLabel,
                             textAlign = TextAlign.Center,
                             modifier = Modifier.fillMaxWidth()
+                        )
+                    },
+                    trailingIcon = {
+                        Icon(
+                            imageVector = if (sortMenuExpanded) {
+                                Icons.Default.ArrowUpward
+                            } else {
+                                Icons.Default.ArrowDownward
+                            },
+                            contentDescription = null
                         )
                     },
                     modifier = Modifier

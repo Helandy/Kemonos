@@ -44,7 +44,6 @@ android {
             )
 
             buildConfigField("boolean", "LOG_HTTP", "false")
-            buildConfigField("boolean", "CRASHLYTICS_ENABLED", "true")
         }
     }
 
