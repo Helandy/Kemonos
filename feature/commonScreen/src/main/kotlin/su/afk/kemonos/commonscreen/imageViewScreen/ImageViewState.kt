@@ -10,6 +10,8 @@ internal class ImageViewState {
     data class State(
         val loading: Boolean = true,
         val imageUrl: String? = null,
+        val imageUrls: List<String> = emptyList(),
+        val selectedIndex: Int = 0,
 
         val requestId: String = java.util.UUID.randomUUID().toString(),
         val reloadKey: Int = 0,
@@ -23,6 +25,8 @@ internal class ImageViewState {
 
     sealed class Event : UiEvent {
         object Back : Event()
+        data object PrevImage : Event()
+        data object NextImage : Event()
         data object ImageLoaded : Event()
         data class ImageFailed(val throwable: Throwable?) : Event()
         data object Retry : Event()

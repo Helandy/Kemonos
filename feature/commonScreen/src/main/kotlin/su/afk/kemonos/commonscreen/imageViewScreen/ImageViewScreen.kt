@@ -7,6 +7,8 @@ import androidx.compose.foundation.gestures.transformable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.KeyboardArrowLeft
+import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -51,6 +53,17 @@ internal fun ImageViewScreen(state: ImageViewState.State, onEvent: (Event) -> Un
     var scale by remember { mutableFloatStateOf(minScale) }
     var offsetX by remember { mutableFloatStateOf(0f) }
     var offsetY by remember { mutableFloatStateOf(0f) }
+
+    val hasGallery = state.imageUrls.size > 1
+    val canGoPrev = state.selectedIndex > 0
+    val canGoNext = state.selectedIndex < state.imageUrls.lastIndex
+
+    LaunchedEffect(state.imageUrl, state.selectedIndex) {
+        // При смене картинки начинаем с дефолтного состояния (без зума/панорамы)
+        scale = minScale
+        offsetX = 0f
+        offsetY = 0f
+    }
 
     fun clampOffset(x: Float, y: Float, s: Float): Pair<Float, Float> {
         if (container.width == 0 || container.height == 0) return x to y
@@ -236,6 +249,49 @@ internal fun ImageViewScreen(state: ImageViewState.State, onEvent: (Event) -> Un
                 imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                 contentDescription = stringResource(R.string.back),
             )
+        }
+
+        if (hasGallery) {
+            Surface(
+                modifier = Modifier
+                    .align(Alignment.BottomCenter)
+                    .navigationBarsPadding()
+                    .padding(bottom = 16.dp),
+                shape = MaterialTheme.shapes.small,
+                color = MaterialTheme.colorScheme.surface.copy(alpha = 0.8f),
+                tonalElevation = 2.dp,
+            ) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier.padding(horizontal = 4.dp, vertical = 2.dp),
+                ) {
+                    IconButton(
+                        onClick = { onEvent(Event.PrevImage) },
+                        enabled = canGoPrev,
+                    ) {
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Filled.KeyboardArrowLeft,
+                            contentDescription = "Previous image",
+                        )
+                    }
+
+                    Text(
+                        text = "${state.selectedIndex + 1} / ${state.imageUrls.size}",
+                        style = MaterialTheme.typography.labelLarge,
+                        modifier = Modifier.padding(horizontal = 8.dp),
+                    )
+
+                    IconButton(
+                        onClick = { onEvent(Event.NextImage) },
+                        enabled = canGoNext,
+                    ) {
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
+                            contentDescription = "Next image",
+                        )
+                    }
+                }
+            }
         }
     }
 }
