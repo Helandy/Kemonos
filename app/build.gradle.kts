@@ -114,16 +114,20 @@ dependencies {
     implementation(project(":feature:main"))
 }
 
-val releaseApkName = "kemonos-${libs.versions.appVersionName.get()}-universal.apk"
+val releaseApkName = "kemonos-${libs.versions.appVersionName.get()}-release.apk"
 
-tasks.register<Copy>("exportReleaseApkForGithub") {
+tasks.register<Sync>("exportReleaseApkForGithub") {
     val releaseDir = layout.buildDirectory.dir("outputs/apk/release")
-
-    // AGP/соседние задачи могут дать либо app-release.apk, либо уже финальное имя.
     from(releaseDir.map { it.file(releaseApkName) })
     from(releaseDir.map { it.file("app-release.apk") })
     into(layout.buildDirectory.dir("outputs/apk/githubRelease"))
     rename("app-release.apk", releaseApkName)
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
     dependsOn("assembleRelease")
+}
+
+tasks.configureEach {
+    if (name == "assembleRelease") {
+        finalizedBy("exportReleaseApkForGithub")
+    }
 }
