@@ -44,9 +44,10 @@ internal class DownloadUtil @Inject constructor(
             .setAllowedOverMetered(true)
             .setAllowedOverRoaming(true)
 
-        request.setTitle(fileName?.takeIf { it.isNotBlank() } ?: url)
+        val resolvedFileName = fileName?.takeIf { it.isNotBlank() } ?: guessFileNameFromUrl(url)
+        request.setTitle(resolvedFileName)
 
-        val safeName = (fileName ?: guessFileNameFromUrl(url))
+        val safeName = resolvedFileName
             .sanitizeFileName()
             .ifBlank { "download" }
 

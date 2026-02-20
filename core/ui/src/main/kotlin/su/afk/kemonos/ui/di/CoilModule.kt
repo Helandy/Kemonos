@@ -96,7 +96,7 @@ object CoilModule {
         .crossfade(true)
         .memoryCache {
             MemoryCache.Builder()
-                .maxSizePercent(appContext, 0.20)
+                .maxSizeBytes(IMAGE_VIEW_MIN_MEMORY_CACHE_BYTES)
                 .build()
         }
         .memoryCachePolicy(CachePolicy.ENABLED)
@@ -108,4 +108,7 @@ object CoilModule {
     private const val DEFAULT_COIL_CACHE_MB = 300
     private const val MIN_COIL_CACHE_MB = 50
     private const val MAX_COIL_CACHE_MB = 500
+
+    /** 150 mb */
+    private const val IMAGE_VIEW_MIN_MEMORY_CACHE_BYTES = 150L * 1024L * 1024L
 }

@@ -1,5 +1,6 @@
 package su.afk.kemonos.commonscreen.imageViewScreen
 
+import androidx.core.net.toUri
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.*
@@ -180,19 +181,22 @@ internal class ImageViewViewModel @Inject constructor(
         val url = state.value.imageUrl
             ?.takeIf { it.isNotBlank() }
             ?: return
+        val fileName = url.toUri().lastPathSegment
+            ?.takeIf { it.isNotBlank() }
+            ?: url.substringAfterLast('/').substringBefore('?').ifBlank { "image" }
 
         viewModelScope.launch {
             runCatching {
                 downloadUtil.enqueueSystemDownload(
                     url = url,
-                    fileName = null,
+                    fileName = fileName,
                     service = null,
                     creatorName = null,
                     postId = null,
                     postTitle = null,
                 )
             }.onSuccess {
-                setEffect(Effect.DownloadToast(url))
+                setEffect(Effect.DownloadToast(fileName))
             }.onFailure { t ->
                 setEffect(Effect.ShowToast(errorHandler.parse(t, navigate = false).message))
             }
