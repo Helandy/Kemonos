@@ -8,6 +8,7 @@ import su.afk.kemonos.commonscreen.imageViewScreen.ImageViewState.*
 import su.afk.kemonos.commonscreen.navigator.ImageNavigationConst.KEY_IMAGE_URLS
 import su.afk.kemonos.commonscreen.navigator.ImageNavigationConst.KEY_SELECTED_IMAGE
 import su.afk.kemonos.commonscreen.navigator.ImageNavigationConst.KEY_SELECTED_IMAGE_INDEX
+import su.afk.kemonos.download.api.IDownloadUtil
 import su.afk.kemonos.error.error.IErrorHandlerUseCase
 import su.afk.kemonos.error.error.storage.RetryStorage
 import su.afk.kemonos.navigation.NavigationManager
@@ -25,6 +26,7 @@ internal class ImageViewViewModel @Inject constructor(
     private val navManager: NavigationManager,
     private val navigationStorage: NavigationStorage,
     private val progressStore: ImageProgressStore,
+    private val downloadUtil: IDownloadUtil,
     override val errorHandler: IErrorHandlerUseCase,
     override val retryStorage: RetryStorage
 ) : BaseViewModelNew<State, Event, Effect>() {
@@ -40,6 +42,12 @@ internal class ImageViewViewModel @Inject constructor(
 
             Event.PrevImage -> openRelativeImage(offset = -1)
             Event.NextImage -> openRelativeImage(offset = 1)
+            Event.DownloadCurrentImage -> downloadCurrentImage()
+            Event.CopyCurrentImageLink -> {
+                state.value.imageUrl
+                    ?.takeIf { it.isNotBlank() }
+                    ?.let { setEffect(Effect.CopyUrl(it)) }
+            }
 
             Event.ImageLoaded -> {
                 progressStore.clear(state.value.requestId)
@@ -165,6 +173,29 @@ internal class ImageViewViewModel @Inject constructor(
                 contentLength = -1L,
                 progress = 0f,
             )
+        }
+    }
+
+    private fun downloadCurrentImage() {
+        val url = state.value.imageUrl
+            ?.takeIf { it.isNotBlank() }
+            ?: return
+
+        viewModelScope.launch {
+            runCatching {
+                downloadUtil.enqueueSystemDownload(
+                    url = url,
+                    fileName = null,
+                    service = null,
+                    creatorName = null,
+                    postId = null,
+                    postTitle = null,
+                )
+            }.onSuccess {
+                setEffect(Effect.DownloadToast(url))
+            }.onFailure { t ->
+                setEffect(Effect.ShowToast(errorHandler.parse(t, navigate = false).message))
+            }
         }
     }
 

@@ -70,7 +70,7 @@ object CoilModule {
             .crossfade(true)
             .memoryCache {
                 MemoryCache.Builder()
-                    .maxSizePercent(appContext, 0.15)
+                    .maxSizePercent(appContext, 0.20)
                     .build()
             }
             .diskCache {
@@ -96,7 +96,7 @@ object CoilModule {
         .crossfade(true)
         .memoryCache {
             MemoryCache.Builder()
-                .maxSizePercent(appContext, 0.15)
+                .maxSizePercent(appContext, 0.20)
                 .build()
         }
         .memoryCachePolicy(CachePolicy.ENABLED)

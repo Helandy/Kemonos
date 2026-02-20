@@ -91,7 +91,6 @@ internal fun CreatorPostScreen(state: State, onEvent: (Event) -> Unit, effect: F
                     } else {
                         context.getString(R.string.download_started)
                     }
-
                     context.toast(message)
                 }
             }

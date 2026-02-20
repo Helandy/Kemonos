@@ -14,4 +14,5 @@ dependencies {
     implementation(project(":core:error"))
 
     implementation(project(":feature:commonScreen-api"))
+    implementation(project(":feature:download-api"))
 }
