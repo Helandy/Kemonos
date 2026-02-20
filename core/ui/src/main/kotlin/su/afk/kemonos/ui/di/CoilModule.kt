@@ -100,8 +100,13 @@ object CoilModule {
                 .build()
         }
         .memoryCachePolicy(CachePolicy.ENABLED)
-        .diskCache(null)
-        .diskCachePolicy(CachePolicy.DISABLED)
+        .diskCache {
+            DiskCache.Builder()
+                .directory(appContext.cacheDir.resolve(IMAGE_VIEW_COIL_DISK_DIR_NAME))
+                .maxSizeBytes(IMAGE_VIEW_DISK_CACHE_BYTES)
+                .build()
+        }
+        .diskCachePolicy(CachePolicy.ENABLED)
         .build()
 
 
@@ -109,6 +114,10 @@ object CoilModule {
     private const val MIN_COIL_CACHE_MB = 50
     private const val MAX_COIL_CACHE_MB = 500
 
-    /** 150 mb */
+    /** 150 mb RAM */
     private const val IMAGE_VIEW_MIN_MEMORY_CACHE_BYTES = 150L * 1024L * 1024L
+
+    /** 100 mb DISK */
+    private const val IMAGE_VIEW_DISK_CACHE_BYTES = 100L * 1024L * 1024L
+    private const val IMAGE_VIEW_COIL_DISK_DIR_NAME = "${COIL_DISK_DIR_NAME}_image_view"
 }
