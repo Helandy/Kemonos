@@ -43,7 +43,6 @@ import su.afk.kemonos.ui.imageLoader.imageProgress.IMAGE_PROGRESS_REQUEST_ID_HEA
 import su.afk.kemonos.ui.shared.ShareActions
 import su.afk.kemonos.ui.toast.toast
 import su.afk.kemonos.ui.uiUtils.size.formatBytes
-import kotlin.math.abs
 import kotlin.math.roundToInt
 
 @Composable
@@ -187,9 +186,6 @@ internal fun ImageViewScreen(
             .onSizeChanged { container = it }
             .pointerInput(Unit) {
                 detectTapGestures(
-                    onTap = {
-                        if (abs(scale - minScale) < 0.01f) onEvent(Event.Back)
-                    },
                     onDoubleTap = { tap -> onDoubleTap(tap) }
                 )
             }
