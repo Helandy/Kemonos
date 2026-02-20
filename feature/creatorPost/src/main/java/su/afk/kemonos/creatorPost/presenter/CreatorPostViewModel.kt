@@ -3,13 +3,10 @@ package su.afk.kemonos.creatorPost.presenter
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.async
+import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import su.afk.kemonos.creatorPost.api.domain.model.PostContentDomain
 import su.afk.kemonos.creatorPost.domain.model.media.MediaInfoState
 import su.afk.kemonos.creatorPost.domain.model.video.VideoThumbState
@@ -62,6 +59,8 @@ internal class CreatorPostViewModel @AssistedInject constructor(
     override val errorHandler: IErrorHandlerUseCase,
     override val retryStorage: RetryStorage,
 ) : BaseViewModelNew<State, Event, Effect>() {
+    private var loadingJob: Job? = null
+    private var loadingRequestId: Long = 0L
 
     @AssistedFactory
     interface Factory {
@@ -141,52 +140,76 @@ internal class CreatorPostViewModel @AssistedInject constructor(
         }
     }
 
-    fun loadingPost() = viewModelScope.launch {
-        setState { copy(loading = true) }
+    fun loadingPost() {
+        loadingJob?.cancel()
+        val requestId = ++loadingRequestId
+        val requestService = currentState.service
+        val requestCreatorId = currentState.id
+        val requestPostId = currentState.postId
 
-        val postDeferred = async { getPostUseCase(currentState.service, currentState.id, currentState.postId) }
-        val commentsDeferred = async { getCommentsUseCase(currentState.service, currentState.id, currentState.postId) }
+        loadingJob = viewModelScope.launch {
+            setState { copy(loading = true) }
 
-        /** шапка профиля не всегда нужна */
-        val profileDeferred = async { getProfileUseCase(service = currentState.service, id = currentState.id) }
+            val postDeferred = async { getPostUseCase(requestService, requestCreatorId, requestPostId) }
+            val commentsDeferred = async { getCommentsUseCase(requestService, requestCreatorId, requestPostId) }
 
-        val post = postDeferred.await()
-        val comments = commentsDeferred.await()
-        val profile = profileDeferred.await()
+            /** шапка профиля не всегда нужна */
+            val profileDeferred = async { getProfileUseCase(service = requestService, id = requestCreatorId) }
 
-        val showButtonTranslate = post?.post?.content?.clearHtml()?.isNotBlank() ?: false
-        val mediaRefs = post?.collectMediaRefsForDedup()
-        val siteBaseUrl = getCurrentSiteRootUrlUseCase()
+            val post = postDeferred.await()
+            val comments = commentsDeferred.await()
+            val profile = profileDeferred.await()
 
-        val cleanContent = withContext(Dispatchers.Default) {
-            cleanDuplicatedMediaFromContent(
-                html = post?.post?.content.orEmpty().take(MAX_HTML_CHARS),
-                attachmentPaths = mediaRefs.orEmpty(),
-            )
+            val showButtonTranslate = post?.post?.content?.clearHtml()?.isNotBlank() ?: false
+            val mediaRefs = post?.collectMediaRefsForDedup()
+            val siteBaseUrl = getCurrentSiteRootUrlUseCase()
+
+            val cleanContent = withContext(Dispatchers.Default) {
+                cleanDuplicatedMediaFromContent(
+                    html = post?.post?.content.orEmpty().take(MAX_HTML_CHARS),
+                    attachmentPaths = mediaRefs.orEmpty(),
+                )
+            }
+
+            val blocks = withContext(Dispatchers.Default) {
+                htmlToBlocks(cleanContent, siteBaseUrl)
+            }
+
+            if (requestId != loadingRequestId) return@launch
+
+            setState {
+                copy(
+                    loading = false,
+                    post = post,
+                    showButtonTranslate = showButtonTranslate,
+                    contentBlocks = blocks,
+
+                    commentDomains = comments,
+                    profile = profile,
+
+                    translateExpanded = false,
+                    translateLoading = false,
+                    translateText = null,
+                    translateError = null,
+                )
+            }
+
+            val isShowAvailable = likeDelegate.postIsAvailableLike()
+            if (requestId != loadingRequestId) return@launch
+
+            if (isShowAvailable) {
+                val favorite = likeDelegate.isPostFavorite(
+                    service = requestService,
+                    creatorId = requestCreatorId,
+                    postId = requestPostId,
+                )
+                if (requestId != loadingRequestId) return@launch
+                setState { copy(isFavorite = favorite) }
+            }
+
+            if (requestId != loadingRequestId) return@launch
+            setState { copy(isFavoriteShowButton = isShowAvailable) }
         }
-
-        val blocks = withContext(Dispatchers.Default) {
-            htmlToBlocks(cleanContent, siteBaseUrl)
-        }
-
-        setState {
-            copy(
-                loading = false,
-                post = post,
-                showButtonTranslate = showButtonTranslate,
-                contentBlocks = blocks,
-
-                commentDomains = comments,
-                profile = profile,
-
-                translateExpanded = false,
-                translateLoading = false,
-                translateText = null,
-                translateError = null,
-            )
-        }
-
-        isPostFavorite()
     }
 
     private val mediaMetaDelegate = MediaMetaDelegate(
@@ -273,20 +296,6 @@ internal class CreatorPostViewModel @AssistedInject constructor(
                 setEffect(Effect.ShowToast(errorMessage))
             }
         setState { copy(favoriteActionLoading = false) }
-    }
-
-    /** Проверит в избранном ли пост */
-    fun isPostFavorite() = viewModelScope.launch {
-        val isShowAvailable = likeDelegate.postIsAvailableLike()
-        if (isShowAvailable) {
-            val favorite = likeDelegate.isPostFavorite(
-                service = currentState.service,
-                creatorId = currentState.id,
-                postId = currentState.postId,
-            )
-            setState { copy(isFavorite = favorite) }
-        }
-        setState { copy(isFavoriteShowButton = isShowAvailable) }
     }
 
     /** навиагция на профиль автора */

@@ -23,10 +23,7 @@ internal fun LazyListScope.postVideosSection(
     onDownload: (url: String, fileName: String) -> Unit,
     showHeader: Boolean = true,
 ) {
-    val uniqueVideos = videos.distinctBy { v ->
-        "video:${v.server}:${v.path}"
-    }
-    if (uniqueVideos.isEmpty()) return
+    if (videos.isEmpty()) return
 
     if (showHeader) {
         item(key = "videos_header") {
@@ -39,10 +36,10 @@ internal fun LazyListScope.postVideosSection(
     }
 
     items(
-        count = uniqueVideos.size,
-        key = { index -> "video:${uniqueVideos[index].server}:${uniqueVideos[index].path}" }
+        count = videos.size,
+        key = { index -> "video:${videos[index].server}:${videos[index].path}" }
     ) { index ->
-        val video = uniqueVideos[index]
+        val video = videos[index]
         val url = "${video.server}/data${video.path}"
 
         VideoPreviewItem(
