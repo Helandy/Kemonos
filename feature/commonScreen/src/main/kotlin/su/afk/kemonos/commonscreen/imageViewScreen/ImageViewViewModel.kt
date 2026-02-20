@@ -50,11 +50,12 @@ internal class ImageViewViewModel @Inject constructor(
                 progressStore.clear(state.value.requestId)
                 val throwable = event.throwable ?: IllegalStateException("Image loading failed")
                 val parsed = errorHandler.parse(throwable, navigate = false)
+                val errorWithUrl = parsed.copy(url = parsed.url ?: state.value.imageUrl)
                 setState {
                     copy(
                         loading = false,
                         isLoadError = true,
-                        errorItem = parsed,
+                        errorItem = errorWithUrl,
                     )
                 }
             }

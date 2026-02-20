@@ -237,6 +237,7 @@ internal fun ImageViewScreen(
                         errorItem = state.errorItem ?: ErrorItem(
                             title = stringResource(R.string.err_title_generic),
                             message = stringResource(R.string.err_msg_generic),
+                            url = state.imageUrl,
                         ),
                         onRetry = { onEvent(Event.Retry) }
                     )
@@ -260,8 +261,7 @@ internal fun ImageViewScreen(
             Surface(
                 modifier = Modifier
                     .align(Alignment.BottomCenter)
-                    .navigationBarsPadding()
-                    .padding(bottom = 16.dp),
+                    .navigationBarsPadding(),
                 shape = MaterialTheme.shapes.small,
                 color = MaterialTheme.colorScheme.surface.copy(alpha = 0.8f),
                 tonalElevation = 2.dp,
