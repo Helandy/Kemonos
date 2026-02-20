@@ -7,6 +7,7 @@ import su.afk.kemonos.domain.models.VideoDomain
 import su.afk.kemonos.ui.uiUtils.format.isAudioFile
 import su.afk.kemonos.utils.url.buildContentUrlToDataSite
 import java.net.URLEncoder
+import java.util.*
 
 internal data class PostDownloadItem(
     val url: String,
@@ -34,7 +35,7 @@ internal fun PostContentDomain.collectDownloadAllItems(fallbackBaseUrl: String):
         .map { it.toAttachmentDownloadItem(fallbackBaseUrl) }
         .forEach(::add)
 }
-    .distinctBy { item -> item.url.substringBefore('?').trim() }
+    .distinctBy(PostDownloadItem::dedupKey)
     .filter { it.url.isNotBlank() }
 
 private fun PreviewDomain.previewKey(): String = when (type) {
@@ -66,3 +67,18 @@ private fun AttachmentDomain.toAttachmentDownloadItem(fallbackBaseUrl: String): 
     url = buildContentUrlToDataSite(fallbackBaseUrl),
     fileName = name
 )
+
+private fun PostDownloadItem.dedupKey(): String {
+    val source = url.trim()
+    if (source.isBlank()) return source
+
+    val withoutParams = source.substringBefore('#').substringBefore('?')
+
+    val afterData = withoutParams.substringAfter("/data/", missingDelimiterValue = "")
+        .ifBlank { withoutParams.substringAfter("data/", missingDelimiterValue = "") }
+        .takeIf { it.isNotBlank() }
+        ?.removePrefix("/")
+        ?.lowercase(Locale.ROOT)
+
+    return afterData ?: withoutParams.lowercase(Locale.ROOT)
+}

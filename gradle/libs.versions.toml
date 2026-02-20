@@ -6,7 +6,7 @@ jvmVersion = "21"
 
 # --- App versioning
 appVersionName = "1.8"
-appVersionCode = "30"
+appVersionCode = "31"
 
 agp = "8.12.3"
 kotlin = "2.3.10"
@@ -14,7 +14,6 @@ ksp = "2.3.4"
 
 # --- AndroidX
 androidxCore = "1.17.0"
-appcompat = "1.7.1"
 activityCompose = "1.12.4"
 lifecycle = "2.10.0"
 datastore = "1.2.0"
@@ -48,7 +47,6 @@ kotlinxSerializationJson = "1.10.0"
 # --- Media / Images / UI helpers
 coil3 = "3.3.0"
 media3 = "1.9.2"
-accompanistSystemUiController = "0.36.0"
 multiplatformMarkdownRendererM3 = "0.39.2"
 
 # --- Navigation3
@@ -150,7 +148,6 @@ androidx-media3-exoplayer = { module = "androidx.media3:media3-exoplayer", versi
 androidx-media3-ui = { module = "androidx.media3:media3-ui", version.ref = "media3" }
 
 # --- UI helpers
-accompanist-systemuicontroller = { module = "com.google.accompanist:accompanist-systemuicontroller", version.ref = "accompanistSystemUiController" }
 multiplatform-markdown-renderer-m3 = { module = "com.mikepenz:multiplatform-markdown-renderer-m3", version.ref = "multiplatformMarkdownRendererM3" }
 
 # --- Play services
@@ -272,10 +269,6 @@ paging = [
 media3 = [
     "androidx-media3-exoplayer",
     "androidx-media3-ui",
-]
-
-accompanist = [
-    "accompanist-systemuicontroller",
 ]
 
 datastore = [
