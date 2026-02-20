@@ -1,5 +1,6 @@
 package su.afk.kemonos.commonscreen.imageViewScreen
 
+import androidx.core.net.toUri
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.*
@@ -8,6 +9,7 @@ import su.afk.kemonos.commonscreen.imageViewScreen.ImageViewState.*
 import su.afk.kemonos.commonscreen.navigator.ImageNavigationConst.KEY_IMAGE_URLS
 import su.afk.kemonos.commonscreen.navigator.ImageNavigationConst.KEY_SELECTED_IMAGE
 import su.afk.kemonos.commonscreen.navigator.ImageNavigationConst.KEY_SELECTED_IMAGE_INDEX
+import su.afk.kemonos.download.api.IDownloadUtil
 import su.afk.kemonos.error.error.IErrorHandlerUseCase
 import su.afk.kemonos.error.error.storage.RetryStorage
 import su.afk.kemonos.navigation.NavigationManager
@@ -25,6 +27,7 @@ internal class ImageViewViewModel @Inject constructor(
     private val navManager: NavigationManager,
     private val navigationStorage: NavigationStorage,
     private val progressStore: ImageProgressStore,
+    private val downloadUtil: IDownloadUtil,
     override val errorHandler: IErrorHandlerUseCase,
     override val retryStorage: RetryStorage
 ) : BaseViewModelNew<State, Event, Effect>() {
@@ -40,6 +43,12 @@ internal class ImageViewViewModel @Inject constructor(
 
             Event.PrevImage -> openRelativeImage(offset = -1)
             Event.NextImage -> openRelativeImage(offset = 1)
+            Event.DownloadCurrentImage -> downloadCurrentImage()
+            Event.CopyCurrentImageLink -> {
+                state.value.imageUrl
+                    ?.takeIf { it.isNotBlank() }
+                    ?.let { setEffect(Effect.CopyUrl(it)) }
+            }
 
             Event.ImageLoaded -> {
                 progressStore.clear(state.value.requestId)
@@ -50,11 +59,12 @@ internal class ImageViewViewModel @Inject constructor(
                 progressStore.clear(state.value.requestId)
                 val throwable = event.throwable ?: IllegalStateException("Image loading failed")
                 val parsed = errorHandler.parse(throwable, navigate = false)
+                val errorWithUrl = parsed.copy(url = parsed.url ?: state.value.imageUrl)
                 setState {
                     copy(
                         loading = false,
                         isLoadError = true,
-                        errorItem = parsed,
+                        errorItem = errorWithUrl,
                     )
                 }
             }
@@ -164,6 +174,32 @@ internal class ImageViewViewModel @Inject constructor(
                 contentLength = -1L,
                 progress = 0f,
             )
+        }
+    }
+
+    private fun downloadCurrentImage() {
+        val url = state.value.imageUrl
+            ?.takeIf { it.isNotBlank() }
+            ?: return
+        val fileName = url.toUri().lastPathSegment
+            ?.takeIf { it.isNotBlank() }
+            ?: url.substringAfterLast('/').substringBefore('?').ifBlank { "image" }
+
+        viewModelScope.launch {
+            runCatching {
+                downloadUtil.enqueueSystemDownload(
+                    url = url,
+                    fileName = fileName,
+                    service = null,
+                    creatorName = null,
+                    postId = null,
+                    postTitle = null,
+                )
+            }.onSuccess {
+                setEffect(Effect.DownloadToast(fileName))
+            }.onFailure { t ->
+                setEffect(Effect.ShowToast(errorHandler.parse(t, navigate = false).message))
+            }
         }
     }
 

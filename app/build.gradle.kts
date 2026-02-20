@@ -58,15 +58,6 @@ android {
     }
 }
 
-@Suppress("DEPRECATION")
-android.applicationVariants.configureEach {
-    val vName = versionName ?: "0.0"
-    outputs.configureEach {
-        val out = this as com.android.build.gradle.internal.api.BaseVariantOutputImpl
-        val abi = out.getFilter(com.android.build.OutputFile.ABI) ?: "universal"
-        out.outputFileName = "kemonos-$vName-$abi.apk"
-    }
-}
 dependencies {
     debugImplementation(libs.leakcanary.android)
 
@@ -123,3 +114,11 @@ dependencies {
     implementation(project(":feature:main"))
 }
 
+val releaseApkName = "kemonos-${libs.versions.appVersionName.get()}-universal.apk"
+
+tasks.register<Copy>("exportReleaseApkForGithub") {
+    from(layout.buildDirectory.file("outputs/apk/release/app-release.apk"))
+    into(layout.buildDirectory.dir("outputs/apk/githubRelease"))
+    rename("app-release.apk", releaseApkName)
+    dependsOn("assembleRelease")
+}

@@ -163,8 +163,7 @@ private fun DownloadItemCard(
             )
 
             if (item.reasonLabel != null) {
-                val code = item.reasonCode?.toString() ?: "-"
-                Text(text = "${stringResource(R.string.downloads_error)}: ${item.reasonLabel} (code=$code)")
+                Text(text = "${stringResource(R.string.downloads_error)}: ${item.reasonLabel}")
             }
 
             val isCompleted = item.status == DownloadManager.STATUS_SUCCESSFUL

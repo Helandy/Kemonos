@@ -91,7 +91,6 @@ internal fun CreatorPostScreen(state: State, onEvent: (Event) -> Unit, effect: F
                     } else {
                         context.getString(R.string.download_started)
                     }
-
                     context.toast(message)
                 }
             }
@@ -280,7 +279,7 @@ internal fun CreatorPostScreen(state: State, onEvent: (Event) -> Unit, effect: F
                     if (videosExpanded) {
                         postVideosSection(
                             uiSettingModel = state.uiSettingModel,
-                            videos = state.post.videos,
+                            videos = uniqueVideos,
                             videoThumbs = state.videoThumbs,
                             requestThumb = { server, path ->
                                 onEvent(Event.VideoThumbRequested(server = server, path = path))
@@ -308,6 +307,7 @@ internal fun CreatorPostScreen(state: State, onEvent: (Event) -> Unit, effect: F
                     if (audioExpanded) {
                         postAudioSection(
                             attachments = state.post.attachments,
+                            fallbackBaseUrl = fallbackBaseUrl,
                             audioInfo = state.audioInfo,
                             onInfoRequested = { url -> onEvent(Event.AudioInfoRequested(url)) },
                             onPlay = { att ->

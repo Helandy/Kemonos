@@ -8,7 +8,6 @@ import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -22,13 +21,12 @@ import kotlin.math.roundToInt
 @Composable
 internal fun AudioInfoItem(
     audio: AttachmentDomain,
+    url: String,
     infoState: MediaInfoState?,
     requestInfo: (url: String) -> Unit,
     onPlay: (AttachmentDomain) -> Unit,
     onDownload: (AttachmentDomain) -> Unit,
 ) {
-    val url = remember(audio) { "${audio.server}/data${audio.path}" }
-
     LaunchedEffect(url) {
         requestInfo(url)
     }

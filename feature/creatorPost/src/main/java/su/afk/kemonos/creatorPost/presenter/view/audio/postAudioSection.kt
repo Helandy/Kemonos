@@ -11,9 +11,11 @@ import su.afk.kemonos.creatorPost.domain.model.media.MediaInfoState
 import su.afk.kemonos.domain.models.AttachmentDomain
 import su.afk.kemonos.ui.R
 import su.afk.kemonos.ui.uiUtils.format.isAudioFile
+import su.afk.kemonos.utils.url.buildContentUrlToDataSite
 
 internal fun LazyListScope.postAudioSection(
     attachments: List<AttachmentDomain>,
+    fallbackBaseUrl: String?,
     audioInfo: Map<String, MediaInfoState>,
     onInfoRequested: (String) -> Unit,
     onPlay: (AttachmentDomain) -> Unit,
@@ -45,10 +47,11 @@ internal fun LazyListScope.postAudioSection(
         }
     ) { idx ->
         val a = audios[idx]
-        val url = "${a.server}/data${a.path}"
+        val url = a.buildContentUrlToDataSite(fallbackBaseUrl = fallbackBaseUrl)
 
         AudioInfoItem(
             audio = a,
+            url = url,
             infoState = audioInfo[url],
             requestInfo = onInfoRequested,
             onPlay = onPlay,

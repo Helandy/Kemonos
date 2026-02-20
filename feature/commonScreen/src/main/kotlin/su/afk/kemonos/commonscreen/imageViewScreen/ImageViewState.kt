@@ -27,6 +27,8 @@ internal class ImageViewState {
         object Back : Event()
         data object PrevImage : Event()
         data object NextImage : Event()
+        data object DownloadCurrentImage : Event()
+        data object CopyCurrentImageLink : Event()
         data object ImageLoaded : Event()
         data class ImageFailed(val throwable: Throwable?) : Event()
         data object Retry : Event()
@@ -34,5 +36,8 @@ internal class ImageViewState {
 
     sealed interface Effect : UiEffect {
         data class OpenUrl(val url: String) : Effect
+        data class ShowToast(val message: String) : Effect
+        data class DownloadToast(val fileName: String) : Effect
+        data class CopyUrl(val url: String) : Effect
     }
 }

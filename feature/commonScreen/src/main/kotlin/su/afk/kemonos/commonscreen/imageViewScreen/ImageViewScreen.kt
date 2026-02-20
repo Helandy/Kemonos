@@ -1,5 +1,6 @@
 package su.afk.kemonos.commonscreen.imageViewScreen
 
+import android.content.Intent
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.gestures.rememberTransformableState
@@ -9,6 +10,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowLeft
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
+import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -22,6 +24,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
+import androidx.core.net.toUri
 import coil3.ImageLoader
 import coil3.compose.SubcomposeAsyncImage
 import coil3.compose.SubcomposeAsyncImageContent
@@ -37,6 +40,8 @@ import su.afk.kemonos.domain.models.ErrorItem
 import su.afk.kemonos.error.error.view.DefaultErrorContent
 import su.afk.kemonos.ui.R
 import su.afk.kemonos.ui.imageLoader.imageProgress.IMAGE_PROGRESS_REQUEST_ID_HEADER
+import su.afk.kemonos.ui.shared.ShareActions
+import su.afk.kemonos.ui.toast.toast
 import su.afk.kemonos.ui.uiUtils.size.formatBytes
 import kotlin.math.abs
 import kotlin.math.roundToInt
@@ -51,6 +56,7 @@ internal fun ImageViewScreen(
     val minScale: Float = 1f
     val maxScale: Float = 4f
     val doubleTapScale: Float = 3f
+    var showActionsMenu by remember { mutableStateOf(false) }
 
     var container by remember { mutableStateOf(IntSize.Zero) }
 
@@ -111,6 +117,41 @@ internal fun ImageViewScreen(
 
     /** Coil ImageLoader */
     val context = LocalContext.current
+
+    LaunchedEffect(effect) {
+        effect.collect { item ->
+            when (item) {
+                is Effect.OpenUrl -> {
+                    val intent = Intent(Intent.ACTION_VIEW, item.url.toUri())
+                    context.startActivity(intent)
+                }
+
+                is Effect.ShowToast -> {
+                    context.toast(item.message)
+                }
+
+                is Effect.DownloadToast -> {
+                    val safeName = item.fileName.trim().takeIf { it.isNotBlank() }
+
+                    val message = if (safeName != null) {
+                        context.getString(R.string.download_started_named, safeName)
+                    } else {
+                        context.getString(R.string.download_started)
+                    }
+                    context.toast(message)
+                }
+
+                is Effect.CopyUrl -> {
+                    ShareActions.copyToClipboard(
+                        context = context,
+                        label = context.getString(R.string.copy),
+                        text = item.url,
+                    )
+                    context.toast(context.getString(R.string.copy_link))
+                }
+            }
+        }
+    }
 
     val headers = remember(state.requestId, state.reloadKey) {
         NetworkHeaders.Builder()
@@ -237,6 +278,7 @@ internal fun ImageViewScreen(
                         errorItem = state.errorItem ?: ErrorItem(
                             title = stringResource(R.string.err_title_generic),
                             message = stringResource(R.string.err_msg_generic),
+                            url = state.imageUrl,
                         ),
                         onRetry = { onEvent(Event.Retry) }
                     )
@@ -256,12 +298,47 @@ internal fun ImageViewScreen(
             )
         }
 
+        Box(
+            modifier = Modifier
+                .align(Alignment.TopEnd)
+                .statusBarsPadding()
+        ) {
+            IconButton(
+                onClick = { showActionsMenu = true },
+                enabled = !state.imageUrl.isNullOrBlank(),
+            ) {
+                Icon(
+                    imageVector = Icons.Filled.MoreVert,
+                    contentDescription = stringResource(R.string.more_actions),
+                )
+            }
+
+            DropdownMenu(
+                expanded = showActionsMenu,
+                onDismissRequest = { showActionsMenu = false },
+            ) {
+                DropdownMenuItem(
+                    text = { Text(text = stringResource(R.string.download)) },
+                    onClick = {
+                        showActionsMenu = false
+                        onEvent(Event.DownloadCurrentImage)
+                    },
+                )
+                DropdownMenuItem(
+                    text = { Text(text = stringResource(R.string.copy_link)) },
+                    onClick = {
+                        showActionsMenu = false
+                        onEvent(Event.CopyCurrentImageLink)
+                    },
+                )
+            }
+        }
+
         if (hasGallery) {
             Surface(
                 modifier = Modifier
                     .align(Alignment.BottomCenter)
-                    .navigationBarsPadding()
-                    .padding(bottom = 16.dp),
+                    .navigationBarsPadding(),
                 shape = MaterialTheme.shapes.small,
                 color = MaterialTheme.colorScheme.surface.copy(alpha = 0.8f),
                 tonalElevation = 2.dp,
