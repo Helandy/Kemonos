@@ -174,7 +174,7 @@ internal fun ImageViewScreen(
             .size(rw, rh)
             .precision(Precision.EXACT)
             .memoryCachePolicy(CachePolicy.ENABLED)
-            .diskCachePolicy(CachePolicy.DISABLED)
+            .diskCachePolicy(CachePolicy.ENABLED)
             .httpHeaders(headers)
             .build()
     }
