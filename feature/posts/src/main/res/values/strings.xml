@@ -1,5 +1,18 @@
 <resources>
     <string name="posts_tab_popular">Popular</string>
+    <string name="posts_tab_hash_lookup">Hash Lookup</string>
+
+    <string name="hash_lookup_title">Hash Lookup</string>
+    <string name="hash_lookup_search_files">Search Files</string>
+    <string name="hash_lookup_selected_file">File: %1$s</string>
+    <string name="hash_lookup_sha256_label">SHA256 hash</string>
+    <string name="hash_lookup_invalid_hash">Enter a valid SHA256 hash (64 hex chars)</string>
+    <string name="hash_lookup_submit">Submit</string>
+    <string name="hash_lookup_result_hash">SHA256: %1$s</string>
+    <string name="hash_lookup_result_id">File ID: %1$s</string>
+    <string name="hash_lookup_result_meta">MIME: %1$s EXT: %2$s Size: %3$s bytes</string>
+    <string name="hash_lookup_result_posts_count">Posts: %1$s</string>
+    <string name="hash_lookup_post_meta">Service: %1$s User: %2$s Post ID: %3$s</string>
 
     <string name="popular_period_day">Day</string>
     <string name="popular_period_week">Week</string>

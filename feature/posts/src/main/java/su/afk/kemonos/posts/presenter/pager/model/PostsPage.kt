@@ -10,10 +10,12 @@ internal sealed class PostsPage(
     data object Search : PostsPage(CommonR.string.search)
     data object Popular : PostsPage(R.string.posts_tab_popular)
     data object Tags : PostsPage(CommonR.string.tags)
+    data object HashLookup : PostsPage(R.string.posts_tab_hash_lookup)
 }
 
 internal val ALL_POSTS_PAGES: List<PostsPage> = listOf(
     PostsPage.Search,
     PostsPage.Popular,
     PostsPage.Tags,
+    PostsPage.HashLookup,
 )

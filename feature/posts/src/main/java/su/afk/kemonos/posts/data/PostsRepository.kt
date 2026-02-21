@@ -7,9 +7,11 @@ import su.afk.kemonos.network.util.call
 import su.afk.kemonos.posts.api.popular.PopularPosts
 import su.afk.kemonos.posts.api.tags.Tags
 import su.afk.kemonos.posts.data.api.PostsApi
+import su.afk.kemonos.posts.data.dto.hashLookup.toDomain
 import su.afk.kemonos.posts.data.dto.popular.response.PopularPostsDto.Companion.toDomain
 import su.afk.kemonos.posts.data.dto.random.RandomDto.Companion.toDomain
 import su.afk.kemonos.posts.data.dto.tags.TagsDto.Companion.toDomain
+import su.afk.kemonos.posts.domain.model.hashLookup.HashLookupDomain
 import su.afk.kemonos.posts.domain.model.popular.Period
 import su.afk.kemonos.posts.domain.model.popular.Period.Companion.toDto
 import su.afk.kemonos.posts.domain.model.random.RandomDomain
@@ -25,6 +27,7 @@ internal interface IPostsRepository {
 
     suspend fun getTags(site: SelectedSite): List<Tags>
     suspend fun getRandomPost(): RandomDomain
+    suspend fun searchHash(hash: String): HashLookupDomain
 }
 
 internal class PostsRepository @Inject constructor(
@@ -106,5 +109,8 @@ internal class PostsRepository @Inject constructor(
 
     /** Рандомный пост */
     override suspend fun getRandomPost(): RandomDomain = postsApi.getRandomPost()
+        .call { dto -> dto.toDomain() }
+
+    override suspend fun searchHash(hash: String): HashLookupDomain = postsApi.searchHash(hash)
         .call { dto -> dto.toDomain() }
 }
