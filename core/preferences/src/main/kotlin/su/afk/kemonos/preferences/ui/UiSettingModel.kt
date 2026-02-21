@@ -60,7 +60,7 @@ enum class PostsSize {
         fun PostsSize.toDp() = when (this) {
             SMALL -> 110.dp
             MEDIUM -> 150.dp
-            LARGE -> 200.dp
+            LARGE -> 210.dp
         }
 
         fun PostsSize.toArrangement() = when (this) {

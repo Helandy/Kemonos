@@ -123,4 +123,12 @@ internal interface CoomerCreatorsDao {
     """
     )
     suspend fun randomCreators(service: String, limit: Int): List<CreatorsEntity>
+
+    @Query(
+        """
+    SELECT * FROM creators
+    WHERE (service || ':' || id) IN (:compositeKeys)
+    """
+    )
+    suspend fun findByCompositeKeys(compositeKeys: Set<String>): List<CreatorsEntity>
 }

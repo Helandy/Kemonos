@@ -26,4 +26,9 @@ interface IStoreCreatorsRepository {
         service: String,
         limit: Int,
     ): List<Creators>
+
+    suspend fun getNamesByCompositeKeys(
+        site: SelectedSite,
+        compositeKeys: Set<String>,
+    ): Map<String, String>
 }

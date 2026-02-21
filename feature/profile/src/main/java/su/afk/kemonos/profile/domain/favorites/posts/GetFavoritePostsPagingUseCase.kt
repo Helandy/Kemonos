@@ -15,6 +15,7 @@ internal class GetFavoritePostsPagingUseCase @Inject constructor(
     operator fun invoke(
         site: SelectedSite,
         query: String?,
+        groupByAuthor: Boolean,
     ): Flow<PagingData<PostDomain>> {
         return Pager(
             config = PagingConfig(
@@ -27,7 +28,8 @@ internal class GetFavoritePostsPagingUseCase @Inject constructor(
                 FavoritePostsPagingSource(
                     repository = repository,
                     site = site,
-                    query = query
+                    query = query,
+                    groupByAuthor = groupByAuthor,
                 )
             }
         ).flow
