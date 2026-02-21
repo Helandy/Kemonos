@@ -132,6 +132,18 @@ internal class StoreCreatorsRepository @Inject constructor(
         SelectedSite.C -> coomerDao.randomCreators(service, limit).map { it.toDomain() }
     }
 
+    override suspend fun getNamesByCompositeKeys(
+        site: SelectedSite,
+        compositeKeys: Set<String>
+    ): Map<String, String> {
+        if (compositeKeys.isEmpty()) return emptyMap()
+        val items = when (site) {
+            SelectedSite.K -> kemonoDao.findByCompositeKeys(compositeKeys)
+            SelectedSite.C -> coomerDao.findByCompositeKeys(compositeKeys)
+        }
+        return items.associate { "${it.service}:${it.id}" to it.name }
+    }
+
     private fun key(site: SelectedSite): String =
         if (site == SelectedSite.K) CREATORS_KEMONO else CREATORS_COOMER
 

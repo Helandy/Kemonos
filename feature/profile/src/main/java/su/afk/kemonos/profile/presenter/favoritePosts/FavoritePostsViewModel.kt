@@ -8,6 +8,7 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import su.afk.kemonos.creatorPost.api.ICreatorPostNavigator
+import su.afk.kemonos.creatorProfile.api.ICreatorProfileNavigator
 import su.afk.kemonos.domain.SelectedSite
 import su.afk.kemonos.domain.models.PostDomain
 import su.afk.kemonos.error.error.IErrorHandlerUseCase
@@ -20,6 +21,8 @@ import su.afk.kemonos.profile.domain.favorites.GetFavoritePostsUseCase
 import su.afk.kemonos.profile.domain.favorites.posts.GetFavoritePostsPagingUseCase
 import su.afk.kemonos.profile.presenter.favoritePosts.FavoritePostsState.*
 import su.afk.kemonos.profile.utils.Const.KEY_SELECT_SITE
+import su.afk.kemonos.storage.api.repository.creators.IStoreCreatorsRepository
+import su.afk.kemonos.storage.api.repository.favorites.post.IStoreFavoritePostsRepository
 import su.afk.kemonos.ui.components.posts.filter.PostMediaFilter
 import su.afk.kemonos.ui.components.posts.filter.matchesMediaFilter
 import su.afk.kemonos.ui.presenter.baseViewModel.BaseViewModelNew
@@ -28,7 +31,10 @@ import javax.inject.Inject
 @HiltViewModel
 internal class FavoritePostsViewModel @Inject constructor(
     private val getFavoritePostsUseCase: GetFavoritePostsUseCase,
+    private val storeCreatorsRepository: IStoreCreatorsRepository,
+    private val storeFavoritePostsRepository: IStoreFavoritePostsRepository,
     private val navManager: NavigationManager,
+    private val creatorProfileNavigator: ICreatorProfileNavigator,
     private val creatorPostNavigator: ICreatorPostNavigator,
     private val selectedSiteUseCase: ISelectedSiteUseCase,
     private val getFavoritePostsPagingUseCase: GetFavoritePostsPagingUseCase,
@@ -42,6 +48,7 @@ internal class FavoritePostsViewModel @Inject constructor(
 
     private val searchQueryFlow = MutableStateFlow("")
     private val mediaFilterFlow = MutableStateFlow(PostMediaFilter())
+    private val groupByAuthorFlow = MutableStateFlow(false)
     private var observeSearchJob: Job? = null
 
     override fun onRetry() {
@@ -69,8 +76,10 @@ internal class FavoritePostsViewModel @Inject constructor(
             Event.ToggleHasVideo -> toggleHasVideo()
             Event.ToggleHasAttachments -> toggleHasAttachments()
             Event.ToggleHasImages -> toggleHasImages()
+            Event.ToggleGroupByAuthor -> toggleGroupByAuthor()
             is Event.Load -> load(event.refresh)
             is Event.NavigateToPost -> navigateToPost(event.post)
+            is Event.NavigateToProfile -> navigateToProfile(event.service, event.creatorId)
         }
     }
 
@@ -88,15 +97,17 @@ internal class FavoritePostsViewModel @Inject constructor(
                 .debounce(500L)
                 .map { it.trim() }
                 .distinctUntilChanged(),
-            mediaFilterFlow
-        ) { query, mediaFilter ->
-            query to mediaFilter
+            mediaFilterFlow,
+            groupByAuthorFlow
+        ) { query, mediaFilter, groupByAuthor ->
+            Triple(query, mediaFilter, groupByAuthor)
         }
             .distinctUntilChanged()
-            .onEach { (query, mediaFilter) ->
+            .onEach { (query, mediaFilter, groupByAuthor) ->
                 val pagingFlow = getFavoritePostsPagingUseCase(
                     site = currentState.selectSite,
-                    query = query
+                    query = query,
+                    groupByAuthor = groupByAuthor,
                 )
                 setState {
                     copy(
@@ -125,10 +136,28 @@ internal class FavoritePostsViewModel @Inject constructor(
         setState { copy(selectSite = selectSite) }
 
         load(refresh = false)
+        loadAuthorNames()
 
         startObserveSearchOnce()
 
         searchQueryFlow.value = currentState.searchQuery
+    }
+
+    private fun loadAuthorNames() = viewModelScope.launch {
+        val compositeKeys = runCatching {
+            storeFavoritePostsRepository.getAll(currentState.selectSite).mapTo(linkedSetOf()) { post ->
+                "${post.service}:${post.userId}"
+            }
+        }.getOrDefault(emptySet())
+
+        val namesByKey = runCatching {
+            storeCreatorsRepository.getNamesByCompositeKeys(
+                site = currentState.selectSite,
+                compositeKeys = compositeKeys,
+            )
+        }.getOrDefault(emptyMap())
+
+        setState { copy(authorNamesByKey = namesByKey) }
     }
 
     /** Получить избранные посты */
@@ -156,6 +185,18 @@ internal class FavoritePostsViewModel @Inject constructor(
         )
     }
 
+    private fun navigateToProfile(service: String, creatorId: String) {
+        viewModelScope.launch {
+            navManager.navigate(
+                creatorProfileNavigator.getCreatorProfileDest(
+                    service = service,
+                    id = creatorId,
+                    isFresh = false,
+                )
+            )
+        }
+    }
+
     private fun toggleHasVideo() {
         val current = currentState.mediaFilter
         val next = current.copy(hasVideo = !current.hasVideo)
@@ -180,6 +221,15 @@ internal class FavoritePostsViewModel @Inject constructor(
         mediaFilterFlow.value = next
         setState {
             copy(mediaFilter = next)
+        }
+    }
+
+    private fun toggleGroupByAuthor() {
+        val enableGrouping = !currentState.groupByAuthorEnabled
+        setState { copy(groupByAuthorEnabled = enableGrouping) }
+        groupByAuthorFlow.value = enableGrouping
+        if (enableGrouping && currentState.authorNamesByKey.isEmpty()) {
+            loadAuthorNames()
         }
     }
 

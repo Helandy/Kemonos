@@ -28,6 +28,7 @@ internal interface IFavoritesRepository {
     suspend fun pageFavoritePosts(
         site: SelectedSite,
         query: String?,
+        groupByAuthor: Boolean,
         limit: Int,
         offset: Int,
     ): List<PostDomain>
@@ -74,14 +75,23 @@ internal class FavoritesRepository @Inject constructor(
     override suspend fun pageFavoritePosts(
         site: SelectedSite,
         query: String?,
+        groupByAuthor: Boolean,
         limit: Int,
         offset: Int,
     ): List<PostDomain> {
         val q = query?.trim().orEmpty()
         return if (q.length >= 2) {
-            postsStore.pageSearch(site = site, query = q, limit = limit, offset = offset)
+            if (groupByAuthor) {
+                postsStore.pageSearchGrouped(site = site, query = q, limit = limit, offset = offset)
+            } else {
+                postsStore.pageSearch(site = site, query = q, limit = limit, offset = offset)
+            }
         } else {
-            postsStore.page(site = site, limit = limit, offset = offset)
+            if (groupByAuthor) {
+                postsStore.pageGrouped(site = site, limit = limit, offset = offset)
+            } else {
+                postsStore.page(site = site, limit = limit, offset = offset)
+            }
         }
     }
 

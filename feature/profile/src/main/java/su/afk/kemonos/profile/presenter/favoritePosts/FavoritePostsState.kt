@@ -16,6 +16,8 @@ internal class FavoritePostsState {
         val selectSite: SelectedSite = SelectedSite.K,
         val loading: Boolean = false,
         val uiSettingModel: UiSettingModel = UiSettingModel(),
+        val authorNamesByKey: Map<String, String> = emptyMap(),
+        val groupByAuthorEnabled: Boolean = false,
 
         val searchQuery: String = "",
         val mediaFilter: PostMediaFilter = PostMediaFilter(),
@@ -28,6 +30,8 @@ internal class FavoritePostsState {
         data class SearchQueryChanged(val query: String) : Event
         data class Load(val refresh: Boolean = false) : Event
         data class NavigateToPost(val post: PostDomain) : Event
+        data class NavigateToProfile(val service: String, val creatorId: String) : Event
+        data object ToggleGroupByAuthor : Event
 
         data object ToggleHasVideo : Event
         data object ToggleHasAttachments : Event

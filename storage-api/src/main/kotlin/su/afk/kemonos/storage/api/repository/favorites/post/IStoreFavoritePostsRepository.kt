@@ -6,6 +6,8 @@ import su.afk.kemonos.domain.models.PostDomain
 interface IStoreFavoritePostsRepository {
     suspend fun page(site: SelectedSite, limit: Int, offset: Int): List<PostDomain>
     suspend fun pageSearch(site: SelectedSite, query: String, limit: Int, offset: Int): List<PostDomain>
+    suspend fun pageGrouped(site: SelectedSite, limit: Int, offset: Int): List<PostDomain>
+    suspend fun pageSearchGrouped(site: SelectedSite, query: String, limit: Int, offset: Int): List<PostDomain>
 
     suspend fun getAll(site: SelectedSite): List<PostDomain>
     suspend fun replaceAll(site: SelectedSite, items: List<PostDomain>)

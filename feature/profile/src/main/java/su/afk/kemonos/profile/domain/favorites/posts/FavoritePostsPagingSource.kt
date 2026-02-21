@@ -10,6 +10,7 @@ internal class FavoritePostsPagingSource(
     private val repository: IFavoritesRepository,
     private val site: SelectedSite,
     private val query: String?,
+    private val groupByAuthor: Boolean,
 ) : PagingSource<Int, PostDomain>() {
 
     override fun getRefreshKey(state: PagingState<Int, PostDomain>): Int? {
@@ -26,6 +27,7 @@ internal class FavoritePostsPagingSource(
             val data = repository.pageFavoritePosts(
                 site = site,
                 query = query,
+                groupByAuthor = groupByAuthor,
                 limit = limit,
                 offset = offset
             )

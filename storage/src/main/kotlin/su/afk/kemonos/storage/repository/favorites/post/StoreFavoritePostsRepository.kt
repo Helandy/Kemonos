@@ -22,6 +22,17 @@ internal class StoreFavoritePostsRepository @Inject constructor(
     override suspend fun pageSearch(site: SelectedSite, query: String, limit: Int, offset: Int): List<PostDomain> =
         dao.pageSearch(site = site, query = query, limit = limit, offset = offset).map(mapper::toDomain)
 
+    override suspend fun pageGrouped(site: SelectedSite, limit: Int, offset: Int): List<PostDomain> =
+        dao.pageGrouped(site = site, limit = limit, offset = offset).map(mapper::toDomain)
+
+    override suspend fun pageSearchGrouped(
+        site: SelectedSite,
+        query: String,
+        limit: Int,
+        offset: Int
+    ): List<PostDomain> =
+        dao.pageSearchGrouped(site = site, query = query, limit = limit, offset = offset).map(mapper::toDomain)
+
     override suspend fun getAll(site: SelectedSite): List<PostDomain> =
         dao.getAll(site).map(mapper::toDomain)
 
