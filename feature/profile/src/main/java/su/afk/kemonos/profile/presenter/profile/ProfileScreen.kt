@@ -19,10 +19,7 @@ import kotlinx.coroutines.launch
 import su.afk.kemonos.domain.SelectedSite
 import su.afk.kemonos.profile.R
 import su.afk.kemonos.profile.presenter.profile.ProfileState.*
-import su.afk.kemonos.profile.presenter.profile.views.DownloadsButton
-import su.afk.kemonos.profile.presenter.profile.views.LogoutDialog
-import su.afk.kemonos.profile.presenter.profile.views.SettingsButton
-import su.afk.kemonos.profile.presenter.profile.views.SitePage
+import su.afk.kemonos.profile.presenter.profile.views.*
 import su.afk.kemonos.ui.presenter.baseScreen.BaseScreen
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -113,6 +110,10 @@ internal fun ProfileScreen(
 
             DownloadsButton(
                 onClick = { onEvent(Event.NavigateToDownloads) }
+            )
+
+            AuthorsBlacklistButton(
+                onClick = { onEvent(Event.NavigateToAuthorsBlacklist) }
             )
 
             SettingsButton(

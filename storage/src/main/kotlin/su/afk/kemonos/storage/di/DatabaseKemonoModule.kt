@@ -9,6 +9,7 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import su.afk.kemonos.storage.database.KemonoDatabase
 import su.afk.kemonos.storage.database.migrations.kemono.*
+import su.afk.kemonos.storage.entity.blacklist.dao.BlacklistedAuthorsDao
 import su.afk.kemonos.storage.entity.comments.dao.CommentsDao
 import su.afk.kemonos.storage.entity.creatorProfileCache.dao.CreatorProfileCacheDao
 import su.afk.kemonos.storage.entity.creators.dao.KemonoCreatorsDao
@@ -40,7 +41,8 @@ internal object DatabaseKemonoModule {
                 KemonoFrom5To6,
                 KemonoFrom6To7,
                 KemonoFrom7To8,
-                KemonoFrom8To9
+                KemonoFrom8To9,
+                KemonoFrom9To10
             )
             .build()
 
@@ -86,4 +88,7 @@ internal object DatabaseKemonoModule {
 
     @Provides
     fun provideDownloadTaskDao(db: KemonoDatabase): DownloadTaskDao = db.downloadTaskDao()
+
+    @Provides
+    fun provideBlacklistedAuthorsDao(db: KemonoDatabase): BlacklistedAuthorsDao = db.blacklistedAuthorsDao()
 }

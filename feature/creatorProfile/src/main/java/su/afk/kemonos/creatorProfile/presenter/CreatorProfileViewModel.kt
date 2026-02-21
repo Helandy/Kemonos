@@ -27,6 +27,8 @@ import su.afk.kemonos.navigation.NavigationManager
 import su.afk.kemonos.preferences.GetKemonoRootUrlUseCase
 import su.afk.kemonos.preferences.IGetCurrentSiteRootUrlUseCase
 import su.afk.kemonos.preferences.ui.IUiSettingUseCase
+import su.afk.kemonos.storage.api.repository.blacklist.BlacklistedAuthor
+import su.afk.kemonos.storage.api.repository.blacklist.IStoreBlacklistedAuthorsRepository
 import su.afk.kemonos.storage.api.repository.profilePosts.IStorageCreatorPostsRepository
 import su.afk.kemonos.ui.components.posts.filter.matchesMediaFilter
 import su.afk.kemonos.ui.presenter.baseViewModel.BaseViewModelNew
@@ -44,12 +46,14 @@ internal class CreatorProfileViewModel @AssistedInject constructor(
     private val getProfilePostsPagingUseCase: GetProfilePostsPagingUseCase,
     private val navManager: NavigationManager,
     private val postsCache: IStorageCreatorPostsRepository,
+    private val blacklistedAuthorsRepository: IStoreBlacklistedAuthorsRepository,
     private val uiSetting: IUiSettingUseCase,
     override val errorHandler: IErrorHandlerUseCase,
     override val retryStorage: RetryStorage,
 ) : BaseViewModelNew<State, Event, Effect>() {
 
     private var searchJob: Job? = null
+    private var observeBlacklistJob: Job? = null
 
     override fun createInitialState(): State = State()
 
@@ -77,6 +81,7 @@ internal class CreatorProfileViewModel @AssistedInject constructor(
             Event.ToggleHasVideo -> toggleHasVideo()
             Event.ToggleHasAttachments -> toggleHasAttachments()
             Event.ToggleHasImages -> toggleHasImages()
+            Event.ToggleBlacklist -> toggleBlacklist()
 
             Event.FavoriteClick -> onFavoriteClick()
         }
@@ -112,6 +117,7 @@ internal class CreatorProfileViewModel @AssistedInject constructor(
         }
 
         if (!isDiscordProfile(dest.service)) {
+            observeBlacklist()
             loadAll()
         }
     }
@@ -373,5 +379,40 @@ internal class CreatorProfileViewModel @AssistedInject constructor(
             )
         )
         setEffect(Effect.CopyPostLink(url))
+    }
+
+    private fun observeBlacklist() {
+        observeBlacklistJob?.cancel()
+        observeBlacklistJob = blacklistedAuthorsRepository.observeContains(
+            service = currentState.service,
+            creatorId = currentState.id
+        )
+            .onEach { inBlacklist ->
+                setState { copy(isInBlacklist = inBlacklist) }
+            }
+            .launchIn(viewModelScope)
+    }
+
+    private fun toggleBlacklist() = viewModelScope.launch {
+        val profile = currentState.profile ?: return@launch
+
+        if (currentState.isInBlacklist) {
+            blacklistedAuthorsRepository.remove(
+                service = profile.service,
+                creatorId = profile.id
+            )
+            setEffect(Effect.RemovedFromBlacklist)
+            return@launch
+        }
+
+        blacklistedAuthorsRepository.upsert(
+            BlacklistedAuthor(
+                service = profile.service,
+                creatorId = profile.id,
+                creatorName = profile.name,
+                createdAt = System.currentTimeMillis()
+            )
+        )
+        setEffect(Effect.AddedToBlacklist)
     }
 }

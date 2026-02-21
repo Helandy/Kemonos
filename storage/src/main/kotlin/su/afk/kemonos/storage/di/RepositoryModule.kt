@@ -4,6 +4,7 @@ import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
+import su.afk.kemonos.storage.api.repository.blacklist.IStoreBlacklistedAuthorsRepository
 import su.afk.kemonos.storage.api.repository.comments.IStoreCommentsRepository
 import su.afk.kemonos.storage.api.repository.creatorProfile.IStoreCreatorProfileRepository
 import su.afk.kemonos.storage.api.repository.creators.IStoreCreatorsRepository
@@ -17,6 +18,7 @@ import su.afk.kemonos.storage.api.repository.postsSearch.IStoragePostsSearchRepo
 import su.afk.kemonos.storage.api.repository.profile.IStoreProfileRepository
 import su.afk.kemonos.storage.api.repository.profilePosts.IStorageCreatorPostsRepository
 import su.afk.kemonos.storage.api.repository.tags.IStoreTagsRepository
+import su.afk.kemonos.storage.repository.blacklist.StoreBlacklistedAuthorsRepository
 import su.afk.kemonos.storage.repository.comments.StoreCommentsRepository
 import su.afk.kemonos.storage.repository.creatorProfileCache.StoreCreatorProfileRepository
 import su.afk.kemonos.storage.repository.creators.StoreCreatorsRepository
@@ -89,4 +91,10 @@ internal interface RepositoryModule {
     @Singleton
     @Binds
     fun bindTrackedDownloadsRepository(impl: TrackedDownloadsRepository): ITrackedDownloadsRepository
+
+    @Singleton
+    @Binds
+    fun bindStoreBlacklistedAuthorsRepository(
+        impl: StoreBlacklistedAuthorsRepository
+    ): IStoreBlacklistedAuthorsRepository
 }

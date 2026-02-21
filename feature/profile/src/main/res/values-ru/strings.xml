@@ -48,6 +48,13 @@
     <string name="profile_menu_change_username">Сменить имя пользователя</string>
     <string name="profile_menu_change_password">Сменить пароль</string>
     <string name="profile_downloads">Загрузки</string>
+    <string name="profile_authors_blacklist">Черный список авторов</string>
+    <string name="profile_authors_blacklist_search">Поиск по черному списку</string>
+    <string name="profile_authors_blacklist_remove">Удалить из черного списка</string>
+    <string name="profile_authors_blacklist_empty">Черный список пуст</string>
+    <string name="profile_authors_blacklist_remove_title">Удалить автора?</string>
+    <string name="profile_authors_blacklist_remove_message">Удалить %1$s из черного списка?</string>
+    <string name="profile_authors_blacklist_remove_confirm">Удалить</string>
 
     <string name="profile_error_not_authorized">Вы не авторизованы</string>
 

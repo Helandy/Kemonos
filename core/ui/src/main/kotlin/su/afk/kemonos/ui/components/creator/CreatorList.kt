@@ -25,7 +25,7 @@ import su.afk.kemonos.ui.uiUtils.color.getColorForFavorites
 import su.afk.kemonos.ui.uiUtils.formatNumberWithSpaces
 
 @Composable
-internal fun CreatorListItem(
+fun CreatorListItem(
     dateMode: DateFormatMode,
     service: String,
     id: String,

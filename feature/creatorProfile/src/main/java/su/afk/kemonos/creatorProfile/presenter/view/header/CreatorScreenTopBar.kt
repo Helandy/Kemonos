@@ -27,6 +27,8 @@ internal fun CreatorScreenTopBar(
     onToggleSearch: () -> Unit,
     onShare: () -> Unit,
     onOpenPlatform: (String) -> Unit,
+    isInBlacklist: Boolean,
+    onToggleBlacklist: () -> Unit,
 ) {
     val extrasVisible by remember(scrollBehavior) {
         derivedStateOf {
@@ -57,6 +59,8 @@ internal fun CreatorScreenTopBar(
                     onToggleSearch = onToggleSearch,
                     onShare = onShare,
                     onOpenPlatform = onOpenPlatform,
+                    isInBlacklist = isInBlacklist,
+                    onToggleBlacklist = onToggleBlacklist,
                 )
             }
         )
@@ -85,6 +89,8 @@ private fun CreatorTopBarActions(
     onToggleSearch: () -> Unit,
     onShare: () -> Unit,
     onOpenPlatform: (String) -> Unit,
+    isInBlacklist: Boolean,
+    onToggleBlacklist: () -> Unit,
 ) {
     var expanded by remember { mutableStateOf(false) }
 
@@ -116,6 +122,11 @@ private fun CreatorTopBarActions(
             expanded = false
             onOpenPlatform(link)
         },
+        isInBlacklist = isInBlacklist,
+        onToggleBlacklist = {
+            expanded = false
+            onToggleBlacklist()
+        }
     )
 }
 
@@ -128,6 +139,8 @@ private fun CreatorTopBarMenu(
     onDismiss: () -> Unit,
     onShare: () -> Unit,
     onOpenPlatform: (String) -> Unit,
+    isInBlacklist: Boolean,
+    onToggleBlacklist: () -> Unit,
 ) {
     DropdownMenu(
         expanded = expanded,
@@ -156,6 +169,27 @@ private fun CreatorTopBarMenu(
                 onClick = { onOpenPlatform(link) }
             )
         }
+
+        DropdownMenuItem(
+            text = {
+                Text(
+                    stringResource(
+                        if (isInBlacklist) {
+                            R.string.author_blacklist_remove_action
+                        } else {
+                            R.string.author_blacklist_add_action
+                        }
+                    )
+                )
+            },
+            leadingIcon = {
+                Icon(
+                    imageVector = Icons.Default.Block,
+                    contentDescription = null
+                )
+            },
+            onClick = onToggleBlacklist
+        )
 
         updated?.let { upd ->
             DropdownMenuItem(

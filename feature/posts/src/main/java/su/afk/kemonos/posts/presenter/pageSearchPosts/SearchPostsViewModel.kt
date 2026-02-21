@@ -16,6 +16,7 @@ import su.afk.kemonos.posts.presenter.common.NavigateToPostDelegate
 import su.afk.kemonos.posts.presenter.pageSearchPosts.SearchPostsState.*
 import su.afk.kemonos.preferences.site.ISelectedSiteUseCase
 import su.afk.kemonos.preferences.ui.IUiSettingUseCase
+import su.afk.kemonos.storage.api.repository.blacklist.IStoreBlacklistedAuthorsRepository
 import su.afk.kemonos.ui.components.posts.filter.PostMediaFilter
 import su.afk.kemonos.ui.components.posts.filter.matchesMediaFilter
 import su.afk.kemonos.ui.presenter.changeSite.SiteAwareBaseViewModelNew
@@ -27,6 +28,7 @@ internal class SearchPostsViewModel @Inject constructor(
     private val navigateToPostDelegate: NavigateToPostDelegate,
     private val getRandomPost: GetRandomPost,
     private val uiSetting: IUiSettingUseCase,
+    private val blacklistedAuthorsRepository: IStoreBlacklistedAuthorsRepository,
     override val selectedSiteUseCase: ISelectedSiteUseCase,
     override val errorHandler: IErrorHandlerUseCase,
     override val retryStorage: RetryStorage,
@@ -44,12 +46,22 @@ internal class SearchPostsViewModel @Inject constructor(
             searchQueryFlow
                 .debounce(2000L)
                 .distinctUntilChanged(),
-            mediaFilterFlow
-        ) { query, mediaFilter ->
-            query to mediaFilter
+            mediaFilterFlow,
+            blacklistedAuthorsRepository.observeAll()
+                .map { items ->
+                    items.mapTo(mutableSetOf()) { blacklisted ->
+                        blacklistKey(blacklisted.service, blacklisted.creatorId)
+                    }
+                }
+        ) { query, mediaFilter, blacklistedAuthorKeys ->
+            Triple(query, mediaFilter, blacklistedAuthorKeys)
         }.distinctUntilChanged()
-            .collectLatest { (query, mediaFilter) ->
-                requestPosts(query = query, mediaFilter = mediaFilter)
+            .collectLatest { (query, mediaFilter, blacklistedAuthorKeys) ->
+                requestPosts(
+                    query = query,
+                    mediaFilter = mediaFilter,
+                    blacklistedAuthorKeys = blacklistedAuthorKeys
+                )
             }
     }
 
@@ -72,7 +84,10 @@ internal class SearchPostsViewModel @Inject constructor(
         viewModelScope.launch {
             requestPosts(
                 query = currentState.searchQuery,
-                mediaFilter = currentState.mediaFilter
+                mediaFilter = currentState.mediaFilter,
+                blacklistedAuthorKeys = blacklistedAuthorsRepository.observeAll()
+                    .first()
+                    .mapTo(mutableSetOf()) { blacklistKey(it.service, it.creatorId) }
             )
         }
     }
@@ -81,7 +96,13 @@ internal class SearchPostsViewModel @Inject constructor(
         /** при смене сайта — сбросить поисковую строку и запросить заново */
         setState { copy(searchQuery = "") }
         searchQueryFlow.value = ""
-        requestPosts(query = "", mediaFilter = currentState.mediaFilter)
+        requestPosts(
+            query = "",
+            mediaFilter = currentState.mediaFilter,
+            blacklistedAuthorKeys = blacklistedAuthorsRepository.observeAll()
+                .first()
+                .mapTo(mutableSetOf()) { blacklistKey(it.service, it.creatorId) }
+        )
     }
 
     override fun onEvent(event: Event) {
@@ -104,6 +125,7 @@ internal class SearchPostsViewModel @Inject constructor(
     private fun requestPosts(
         query: String,
         mediaFilter: PostMediaFilter,
+        blacklistedAuthorKeys: Set<String>,
     ) {
         val search = query.trim().ifEmpty { null }
         val currentSite = site.value
@@ -116,10 +138,13 @@ internal class SearchPostsViewModel @Inject constructor(
 
         setState {
             copy(
-                posts = if (mediaFilter.isActive) {
+                posts = if (mediaFilter.isActive || blacklistedAuthorKeys.isNotEmpty()) {
                     pagingFlow.map { page ->
                         page.filter { post ->
-                            post.matchesMediaFilter(mediaFilter)
+                            val allowedByBlacklist = !blacklistedAuthorKeys.contains(
+                                blacklistKey(post.service, post.userId)
+                            )
+                            allowedByBlacklist && post.matchesMediaFilter(mediaFilter)
                         }
                     }.cachedIn(viewModelScope)
                 } else {
@@ -162,4 +187,7 @@ internal class SearchPostsViewModel @Inject constructor(
     private fun navigateToPost(post: PostDomain) {
         navigateToPostDelegate.navigateToPost(post)
     }
+
+    private fun blacklistKey(service: String, creatorId: String): String =
+        "${service.lowercase()}:$creatorId"
 }

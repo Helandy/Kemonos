@@ -41,6 +41,11 @@
 
     <string name="open_with">Open via…</string>
     <string name="open_platform_profile">Platform Link</string>
+    <string name="author_blacklist_add_action">Add to blacklist</string>
+    <string name="author_blacklist_remove_action">Remove from blacklist</string>
+    <string name="author_blacklist_added">Author added to blacklist</string>
+    <string name="author_blacklist_removed">Author removed from blacklist</string>
+    <string name="author_blacklist_already_exists">Author is already in blacklist</string>
     <string name="vlc_not_installed">VLC is not installed. Opening it through another application…</string>
 
     <string name="search">Search…</string>

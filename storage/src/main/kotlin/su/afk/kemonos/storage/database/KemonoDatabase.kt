@@ -4,6 +4,8 @@ import androidx.room.Database
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 import su.afk.kemonos.storage.database.converter.SelectedSiteConverters
+import su.afk.kemonos.storage.entity.blacklist.BlacklistedAuthorEntity
+import su.afk.kemonos.storage.entity.blacklist.dao.BlacklistedAuthorsDao
 import su.afk.kemonos.storage.entity.comments.dao.CommentsDao
 import su.afk.kemonos.storage.entity.comments.entity.CommentEntity
 import su.afk.kemonos.storage.entity.comments.entity.CommentRevisionEntity
@@ -61,8 +63,9 @@ import su.afk.kemonos.storage.entity.video.dao.VideoInfoDao
         PostsPopularCacheEntity::class,
 
         DownloadTaskEntity::class,
+        BlacklistedAuthorEntity::class,
     ],
-    version = 9,
+    version = 10,
     exportSchema = false
 )
 @TypeConverters(SelectedSiteConverters::class)
@@ -91,4 +94,6 @@ internal abstract class KemonoDatabase : RoomDatabase() {
     abstract fun postsPopularCacheDao(): KemonoPostsPopularCacheDao
 
     abstract fun downloadTaskDao(): DownloadTaskDao
+
+    abstract fun blacklistedAuthorsDao(): BlacklistedAuthorsDao
 }
