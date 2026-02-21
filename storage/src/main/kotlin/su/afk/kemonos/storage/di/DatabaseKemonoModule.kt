@@ -13,6 +13,7 @@ import su.afk.kemonos.storage.entity.blacklist.dao.BlacklistedAuthorsDao
 import su.afk.kemonos.storage.entity.comments.dao.CommentsDao
 import su.afk.kemonos.storage.entity.creatorProfileCache.dao.CreatorProfileCacheDao
 import su.afk.kemonos.storage.entity.creators.dao.KemonoCreatorsDao
+import su.afk.kemonos.storage.entity.dms.dao.KemonoDmsCacheDao
 import su.afk.kemonos.storage.entity.download.dao.DownloadTaskDao
 import su.afk.kemonos.storage.entity.favorites.artist.FavoriteArtistsDao
 import su.afk.kemonos.storage.entity.favorites.post.FavoritePostsDao
@@ -46,6 +47,7 @@ internal object DatabaseKemonoModule {
                 KemonoFrom9To10,
                 KemonoFrom10To11,
                 KemonoFrom11To12,
+                KemonoFrom12To13,
             )
             .build()
 
@@ -89,6 +91,9 @@ internal object DatabaseKemonoModule {
     @Provides
     fun providePostsSearchHistoryDao(db: KemonoDatabase): KemonoPostsSearchHistoryDao =
         db.postsSearchHistoryDao()
+
+    @Provides
+    fun provideDmsCacheDao(db: KemonoDatabase): KemonoDmsCacheDao = db.dmsCacheDao()
 
     @Provides
     fun providePostsPopularCacheDao(db: KemonoDatabase): KemonoPostsPopularCacheDao = db.postsPopularCacheDao()

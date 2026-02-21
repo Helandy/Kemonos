@@ -6,6 +6,7 @@ import retrofit2.http.Path
 import retrofit2.http.Query
 import su.afk.kemonos.network.textInterceptor.HeaderText
 import su.afk.kemonos.posts.data.dto.PostsDto
+import su.afk.kemonos.posts.data.dto.dms.DmsPageDto
 import su.afk.kemonos.posts.data.dto.hashLookup.HashLookupDto
 import su.afk.kemonos.posts.data.dto.popular.request.PeriodDto
 import su.afk.kemonos.posts.data.dto.popular.response.PopularPostsDto
@@ -21,6 +22,14 @@ internal interface PostsApi {
         @Query("q") search: String? = null,
         @Query("tag") tag: String? = null,
     ): Response<PostsDto>
+
+    @GET("v1/dms")
+    @HeaderText
+    suspend fun getDms(
+        @Query("o") offset: Int? = null,
+        @Query("limit") limit: Int? = null,
+        @Query("q") query: String? = null,
+    ): Response<DmsPageDto>
 
     @GET("v1/posts/popular")
     @HeaderText

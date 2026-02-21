@@ -26,6 +26,8 @@ import su.afk.kemonos.creatorProfile.presenter.view.header.ProfileTabsBar
 import su.afk.kemonos.deepLink.utils.openUrlInBrowser
 import su.afk.kemonos.domain.models.PostDomain
 import su.afk.kemonos.ui.components.button.FavoriteActionButton
+import su.afk.kemonos.ui.components.dm.DmListScreen
+import su.afk.kemonos.ui.components.dm.DmUiItem
 import su.afk.kemonos.ui.components.posts.PostsContentPaging
 import su.afk.kemonos.ui.presenter.baseScreen.BaseScreen
 import su.afk.kemonos.ui.presenter.baseScreen.TopBarScroll
@@ -181,7 +183,14 @@ private fun SelectedTab(
 
         ProfileTab.DMS -> DmListScreen(
             dateMode = state.uiSettingModel.dateFormatMode,
-            dms = state.dmList,
+            dms = state.dmList.map { dm ->
+                DmUiItem(
+                    hash = dm.hash,
+                    content = dm.content,
+                    published = dm.published,
+                )
+            },
+            sortByPublishedDesc = true,
         )
 
         ProfileTab.ANNOUNCEMENTS -> AnnouncementsScreen(

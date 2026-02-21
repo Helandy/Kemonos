@@ -17,6 +17,7 @@ dependencies {
     implementation(project(":core:error"))
 
     implementation(project(":feature:posts-api"))
+    implementation(project(":feature:creatorProfile-api"))
     implementation(project(":feature:creatorPost-api"))
     implementation(project(":storage-api"))
 }

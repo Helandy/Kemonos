@@ -10,6 +10,7 @@ import dagger.hilt.components.SingletonComponent
 import su.afk.kemonos.storage.database.CoomerDatabase
 import su.afk.kemonos.storage.database.migrations.coomer.*
 import su.afk.kemonos.storage.entity.creators.dao.CoomerCreatorsDao
+import su.afk.kemonos.storage.entity.dms.dao.CoomerDmsCacheDao
 import su.afk.kemonos.storage.entity.popular.dao.CoomerPostsPopularCacheDao
 import su.afk.kemonos.storage.entity.postsSearch.dao.CoomerPostsSearchCacheDao
 import su.afk.kemonos.storage.entity.postsSearch.history.dao.CoomerPostsSearchHistoryDao
@@ -29,7 +30,8 @@ internal object DatabaseCoomerModule {
                 CoomerFrom3To4,
                 CoomerFrom4To5,
                 CoomerFrom5To6,
-                CoomerFrom6To7
+                CoomerFrom6To7,
+                CoomerFrom7To8,
             )
             .build()
 
@@ -45,6 +47,9 @@ internal object DatabaseCoomerModule {
     @Provides
     fun provideCoomerPostsSearchHistoryDao(db: CoomerDatabase): CoomerPostsSearchHistoryDao =
         db.coomerPostsSearchHistoryDao()
+
+    @Provides
+    fun provideCoomerDmsCacheDao(db: CoomerDatabase): CoomerDmsCacheDao = db.coomerDmsCacheDao()
 
     @Provides
     fun provideCoomerPostsPopularCacheDao(db: CoomerDatabase): CoomerPostsPopularCacheDao =
