@@ -28,12 +28,20 @@ internal class NavigateDelegates @Inject constructor(
         originalUrl: String,
         imageUrls: List<String> = emptyList(),
         selectedIndex: Int? = null,
+        service: String? = null,
+        creatorName: String? = null,
+        postId: String? = null,
+        postTitle: String? = null,
     ) {
         navManager.navigate(
             imageViewNavigator(
                 imageUrl = originalUrl,
                 imageUrls = imageUrls,
                 selectedIndex = selectedIndex,
+                service = service,
+                creatorName = creatorName,
+                postId = postId,
+                postTitle = postTitle,
             )
         )
     }

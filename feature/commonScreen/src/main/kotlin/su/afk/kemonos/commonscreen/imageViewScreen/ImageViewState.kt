@@ -12,6 +12,10 @@ internal class ImageViewState {
         val imageUrl: String? = null,
         val imageUrls: List<String> = emptyList(),
         val selectedIndex: Int = 0,
+        val service: String? = null,
+        val creatorName: String? = null,
+        val postId: String? = null,
+        val postTitle: String? = null,
 
         val requestId: String = java.util.UUID.randomUUID().toString(),
         val reloadKey: Int = 0,
