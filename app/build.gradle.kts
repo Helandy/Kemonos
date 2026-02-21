@@ -104,6 +104,9 @@ dependencies {
     implementation(project(":feature:profile-api"))
     implementation(project(":feature:profile"))
 
+    implementation(project(":feature:setting-api"))
+    implementation(project(":feature:setting"))
+
     implementation(project(":feature:appUpdate-api"))
     implementation(project(":feature:appUpdate"))
 

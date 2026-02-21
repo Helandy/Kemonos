@@ -6,7 +6,7 @@ import su.afk.kemonos.preferences.ui.IUiSettingUseCase
 import su.afk.kemonos.profile.presenter.setting.SettingState.Event
 import javax.inject.Inject
 
-internal class SettingUiPreferencesDelegate @Inject constructor(
+class SettingUiPreferencesDelegate @Inject constructor(
     private val uiSetting: IUiSettingUseCase
 ) {
     fun handle(event: Event.ChangeViewSetting, scope: CoroutineScope) {

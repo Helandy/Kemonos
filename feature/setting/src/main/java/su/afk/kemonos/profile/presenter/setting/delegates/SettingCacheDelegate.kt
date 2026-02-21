@@ -16,7 +16,7 @@ import su.afk.kemonos.storage.api.repository.profilePosts.IStorageCreatorPostsRe
 import su.afk.kemonos.storage.api.repository.tags.IStoreTagsRepository
 import javax.inject.Inject
 
-internal class SettingCacheDelegate @Inject constructor(
+class SettingCacheDelegate @Inject constructor(
     private val errorHandler: IErrorHandlerUseCase,
     private val storeTagsUseCase: IStoreTagsRepository,
     private val storeCreatorsUseCase: IStoreCreatorsRepository,

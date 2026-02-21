@@ -13,17 +13,17 @@ import su.afk.kemonos.preferences.ui.IUiSettingUseCase
 import su.afk.kemonos.preferences.useCase.CacheKeys
 import su.afk.kemonos.preferences.useCase.CacheTimes
 import su.afk.kemonos.preferences.useCase.ICacheTimestampUseCase
-import su.afk.kemonos.profile.BuildConfig
 import su.afk.kemonos.profile.presenter.setting.SettingState.*
 import su.afk.kemonos.profile.presenter.setting.delegates.SettingApiDelegate
 import su.afk.kemonos.profile.presenter.setting.delegates.SettingCacheDelegate
 import su.afk.kemonos.profile.presenter.setting.delegates.SettingUiPreferencesDelegate
+import su.afk.kemonos.setting.BuildConfig
 import su.afk.kemonos.ui.presenter.baseViewModel.BaseViewModelNew
 import su.afk.kemonos.utils.url.normalizeDomain
 import javax.inject.Inject
 
 @HiltViewModel
-internal class SettingViewModel @Inject constructor(
+class SettingViewModel @Inject constructor(
     private val getCoomerRootUrlUseCase: GetCoomerRootUrlUseCase,
     private val getKemonoRootUrlUseCase: GetKemonoRootUrlUseCase,
     private val cacheTimestamps: ICacheTimestampUseCase,

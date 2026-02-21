@@ -11,7 +11,7 @@ import su.afk.kemonos.utils.url.normalizeDomain
 import su.afk.kemonos.utils.url.toRootUrl
 import javax.inject.Inject
 
-internal class SettingApiDelegate @Inject constructor(
+class SettingApiDelegate @Inject constructor(
     private val setBaseUrlsUseCase: ISetBaseUrlsUseCase,
     private val errorHandler: IErrorHandlerUseCase,
 ) {
@@ -54,4 +54,3 @@ internal class SettingApiDelegate @Inject constructor(
         }
     }
 }
-
