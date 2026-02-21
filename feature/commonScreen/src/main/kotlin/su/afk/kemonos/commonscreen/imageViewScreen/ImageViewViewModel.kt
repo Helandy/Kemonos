@@ -6,9 +6,13 @@ import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import su.afk.kemonos.commonscreen.imageViewScreen.ImageViewState.*
+import su.afk.kemonos.commonscreen.navigator.ImageNavigationConst.KEY_CREATOR_NAME
 import su.afk.kemonos.commonscreen.navigator.ImageNavigationConst.KEY_IMAGE_URLS
+import su.afk.kemonos.commonscreen.navigator.ImageNavigationConst.KEY_POST_ID
+import su.afk.kemonos.commonscreen.navigator.ImageNavigationConst.KEY_POST_TITLE
 import su.afk.kemonos.commonscreen.navigator.ImageNavigationConst.KEY_SELECTED_IMAGE
 import su.afk.kemonos.commonscreen.navigator.ImageNavigationConst.KEY_SELECTED_IMAGE_INDEX
+import su.afk.kemonos.commonscreen.navigator.ImageNavigationConst.KEY_SERVICE
 import su.afk.kemonos.download.api.IDownloadUtil
 import su.afk.kemonos.error.error.IErrorHandlerUseCase
 import su.afk.kemonos.error.error.storage.RetryStorage
@@ -77,6 +81,10 @@ internal class ImageViewViewModel @Inject constructor(
         val imageUrl = navigationStorage.consume<String>(KEY_SELECTED_IMAGE)
         val imageUrls = navigationStorage.consume<List<String>>(KEY_IMAGE_URLS).orEmpty()
         val selectedIndex = navigationStorage.consume<Int>(KEY_SELECTED_IMAGE_INDEX)
+        val service = navigationStorage.consume<String>(KEY_SERVICE)
+        val creatorName = navigationStorage.consume<String>(KEY_CREATOR_NAME)
+        val postId = navigationStorage.consume<String>(KEY_POST_ID)
+        val postTitle = navigationStorage.consume<String>(KEY_POST_TITLE)
 
         val preparedUrls = prepareImageUrls(imageUrl = imageUrl, imageUrls = imageUrls)
         val safeSelectedIndex = selectedIndex
@@ -91,6 +99,10 @@ internal class ImageViewViewModel @Inject constructor(
                 imageUrl = initialUrl,
                 imageUrls = preparedUrls,
                 selectedIndex = safeSelectedIndex,
+                service = service,
+                creatorName = creatorName,
+                postId = postId,
+                postTitle = postTitle,
                 requestId = newRequestId(),
                 loading = true,
                 isLoadError = false,
@@ -190,10 +202,10 @@ internal class ImageViewViewModel @Inject constructor(
                 downloadUtil.enqueueSystemDownload(
                     url = url,
                     fileName = fileName,
-                    service = null,
-                    creatorName = null,
-                    postId = null,
-                    postTitle = null,
+                    service = state.value.service,
+                    creatorName = state.value.creatorName,
+                    postId = state.value.postId,
+                    postTitle = state.value.postTitle,
                 )
             }.onSuccess {
                 setEffect(Effect.DownloadToast(fileName))

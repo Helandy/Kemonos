@@ -7,5 +7,9 @@ interface IImageViewNavigator {
         imageUrl: String,
         imageUrls: List<String> = emptyList(),
         selectedIndex: Int? = null,
+        service: String? = null,
+        creatorName: String? = null,
+        postId: String? = null,
+        postTitle: String? = null,
     ): NavKey
 }

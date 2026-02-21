@@ -313,6 +313,10 @@ internal class CreatorPostViewModel @AssistedInject constructor(
             originalUrl = originalUrl,
             imageUrls = imageUrls,
             selectedIndex = selectedIndex,
+            service = currentState.service,
+            creatorName = currentState.profile?.name,
+            postId = currentState.postId,
+            postTitle = currentState.post?.post?.title,
         )
     }
 
