@@ -84,6 +84,7 @@ internal class CreatorPostState {
         data object FavoriteClicked : Event
 
         data object CreatorHeaderClicked : Event
+        data class TagClicked(val tag: String) : Event
 
         data object ToggleTranslate : Event
 

@@ -112,7 +112,7 @@ internal class CreatorProfileViewModel @AssistedInject constructor(
             copy(
                 service = dest.service,
                 id = dest.id,
-                currentTag = null
+                currentTag = dest.tag
             )
         }
 

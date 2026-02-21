@@ -1,8 +1,11 @@
 package su.afk.kemonos.creatorPost.presenter.view
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -14,6 +17,7 @@ import su.afk.kemonos.ui.R
 internal fun TagsRow(
     tags: List<String>?,
     showHeader: Boolean = true,
+    onTagClick: (String) -> Unit = {},
 ) {
     if (tags.isNullOrEmpty()) return
 
@@ -27,15 +31,24 @@ internal fun TagsRow(
     }
 
     FlowRow(
-        modifier = Modifier.padding(bottom = 8.dp)
+        modifier = Modifier.padding(bottom = 8.dp),
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
+        verticalArrangement = Arrangement.spacedBy(6.dp)
     ) {
         tags.forEach { tag ->
-            Text(
-                text = "#$tag",
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.primary,
-                modifier = Modifier.padding(4.dp)
-            )
+            Surface(
+                onClick = { onTagClick(tag) },
+                shape = RoundedCornerShape(12.dp),
+                color = MaterialTheme.colorScheme.surfaceVariant,
+                tonalElevation = 1.dp,
+            ) {
+                Text(
+                    text = "#$tag",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier.padding(horizontal = 10.dp, vertical = 4.dp)
+                )
+            }
         }
     }
 }
