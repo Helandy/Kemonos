@@ -20,6 +20,7 @@ import su.afk.kemonos.storage.entity.favorites.updates.FreshFavoriteArtistUpdate
 import su.afk.kemonos.storage.entity.popular.dao.KemonoPostsPopularCacheDao
 import su.afk.kemonos.storage.entity.post.dao.PostContentCacheDao
 import su.afk.kemonos.storage.entity.postsSearch.dao.KemonoPostsSearchCacheDao
+import su.afk.kemonos.storage.entity.postsSearch.history.dao.KemonoPostsSearchHistoryDao
 import su.afk.kemonos.storage.entity.profile.dao.ProfileDao
 import su.afk.kemonos.storage.entity.profilePosts.dao.CreatorPostsCacheDao
 import su.afk.kemonos.storage.entity.tags.dao.KemonoTagsDao
@@ -42,7 +43,8 @@ internal object DatabaseKemonoModule {
                 KemonoFrom6To7,
                 KemonoFrom7To8,
                 KemonoFrom8To9,
-                KemonoFrom9To10
+                KemonoFrom9To10,
+                KemonoFrom10To11
             )
             .build()
 
@@ -82,6 +84,10 @@ internal object DatabaseKemonoModule {
 
     @Provides
     fun providePostsSearchCacheDao(db: KemonoDatabase): KemonoPostsSearchCacheDao = db.postsSearchCacheDao()
+
+    @Provides
+    fun providePostsSearchHistoryDao(db: KemonoDatabase): KemonoPostsSearchHistoryDao =
+        db.postsSearchHistoryDao()
 
     @Provides
     fun providePostsPopularCacheDao(db: KemonoDatabase): KemonoPostsPopularCacheDao = db.postsPopularCacheDao()

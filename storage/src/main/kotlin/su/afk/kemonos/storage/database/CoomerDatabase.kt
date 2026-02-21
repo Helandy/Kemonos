@@ -8,6 +8,8 @@ import su.afk.kemonos.storage.entity.popular.PostsPopularCacheEntity
 import su.afk.kemonos.storage.entity.popular.dao.CoomerPostsPopularCacheDao
 import su.afk.kemonos.storage.entity.postsSearch.dao.CoomerPostsSearchCacheDao
 import su.afk.kemonos.storage.entity.postsSearch.entity.PostsSearchCacheEntity
+import su.afk.kemonos.storage.entity.postsSearch.history.PostsSearchHistoryEntity
+import su.afk.kemonos.storage.entity.postsSearch.history.dao.CoomerPostsSearchHistoryDao
 import su.afk.kemonos.storage.entity.tags.TagsEntity
 import su.afk.kemonos.storage.entity.tags.dao.CoomerTagsDao
 
@@ -18,10 +20,11 @@ import su.afk.kemonos.storage.entity.tags.dao.CoomerTagsDao
         TagsEntity::class,
 
         PostsSearchCacheEntity::class,
+        PostsSearchHistoryEntity::class,
 
         PostsPopularCacheEntity::class,
     ],
-    version = 6,
+    version = 7,
     exportSchema = false
 )
 internal abstract class CoomerDatabase : RoomDatabase() {
@@ -29,6 +32,7 @@ internal abstract class CoomerDatabase : RoomDatabase() {
     abstract fun coomerTagsDao(): CoomerTagsDao
 
     abstract fun coomerPostsSearchCacheDao(): CoomerPostsSearchCacheDao
+    abstract fun coomerPostsSearchHistoryDao(): CoomerPostsSearchHistoryDao
 
     abstract fun coomerPostsPopularCacheDao(): CoomerPostsPopularCacheDao
 }

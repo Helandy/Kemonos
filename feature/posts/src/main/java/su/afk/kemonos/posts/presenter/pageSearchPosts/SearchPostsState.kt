@@ -14,6 +14,7 @@ internal class SearchPostsState {
     data class State(
         /** Поиск постов */
         val searchQuery: String = "",
+        val recentSearches: List<String> = emptyList(),
         val mediaFilter: PostMediaFilter = PostMediaFilter(),
         val posts: Flow<PagingData<PostDomain>> = emptyFlow(),
 
@@ -22,6 +23,9 @@ internal class SearchPostsState {
 
     sealed interface Event : UiEvent {
         data class SearchQueryChanged(val value: String) : Event
+        data object SearchSubmitted : Event
+        data class RecentSearchSelected(val value: String) : Event
+        data class RemoveRecentSearch(val value: String) : Event
         data class NavigateToPost(val post: PostDomain) : Event
         data object RandomPost : Event
         data object SwitchSite : Event

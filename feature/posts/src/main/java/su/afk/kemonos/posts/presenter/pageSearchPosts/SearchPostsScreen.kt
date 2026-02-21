@@ -1,16 +1,16 @@
 package su.afk.kemonos.posts.presenter.pageSearchPosts
 
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Casino
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
+import androidx.compose.material.icons.filled.Close
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.paging.LoadState
 import androidx.paging.compose.collectAsLazyPagingItems
@@ -75,8 +75,46 @@ internal fun SearchPostsScreen(
                         }
                     }
                 },
-                onSearch = { focusManager.clearFocus() }
+                onSearch = {
+                    focusManager.clearFocus()
+                    onEvent(Event.SearchSubmitted)
+                }
             )
+            if (state.recentSearches.isNotEmpty()) {
+                FlowRow(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    verticalArrangement = Arrangement.spacedBy(8.dp),
+                ) {
+                    state.recentSearches.forEach { query ->
+                        InputChip(
+                            selected = false,
+                            onClick = {
+                                focusManager.clearFocus()
+                                onEvent(Event.RecentSearchSelected(query))
+                            },
+                            label = {
+                                Text(
+                                    text = query,
+                                    maxLines = 1,
+                                    overflow = TextOverflow.Ellipsis,
+                                    modifier = Modifier.widthIn(max = 180.dp)
+                                )
+                            },
+                            trailingIcon = {
+                                Icon(
+                                    imageVector = Icons.Filled.Close,
+                                    contentDescription = "Remove search",
+                                    modifier = Modifier
+                                        .size(16.dp)
+                                        .clickable { onEvent(Event.RemoveRecentSearch(query)) }
+                                )
+                            }
+                        )
+                    }
+                }
+                Spacer(Modifier.height(8.dp))
+            }
         },
         floatingActionButtonStart = {
             SiteToggleFab(
@@ -94,7 +132,8 @@ internal fun SearchPostsScreen(
             }
         },
     ) {
-        /** Контент */
+
+    /** Контент */
         PostsContentPaging(
             postsViewMode = state.uiSettingModel.searchPostsViewMode,
             uiSettingModel = state.uiSettingModel,
