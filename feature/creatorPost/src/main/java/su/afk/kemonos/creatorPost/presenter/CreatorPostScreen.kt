@@ -2,16 +2,15 @@ package su.afk.kemonos.creatorPost.presenter
 
 import android.content.ClipData
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ExpandLess
 import androidx.compose.material.icons.filled.ExpandMore
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
+import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
@@ -223,6 +222,18 @@ internal fun CreatorPostScreen(state: State, onEvent: (Event) -> Unit, effect: F
                     )
                 }
 
+                if (state.revisionIds.size > 1) {
+                    item(key = "revision_switcher") {
+                        PostRevisionSwitcher(
+                            revisionIds = state.revisionIds,
+                            selectedRevisionId = state.selectedRevisionId,
+                            onSelectRevision = { revisionId ->
+                                onEvent(Event.SelectRevision(revisionId))
+                            }
+                        )
+                    }
+                }
+
                 item(key = "incompleteRewards") {
                     val rewards = state.post.post.incompleteRewards ?: return@item
 
@@ -409,6 +420,46 @@ private fun PreviewCreatorPostScreen() {
             onEvent = {},
             effect = emptyFlow()
         )
+    }
+}
+
+@Composable
+private fun PostRevisionSwitcher(
+    revisionIds: List<Int?>,
+    selectedRevisionId: Int?,
+    onSelectRevision: (Int?) -> Unit,
+) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 4.dp, vertical = 6.dp),
+        verticalArrangement = Arrangement.spacedBy(6.dp),
+    ) {
+        Text(
+            text = stringResource(R.string.post_version_title),
+            style = MaterialTheme.typography.titleSmall,
+        )
+
+        Row(
+            modifier = Modifier
+                .horizontalScroll(rememberScrollState()),
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+        ) {
+            revisionIds.forEach { revisionId ->
+                val isSelected = revisionId == selectedRevisionId
+                val label = if (revisionId == null) {
+                    stringResource(R.string.post_version_current)
+                } else {
+                    stringResource(R.string.post_version_revision, revisionId)
+                }
+
+                FilterChip(
+                    selected = isSelected,
+                    onClick = { onSelectRevision(revisionId) },
+                    label = { Text(text = label) },
+                )
+            }
+        }
     }
 }
 

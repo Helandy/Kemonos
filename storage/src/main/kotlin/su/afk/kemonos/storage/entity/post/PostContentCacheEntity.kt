@@ -29,6 +29,7 @@ data class PostContentCacheEntity(
     val tagsJson: String?,
     val videosJson: String?,
     val previewsJson: String?,
+    val revisionsJson: String?,
 
     val nextId: String?,
     val prevId: String?,

@@ -148,6 +148,9 @@
     <string name="main_api_check_button">Проверить</string>
 
     <string name="previews_title">Превью (%1$d)</string>
+    <string name="post_version_title">Версия поста</string>
+    <string name="post_version_current">Текущая</string>
+    <string name="post_version_revision">Ревизия %1$d</string>
 
     <string name="expand">Развернуть</string>
     <string name="collapse">Свернуть</string>
