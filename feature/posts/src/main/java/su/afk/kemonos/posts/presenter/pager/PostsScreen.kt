@@ -11,6 +11,7 @@ import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.distinctUntilChanged
+import su.afk.kemonos.posts.presenter.pageHashLookup.HashLookupNavigation
 import su.afk.kemonos.posts.presenter.pagePopularPosts.PopularPostsNavigation
 import su.afk.kemonos.posts.presenter.pageSearchPosts.SearchPostsNavigation
 import su.afk.kemonos.posts.presenter.pageTags.TagsPageNavigation
@@ -76,6 +77,7 @@ internal fun PostsScreen(
                 PostsPage.Search -> "posts_page_search"
                 PostsPage.Popular -> "posts_page_popular"
                 PostsPage.Tags -> "posts_page_tags"
+                PostsPage.HashLookup -> "posts_page_hash_lookup"
             }
 
             saveableStateHolder.SaveableStateProvider(key) {
@@ -83,6 +85,7 @@ internal fun PostsScreen(
                     PostsPage.Search -> SearchPostsNavigation()
                     PostsPage.Popular -> PopularPostsNavigation()
                     PostsPage.Tags -> TagsPageNavigation()
+                    PostsPage.HashLookup -> HashLookupNavigation()
                 }
             }
         }
