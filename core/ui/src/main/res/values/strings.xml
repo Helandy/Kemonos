@@ -152,6 +152,9 @@
     <string name="main_api_check_button">Check</string>
 
     <string name="previews_title">Previews (%1$d)</string>
+    <string name="post_version_title">Post version</string>
+    <string name="post_version_current">Current</string>
+    <string name="post_version_revision">Revision %1$d</string>
 
     <string name="expand">Expand</string>
     <string name="collapse">Collapse</string>

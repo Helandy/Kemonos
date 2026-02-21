@@ -19,7 +19,10 @@ internal class CreatorPostState {
         val id: String,
         val postId: String,
 
+        val sourcePost: PostContentDomain?,
         val post: PostContentDomain?,
+        val revisionIds: List<Int?>,
+        val selectedRevisionId: Int?,
         val showButtonTranslate: Boolean,
         val contentBlocks: List<PostBlock>?,
         val commentDomains: List<CommentDomain>,
@@ -49,7 +52,10 @@ internal class CreatorPostState {
                 service = "",
                 id = "",
                 postId = "",
+                sourcePost = null,
                 post = null,
+                revisionIds = emptyList(),
+                selectedRevisionId = null,
                 showButtonTranslate = false,
                 contentBlocks = null,
                 commentDomains = emptyList(),
@@ -91,6 +97,8 @@ internal class CreatorPostState {
         data class AudioInfoRequested(val url: String) : Event
 
         data class PlayAudio(val url: String, val name: String?) : Event
+
+        data class SelectRevision(val revisionId: Int?) : Event
 
         data object OpenNextPost : Event
         data object OpenPrevPost : Event

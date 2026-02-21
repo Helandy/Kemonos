@@ -124,6 +124,8 @@ internal class CreatorPostViewModel @AssistedInject constructor(
                 setEffect(OpenAudio(event.url, safeName, mime))
             }
 
+            is Event.SelectRevision -> onSelectRevision(event.revisionId)
+
             Event.OpenNextPost -> {
                 val next = currentState.post?.post?.nextId ?: return
 
@@ -160,13 +162,16 @@ internal class CreatorPostViewModel @AssistedInject constructor(
             val comments = commentsDeferred.await()
             val profile = profileDeferred.await()
 
-            val showButtonTranslate = post?.post?.content?.clearHtml()?.isNotBlank() ?: false
-            val mediaRefs = post?.collectMediaRefsForDedup()
+            val selectedRevisionId = post?.findSelectedRevisionIdOrNull()
+            val resolvedPost = post?.toResolvedPost(selectedRevisionId)
+
+            val showButtonTranslate = resolvedPost?.post?.content?.clearHtml()?.isNotBlank() ?: false
+            val mediaRefs = resolvedPost?.collectMediaRefsForDedup()
             val siteBaseUrl = getCurrentSiteRootUrlUseCase()
 
             val cleanContent = withContext(Dispatchers.Default) {
                 cleanDuplicatedMediaFromContent(
-                    html = post?.post?.content.orEmpty().take(MAX_HTML_CHARS),
+                    html = resolvedPost?.post?.content.orEmpty().take(MAX_HTML_CHARS),
                     attachmentPaths = mediaRefs.orEmpty(),
                 )
             }
@@ -180,7 +185,10 @@ internal class CreatorPostViewModel @AssistedInject constructor(
             setState {
                 copy(
                     loading = false,
-                    post = post,
+                    sourcePost = post,
+                    post = resolvedPost,
+                    revisionIds = post?.buildRevisionSelectorIds(selectedRevisionId).orEmpty(),
+                    selectedRevisionId = selectedRevisionId,
                     showButtonTranslate = showButtonTranslate,
                     contentBlocks = blocks,
 
@@ -209,6 +217,44 @@ internal class CreatorPostViewModel @AssistedInject constructor(
 
             if (requestId != loadingRequestId) return@launch
             setState { copy(isFavoriteShowButton = isShowAvailable) }
+        }
+    }
+
+    private fun onSelectRevision(revisionId: Int?) {
+        val sourcePost = currentState.sourcePost ?: return
+        if (currentState.selectedRevisionId == revisionId) return
+
+        viewModelScope.launch {
+            val resolvedPost = sourcePost.toResolvedPost(revisionId)
+            val mediaRefs = resolvedPost.collectMediaRefsForDedup()
+            val siteBaseUrl = getCurrentSiteRootUrlUseCase()
+
+            val cleanContent = withContext(Dispatchers.Default) {
+                cleanDuplicatedMediaFromContent(
+                    html = resolvedPost.post.content.orEmpty().take(MAX_HTML_CHARS),
+                    attachmentPaths = mediaRefs,
+                )
+            }
+
+            val blocks = withContext(Dispatchers.Default) {
+                htmlToBlocks(cleanContent, siteBaseUrl)
+            }
+
+            setState {
+                copy(
+                    post = resolvedPost,
+                    selectedRevisionId = revisionId,
+                    showButtonTranslate = resolvedPost.post.content?.clearHtml()?.isNotBlank() ?: false,
+                    contentBlocks = blocks,
+                    translateExpanded = false,
+                    translateLoading = false,
+                    translateText = null,
+                    translateError = null,
+                    videoThumbs = emptyMap(),
+                    videoInfo = emptyMap(),
+                    audioInfo = emptyMap(),
+                )
+            }
         }
     }
 
@@ -457,12 +503,43 @@ internal class CreatorPostViewModel @AssistedInject constructor(
         const val MAX_HTML_CHARS = 100_000
     }
 
+    private fun PostContentDomain.findSelectedRevisionIdOrNull(): Int? {
+        val current = post
+        return revisions.firstOrNull { revision ->
+            val candidate = revision.post
+            candidate.id == current.id &&
+                    candidate.content == current.content &&
+                    candidate.edited == current.edited &&
+                    candidate.added == current.added &&
+                    candidate.attachments == current.attachments
+        }?.revisionId
+    }
+
+    private fun PostContentDomain.buildRevisionSelectorIds(selectedRevisionId: Int?): List<Int?> {
+        val ids = revisions.map { it.revisionId }.distinct()
+        if (ids.isEmpty()) return emptyList()
+        return if (selectedRevisionId == null) listOf(null) + ids else ids
+    }
+
+    private fun PostContentDomain.toResolvedPost(selectedRevisionId: Int?): PostContentDomain {
+        if (selectedRevisionId == null) return this
+        val selected = revisions.firstOrNull { it.revisionId == selectedRevisionId } ?: return this
+        val selectedAttachments = selected.post.attachments.ifEmpty { attachments }
+        return copy(
+            post = selected.post,
+            attachments = selectedAttachments,
+        )
+    }
+
     private fun resetForNewPost(nextPostId: String) = setState {
         copy(
             postId = nextPostId,
             loading = true,
 
+            sourcePost = null,
             post = null,
+            revisionIds = emptyList(),
+            selectedRevisionId = null,
             showButtonTranslate = false,
             contentBlocks = null,
             commentDomains = emptyList(),

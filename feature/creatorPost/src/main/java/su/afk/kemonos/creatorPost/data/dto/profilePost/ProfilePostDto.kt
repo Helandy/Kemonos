@@ -1,7 +1,10 @@
 package su.afk.kemonos.creatorPost.data.dto.profilePost
 
+import com.google.gson.Gson
+import com.google.gson.JsonElement
 import com.google.gson.annotations.SerializedName
 import su.afk.kemonos.creatorPost.api.domain.model.PostContentDomain
+import su.afk.kemonos.creatorPost.api.domain.model.PostContentRevisionDomain
 import su.afk.kemonos.creatorPost.data.dto.profilePost.PreviewDto.Companion.toDomain
 import su.afk.kemonos.creatorPost.data.dto.profilePost.VideoDto.Companion.toDomain
 import su.afk.kemonos.data.dto.AttachmentDto
@@ -39,8 +42,29 @@ internal data class PostResponseDto(
                 videos = videos.orEmpty().map { it.toDomain() },
                 attachments = merged,
                 previews = previews.orEmpty().map { it.toDomain() },
+                revisions = props.toRevisionsDomain(),
             )
         }
+
+        private val gson = Gson()
+
+        private fun PropsDto?.toRevisionsDomain(): List<PostContentRevisionDomain> {
+            val raw = this?.revisions.orEmpty()
+            return raw.mapNotNull { pair ->
+                val revisionId = pair.getOrNull(0)?.toIntSafe() ?: return@mapNotNull null
+                val postPayload = pair.getOrNull(1) ?: return@mapNotNull null
+                val revisionPostDto = runCatching {
+                    gson.fromJson(postPayload, PostUnifiedDto::class.java)
+                }.getOrNull() ?: return@mapNotNull null
+
+                PostContentRevisionDomain(
+                    revisionId = revisionId,
+                    post = revisionPostDto.toDomain(),
+                )
+            }
+        }
+
+        private fun JsonElement.toIntSafe(): Int? = runCatching { asInt }.getOrNull()
     }
 }
 
@@ -103,5 +127,8 @@ internal data class VideoDto(
 
 internal data class PropsDto(
     @SerializedName("flagged")
-    val flagged: String? = null
+    val flagged: String? = null,
+
+    @SerializedName("revisions")
+    val revisions: List<List<JsonElement>>? = null,
 )

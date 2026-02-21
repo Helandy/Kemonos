@@ -5,6 +5,7 @@ import kotlinx.serialization.builtins.ListSerializer
 import kotlinx.serialization.builtins.serializer
 import kotlinx.serialization.json.Json
 import su.afk.kemonos.creatorPost.api.domain.model.PostContentDomain
+import su.afk.kemonos.creatorPost.api.domain.model.PostContentRevisionDomain
 import su.afk.kemonos.domain.models.*
 import su.afk.kemonos.storage.entity.post.PostContentCacheEntity
 import javax.inject.Inject
@@ -18,6 +19,7 @@ internal class PostContentCacheMapper @Inject constructor(
     private val stringListSer = ListSerializer(String.serializer())
     private val videoListSer = ListSerializer(VideoDomain.serializer())
     private val previewListSer = ListSerializer(PreviewDomain.serializer())
+    private val revisionListSer = ListSerializer(PostContentRevisionDomain.serializer())
 
     fun toEntity(
         domain: PostContentDomain,
@@ -51,6 +53,7 @@ internal class PostContentCacheMapper @Inject constructor(
             tagsJson = json.encodeToString(stringListSer, post.tags),
             videosJson = json.encodeToString(videoListSer, domain.videos),
             previewsJson = json.encodeToString(previewListSer, domain.previews),
+            revisionsJson = json.encodeToString(revisionListSer, domain.revisions),
 
             nextId = post.nextId,
             prevId = post.prevId,
@@ -97,6 +100,7 @@ internal class PostContentCacheMapper @Inject constructor(
             videos = decodeList(entity.videosJson, videoListSer),
             attachments = attachments,
             previews = decodeList(entity.previewsJson, previewListSer),
+            revisions = decodeList(entity.revisionsJson, revisionListSer),
         )
     }
 
