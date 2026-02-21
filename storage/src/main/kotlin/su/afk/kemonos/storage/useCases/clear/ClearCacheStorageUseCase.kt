@@ -4,6 +4,7 @@ import su.afk.kemonos.domain.SelectedSite
 import su.afk.kemonos.storage.api.clear.IClearCacheStorageUseCase
 import su.afk.kemonos.storage.api.repository.comments.IStoreCommentsRepository
 import su.afk.kemonos.storage.api.repository.creatorProfile.IStoreCreatorProfileRepository
+import su.afk.kemonos.storage.api.repository.dms.IStorageDmsRepository
 import su.afk.kemonos.storage.api.repository.download.ITrackedDownloadsRepository
 import su.afk.kemonos.storage.api.repository.favorites.updates.IFreshFavoriteArtistsUpdatesRepository
 import su.afk.kemonos.storage.api.repository.media.IStoreMediaInfoRepository
@@ -21,6 +22,7 @@ internal class ClearCacheStorageUseCase @Inject constructor(
     private val popularPostsCacheRepository: IStoragePopularPostsRepository,
     private val postStorageRepository: IStoragePostStorageRepository,
     private val postsSearchCacheRepository: IStoragePostsSearchRepository,
+    private val dmsCacheRepository: IStorageDmsRepository,
     private val trackedDownloadsRepository: ITrackedDownloadsRepository,
     private val storeProfileRepository: IStoreProfileRepository,
     private val creatorPostsCacheRepository: IStorageCreatorPostsRepository,
@@ -42,6 +44,9 @@ internal class ClearCacheStorageUseCase @Inject constructor(
         /** Чистка поиска */
         postsSearchCacheRepository.clearCache(SelectedSite.K)
         postsSearchCacheRepository.clearCache(SelectedSite.C)
+        /** Чистка dms */
+        dmsCacheRepository.clearCache(SelectedSite.K)
+        dmsCacheRepository.clearCache(SelectedSite.C)
         /** Чистка истории загрузок старше 60 дней */
         trackedDownloadsRepository.clearCache()
         /** Чистка профилей креаторов */

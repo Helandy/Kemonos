@@ -8,6 +8,7 @@ import su.afk.kemonos.storage.api.repository.blacklist.IStoreBlacklistedAuthorsR
 import su.afk.kemonos.storage.api.repository.comments.IStoreCommentsRepository
 import su.afk.kemonos.storage.api.repository.creatorProfile.IStoreCreatorProfileRepository
 import su.afk.kemonos.storage.api.repository.creators.IStoreCreatorsRepository
+import su.afk.kemonos.storage.api.repository.dms.IStorageDmsRepository
 import su.afk.kemonos.storage.api.repository.download.ITrackedDownloadsRepository
 import su.afk.kemonos.storage.api.repository.favorites.artist.IStoreFavoriteArtistsRepository
 import su.afk.kemonos.storage.api.repository.favorites.post.IStoreFavoritePostsRepository
@@ -23,6 +24,7 @@ import su.afk.kemonos.storage.repository.blacklist.StoreBlacklistedAuthorsReposi
 import su.afk.kemonos.storage.repository.comments.StoreCommentsRepository
 import su.afk.kemonos.storage.repository.creatorProfileCache.StoreCreatorProfileRepository
 import su.afk.kemonos.storage.repository.creators.StoreCreatorsRepository
+import su.afk.kemonos.storage.repository.dms.StorageDmsRepository
 import su.afk.kemonos.storage.repository.download.TrackedDownloadsRepository
 import su.afk.kemonos.storage.repository.favorites.artist.StoreFavoriteArtistsRepository
 import su.afk.kemonos.storage.repository.favorites.post.StoreFavoritePostsRepository
@@ -75,6 +77,10 @@ internal interface RepositoryModule {
     @Singleton
     @Binds
     fun bindPostsSearchCacheRepository(impl: StoragePostsSearchRepository): IStoragePostsSearchRepository
+
+    @Singleton
+    @Binds
+    fun bindDmsCacheRepository(impl: StorageDmsRepository): IStorageDmsRepository
 
     @Singleton
     @Binds

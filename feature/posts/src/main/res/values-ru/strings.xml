@@ -1,4 +1,5 @@
 <resources>
+    <string name="posts_tab_dm">DM</string>
     <string name="posts_tab_popular">Популярное</string>
     <string name="posts_tab_hash_lookup">Hash Lookup</string>
 
