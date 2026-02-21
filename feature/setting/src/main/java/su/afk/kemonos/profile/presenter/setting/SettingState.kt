@@ -7,7 +7,7 @@ import su.afk.kemonos.ui.presenter.baseViewModel.UiEffect
 import su.afk.kemonos.ui.presenter.baseViewModel.UiEvent
 import su.afk.kemonos.ui.presenter.baseViewModel.UiState
 
-internal class SettingState {
+class SettingState {
     data class State(
         val loading: Boolean = true,
 

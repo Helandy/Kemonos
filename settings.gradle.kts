@@ -53,6 +53,8 @@ include(":feature:posts")
 
 include(":feature:profile-api")
 include(":feature:profile")
+include(":feature:setting-api")
+include(":feature:setting")
 
 include(":feature:appUpdate-api")
 include(":feature:appUpdate")

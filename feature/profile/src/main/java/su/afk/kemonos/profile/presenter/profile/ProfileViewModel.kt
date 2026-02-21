@@ -18,6 +18,7 @@ import su.afk.kemonos.profile.navigation.AuthDest
 import su.afk.kemonos.profile.presenter.profile.ProfileState.*
 import su.afk.kemonos.profile.presenter.profile.delegate.LogoutDelegate
 import su.afk.kemonos.profile.utils.Const.KEY_SELECT_SITE
+import su.afk.kemonos.setting.api.useCase.IGetSettingDestinationUseCase
 import su.afk.kemonos.ui.presenter.baseViewModel.BaseViewModelNew
 import javax.inject.Inject
 
@@ -27,6 +28,7 @@ internal class ProfileViewModel @Inject constructor(
     private val navigationManager: NavigationManager,
     private val navigationStorage: NavigationStorage,
     private val downloadNavigator: IDownloadNavigator,
+    private val getSettingDestinationUseCase: IGetSettingDestinationUseCase,
     private val logoutDelegate: LogoutDelegate,
     private val uiSetting: IUiSettingUseCase,
     private val freshUpdatesUseCase: IFreshFavoriteArtistsUpdatesUseCase,
@@ -132,7 +134,7 @@ internal class ProfileViewModel @Inject constructor(
     }
 
     /** Настройки */
-    private fun navigateToSettings() = navigationManager.navigate(AuthDest.Setting)
+    private fun navigateToSettings() = navigationManager.navigate(getSettingDestinationUseCase())
 
     private fun navigateToDownloads() = navigationManager.navigate(downloadNavigator.getDownloadsDest())
 

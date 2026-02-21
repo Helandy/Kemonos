@@ -14,8 +14,8 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import su.afk.kemonos.deepLink.utils.openUrlInBrowser
-import su.afk.kemonos.profile.BuildConfig
 import su.afk.kemonos.profile.R
+import su.afk.kemonos.setting.BuildConfig
 import su.afk.kemonos.ui.preview.KemonosPreviewScreen
 
 @Composable
