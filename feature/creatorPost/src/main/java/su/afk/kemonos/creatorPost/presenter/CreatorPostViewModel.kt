@@ -106,6 +106,7 @@ internal class CreatorPostViewModel @AssistedInject constructor(
             Event.FavoriteClicked -> onFavoriteClick()
 
             Event.CreatorHeaderClicked -> navigateToCreatorProfile()
+            is Event.TagClicked -> navigateToCreatorProfileByTag(event.tag)
 
             is Event.ToggleTranslate -> onToggleTranslate()
 
@@ -348,6 +349,18 @@ internal class CreatorPostViewModel @AssistedInject constructor(
     fun navigateToCreatorProfile() {
         viewModelScope.launch {
             navigateDelegates.navigateToCreatorProfile(currentState.id, currentState.service)
+        }
+    }
+
+    private fun navigateToCreatorProfileByTag(tag: String) {
+        if (tag.isBlank()) return
+
+        viewModelScope.launch {
+            navigateDelegates.navigateToCreatorProfileByTag(
+                id = currentState.id,
+                service = currentState.service,
+                tag = tag
+            )
         }
     }
 

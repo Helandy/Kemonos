@@ -344,7 +344,11 @@ internal fun CreatorPostScreen(state: State, onEvent: (Event) -> Unit, effect: F
                     }
                     if (tagsExpanded) {
                         item(key = "tags") {
-                            TagsRow(tags = post.tags, showHeader = false)
+                            TagsRow(
+                                tags = post.tags,
+                                showHeader = false,
+                                onTagClick = { tag -> onEvent(Event.TagClicked(tag)) }
+                            )
                         }
                     }
                 }
