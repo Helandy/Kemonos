@@ -3,6 +3,7 @@ package su.afk.kemonos.posts.presenter.pageSearchPosts
 import androidx.paging.cachedIn
 import androidx.paging.filter
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
@@ -17,6 +18,7 @@ import su.afk.kemonos.posts.presenter.pageSearchPosts.SearchPostsState.*
 import su.afk.kemonos.preferences.site.ISelectedSiteUseCase
 import su.afk.kemonos.preferences.ui.IUiSettingUseCase
 import su.afk.kemonos.storage.api.repository.blacklist.IStoreBlacklistedAuthorsRepository
+import su.afk.kemonos.storage.api.repository.postsSearchHistory.IStoragePostsSearchHistoryRepository
 import su.afk.kemonos.ui.components.posts.filter.PostMediaFilter
 import su.afk.kemonos.ui.components.posts.filter.matchesMediaFilter
 import su.afk.kemonos.ui.presenter.changeSite.SiteAwareBaseViewModelNew
@@ -29,6 +31,7 @@ internal class SearchPostsViewModel @Inject constructor(
     private val getRandomPost: GetRandomPost,
     private val uiSetting: IUiSettingUseCase,
     private val blacklistedAuthorsRepository: IStoreBlacklistedAuthorsRepository,
+    private val postsSearchHistoryRepository: IStoragePostsSearchHistoryRepository,
     override val selectedSiteUseCase: ISelectedSiteUseCase,
     override val errorHandler: IErrorHandlerUseCase,
     override val retryStorage: RetryStorage,
@@ -39,13 +42,23 @@ internal class SearchPostsViewModel @Inject constructor(
     /** Flow для текстового поиска */
     private val searchQueryFlow = MutableStateFlow("")
     private val mediaFilterFlow = MutableStateFlow(PostMediaFilter())
+    private val recentSearchLimit = 10
 
     @OptIn(FlowPreview::class)
     private fun observeSearchQuery() = viewModelScope.launch {
+        val debouncedQueryFlow = searchQueryFlow
+            .debounce(2000L)
+            .distinctUntilChanged()
+            .onEach { query ->
+                postsSearchHistoryRepository.save(
+                    site = site.value,
+                    query = query,
+                    limit = recentSearchLimit
+                )
+            }
+
         combine(
-            searchQueryFlow
-                .debounce(2000L)
-                .distinctUntilChanged(),
+            debouncedQueryFlow,
             mediaFilterFlow,
             blacklistedAuthorsRepository.observeAll()
                 .map { items ->
@@ -74,10 +87,22 @@ internal class SearchPostsViewModel @Inject constructor(
             .launchIn(viewModelScope)
     }
 
+    @OptIn(ExperimentalCoroutinesApi::class)
+    private fun observeRecentSearches() {
+        site.flatMapLatest { currentSite ->
+            postsSearchHistoryRepository.observeRecent(currentSite, recentSearchLimit)
+        }
+            .onEach { items ->
+                setState { copy(recentSearches = items) }
+            }
+            .launchIn(viewModelScope)
+    }
+
     init {
         observeUiSetting()
         initSiteAware()
         observeSearchQuery()
+        observeRecentSearches()
     }
 
     override fun onRetry() {
@@ -108,6 +133,9 @@ internal class SearchPostsViewModel @Inject constructor(
     override fun onEvent(event: Event) {
         when (event) {
             is Event.SearchQueryChanged -> onSearchQueryChanged(event.value)
+            Event.SearchSubmitted -> onSearchSubmitted()
+            is Event.RecentSearchSelected -> onRecentSearchSelected(event.value)
+            is Event.RemoveRecentSearch -> onRemoveRecentSearch(event.value)
             Event.ToggleHasVideo -> toggleHasVideo()
             Event.ToggleHasAttachments -> toggleHasAttachments()
             Event.ToggleHasImages -> toggleHasImages()
@@ -120,6 +148,27 @@ internal class SearchPostsViewModel @Inject constructor(
     private fun onSearchQueryChanged(newQuery: String) {
         setState { copy(searchQuery = newQuery) }
         searchQueryFlow.value = newQuery
+    }
+
+    private fun onSearchSubmitted() = viewModelScope.launch {
+        postsSearchHistoryRepository.save(
+            site = site.value,
+            query = currentState.searchQuery,
+            limit = recentSearchLimit
+        )
+    }
+
+    private fun onRecentSearchSelected(query: String) {
+        setState { copy(searchQuery = query) }
+        searchQueryFlow.value = query
+        onSearchSubmitted()
+    }
+
+    private fun onRemoveRecentSearch(query: String) = viewModelScope.launch {
+        postsSearchHistoryRepository.delete(
+            site = site.value,
+            query = query
+        )
     }
 
     private fun requestPosts(

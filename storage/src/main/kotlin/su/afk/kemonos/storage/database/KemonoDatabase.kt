@@ -27,6 +27,8 @@ import su.afk.kemonos.storage.entity.post.PostContentCacheEntity
 import su.afk.kemonos.storage.entity.post.dao.PostContentCacheDao
 import su.afk.kemonos.storage.entity.postsSearch.dao.KemonoPostsSearchCacheDao
 import su.afk.kemonos.storage.entity.postsSearch.entity.PostsSearchCacheEntity
+import su.afk.kemonos.storage.entity.postsSearch.history.PostsSearchHistoryEntity
+import su.afk.kemonos.storage.entity.postsSearch.history.dao.KemonoPostsSearchHistoryDao
 import su.afk.kemonos.storage.entity.profile.ProfileEntity
 import su.afk.kemonos.storage.entity.profile.dao.ProfileDao
 import su.afk.kemonos.storage.entity.profilePosts.CreatorPostCacheEntity
@@ -59,13 +61,14 @@ import su.afk.kemonos.storage.entity.video.dao.VideoInfoDao
         PostContentCacheEntity::class,
 
         PostsSearchCacheEntity::class,
+        PostsSearchHistoryEntity::class,
 
         PostsPopularCacheEntity::class,
 
         DownloadTaskEntity::class,
         BlacklistedAuthorEntity::class,
     ],
-    version = 10,
+    version = 11,
     exportSchema = false
 )
 @TypeConverters(SelectedSiteConverters::class)
@@ -90,6 +93,7 @@ internal abstract class KemonoDatabase : RoomDatabase() {
     abstract fun postContentCacheDao(): PostContentCacheDao
 
     abstract fun postsSearchCacheDao(): KemonoPostsSearchCacheDao
+    abstract fun postsSearchHistoryDao(): KemonoPostsSearchHistoryDao
 
     abstract fun postsPopularCacheDao(): KemonoPostsPopularCacheDao
 
