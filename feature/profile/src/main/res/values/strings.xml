@@ -49,6 +49,13 @@
     <string name="profile_menu_change_username">Change username</string>
     <string name="profile_menu_change_password">Change password</string>
     <string name="profile_downloads">Downloads</string>
+    <string name="profile_authors_blacklist">Authors blacklist</string>
+    <string name="profile_authors_blacklist_search">Search in blacklist</string>
+    <string name="profile_authors_blacklist_remove">Remove from blacklist</string>
+    <string name="profile_authors_blacklist_empty">Blacklist is empty</string>
+    <string name="profile_authors_blacklist_remove_title">Remove author?</string>
+    <string name="profile_authors_blacklist_remove_message">Remove %1$s from blacklist?</string>
+    <string name="profile_authors_blacklist_remove_confirm">Remove</string>
 
     <string name="profile_error_not_authorized">You are not authorized</string>
     <string name="profile_not_logged_in_message">

@@ -62,6 +62,7 @@ internal class CreatorProfileState {
         val isFavoriteShowButton: Boolean = false,
         val isFavorite: Boolean = false,
         val favoriteActionLoading: Boolean = false,
+        val isInBlacklist: Boolean = false,
 
         val uiSettingModel: UiSettingModel = UiSettingModel(),
     ) : UiState
@@ -76,6 +77,7 @@ internal class CreatorProfileState {
         data object Back : Event
         data object CopyProfileLink : Event
         data class OpenCreatorPlatformLink(val url: String) : Event
+        data object ToggleBlacklist : Event
 
         data class OpenImage(val url: String) : Event
         data class OpenLinkProfile(val link: ProfileLink) : Event
@@ -104,5 +106,8 @@ internal class CreatorProfileState {
         data class OpenUrl(val url: String) : Effect
         data class ShowToast(val message: String) : Effect
         data class CopyPostLink(val message: String) : Effect
+        data object AddedToBlacklist : Effect
+        data object AlreadyInBlacklist : Effect
+        data object RemovedFromBlacklist : Effect
     }
 }

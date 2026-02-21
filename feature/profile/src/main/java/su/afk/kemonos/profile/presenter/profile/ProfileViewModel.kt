@@ -50,6 +50,7 @@ internal class ProfileViewModel @Inject constructor(
             is Event.FavoritePostNavigate -> onFavoritePostNavigate(event.site)
             Event.NavigateToDownloads -> navigateToDownloads()
             Event.NavigateToSettings -> navigateToSettings()
+            Event.NavigateToAuthorsBlacklist -> navigateToAuthorsBlacklist()
             Event.KeysClick -> onKeysClick()
             Event.ReviewDMsClick -> onReviewDMsClick()
             Event.ExportFavoritesClick -> onExportFavoritesClick()
@@ -134,6 +135,8 @@ internal class ProfileViewModel @Inject constructor(
     private fun navigateToSettings() = navigationManager.navigate(AuthDest.Setting)
 
     private fun navigateToDownloads() = navigationManager.navigate(downloadNavigator.getDownloadsDest())
+
+    private fun navigateToAuthorsBlacklist() = navigationManager.navigate(AuthDest.AuthorsBlacklist)
 
     private fun onKeysClick() {
     }

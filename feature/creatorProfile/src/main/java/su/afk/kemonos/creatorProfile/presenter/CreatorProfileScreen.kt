@@ -53,6 +53,9 @@ internal fun CreatorScreen(state: State, onEvent: (Event) -> Unit, effect: Flow<
                     "Profile link",
                     effect.message
                 )
+                Effect.AddedToBlacklist -> context.toast(context.getString(su.afk.kemonos.ui.R.string.author_blacklist_added))
+                Effect.RemovedFromBlacklist -> context.toast(context.getString(su.afk.kemonos.ui.R.string.author_blacklist_removed))
+                Effect.AlreadyInBlacklist -> context.toast(context.getString(su.afk.kemonos.ui.R.string.author_blacklist_already_exists))
             }
         }
     }
@@ -82,6 +85,8 @@ internal fun CreatorScreen(state: State, onEvent: (Event) -> Unit, effect: Flow<
                 onToggleSearch = { onEvent(Event.ToggleSearch) },
                 onShare = { onEvent(Event.CopyProfileLink) },
                 onOpenPlatform = { onEvent(Event.OpenCreatorPlatformLink(it)) },
+                isInBlacklist = state.isInBlacklist,
+                onToggleBlacklist = { onEvent(Event.ToggleBlacklist) },
             )
         },
         contentModifier = Modifier.padding(horizontal = 8.dp),

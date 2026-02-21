@@ -41,6 +41,11 @@
 
     <string name="open_with">Открыть через…</string>
     <string name="open_platform_profile">Ссылка на платформу</string>
+    <string name="author_blacklist_add_action">Добавить в черный список</string>
+    <string name="author_blacklist_remove_action">Убрать из черного списка</string>
+    <string name="author_blacklist_added">Автор добавлен в черный список</string>
+    <string name="author_blacklist_removed">Автор удален из черного списка</string>
+    <string name="author_blacklist_already_exists">Автор уже в черном списке</string>
     <string name="vlc_not_installed">VLC не установлен. Открываю через другое приложение…</string>
 
     <string name="search">Поиск…</string>

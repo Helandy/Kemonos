@@ -8,6 +8,7 @@ import dagger.multibindings.IntoSet
 import su.afk.kemonos.navigation.NavRegistrar
 import su.afk.kemonos.profile.api.domain.IProfileNavigator
 import su.afk.kemonos.profile.navigation.ProfileNavigator
+import su.afk.kemonos.profile.presenter.blacklist.AuthorsBlacklistNavigatorRegister
 import su.afk.kemonos.profile.presenter.favoritePosts.FavoritePostsNavigator
 import su.afk.kemonos.profile.presenter.favoriteProfiles.FavoriteProfilesRegister
 import su.afk.kemonos.profile.presenter.login.LoginNavigator
@@ -43,6 +44,10 @@ interface NavigationModule {
     @Binds
     @IntoSet
     fun bindFavoritePostsNavigator(impl: FavoritePostsNavigator): NavRegistrar
+
+    @Binds
+    @IntoSet
+    fun bindAuthorsBlacklistNavigator(impl: AuthorsBlacklistNavigatorRegister): NavRegistrar
 
     @Binds
     @Singleton
