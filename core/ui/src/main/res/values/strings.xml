@@ -47,6 +47,7 @@
     <string name="author_blacklist_removed">Author removed from blacklist</string>
     <string name="author_blacklist_already_exists">Author is already in blacklist</string>
     <string name="vlc_not_installed">VLC is not installed. Opening it through another application…</string>
+    <string name="video_open_failed">No video app found, install VLC</string>
 
     <string name="search">Search…</string>
     <string name="close">Close…</string>
