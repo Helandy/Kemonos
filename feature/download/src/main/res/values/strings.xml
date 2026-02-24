@@ -18,4 +18,5 @@
     <string name="downloads_action_start">Start</string>
     <string name="downloads_action_stop">Stop</string>
     <string name="downloads_action_restart">Restart</string>
+    <string name="downloads_action_delete">Delete</string>
 </resources>

@@ -48,6 +48,7 @@ internal class DownloadsViewModel @Inject constructor(
             is DownloadsState.Event.StartDownload -> startDownload(event.downloadId)
             is DownloadsState.Event.StopDownload -> stopDownload(event.downloadId)
             is DownloadsState.Event.RestartDownload -> restartDownload(event.downloadId)
+            is DownloadsState.Event.DeleteDownload -> deleteDownload(event.downloadId)
         }
     }
 
@@ -155,6 +156,17 @@ internal class DownloadsViewModel @Inject constructor(
                     trackedDownloadsRepository.delete(downloadId)
                 }
 
+                speedMap.remove(downloadId)
+                lastSnapshots.remove(downloadId)
+                refreshInternal(onlyActive = false)
+            }
+        }
+    }
+
+    private fun deleteDownload(downloadId: Long) {
+        viewModelScope.launch {
+            refreshMutex.withLock {
+                trackedDownloadsRepository.delete(downloadId)
                 speedMap.remove(downloadId)
                 lastSnapshots.remove(downloadId)
                 refreshInternal(onlyActive = false)

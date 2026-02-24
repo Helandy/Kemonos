@@ -49,11 +49,11 @@
     <string name="vlc_not_installed">VLC is not installed. Opening it through another application…</string>
     <string name="video_open_failed">No video app found, install VLC</string>
 
-    <string name="search">Search…</string>
-    <string name="close">Close…</string>
-    <string name="post_filter_contains_video">Contains video</string>
-    <string name="post_filter_contains_attachments">Contains attachments</string>
-    <string name="post_filter_contains_images">Contains images</string>
+    <string name="search">Search</string>
+    <string name="close">Close</string>
+    <string name="post_filter_contains_video">With video</string>
+    <string name="post_filter_contains_attachments">With attachments</string>
+    <string name="post_filter_contains_images">With images</string>
     <string name="posts_filter_local_info_tooltip">Filters work locally, not in API. More filtering can increase 429
         errors.
     </string>

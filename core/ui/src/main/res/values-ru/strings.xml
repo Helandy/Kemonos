@@ -49,8 +49,8 @@
     <string name="vlc_not_installed">VLC не установлен. Открываю через другое приложение…</string>
     <string name="video_open_failed">Нет приложения для видео, установите VLC</string>
 
-    <string name="search">Поиск…</string>
-    <string name="close">Закрыть…</string>
+    <string name="search">Поиск</string>
+    <string name="close">Закрыть</string>
     <string name="post_filter_contains_video">С видео</string>
     <string name="post_filter_contains_attachments">С вложения</string>
     <string name="post_filter_contains_images">С фото</string>
