@@ -82,9 +82,7 @@ internal fun AuthorsBlacklistScreen(
                 )
             }
         } else {
-            LazyColumn(
-                verticalArrangement = Arrangement.spacedBy(8.dp),
-            ) {
+            LazyColumn {
                 items(
                     items = filteredItems,
                     key = { "${it.service}:${it.creatorId}" }

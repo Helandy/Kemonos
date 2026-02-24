@@ -133,9 +133,9 @@ private fun saveCrashReportToDownloads(
     check(crashFile.exists()) { "Crash file does not exist" }
 
     val targetName = if (crashFile.name.startsWith("crash_")) {
-        crashFile.name.replaceFirst("crash_", "kemono_crash_")
+        crashFile.name.replaceFirst("crash_", "Kemonos_crash_")
     } else {
-        "kemono_crash_${System.currentTimeMillis()}.txt"
+        "Kemonos_crash_${System.currentTimeMillis()}.txt"
     }
 
     val values = ContentValues().apply {
