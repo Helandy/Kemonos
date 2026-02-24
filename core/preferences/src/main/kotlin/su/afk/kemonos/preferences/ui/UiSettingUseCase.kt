@@ -19,6 +19,7 @@ import su.afk.kemonos.preferences.ui.UiSettingKey.PREVIEW_VIDEO_SIZE_MB
 import su.afk.kemonos.preferences.ui.UiSettingKey.PROFILE_POSTS_VIEW_MODE
 import su.afk.kemonos.preferences.ui.UiSettingKey.RANDOM_BUTTON_PLACEMENT
 import su.afk.kemonos.preferences.ui.UiSettingKey.SEARCH_POSTS_VIEW_MODE
+import su.afk.kemonos.preferences.ui.UiSettingKey.SHOW_COMMENTS_IN_POST
 import su.afk.kemonos.preferences.ui.UiSettingKey.SHOW_PREVIEW_VIDEO
 import su.afk.kemonos.preferences.ui.UiSettingKey.SKIP_API_CHECK_ON_LOGIN
 import su.afk.kemonos.preferences.ui.UiSettingKey.SUGGEST_RANDOM_AUTHORS
@@ -61,6 +62,7 @@ internal class UiSettingUseCase @Inject constructor(
 
             showPreviewVideo = p[SHOW_PREVIEW_VIDEO] ?: UiSettingModel.DEFAULT_SHOW_VIDEO_PREVIEW,
             blurImages = p[BLUR_IMAGES] ?: UiSettingModel.DEFAULT_BLUR_PICTURE,
+            showCommentsInPost = p[SHOW_COMMENTS_IN_POST] ?: UiSettingModel.DEFAULT_SHOW_COMMENTS_IN_POST,
             experimentalCalendar = p[EXPERIMENTAL_CALENDAR] ?: UiSettingModel.DEFAULT_EXPERIMENTAL_CALENDAR,
 
             downloadFolderMode = p.readEnum(DOWNLOAD_FOLDER_MODE, UiSettingModel.DEFAULT_DOWNLOAD_FOLDER_MODE),
@@ -163,6 +165,11 @@ internal class UiSettingUseCase @Inject constructor(
         dataStore.edit { it[BLUR_IMAGES] = value }
     }
 
+    /** Показывать комментарии в посте */
+    override suspend fun setShowCommentsInPost(value: Boolean) {
+        dataStore.edit { it[SHOW_COMMENTS_IN_POST] = value }
+    }
+
     /** Экспериментальный календарь */
     override suspend fun setExperimentalCalendar(value: Boolean) {
         dataStore.edit { it[EXPERIMENTAL_CALENDAR] = value }
@@ -208,6 +215,7 @@ object UiSettingKey {
 
     val SHOW_PREVIEW_VIDEO = booleanPreferencesKey("SHOW_PREVIEW_VIDEO")
     val BLUR_IMAGES = booleanPreferencesKey("BLUR_IMAGES")
+    val SHOW_COMMENTS_IN_POST = booleanPreferencesKey("SHOW_COMMENTS_IN_POST")
     val EXPERIMENTAL_CALENDAR = booleanPreferencesKey("EXPERIMENTAL_CALENDAR")
 
     val DOWNLOAD_FOLDER_MODE = stringPreferencesKey("DOWNLOAD_FOLDER_MODE")

@@ -51,6 +51,9 @@ interface IUiSettingUseCase {
     /** Блюрить все картинки */
     suspend fun setBlurImages(value: Boolean)
 
+    /** Показывать комментарии в посте */
+    suspend fun setShowCommentsInPost(value: Boolean)
+
     /** Экспериментальный календарь поиска популярных постов */
     suspend fun setExperimentalCalendar(value: Boolean)
 

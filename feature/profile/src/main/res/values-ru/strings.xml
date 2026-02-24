@@ -187,6 +187,7 @@
 
     <string name="settings_show_preview_video_title">Показывать превью видео</string>
     <string name="settings_blur_images_title">Размывать изображения</string>
+    <string name="settings_show_comments_in_post_title">Показывать комментарии в посте</string>
 
     <string name="settings_downloads_title">Скачивание</string>
 

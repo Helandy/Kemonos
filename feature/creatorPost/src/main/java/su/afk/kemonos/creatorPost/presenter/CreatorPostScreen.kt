@@ -140,7 +140,9 @@ internal fun CreatorPostScreen(state: State, onEvent: (Event) -> Unit, effect: F
                 .distinctBy { "${it.server.orEmpty()}|${it.path}" }
                 .toList()
         }
-        val hasComments = state.commentDomains.isNotEmpty() && !state.commentDomains.firstOrNull()?.id.isNullOrBlank()
+        val hasComments = state.uiSettingModel.showCommentsInPost &&
+                state.commentDomains.isNotEmpty() &&
+                !state.commentDomains.firstOrNull()?.id.isNullOrBlank()
         val hasTags = !post.tags.isNullOrEmpty()
         val hasAttachments = state.post.attachments.isNotEmpty()
 

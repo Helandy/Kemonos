@@ -154,7 +154,13 @@ internal class CreatorPostViewModel @AssistedInject constructor(
             setState { copy(loading = true) }
 
             val postDeferred = async { getPostUseCase(requestService, requestCreatorId, requestPostId) }
-            val commentsDeferred = async { getCommentsUseCase(requestService, requestCreatorId, requestPostId) }
+            val commentsDeferred = async {
+                if (currentState.uiSettingModel.showCommentsInPost) {
+                    getCommentsUseCase(requestService, requestCreatorId, requestPostId)
+                } else {
+                    emptyList()
+                }
+            }
 
             /** шапка профиля не всегда нужна */
             val profileDeferred = async { getProfileUseCase(service = requestService, id = requestCreatorId) }
