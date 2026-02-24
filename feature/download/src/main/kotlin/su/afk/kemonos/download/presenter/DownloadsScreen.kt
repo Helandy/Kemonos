@@ -13,10 +13,12 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material.icons.outlined.FolderOpen
 import androidx.compose.material.icons.outlined.Link
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
@@ -90,6 +92,7 @@ internal fun DownloadsScreen(
                         dateFormatMode = state.uiSettingModel.dateFormatMode,
                         onStop = { onEvent(DownloadsState.Event.StopDownload(item.downloadId)) },
                         onRestart = { onEvent(DownloadsState.Event.RestartDownload(item.downloadId)) },
+                        onDelete = { onEvent(DownloadsState.Event.DeleteDownload(item.downloadId)) },
                     )
                 }
             }
@@ -136,6 +139,7 @@ private fun DownloadItemCard(
     dateFormatMode: DateFormatMode,
     onStop: () -> Unit,
     onRestart: () -> Unit,
+    onDelete: () -> Unit,
 ) {
     val context = LocalContext.current
 
@@ -168,6 +172,7 @@ private fun DownloadItemCard(
 
             val isCompleted = item.status == DownloadManager.STATUS_SUCCESSFUL
             val isStopped = item.status == DownloadUiItem.STATUS_REMOVED
+            val canDelete = isCompleted || isStopped || item.status == DownloadManager.STATUS_FAILED
             if (isCompleted) {
                 val completedSize = if (item.totalBytes > 0L) item.totalBytes else item.bytesDownloaded
                 Text(text = "${stringResource(R.string.downloads_size)}: ${formatBytes(completedSize)}")
@@ -290,10 +295,36 @@ private fun DownloadItemCard(
                 }
             }
 
-            if (item.lastModifiedMs != null && item.lastModifiedMs > 0L) {
-                Text(
-                    text = item.lastModifiedMs.toUiDateTimeWithTime(dateFormatMode)
-                )
+            if (canDelete) {
+                if (item.lastModifiedMs != null && item.lastModifiedMs > 0L) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
+                        Text(
+                            text = item.lastModifiedMs.toUiDateTimeWithTime(dateFormatMode)
+                        )
+                        IconButton(onClick = onDelete) {
+                            Icon(
+                                imageVector = Icons.Outlined.Delete,
+                                contentDescription = stringResource(R.string.downloads_action_delete),
+                            )
+                        }
+                    }
+                } else {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.End,
+                    ) {
+                        IconButton(onClick = onDelete) {
+                            Icon(
+                                imageVector = Icons.Outlined.Delete,
+                                contentDescription = stringResource(R.string.downloads_action_delete),
+                            )
+                        }
+                    }
+                }
             }
         }
     }

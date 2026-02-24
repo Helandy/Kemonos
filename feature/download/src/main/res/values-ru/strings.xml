@@ -18,4 +18,5 @@
     <string name="downloads_action_start">Старт</string>
     <string name="downloads_action_stop">Стоп</string>
     <string name="downloads_action_restart">Перезапуск</string>
+    <string name="downloads_action_delete">Удалить</string>
 </resources>
