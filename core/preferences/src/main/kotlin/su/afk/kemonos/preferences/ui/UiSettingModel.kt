@@ -142,6 +142,9 @@ data class UiSettingModel(
     /** Блюрить все картинки */
     val blurImages: Boolean = DEFAULT_BLUR_PICTURE,
 
+    /** Показывать комментарии в посте */
+    val showCommentsInPost: Boolean = DEFAULT_SHOW_COMMENTS_IN_POST,
+
     /** Эксперементальный календарь поиска популярных постов */
     val experimentalCalendar: Boolean = DEFAULT_EXPERIMENTAL_CALENDAR,
 
@@ -168,6 +171,7 @@ data class UiSettingModel(
         const val DEFAULT_VIDEO_PREVIEW_SIZE = 150
         const val DEFAULT_SHOW_VIDEO_PREVIEW = true
         const val DEFAULT_BLUR_PICTURE = false
+        const val DEFAULT_SHOW_COMMENTS_IN_POST = true
         const val DEFAULT_EXPERIMENTAL_CALENDAR = false
 
         val DEFAULT_DOWNLOAD_FOLDER_MODE = DownloadFolderMode.CREATOR_POST_TITLE_ID

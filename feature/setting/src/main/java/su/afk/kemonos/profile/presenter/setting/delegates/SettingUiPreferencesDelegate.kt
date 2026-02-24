@@ -83,6 +83,10 @@ class SettingUiPreferencesDelegate @Inject constructor(
             is Event.ChangeViewSetting.BlurImages ->
                 scope.launch { uiSetting.setBlurImages(event.value) }
 
+            /** Показывать комментарии в посте */
+            is Event.ChangeViewSetting.ShowCommentsInPost ->
+                scope.launch { uiSetting.setShowCommentsInPost(event.value) }
+
             /** Вид папок для скачивания */
             is Event.ChangeViewSetting.EditDownloadFolderMode ->
                 scope.launch { uiSetting.setDownloadFolderMode(event.value) }

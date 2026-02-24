@@ -43,6 +43,12 @@ internal fun ViewSettingsSection(
         onCheckedChange = { onEvent(Event.ChangeViewSetting.BlurImages(it)) },
     )
 
+    SwitchRow(
+        title = stringResource(R.string.settings_show_comments_in_post_title),
+        checked = ui.showCommentsInPost,
+        onCheckedChange = { onEvent(Event.ChangeViewSetting.ShowCommentsInPost(it)) },
+    )
+
     SectionSpacer()
     SettingsSectionTitle(text = stringResource(R.string.settings_view_modes_section_title))
     ViewModesSection(
