@@ -2,6 +2,8 @@ package su.afk.kemonos.posts.presenter.pageSearchPosts
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Casino
 import androidx.compose.material.icons.filled.Close
@@ -78,15 +80,18 @@ internal fun SearchPostsScreen(
                 onSearch = {
                     focusManager.clearFocus()
                     onEvent(Event.SearchSubmitted)
-                }
+                },
+                bottomPadding = 0
             )
             if (state.recentSearches.isNotEmpty()) {
-                FlowRow(
+                LazyRow(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.spacedBy(8.dp),
-                    verticalArrangement = Arrangement.spacedBy(8.dp),
                 ) {
-                    state.recentSearches.forEach { query ->
+                    itemsIndexed(
+                        items = state.recentSearches,
+                        key = { index, query -> "$query-$index" }
+                    ) { _, query ->
                         InputChip(
                             selected = false,
                             onClick = {
@@ -113,7 +118,6 @@ internal fun SearchPostsScreen(
                         )
                     }
                 }
-                Spacer(Modifier.height(8.dp))
             }
         },
         floatingActionButtonStart = {
@@ -132,8 +136,7 @@ internal fun SearchPostsScreen(
             }
         },
     ) {
-
-    /** Контент */
+        /** Контент */
         PostsContentPaging(
             postsViewMode = state.uiSettingModel.searchPostsViewMode,
             uiSettingModel = state.uiSettingModel,

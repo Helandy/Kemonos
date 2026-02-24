@@ -29,7 +29,7 @@ fun PostsSearchBarWithMediaFilters(
     onToggleHasImages: () -> Unit,
     label: String,
     modifier: Modifier = Modifier,
-    bottomPadding: Int = 6,
+    bottomPadding: Int = 4,
     chipsTopPadding: Int = 8,
     showMediaFiltersInfoTooltip: Boolean = false,
     trailingIcon: @Composable (() -> Unit)? = null,
