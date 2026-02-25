@@ -106,6 +106,7 @@ internal class CreatorPostViewModel @AssistedInject constructor(
             Event.FavoriteClicked -> onFavoriteClick()
 
             Event.CreatorHeaderClicked -> navigateToCreatorProfile()
+            Event.ShowCreatorBanner -> setState { copy(showBarCreator = true) }
             is Event.TagClicked -> navigateToCreatorProfileByTag(event.tag)
 
             is Event.ToggleTranslate -> onToggleTranslate()

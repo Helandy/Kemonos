@@ -8,6 +8,7 @@ import androidx.compose.material.icons.automirrored.outlined.TextSnippet
 import androidx.compose.material.icons.filled.Download
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Share
+import androidx.compose.material.icons.outlined.AccountBox
 import androidx.compose.material.icons.outlined.ContentCopy
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -27,6 +28,8 @@ internal fun PostTitleBlock(
     onDownloadAllClick: () -> Unit,
     onShareClick: () -> Unit,
     onCopyOriginalClick: () -> Unit,
+    showCreatorBannerAction: Boolean,
+    onShowCreatorBannerClick: () -> Unit,
     onBackClick: () -> Unit,
 ) {
     var menuExpanded by remember { mutableStateOf(false) }
@@ -109,6 +112,22 @@ internal fun PostTitleBlock(
                         onCopyOriginalClick()
                     }
                 )
+
+                if (showCreatorBannerAction) {
+                    DropdownMenuItem(
+                        text = { Text(stringResource(R.string.show_creator_banner)) },
+                        leadingIcon = {
+                            Icon(
+                                imageVector = Icons.Outlined.AccountBox,
+                                contentDescription = null
+                            )
+                        },
+                        onClick = {
+                            menuExpanded = false
+                            onShowCreatorBannerClick()
+                        }
+                    )
+                }
 
                 DropdownMenuItem(
                     text = {

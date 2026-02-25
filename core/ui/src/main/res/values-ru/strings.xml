@@ -158,6 +158,7 @@
     <string name="download">Скачать</string>
     <string name="download_all">Скачать все</string>
     <string name="more_actions">Дополнительные действия</string>
+    <string name="show_creator_banner">Показать баннер автора</string>
 
     <string name="discord_profile_not_supported_title">
         Профили Discord сейчас не поддерживаются

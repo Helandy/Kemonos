@@ -205,6 +205,8 @@ internal fun CreatorPostScreen(state: State, onEvent: (Event) -> Unit, effect: F
                                 clipboard.setClipEntry(ClipEntry(clip))
                             }
                         },
+                        showCreatorBannerAction = !state.showBarCreator,
+                        onShowCreatorBannerClick = { onEvent(Event.ShowCreatorBanner) },
                         onBackClick = { onEvent(Event.Back) }
                     )
                 }
