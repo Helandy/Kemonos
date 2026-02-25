@@ -11,7 +11,7 @@ internal class TagsPageState {
 
         /** Все тэги */
         val allTags: List<Tags> = emptyList(),
-        val tags: List<Tags> = emptyList(),
+        val filteredTags: List<Tags> = emptyList(),
         val selectTag: String? = null,
 
         val searchQuery: String = "",

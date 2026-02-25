@@ -38,11 +38,12 @@ internal fun TagsPageScreen(
     onEvent: (Event) -> Unit,
 ) {
     val isPageLoading = state.loading || siteSwitching
+    val hasActiveSearch = remember(state.searchQuery) {
+        state.searchQuery.trim().length >= 2
+    }
 
-    val isBusy = isPageLoading
-
-    val chunkedTags = remember(state.tags) {
-        state.tags.sortedByDescending { it.count }.chunked(50)
+    val chunkedTags = remember(state.filteredTags) {
+        state.filteredTags.sortedByDescending { it.count }.chunked(50)
     }
     val focusManager = LocalFocusManager.current
 
@@ -67,12 +68,13 @@ internal fun TagsPageScreen(
         },
         floatingActionButtonStart = {
             SiteToggleFab(
-                enable = !isBusy,
+                enable = !isPageLoading,
                 selectedSite = site,
                 onToggleSite = { onEvent(Event.SwitchSite) },
             )
         },
-        isLoading = isBusy,
+        isLoading = isPageLoading,
+        isEmpty = hasActiveSearch && state.filteredTags.isEmpty(),
     ) {
         LazyColumn(
             verticalArrangement = Arrangement.spacedBy(8.dp),

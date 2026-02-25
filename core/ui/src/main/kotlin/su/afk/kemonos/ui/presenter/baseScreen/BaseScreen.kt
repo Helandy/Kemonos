@@ -120,16 +120,26 @@ fun BaseScreen(
         val bodyModifier = if (isScroll) base.verticalScroll(rememberScrollState()) else base
 
         when {
-            error != null -> (errorContent ?: { e, retry ->
-                DefaultErrorContent(
-                    errorItem = e,
-                    onRetry = retry,
-                    onBack = onBack,
-                )
-            })(error, onRetry)
+            error != null -> Box(modifier = base) {
+                (errorContent ?: { e, retry ->
+                    DefaultErrorContent(
+                        errorItem = e,
+                        onRetry = retry,
+                        onBack = onBack,
+                    )
+                })(error, onRetry)
+            }
 
-            isLoading -> (loadingContent ?: { DefaultLoadingContent() })()
-            isEmpty -> (emptyContent ?: { DefaultEmptyContent() })()
+            isLoading -> Box(modifier = base) {
+                (loadingContent ?: { DefaultLoadingContent() })()
+            }
+
+            isEmpty -> Box(
+                modifier = base,
+                contentAlignment = Alignment.Center
+            ) {
+                (emptyContent ?: { DefaultEmptyContent() })()
+            }
 
             else -> {
                 Box(

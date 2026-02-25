@@ -1,5 +1,6 @@
 package su.afk.kemonos.posts.presenter.pageTags
 
+import android.util.Log
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import su.afk.kemonos.domain.SelectedSite
@@ -42,32 +43,33 @@ internal class TagsPageViewModel @Inject constructor(
             is Event.SelectTag -> navigateToSelectTag(event.tag)
             Event.SwitchSite -> switchSite()
             Event.Retry -> viewModelScope.launch {
-                load(site = site.value, query = currentState.searchQuery)
+                load(site = site.value)
             }
         }
     }
 
     override suspend fun reloadSite(site: SelectedSite) {
         setState { copy(searchQuery = "") }
-        load(site = site, query = "")
+        load(site = site)
     }
 
     private fun onSearchQueryChanged(newQuery: String) {
+        Log.d("super", "onSearchQueryChanged: $newQuery")
         setState { copy(searchQuery = newQuery) }
 
         val filtered = filterTags(all = currentState.allTags, query = newQuery)
-        setState { copy(tags = filtered) }
+        setState { copy(filteredTags = filtered) }
     }
 
-    private suspend fun load(site: SelectedSite, query: String) {
+    private suspend fun load(site: SelectedSite) {
         setState { copy(loading = true) }
-        val tags = getAllTagsUseCase(site)
+        val loadedTags = getAllTagsUseCase(site)
 
         setState {
             copy(
                 loading = false,
-                allTags = tags,
-                tags = filterTags(all = tags, query = query)
+                allTags = loadedTags,
+                filteredTags = filterTags(all = loadedTags, query = searchQuery)
             )
         }
     }
