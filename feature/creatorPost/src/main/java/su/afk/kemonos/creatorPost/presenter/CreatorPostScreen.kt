@@ -148,6 +148,7 @@ internal fun CreatorPostScreen(state: State, onEvent: (Event) -> Unit, effect: F
 
         val canPrevPost = post.prevId != null
         val canNextPost = post.nextId != null
+        val currentRevisionLabel = stringResource(R.string.post_version_current)
 
         val listState = rememberSaveable(
             state.postId,
@@ -204,6 +205,8 @@ internal fun CreatorPostScreen(state: State, onEvent: (Event) -> Unit, effect: F
                                 clipboard.setClipEntry(ClipEntry(clip))
                             }
                         },
+                        showCreatorBannerAction = !state.showBarCreator,
+                        onShowCreatorBannerClick = { onEvent(Event.ShowCreatorBanner) },
                         onBackClick = { onEvent(Event.Back) }
                     )
                 }
@@ -225,9 +228,42 @@ internal fun CreatorPostScreen(state: State, onEvent: (Event) -> Unit, effect: F
                 }
 
                 if (state.revisionIds.size > 1) {
+                    val revisionsById = state.sourcePost
+                        ?.revisions
+                        ?.associateBy { it.revisionId }
+                        .orEmpty()
+
                     item(key = "revision_switcher") {
                         PostRevisionSwitcher(
                             revisionIds = state.revisionIds,
+                            revisionLabel = { revisionId ->
+                                if (revisionId == null) return@PostRevisionSwitcher currentRevisionLabel
+
+                                val revision = revisionsById[revisionId]
+                                val yearMonth = revision
+                                    ?.post
+                                    ?.published
+                                    ?.takeIf { it.length >= 7 }
+                                    ?.take(7)
+                                    ?: revision?.post?.added
+                                        ?.takeIf { it.length >= 7 }
+                                        ?.take(7)
+                                    ?: revision?.post?.edited
+                                        ?.takeIf { it.length >= 7 }
+                                        ?.take(7)
+                                    ?: "unknown"
+
+                                buildString {
+                                    append(yearMonth)
+                                    append(" <")
+                                    append(revisionId)
+                                    append(">")
+                                    revision?.backendRevisionId?.let {
+                                        append(" ")
+                                        append(it)
+                                    }
+                                }
+                            },
                             selectedRevisionId = state.selectedRevisionId,
                             onSelectRevision = { revisionId ->
                                 onEvent(Event.SelectRevision(revisionId))
@@ -292,6 +328,7 @@ internal fun CreatorPostScreen(state: State, onEvent: (Event) -> Unit, effect: F
                     if (videosExpanded) {
                         postVideosSection(
                             uiSettingModel = state.uiSettingModel,
+                            requestKey = state.selectedRevisionId,
                             videos = uniqueVideos,
                             videoThumbs = state.videoThumbs,
                             requestThumb = { server, path ->
@@ -435,6 +472,7 @@ private fun PreviewCreatorPostScreen() {
 @Composable
 private fun PostRevisionSwitcher(
     revisionIds: List<Int?>,
+    revisionLabel: (Int?) -> String,
     selectedRevisionId: Int?,
     onSelectRevision: (Int?) -> Unit,
 ) {
@@ -456,11 +494,7 @@ private fun PostRevisionSwitcher(
         ) {
             revisionIds.forEach { revisionId ->
                 val isSelected = revisionId == selectedRevisionId
-                val label = if (revisionId == null) {
-                    stringResource(R.string.post_version_current)
-                } else {
-                    stringResource(R.string.post_version_revision, revisionId)
-                }
+                val label = revisionLabel(revisionId)
 
                 FilterChip(
                     selected = isSelected,

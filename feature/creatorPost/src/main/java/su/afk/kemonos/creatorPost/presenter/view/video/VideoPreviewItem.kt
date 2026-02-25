@@ -39,6 +39,7 @@ import kotlin.math.roundToInt
 internal fun VideoPreviewItem(
     showPreview: Boolean,
     blurImage: Boolean,
+    requestKey: Any? = null,
     video: VideoDomain,
     infoState: MediaInfoState?,
     requestInfo: (server: String, path: String) -> Unit,
@@ -49,7 +50,7 @@ internal fun VideoPreviewItem(
     val url = remember(video) { "${video.server}/data${video.path}" }
 
     if (showPreview) {
-        LaunchedEffect(url) {
+        LaunchedEffect(requestKey, url) {
             requestInfo(video.server, video.path)
             requestThumb(video.server, video.path)
         }
