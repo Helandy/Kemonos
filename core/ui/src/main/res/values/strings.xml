@@ -8,7 +8,7 @@
     <string name="attachments_count">📎 %1$d attach.</string>
     <string name="tags">Tags</string>
     <string name="empty_screen">No data</string>
-    <string name="attachment_section">📎 Attachments</string>
+    <string name="attachment_section">📎 Attachments (%1$d)</string>
     <string name="comments_section">💬 Comments</string>
     <string name="video_section">🎬 Video</string>
     <string name="audio_file">🎵 Audio</string>

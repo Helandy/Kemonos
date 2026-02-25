@@ -9,7 +9,7 @@
     <string name="attachments_count">📎 %1$d влож.</string>
     <string name="tags">Тэги</string>
     <string name="empty_screen">Нет данных</string>
-    <string name="attachment_section">📎 Вложения</string>
+    <string name="attachment_section">📎 Вложения (%1$d)</string>
     <string name="comments_section">💬 Комментарии</string>
     <string name="video_section">🎬 Видео</string>
     <string name="audio_file">🎵 Аудио</string>
