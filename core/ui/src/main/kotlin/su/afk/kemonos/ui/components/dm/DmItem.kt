@@ -1,22 +1,33 @@
 package su.afk.kemonos.ui.components.dm
 
+import android.util.Patterns
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.text.ClickableText
 import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import su.afk.kemonos.preferences.ui.DateFormatMode
 import su.afk.kemonos.ui.R
 import su.afk.kemonos.ui.components.creator.CreatorListItem
 import su.afk.kemonos.ui.date.toUiDateTime
+
+private const val URL_TAG = "url"
 
 @Composable
 fun DmItem(
@@ -26,6 +37,16 @@ fun DmItem(
     onClick: () -> Unit,
     onCreatorClick: ((DmCreatorUi) -> Unit)? = null,
 ) {
+    val uriHandler = LocalUriHandler.current
+    val linkStyle = SpanStyle(
+        color = MaterialTheme.colorScheme.primary,
+        textDecoration = TextDecoration.Underline,
+        fontWeight = FontWeight.Medium,
+    )
+    val annotatedContent = remember(dm.content, linkStyle) {
+        buildDmAnnotatedContent(dm.content, linkStyle)
+    }
+
     Column {
         dm.creator?.let { creator ->
             CreatorListItem(
@@ -51,11 +72,20 @@ fun DmItem(
                     .padding(12.dp)
             ) {
                 SelectionContainer {
-                    Text(
-                        text = dm.content,
+                    @Suppress("DEPRECATION")
+                    ClickableText(
+                        text = annotatedContent,
                         style = MaterialTheme.typography.bodyLarge,
                         maxLines = if (expanded) Int.MAX_VALUE else 5,
-                        overflow = if (expanded) TextOverflow.Clip else TextOverflow.Ellipsis
+                        overflow = if (expanded) TextOverflow.Clip else TextOverflow.Ellipsis,
+                        onClick = { offset ->
+                            val url = annotatedContent
+                                .getStringAnnotations(URL_TAG, offset, offset)
+                                .firstOrNull()
+                                ?.item
+                                ?: return@ClickableText
+                            uriHandler.openUri(url)
+                        }
                     )
                 }
                 Spacer(Modifier.height(4.dp))
@@ -73,4 +103,34 @@ fun DmItem(
             }
         }
     }
+}
+
+private fun buildDmAnnotatedContent(content: String, linkStyle: SpanStyle): AnnotatedString {
+    val matcher = Patterns.WEB_URL.matcher(content)
+    return buildAnnotatedString {
+        var currentIndex = 0
+        while (matcher.find()) {
+            val start = matcher.start()
+            val end = matcher.end()
+            if (start > currentIndex) {
+                append(content.substring(currentIndex, start))
+            }
+            val rawUrl = content.substring(start, end)
+            val normalizedUrl = normalizeUrl(rawUrl)
+            pushStringAnnotation(tag = URL_TAG, annotation = normalizedUrl)
+            pushStyle(linkStyle)
+            append(rawUrl)
+            pop()
+            pop()
+            currentIndex = end
+        }
+        if (currentIndex < content.length) {
+            append(content.substring(currentIndex))
+        }
+    }
+}
+
+private fun normalizeUrl(url: String): String {
+    val lower = url.lowercase()
+    return if (lower.startsWith("http://") || lower.startsWith("https://")) url else "https://$url"
 }
