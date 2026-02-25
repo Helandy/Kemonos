@@ -358,7 +358,10 @@ internal fun CreatorPostScreen(state: State, onEvent: (Event) -> Unit, effect: F
                 if (hasAttachments) {
                     item(key = "attachments_toggle") {
                         CollapsibleSectionHeader(
-                            title = stringResource(R.string.attachment_section),
+                            title = stringResource(
+                                R.string.attachment_section,
+                                state.post.attachments.size
+                            ),
                             expanded = attachmentsExpanded,
                             onToggle = { attachmentsExpanded = !attachmentsExpanded }
                         )

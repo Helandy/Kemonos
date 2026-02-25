@@ -10,6 +10,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.paging.LoadState
 import androidx.paging.compose.collectAsLazyPagingItems
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
@@ -22,6 +23,7 @@ import su.afk.kemonos.ui.components.creator.CreatorsContentPaging
 import su.afk.kemonos.ui.components.searchBar.SearchBarNew
 import su.afk.kemonos.ui.presenter.baseScreen.BaseScreen
 import su.afk.kemonos.ui.presenter.baseScreen.CenterBackTopBar
+import su.afk.kemonos.ui.presenter.baseScreen.DefaultEmptyContent
 import su.afk.kemonos.ui.presenter.baseScreen.TopBarScroll
 import su.afk.kemonos.ui.preview.KemonosPreviewScreen
 
@@ -31,6 +33,7 @@ internal fun FavoriteProfilesScreen(state: State, onEvent: (Event) -> Unit, effe
     val sortOptions = favoriteProfilesSortOptions()
     val pullState = rememberPullToRefreshState()
     val pagingItems = state.artistsPaged.collectAsLazyPagingItems()
+    val pagingIsEmpty = pagingItems.loadState.refresh is LoadState.NotLoading && pagingItems.itemCount == 0
 
     BaseScreen(
         contentPadding = PaddingValues(horizontal = 8.dp),
@@ -61,6 +64,10 @@ internal fun FavoriteProfilesScreen(state: State, onEvent: (Event) -> Unit, effe
             isAscending = state.sortAscending,
             onToggleAscending = { onEvent(Event.ToggleSortOrder) },
         )
+
+        if (pagingIsEmpty) {
+            DefaultEmptyContent()
+        }
 
         PullToRefreshBox(
             modifier = Modifier.fillMaxSize(),

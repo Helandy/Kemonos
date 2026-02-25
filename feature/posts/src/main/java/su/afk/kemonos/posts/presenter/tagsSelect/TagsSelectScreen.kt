@@ -22,6 +22,7 @@ internal fun TagsPostsScreen(
     BaseScreen(
         isScroll = false,
         contentPadding = PaddingValues(horizontal = 8.dp),
+        isLoading = state.loading,
     ) {
         /** Контент */
         PostsContentPaging(
