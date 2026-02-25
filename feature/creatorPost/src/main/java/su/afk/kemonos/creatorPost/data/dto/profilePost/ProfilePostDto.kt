@@ -53,6 +53,7 @@ internal data class PostResponseDto(
             return raw.mapNotNull { pair ->
                 val revisionId = pair.getOrNull(0)?.toIntSafe() ?: return@mapNotNull null
                 val postPayload = pair.getOrNull(1) ?: return@mapNotNull null
+                val backendRevisionId = postPayload.toBackendRevisionId()
                 val revisionPostDto = runCatching {
                     gson.fromJson(postPayload, PostUnifiedDto::class.java)
                 }.getOrNull() ?: return@mapNotNull null
@@ -60,11 +61,15 @@ internal data class PostResponseDto(
                 PostContentRevisionDomain(
                     revisionId = revisionId,
                     post = revisionPostDto.toDomain(),
+                    backendRevisionId = backendRevisionId,
                 )
             }
         }
 
         private fun JsonElement.toIntSafe(): Int? = runCatching { asInt }.getOrNull()
+        private fun JsonElement.toBackendRevisionId(): Long? = runCatching {
+            asJsonObject.get("revision_id")?.asLong
+        }.getOrNull()
     }
 }
 

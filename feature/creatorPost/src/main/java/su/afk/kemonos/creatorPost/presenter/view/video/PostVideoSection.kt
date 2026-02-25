@@ -15,6 +15,7 @@ import su.afk.kemonos.ui.R
 
 internal fun LazyListScope.postVideosSection(
     uiSettingModel: UiSettingModel,
+    requestKey: Any? = null,
     videos: List<VideoDomain>,
     videoInfo: Map<String, MediaInfoState>,
     onVideoInfoRequested: (server: String, path: String) -> Unit,
@@ -45,6 +46,7 @@ internal fun LazyListScope.postVideosSection(
         VideoPreviewItem(
             showPreview = uiSettingModel.showPreviewVideo,
             blurImage = uiSettingModel.blurImages,
+            requestKey = requestKey,
             video = video,
             infoState = videoInfo[url],
             requestInfo = onVideoInfoRequested,

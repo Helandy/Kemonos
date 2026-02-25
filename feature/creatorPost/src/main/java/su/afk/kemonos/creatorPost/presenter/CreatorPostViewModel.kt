@@ -169,7 +169,7 @@ internal class CreatorPostViewModel @AssistedInject constructor(
             val comments = commentsDeferred.await()
             val profile = profileDeferred.await()
 
-            val selectedRevisionId = post?.findSelectedRevisionIdOrNull()
+            val selectedRevisionId: Int? = null
             val resolvedPost = post?.toResolvedPost(selectedRevisionId)
 
             val showButtonTranslate = resolvedPost?.post?.content?.clearHtml()?.isNotBlank() ?: false
@@ -194,7 +194,7 @@ internal class CreatorPostViewModel @AssistedInject constructor(
                     loading = false,
                     sourcePost = post,
                     post = resolvedPost,
-                    revisionIds = post?.buildRevisionSelectorIds(selectedRevisionId).orEmpty(),
+                    revisionIds = post?.buildRevisionSelectorIds().orEmpty(),
                     selectedRevisionId = selectedRevisionId,
                     showButtonTranslate = showButtonTranslate,
                     contentBlocks = blocks,
@@ -522,22 +522,15 @@ internal class CreatorPostViewModel @AssistedInject constructor(
         const val MAX_HTML_CHARS = 100_000
     }
 
-    private fun PostContentDomain.findSelectedRevisionIdOrNull(): Int? {
-        val current = post
-        return revisions.firstOrNull { revision ->
-            val candidate = revision.post
-            candidate.id == current.id &&
-                    candidate.content == current.content &&
-                    candidate.edited == current.edited &&
-                    candidate.added == current.added &&
-                    candidate.attachments == current.attachments
-        }?.revisionId
-    }
+    private fun PostContentDomain.buildRevisionSelectorIds(): List<Int?> {
+        if (revisions.size <= 1) return emptyList()
 
-    private fun PostContentDomain.buildRevisionSelectorIds(selectedRevisionId: Int?): List<Int?> {
-        val ids = revisions.map { it.revisionId }.distinct()
+        val ids = revisions
+            .filter { it.backendRevisionId != null }
+            .map { it.revisionId }
+            .distinct()
         if (ids.isEmpty()) return emptyList()
-        return if (selectedRevisionId == null) listOf(null) + ids else ids
+        return listOf(null) + ids
     }
 
     private fun PostContentDomain.toResolvedPost(selectedRevisionId: Int?): PostContentDomain {

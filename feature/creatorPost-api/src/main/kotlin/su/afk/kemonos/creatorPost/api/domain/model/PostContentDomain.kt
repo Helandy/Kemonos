@@ -19,4 +19,5 @@ data class PostContentDomain(
 data class PostContentRevisionDomain(
     val revisionId: Int,
     val post: PostDomain,
+    val backendRevisionId: Long? = null,
 )
