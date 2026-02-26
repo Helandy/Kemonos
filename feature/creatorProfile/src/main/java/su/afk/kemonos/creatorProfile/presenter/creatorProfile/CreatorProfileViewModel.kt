@@ -1,6 +1,5 @@
 package su.afk.kemonos.creatorProfile.presenter.creatorProfile
 
-import android.util.Log
 import androidx.paging.cachedIn
 import androidx.paging.filter
 import dagger.assisted.Assisted
@@ -255,10 +254,6 @@ internal class CreatorProfileViewModel @AssistedInject constructor(
     }
 
     private fun openCommunityChannel(channel: CommunityChannel) {
-
-        Log.e("super", "openCommunityChannel $channel")
-        Log.e("super", "openCommunityChannel service ${currentState.service}")
-        Log.e("super", "openCommunityChannel id ${currentState.id}")
         navigationDelegate.navigateToCommunityChat(
             service = currentState.service,
             creatorId = currentState.id,

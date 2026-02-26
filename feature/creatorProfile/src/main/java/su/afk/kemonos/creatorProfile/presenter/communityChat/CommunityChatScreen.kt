@@ -1,6 +1,5 @@
 package su.afk.kemonos.creatorProfile.presenter.communityChat
 
-import android.util.Log
 import android.util.Patterns
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -346,7 +345,6 @@ private fun MediaGrid(
                 rowItems.forEach { media ->
                     Box(modifier = Modifier.weight(1f)) {
                         if (isImageFile(media.pathOrUrl)) {
-                            Log.e("super", "media.previewUrl ${media.previewUrl}")
                             AsyncImageWithStatus(
                                 model = media.previewUrl,
                                 contentDescription = null,
