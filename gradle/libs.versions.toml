@@ -5,8 +5,8 @@ minSdk = "29"
 jvmVersion = "21"
 
 # --- App versioning
-appVersionName = "1.8.1"
-appVersionCode = "34"
+appVersionName = "1.9"
+appVersionCode = "35"
 
 agp = "8.12.3"
 kotlin = "2.3.10"
@@ -45,7 +45,7 @@ coroutines = "1.10.2"
 kotlinxSerializationJson = "1.10.0"
 
 # --- Media / Images / UI helpers
-coil3 = "3.3.0"
+coil3 = "3.4.0"
 media3 = "1.9.2"
 multiplatformMarkdownRendererM3 = "0.39.2"
 

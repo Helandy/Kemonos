@@ -1,6 +1,5 @@
 package su.afk.kemonos.posts.presenter.pageTags
 
-import android.util.Log
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import su.afk.kemonos.domain.SelectedSite
@@ -54,7 +53,6 @@ internal class TagsPageViewModel @Inject constructor(
     }
 
     private fun onSearchQueryChanged(newQuery: String) {
-        Log.d("super", "onSearchQueryChanged: $newQuery")
         setState { copy(searchQuery = newQuery) }
 
         val filtered = filterTags(all = currentState.allTags, query = newQuery)
