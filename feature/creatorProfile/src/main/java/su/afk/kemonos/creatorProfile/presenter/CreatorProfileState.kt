@@ -7,6 +7,7 @@ import su.afk.kemonos.creatorProfile.api.domain.models.profileAnnouncements.Prof
 import su.afk.kemonos.creatorProfile.api.domain.models.profileDms.Dm
 import su.afk.kemonos.creatorProfile.api.domain.models.profileFanCards.ProfileFanCard
 import su.afk.kemonos.creatorProfile.api.domain.models.profileLinks.ProfileLink
+import su.afk.kemonos.creatorProfile.api.domain.models.profileSimilar.SimilarCreator
 import su.afk.kemonos.creatorProfile.presenter.model.ProfileTab
 import su.afk.kemonos.domain.models.PostDomain
 import su.afk.kemonos.domain.models.Profile
@@ -43,6 +44,7 @@ internal class CreatorProfileState {
         val fanCardsList: List<ProfileFanCard> = emptyList(),
         val dmList: List<Dm> = emptyList(),
         val profileLinks: List<ProfileLink> = emptyList(),
+        val similarCreators: List<SimilarCreator> = emptyList(),
 
         /** Табы */
         val showTabs: List<ProfileTab> = listOf(ProfileTab.POSTS),

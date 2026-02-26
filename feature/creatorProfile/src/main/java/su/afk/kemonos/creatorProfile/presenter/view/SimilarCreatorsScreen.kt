@@ -10,36 +10,38 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import su.afk.kemonos.creatorProfile.api.domain.models.profileLinks.ProfileLink
+import su.afk.kemonos.creatorProfile.api.domain.models.profileSimilar.SimilarCreator
 import su.afk.kemonos.preferences.domainResolver.LocalDomainResolver
 import su.afk.kemonos.preferences.ui.DateFormatMode
 import su.afk.kemonos.ui.components.creator.ProfileLinkItem
 
 @Composable
-fun ProfileLinksScreen(
+fun SimilarCreatorsScreen(
     dateMode: DateFormatMode,
-    links: List<ProfileLink>,
-    onClick: (ProfileLink) -> Unit,
+    creators: List<SimilarCreator>,
+    onClick: (SimilarCreator) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    if (links.isEmpty()) return
+    if (creators.isEmpty()) return
 
     val resolver = LocalDomainResolver.current
-    val imgBaseUrl = remember(links.first().service) { resolver.imageBaseUrlByService(links.first().service) }
+    val imgBaseUrl = remember(creators.first().service) {
+        resolver.imageBaseUrlByService(creators.first().service)
+    }
 
     LazyColumn(
         modifier = modifier.fillMaxSize(),
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
-        items(links, key = { it.id }) { link ->
+        items(creators, key = { "${it.service}:${it.id}" }) { creator ->
             ProfileLinkItem(
                 dateMode = dateMode,
-                name = link.name,
-                service = link.service,
-                id = link.id,
-                updated = link.updated,
+                name = creator.name,
+                service = creator.service,
+                id = creator.id,
+                updated = creator.updated,
                 imgBaseUrl = imgBaseUrl,
-                onClick = { onClick(link) }
+                onClick = { onClick(creator) }
             )
 
             HorizontalDivider(

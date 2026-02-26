@@ -5,5 +5,6 @@ enum class CreatorProfileCacheType {
     TAGS,
     ANNOUNCEMENTS,
     FANCARDS,
-    LINKS
+    LINKS,
+    SIMILAR
 }

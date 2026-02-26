@@ -6,6 +6,7 @@ import su.afk.kemonos.creatorProfile.api.domain.models.profileAnnouncements.Prof
 import su.afk.kemonos.creatorProfile.api.domain.models.profileDms.Dm
 import su.afk.kemonos.creatorProfile.api.domain.models.profileFanCards.ProfileFanCard
 import su.afk.kemonos.creatorProfile.api.domain.models.profileLinks.ProfileLink
+import su.afk.kemonos.creatorProfile.api.domain.models.profileSimilar.SimilarCreator
 import su.afk.kemonos.domain.models.Tag
 import javax.inject.Inject
 
@@ -41,4 +42,10 @@ class CreatorProfileCacheJson @Inject constructor(
 
     fun linksFromJson(raw: String): List<ProfileLink> =
         json.decodeFromString(ListSerializer(ProfileLink.serializer()), raw)
+
+    fun similarToJson(items: List<SimilarCreator>): String =
+        json.encodeToString(ListSerializer(SimilarCreator.serializer()), items)
+
+    fun similarFromJson(raw: String): List<SimilarCreator> =
+        json.decodeFromString(ListSerializer(SimilarCreator.serializer()), raw)
 }
