@@ -1,5 +1,6 @@
 package su.afk.kemonos.creatorProfile.presenter.communityChat
 
+import android.util.Log
 import android.util.Patterns
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -23,6 +24,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
@@ -175,21 +177,34 @@ private fun MessageItem(
             )
         }
 
-        val text = message.text.orEmpty()
-        if (text.isNotBlank()) {
-            MessageText(
-                text = text,
+        val isDeleted = message.deletedAt.isNullOrBlank().not()
+        if (isDeleted) {
+            Text(
+                text = "Message deleted",
                 modifier = Modifier.padding(top = 4.dp),
-                onOpenUrl = onOpenUrl
+                style = MaterialTheme.typography.bodyMedium,
+                fontStyle = FontStyle.Italic,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
             )
+        } else {
+            val text = message.text.orEmpty()
+            if (text.isNotBlank()) {
+                MessageText(
+                    text = text,
+                    modifier = Modifier.padding(top = 4.dp),
+                    onOpenUrl = onOpenUrl
+                )
+            }
         }
 
-        val mediaUrls = buildMediaUrls(message, fallbackBaseUrl)
-        if (mediaUrls.isNotEmpty()) {
-            MediaGrid(
-                items = mediaUrls,
-                onOpenMedia = onOpenMedia
-            )
+        if (!isDeleted) {
+            val mediaUrls = buildMediaUrls(message, fallbackBaseUrl)
+            if (mediaUrls.isNotEmpty()) {
+                MediaGrid(
+                    items = mediaUrls,
+                    onOpenMedia = onOpenMedia
+                )
+            }
         }
 
         val replies = message.replies.take(3)
@@ -265,12 +280,16 @@ private fun buildMessageAnnotatedContent(content: String, linkStyle: SpanStyle):
             }
 
             val rawUrl = content.substring(start, end)
-            val normalizedUrl = normalizeUrl(rawUrl)
-            pushStringAnnotation(tag = URL_TAG, annotation = normalizedUrl)
-            pushStyle(linkStyle)
-            append(rawUrl)
-            pop()
-            pop()
+            if (isLikelyUrl(rawUrl)) {
+                val normalizedUrl = normalizeUrl(rawUrl)
+                pushStringAnnotation(tag = URL_TAG, annotation = normalizedUrl)
+                pushStyle(linkStyle)
+                append(rawUrl)
+                pop()
+                pop()
+            } else {
+                append(rawUrl)
+            }
             currentIndex = end
         }
 
@@ -280,13 +299,31 @@ private fun buildMessageAnnotatedContent(content: String, linkStyle: SpanStyle):
     }
 }
 
+private fun isLikelyUrl(rawUrl: String): Boolean {
+    val candidate = rawUrl.trim()
+    val lower = candidate.lowercase()
+    if (lower.startsWith("http://") || lower.startsWith("https://")) return true
+    if (lower.startsWith("www.")) return true
+
+    val host = candidate.substringBefore('/')
+    if (!host.contains('.')) return false
+    if (!host.all { it.isLetterOrDigit() || it == '.' || it == '-' }) return false
+
+    val tld = host.substringAfterLast('.', missingDelimiterValue = "")
+    if (tld.length !in 2..4) return false
+    if (!tld.all(Char::isLetter)) return false
+
+    return true
+}
+
 private fun normalizeUrl(url: String): String {
     val lower = url.lowercase()
     return if (lower.startsWith("http://") || lower.startsWith("https://")) url else "https://$url"
 }
 
 private data class CommunityMedia(
-    val url: String,
+    val previewUrl: String,
+    val openUrl: String,
     val pathOrUrl: String,
 )
 
@@ -309,14 +346,15 @@ private fun MediaGrid(
                 rowItems.forEach { media ->
                     Box(modifier = Modifier.weight(1f)) {
                         if (isImageFile(media.pathOrUrl)) {
+                            Log.e("super", "media.previewUrl ${media.previewUrl}")
                             AsyncImageWithStatus(
-                                model = media.url,
+                                model = media.previewUrl,
                                 contentDescription = null,
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .aspectRatio(1f)
                                     .clip(RoundedCornerShape(10.dp))
-                                    .clickable { onOpenMedia(media.url) },
+                                    .clickable { onOpenMedia(media.openUrl) },
                                 contentScale = ContentScale.Crop
                             )
                         } else {
@@ -326,7 +364,7 @@ private fun MediaGrid(
                                     .aspectRatio(1f)
                                     .clip(RoundedCornerShape(10.dp))
                                     .background(MaterialTheme.colorScheme.surface)
-                                    .clickable { onOpenMedia(media.url) },
+                                    .clickable { onOpenMedia(media.openUrl) },
                                 contentAlignment = Alignment.Center
                             ) {
                                 Text(
@@ -349,26 +387,45 @@ private fun buildMediaUrls(message: CommunityMessage, fallbackBaseUrl: String): 
     val fromAttachments = message.attachments.mapNotNull { att ->
         val path = att.path?.takeIf { it.isNotBlank() }
         if (path != null) {
-            val url = AttachmentDomain(
+            val fullUrl = AttachmentDomain(
                 server = null,
                 path = path,
                 name = att.name
             ).buildContentUrlToDataSite(fallbackBaseUrl = fallbackBaseUrl)
-            return@mapNotNull CommunityMedia(url = url, pathOrUrl = path)
+            val previewUrl = buildThumbnailUrl(path = path, fallbackBaseUrl = fallbackBaseUrl)
+            return@mapNotNull CommunityMedia(
+                previewUrl = previewUrl,
+                openUrl = fullUrl,
+                pathOrUrl = path
+            )
         }
 
         val thumb = att.thumbUrl?.takeIf { it.isNotBlank() } ?: return@mapNotNull null
-        CommunityMedia(url = thumb, pathOrUrl = thumb)
+        CommunityMedia(
+            previewUrl = thumb,
+            openUrl = thumb,
+            pathOrUrl = thumb
+        )
     }
 
     val fromEmbeds = message.embeds.mapNotNull { embed ->
         val image = embed.imageUrl?.takeIf { it.isNotBlank() }
             ?: embed.thumbUrl?.takeIf { it.isNotBlank() }
             ?: return@mapNotNull null
-        CommunityMedia(url = image, pathOrUrl = image)
+        if (!isImageFile(image) && !isVideoFile(image)) return@mapNotNull null
+        CommunityMedia(
+            previewUrl = image,
+            openUrl = image,
+            pathOrUrl = image
+        )
     }
 
     return fromAttachments + fromEmbeds
+}
+
+private fun buildThumbnailUrl(path: String, fallbackBaseUrl: String): String {
+    val base = fallbackBaseUrl.trim().trimEnd('/')
+    return if (base.isBlank()) "/thumbnail/data$path" else "$base/thumbnail/data$path"
 }
 
 private fun String.toUiDateTimeWithTime(mode: DateFormatMode): String {
