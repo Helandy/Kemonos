@@ -3,6 +3,8 @@ package su.afk.kemonos.creatorProfile.data.cache
 import kotlinx.serialization.builtins.ListSerializer
 import kotlinx.serialization.json.Json
 import su.afk.kemonos.creatorProfile.api.domain.models.profileAnnouncements.ProfileAnnouncement
+import su.afk.kemonos.creatorProfile.api.domain.models.profileCommunity.CommunityChannel
+import su.afk.kemonos.creatorProfile.api.domain.models.profileCommunity.CommunityMessage
 import su.afk.kemonos.creatorProfile.api.domain.models.profileDms.Dm
 import su.afk.kemonos.creatorProfile.api.domain.models.profileFanCards.ProfileFanCard
 import su.afk.kemonos.creatorProfile.api.domain.models.profileLinks.ProfileLink
@@ -48,4 +50,16 @@ class CreatorProfileCacheJson @Inject constructor(
 
     fun similarFromJson(raw: String): List<SimilarCreator> =
         json.decodeFromString(ListSerializer(SimilarCreator.serializer()), raw)
+
+    fun communityChannelsToJson(items: List<CommunityChannel>): String =
+        json.encodeToString(ListSerializer(CommunityChannel.serializer()), items)
+
+    fun communityChannelsFromJson(raw: String): List<CommunityChannel> =
+        json.decodeFromString(ListSerializer(CommunityChannel.serializer()), raw)
+
+    fun communityMessagesToJson(items: List<CommunityMessage>): String =
+        json.encodeToString(ListSerializer(CommunityMessage.serializer()), items)
+
+    fun communityMessagesFromJson(raw: String): List<CommunityMessage> =
+        json.decodeFromString(ListSerializer(CommunityMessage.serializer()), raw)
 }

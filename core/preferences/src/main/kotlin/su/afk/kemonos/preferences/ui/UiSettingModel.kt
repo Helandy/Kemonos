@@ -7,6 +7,11 @@ import java.util.*
 
 enum class CreatorViewMode { LIST, GRID }
 enum class PostsViewMode { LIST, GRID }
+enum class AppThemeMode {
+    SYSTEM,
+    LIGHT,
+    DARK,
+}
 
 /** Куда переводить */
 enum class TranslateTarget {
@@ -124,6 +129,9 @@ data class UiSettingModel(
     /** Язык, на который переводим ("" = системный) */
     val translateLanguageTag: String = DEFAULT_TRANSLATE_LANGUAGE_TAG,
 
+    /** Тема приложения */
+    val appThemeMode: AppThemeMode = DEFAULT_APP_THEME_MODE,
+
     /** Формат даты в приложении */
     val dateFormatMode: DateFormatMode = DEFAULT_DATE_FORMAT_MODE,
 
@@ -166,6 +174,7 @@ data class UiSettingModel(
         val DEFAULT_TRANSLATE_TARGET = TranslateTarget.APP
         val DEFAULT_RANDOM_BUTTON_PLACEMENT = RandomButtonPlacement.SEARCH_BAR
         const val DEFAULT_TRANSLATE_LANGUAGE_TAG = "" // системный
+        val DEFAULT_APP_THEME_MODE = AppThemeMode.SYSTEM
         val DEFAULT_DATE_FORMAT_MODE = DateFormatMode.DD_MM_YYYY
         const val DEFAULT_COIL_CACHE_SIZE = 300
         const val DEFAULT_VIDEO_PREVIEW_SIZE = 150

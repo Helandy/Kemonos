@@ -1,5 +1,6 @@
 package su.afk.kemonos
 
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -7,6 +8,8 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import coil3.ImageLoader
 import su.afk.kemonos.error.error.ErrorMapper
@@ -17,6 +20,9 @@ import su.afk.kemonos.navigation.NavRegistrar
 import su.afk.kemonos.navigation.NavigationManager
 import su.afk.kemonos.preferences.domainResolver.IDomainResolver
 import su.afk.kemonos.preferences.domainResolver.LocalDomainResolver
+import su.afk.kemonos.preferences.ui.AppThemeMode
+import su.afk.kemonos.preferences.ui.IUiSettingUseCase
+import su.afk.kemonos.preferences.ui.UiSettingModel
 import su.afk.kemonos.presenter.bottomBar.BottomNavigationBar
 import su.afk.kemonos.storage.api.videoPreview.IVideoFrameCache
 import su.afk.kemonos.ui.imageLoader.LocalAppImageLoader
@@ -32,12 +38,21 @@ class MainRoutingGraph @Inject constructor(
     private val videoFrameCache: IVideoFrameCache,
     private val errorHandler: IErrorHandlerUseCase,
     private val navManager: NavigationManager,
+    private val uiSetting: IUiSettingUseCase,
     private val registrars: Set<@JvmSuppressWildcards NavRegistrar>
 ) {
 
     @Composable
     fun MainGraph() {
-        KemonosTheme {
+        val settings by uiSetting.prefs.collectAsState(initial = UiSettingModel())
+        val systemDark = isSystemInDarkTheme()
+        val darkTheme = when (settings.appThemeMode) {
+            AppThemeMode.SYSTEM -> systemDark
+            AppThemeMode.LIGHT -> false
+            AppThemeMode.DARK -> true
+        }
+
+        KemonosTheme(darkTheme = darkTheme) {
             val inTabs = navManager.startAppBackStack.isEmpty()
             Scaffold(
                 modifier = Modifier,

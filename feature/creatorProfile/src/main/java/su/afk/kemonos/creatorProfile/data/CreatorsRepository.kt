@@ -1,6 +1,8 @@
 package su.afk.kemonos.creatorProfile.data
 
 import su.afk.kemonos.creatorProfile.api.domain.models.profileAnnouncements.ProfileAnnouncement
+import su.afk.kemonos.creatorProfile.api.domain.models.profileCommunity.CommunityChannel
+import su.afk.kemonos.creatorProfile.api.domain.models.profileCommunity.CommunityMessage
 import su.afk.kemonos.creatorProfile.api.domain.models.profileDms.Dm
 import su.afk.kemonos.creatorProfile.api.domain.models.profileFanCards.ProfileFanCard
 import su.afk.kemonos.creatorProfile.api.domain.models.profileLinks.ProfileLink
@@ -8,6 +10,8 @@ import su.afk.kemonos.creatorProfile.api.domain.models.profileSimilar.SimilarCre
 import su.afk.kemonos.creatorProfile.data.api.CreatorProfileApi
 import su.afk.kemonos.creatorProfile.data.cache.CreatorProfileCacheJson
 import su.afk.kemonos.creatorProfile.data.dto.profileAnnouncements.ProfileAnnouncementsDto.Companion.toDomain
+import su.afk.kemonos.creatorProfile.data.dto.profileCommunity.CommunityChannelDto.Companion.toDomain
+import su.afk.kemonos.creatorProfile.data.dto.profileCommunity.CommunityMessageDto.Companion.toDomain
 import su.afk.kemonos.creatorProfile.data.dto.profileDms.DmDto.Companion.toDomain
 import su.afk.kemonos.creatorProfile.data.dto.profileFanCards.ProfileFanCardsDto.Companion.toDomain
 import su.afk.kemonos.creatorProfile.data.dto.profileLinks.ProfileLinksDto.Companion.toDomain
@@ -19,6 +23,8 @@ import su.afk.kemonos.domain.models.PostDomain
 import su.afk.kemonos.domain.models.Tag
 import su.afk.kemonos.network.util.call
 import su.afk.kemonos.network.util.safeCallOrNull
+import su.afk.kemonos.storage.api.repository.community.CommunityCacheType
+import su.afk.kemonos.storage.api.repository.community.IStoreCommunityRepository
 import su.afk.kemonos.storage.api.repository.creatorProfile.CreatorProfileCacheType
 import su.afk.kemonos.storage.api.repository.creatorProfile.IStoreCreatorProfileRepository
 import su.afk.kemonos.storage.api.repository.profilePosts.IStorageCreatorPostsRepository
@@ -27,9 +33,14 @@ import javax.inject.Inject
 internal class CreatorsRepository @Inject constructor(
     private val api: CreatorProfileApi,
     private val cacheStore: IStoreCreatorProfileRepository,
+    private val communityCacheStore: IStoreCommunityRepository,
     private val cacheJson: CreatorProfileCacheJson,
     private val postsCache: IStorageCreatorPostsRepository,
 ) {
+    companion object {
+        private const val COMMUNITY_PAGE_SIZE = 150
+    }
+
     /** Профиль посты и поиск */
     suspend fun getProfilePosts(
         service: String,
@@ -189,4 +200,54 @@ internal class CreatorsRepository @Inject constructor(
 
         return fromNet
     }
+
+    suspend fun getProfileCommunityChannels(service: String, id: String): List<CommunityChannel> {
+        communityCacheStore.getFreshJsonOrNull(service, id, CommunityCacheType.CHANNELS)
+            ?.let { return cacheJson.communityChannelsFromJson(it) }
+
+        val fromNet = safeCallOrNull(
+            api = { api.getProfileCommunityChannels(service, id) },
+            mapper = { dto -> dto.toDomain() }
+        ) ?: emptyList()
+
+        if (fromNet.isNotEmpty()) {
+            communityCacheStore.putJson(
+                service = service,
+                id = id,
+                type = CommunityCacheType.CHANNELS,
+                json = cacheJson.communityChannelsToJson(fromNet)
+            )
+        }
+
+        return fromNet
+    }
+
+    suspend fun getProfileCommunityMessages(
+        service: String,
+        channelId: String,
+        offset: Int
+    ): List<CommunityMessage> {
+        if (offset == 0) {
+            communityCacheStore.getFreshJsonOrNull(service, channelId, CommunityCacheType.MESSAGES_PAGE0)
+                ?.let { return cacheJson.communityMessagesFromJson(it) }
+        }
+
+        val fromNet = safeCallOrNull(
+            api = { api.getProfileCommunityMessages(service, channelId, if (offset == 0) null else offset) },
+            mapper = { dto -> dto.toDomain() }
+        ) ?: emptyList()
+
+        if (offset == 0 && fromNet.isNotEmpty()) {
+            communityCacheStore.putJson(
+                service = service,
+                id = channelId,
+                type = CommunityCacheType.MESSAGES_PAGE0,
+                json = cacheJson.communityMessagesToJson(fromNet)
+            )
+        }
+
+        return fromNet
+    }
+
+    fun nextCommunityOffset(currentOffset: Int): Int = currentOffset + COMMUNITY_PAGE_SIZE
 }

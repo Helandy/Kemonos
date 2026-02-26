@@ -6,6 +6,8 @@ import retrofit2.http.Path
 import retrofit2.http.Query
 import su.afk.kemonos.creatorProfile.data.dto.profile.ProfileDto
 import su.afk.kemonos.creatorProfile.data.dto.profileAnnouncements.ProfileAnnouncementsDto
+import su.afk.kemonos.creatorProfile.data.dto.profileCommunity.CommunityChannelDto
+import su.afk.kemonos.creatorProfile.data.dto.profileCommunity.CommunityMessageDto
 import su.afk.kemonos.creatorProfile.data.dto.profileDms.DmDto
 import su.afk.kemonos.creatorProfile.data.dto.profileFanCards.ProfileFanCardsDto
 import su.afk.kemonos.creatorProfile.data.dto.profileLinks.ProfileLinksDto
@@ -74,6 +76,23 @@ internal interface CreatorProfileApi {
         @Path("service") service: String,
         @Path("id") id: String,
     ): Response<List<SimilarCreatorDto>>
+
+    /** Community channels */
+    @HeaderText
+    @GET("v1/{service}/user/{id}/community")
+    suspend fun getProfileCommunityChannels(
+        @Path("service") service: String,
+        @Path("id") id: String,
+    ): Response<List<CommunityChannelDto>>
+
+    /** Community messages by channel id */
+    @HeaderText
+    @GET("v1/{service}/user/{channelId}/community/messages")
+    suspend fun getProfileCommunityMessages(
+        @Path("service") service: String,
+        @Path("channelId") channelId: String,
+        @Query("o") offset: Int? = null
+    ): Response<List<CommunityMessageDto>>
 
     /** Профиль */
     @HeaderText

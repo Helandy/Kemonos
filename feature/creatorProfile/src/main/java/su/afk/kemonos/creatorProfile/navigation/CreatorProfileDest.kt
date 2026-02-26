@@ -12,4 +12,12 @@ object CreatorDest {
         val id: String,
         val tag: Tag? = null
     ) : NavKey
+
+    @Serializable
+    data class CommunityChat(
+        val service: String,
+        val creatorId: String,
+        val channelId: String,
+        val channelName: String
+    ) : NavKey
 }

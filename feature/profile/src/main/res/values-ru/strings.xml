@@ -147,6 +147,10 @@
     <string name="settings_random_button_title">Кнопка “Случайный”</string>
     <string name="settings_random_button_screen">На экране</string>
     <string name="settings_random_button_search">В поиске</string>
+    <string name="settings_theme_title">Тема</string>
+    <string name="settings_theme_system">Системная</string>
+    <string name="settings_theme_light">Светлая</string>
+    <string name="settings_theme_dark">Темная</string>
 
     <string name="settings_translate_language_title">Язык перевода</string>
     <string name="settings_translate_language_system">Системный</string>

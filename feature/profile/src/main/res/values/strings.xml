@@ -146,6 +146,10 @@
     <string name="settings_random_button_title">“Random” button</string>
     <string name="settings_random_button_screen">On screen</string>
     <string name="settings_random_button_search">In search</string>
+    <string name="settings_theme_title">Theme</string>
+    <string name="settings_theme_system">System</string>
+    <string name="settings_theme_light">Light</string>
+    <string name="settings_theme_dark">Dark</string>
 
     <string name="settings_translate_language_title">Translation language</string>
     <string name="settings_translate_language_system">System</string>
