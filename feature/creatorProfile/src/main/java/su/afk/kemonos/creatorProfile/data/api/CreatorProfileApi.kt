@@ -9,6 +9,7 @@ import su.afk.kemonos.creatorProfile.data.dto.profileAnnouncements.ProfileAnnoun
 import su.afk.kemonos.creatorProfile.data.dto.profileDms.DmDto
 import su.afk.kemonos.creatorProfile.data.dto.profileFanCards.ProfileFanCardsDto
 import su.afk.kemonos.creatorProfile.data.dto.profileLinks.ProfileLinksDto
+import su.afk.kemonos.creatorProfile.data.dto.profileSimilar.SimilarCreatorDto
 import su.afk.kemonos.creatorProfile.data.dto.profileTags.TagDto
 import su.afk.kemonos.data.dto.PostUnifiedDto
 import su.afk.kemonos.network.textInterceptor.HeaderText
@@ -65,6 +66,14 @@ internal interface CreatorProfileApi {
         @Path("service") service: String,
         @Path("id") id: String,
     ): Response<List<ProfileLinksDto>>
+
+    /** Similar creators */
+    @HeaderText
+    @GET("v1/{service}/user/{id}/recommended")
+    suspend fun getProfileRecommended(
+        @Path("service") service: String,
+        @Path("id") id: String,
+    ): Response<List<SimilarCreatorDto>>
 
     /** Профиль */
     @HeaderText

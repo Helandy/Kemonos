@@ -233,6 +233,13 @@ internal class CreatorProfileViewModel @AssistedInject constructor(
                     service = service,
                     id = id
                 )
+            },
+            async {
+                loadingTabsContent.checkSimilar(
+                    setState = ::setState,
+                    service = service,
+                    id = id
+                )
             }
         )
         checks.awaitAll()

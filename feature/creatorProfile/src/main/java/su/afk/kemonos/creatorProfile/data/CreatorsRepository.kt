@@ -4,12 +4,14 @@ import su.afk.kemonos.creatorProfile.api.domain.models.profileAnnouncements.Prof
 import su.afk.kemonos.creatorProfile.api.domain.models.profileDms.Dm
 import su.afk.kemonos.creatorProfile.api.domain.models.profileFanCards.ProfileFanCard
 import su.afk.kemonos.creatorProfile.api.domain.models.profileLinks.ProfileLink
+import su.afk.kemonos.creatorProfile.api.domain.models.profileSimilar.SimilarCreator
 import su.afk.kemonos.creatorProfile.data.api.CreatorProfileApi
 import su.afk.kemonos.creatorProfile.data.cache.CreatorProfileCacheJson
 import su.afk.kemonos.creatorProfile.data.dto.profileAnnouncements.ProfileAnnouncementsDto.Companion.toDomain
 import su.afk.kemonos.creatorProfile.data.dto.profileDms.DmDto.Companion.toDomain
 import su.afk.kemonos.creatorProfile.data.dto.profileFanCards.ProfileFanCardsDto.Companion.toDomain
 import su.afk.kemonos.creatorProfile.data.dto.profileLinks.ProfileLinksDto.Companion.toDomain
+import su.afk.kemonos.creatorProfile.data.dto.profileSimilar.SimilarCreatorDto.Companion.toDomain
 import su.afk.kemonos.creatorProfile.data.dto.profileTags.TagDto.Companion.toDomain
 import su.afk.kemonos.creatorProfile.util.Utils.queryKey
 import su.afk.kemonos.data.dto.PostUnifiedDto.Companion.toDomain
@@ -160,6 +162,28 @@ internal class CreatorsRepository @Inject constructor(
                 id,
                 CreatorProfileCacheType.LINKS,
                 cacheJson.linksToJson(fromNet)
+            )
+        }
+
+        return fromNet
+    }
+
+    /** Similar creators */
+    suspend fun getProfileSimilar(service: String, id: String): List<SimilarCreator> {
+        cacheStore.getFreshJsonOrNull(service, id, CreatorProfileCacheType.SIMILAR)
+            ?.let { return cacheJson.similarFromJson(it) }
+
+        val fromNet = safeCallOrNull(
+            api = { api.getProfileRecommended(service, id) },
+            mapper = { dto -> dto.toDomain() }
+        ) ?: emptyList()
+
+        if (fromNet.isNotEmpty()) {
+            cacheStore.putJson(
+                service = service,
+                id = id,
+                type = CreatorProfileCacheType.SIMILAR,
+                json = cacheJson.similarToJson(fromNet)
             )
         }
 

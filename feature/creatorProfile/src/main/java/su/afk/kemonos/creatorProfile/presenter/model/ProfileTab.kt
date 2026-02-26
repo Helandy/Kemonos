@@ -9,5 +9,6 @@ internal enum class ProfileTab(@StringRes val labelRes: Int) {
     FANCARD(R.string.profile_tab_fancard),
     TAGS(R.string.tags),
     DMS(R.string.profile_tab_dms),
-    LINKS(R.string.profile_tab_links);
+    LINKS(R.string.profile_tab_links),
+    SIMILAR(R.string.profile_tab_similar);
 }

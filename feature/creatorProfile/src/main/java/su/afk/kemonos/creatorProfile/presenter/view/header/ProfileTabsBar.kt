@@ -32,7 +32,8 @@ internal fun ProfileTabsBar(
         ProfileTab.FANCARD,
         ProfileTab.DMS,
         ProfileTab.TAGS,
-        ProfileTab.LINKS
+        ProfileTab.LINKS,
+        ProfileTab.SIMILAR
     )
 
     /** tabs — это список вкладок динамический */

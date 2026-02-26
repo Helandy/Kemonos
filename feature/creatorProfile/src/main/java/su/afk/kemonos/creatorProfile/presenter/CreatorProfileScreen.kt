@@ -17,6 +17,7 @@ import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
+import su.afk.kemonos.creatorProfile.api.domain.models.profileLinks.ProfileLink.Companion.toProfileLink
 import su.afk.kemonos.creatorProfile.presenter.CreatorProfileState.*
 import su.afk.kemonos.creatorProfile.presenter.model.ProfileTab
 import su.afk.kemonos.creatorProfile.presenter.view.*
@@ -218,6 +219,14 @@ private fun SelectedTab(
             links = state.profileLinks,
             onClick = { openProfile ->
                 onEvent(Event.OpenLinkProfile(openProfile))
+            }
+        )
+
+        ProfileTab.SIMILAR -> SimilarCreatorsScreen(
+            dateMode = state.uiSettingModel.dateFormatMode,
+            creators = state.similarCreators,
+            onClick = { creator ->
+                onEvent(Event.OpenLinkProfile(creator.toProfileLink()))
             }
         )
     }

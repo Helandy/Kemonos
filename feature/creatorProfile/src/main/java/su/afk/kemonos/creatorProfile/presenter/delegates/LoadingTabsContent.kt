@@ -11,6 +11,7 @@ internal class LoadingTabsContent @Inject constructor(
     private val getProfileAnnouncementUseCase: GetProfileAnnouncementUseCase,
     private val getProfileFanCardsUseCase: GetProfileFanCardsUseCase,
     private val getProfileDmsUseCase: GetProfileDmsUseCase,
+    private val getProfileSimilarUseCase: GetProfileSimilarUseCase,
 ) {
 
     /** Получение Линков */
@@ -114,6 +115,27 @@ internal class LoadingTabsContent @Inject constructor(
                 copy(
                     showTabs = newTabs,
                     dmList = result
+                )
+            }
+        }
+    }
+
+    suspend fun checkSimilar(
+        setState: (State.() -> State) -> Unit,
+        service: String,
+        id: String
+    ) {
+        if (service !in listOf("patreon", "onlyfans")) return
+
+        val result = getProfileSimilarUseCase(service, id)
+        if (result.isNotEmpty()) {
+            setState {
+                val newTabs = showTabs.toMutableList()
+                if (ProfileTab.SIMILAR !in newTabs) newTabs.add(ProfileTab.SIMILAR)
+
+                copy(
+                    showTabs = newTabs,
+                    similarCreators = result
                 )
             }
         }
