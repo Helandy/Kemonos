@@ -20,6 +20,7 @@ import su.afk.kemonos.domain.SelectedSite
 import su.afk.kemonos.profile.R
 import su.afk.kemonos.profile.presenter.profile.ProfileState.*
 import su.afk.kemonos.profile.presenter.profile.views.*
+import su.afk.kemonos.profile.presenter.profile.views.faq.FaqBlock
 import su.afk.kemonos.ui.presenter.baseScreen.BaseScreen
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -119,6 +120,8 @@ internal fun ProfileScreen(
             SettingsButton(
                 onClick = { onEvent(Event.NavigateToSettings) }
             )
+
+            FaqBlock()
         }
 
         if (state.showLogoutConfirm) {

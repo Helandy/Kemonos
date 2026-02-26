@@ -6,6 +6,7 @@ import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import su.afk.kemonos.storage.api.repository.blacklist.IStoreBlacklistedAuthorsRepository
 import su.afk.kemonos.storage.api.repository.comments.IStoreCommentsRepository
+import su.afk.kemonos.storage.api.repository.community.IStoreCommunityRepository
 import su.afk.kemonos.storage.api.repository.creatorProfile.IStoreCreatorProfileRepository
 import su.afk.kemonos.storage.api.repository.creators.IStoreCreatorsRepository
 import su.afk.kemonos.storage.api.repository.dms.IStorageDmsRepository
@@ -22,6 +23,7 @@ import su.afk.kemonos.storage.api.repository.profilePosts.IStorageCreatorPostsRe
 import su.afk.kemonos.storage.api.repository.tags.IStoreTagsRepository
 import su.afk.kemonos.storage.repository.blacklist.StoreBlacklistedAuthorsRepository
 import su.afk.kemonos.storage.repository.comments.StoreCommentsRepository
+import su.afk.kemonos.storage.repository.community.StoreCommunityRepository
 import su.afk.kemonos.storage.repository.creatorProfileCache.StoreCreatorProfileRepository
 import su.afk.kemonos.storage.repository.creators.StoreCreatorsRepository
 import su.afk.kemonos.storage.repository.dms.StorageDmsRepository
@@ -111,4 +113,8 @@ internal interface RepositoryModule {
     fun bindStoreBlacklistedAuthorsRepository(
         impl: StoreBlacklistedAuthorsRepository
     ): IStoreBlacklistedAuthorsRepository
+
+    @Singleton
+    @Binds
+    fun bindStoreCommunityRepository(impl: StoreCommunityRepository): IStoreCommunityRepository
 }

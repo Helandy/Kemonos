@@ -17,7 +17,6 @@ import su.afk.kemonos.profile.presenter.setting.SettingState.*
 import su.afk.kemonos.profile.presenter.setting.view.apiSetting.ApiSettingsBlock
 import su.afk.kemonos.profile.presenter.setting.view.bottomLink.BottomLinksBlock
 import su.afk.kemonos.profile.presenter.setting.view.cache.CacheSettingsBlock
-import su.afk.kemonos.profile.presenter.setting.view.faq.FaqBlock
 import su.afk.kemonos.profile.presenter.setting.view.uiSetting.UISettingBlock
 import su.afk.kemonos.ui.presenter.baseScreen.BaseScreen
 import su.afk.kemonos.ui.presenter.baseScreen.CenterBackTopBar
@@ -60,10 +59,6 @@ internal fun SettingScreen(state: State, onEvent: (Event) -> Unit, effect: Flow<
             dateFormatMode = state.uiSettingModel.dateFormatMode,
             onEvent = onEvent
         )
-
-        Spacer(Modifier.height(16.dp))
-
-        FaqBlock()
 
         Spacer(Modifier.height(16.dp))
 

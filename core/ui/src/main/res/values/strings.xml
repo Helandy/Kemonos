@@ -35,6 +35,7 @@
     <string name="profile_tab_dms">DM</string>
     <string name="profile_tab_links">Links</string>
     <string name="profile_tab_similar">Similar</string>
+    <string name="profile_tab_community">Community</string>
     <string name="random">Random</string>
     <string name="share">Share</string>
     <string name="save">Save</string>
@@ -252,6 +253,13 @@
     <string name="settings_faq_q3_body">
         To play audio files, you will need a separate audio player.
         You can use any app that supports the required audio format.
+    </string>
+    <string name="settings_faq_q4_title">
+        What if you see differences between the website and the app?
+    </string>
+    <string name="settings_faq_q4_body">
+        If you notice differences between the website and the app, please create an issue.
+        It is physically impossible to manually verify every post, and issues help find and fix problems faster.
     </string>
     <string name="random_creators_title">Random creators</string>
     <string name="creators_title">Creators</string>
