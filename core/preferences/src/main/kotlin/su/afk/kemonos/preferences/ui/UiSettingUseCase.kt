@@ -5,6 +5,7 @@ import androidx.datastore.preferences.core.*
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import su.afk.kemonos.preferences.ui.UiSettingKey.ADD_SERVICE_NAME
+import su.afk.kemonos.preferences.ui.UiSettingKey.APP_THEME_MODE
 import su.afk.kemonos.preferences.ui.UiSettingKey.BLUR_IMAGES
 import su.afk.kemonos.preferences.ui.UiSettingKey.COIL_CACHE_SIZE_MB
 import su.afk.kemonos.preferences.ui.UiSettingKey.CREATORS_FAVORITE_VIEW_MODE
@@ -52,6 +53,7 @@ internal class UiSettingUseCase @Inject constructor(
             translateTarget = p.readEnum(TRANSLATE_TARGET, UiSettingModel.DEFAULT_TRANSLATE_TARGET),
             randomButtonPlacement = p.readEnum(RANDOM_BUTTON_PLACEMENT, UiSettingModel.DEFAULT_RANDOM_BUTTON_PLACEMENT),
             translateLanguageTag = p[TRANSLATE_LANGUAGE_TAG] ?: UiSettingModel.DEFAULT_TRANSLATE_LANGUAGE_TAG,
+            appThemeMode = p.readEnum(APP_THEME_MODE, UiSettingModel.DEFAULT_APP_THEME_MODE),
 
             dateFormatMode = p.readEnum(DATE_FORMAT_MODE, UiSettingModel.DEFAULT_DATE_FORMAT_MODE),
 
@@ -135,6 +137,11 @@ internal class UiSettingUseCase @Inject constructor(
         dataStore.edit { it[TRANSLATE_LANGUAGE_TAG] = value }
     }
 
+    /** Тема приложения */
+    override suspend fun setAppThemeMode(value: AppThemeMode) {
+        dataStore.edit { it[APP_THEME_MODE] = value.name }
+    }
+
     /** Формат даты в приложении */
     override suspend fun setDateFormatMode(value: DateFormatMode) {
         dataStore.edit { it[DATE_FORMAT_MODE] = value.name }
@@ -206,6 +213,7 @@ object UiSettingKey {
     val TRANSLATE_TARGET = stringPreferencesKey("TRANSLATE_TARGET")
     val RANDOM_BUTTON_PLACEMENT = stringPreferencesKey("RANDOM_BUTTON_PLACEMENT")
     val TRANSLATE_LANGUAGE_TAG = stringPreferencesKey("TRANSLATE_LANGUAGE")
+    val APP_THEME_MODE = stringPreferencesKey("APP_THEME_MODE")
 
     val DATE_FORMAT_MODE = stringPreferencesKey("DATE_FORMAT_MODE")
 

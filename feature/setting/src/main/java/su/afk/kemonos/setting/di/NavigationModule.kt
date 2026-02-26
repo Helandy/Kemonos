@@ -6,9 +6,9 @@ import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import dagger.multibindings.IntoSet
 import su.afk.kemonos.navigation.NavRegistrar
-import su.afk.kemonos.profile.presenter.setting.SettingNavigatorRegister
 import su.afk.kemonos.setting.api.useCase.IGetSettingDestinationUseCase
 import su.afk.kemonos.setting.navigation.GetSettingDestinationUseCase
+import su.afk.kemonos.setting.presenter.SettingNavigatorRegister
 
 @Module
 @InstallIn(SingletonComponent::class)
