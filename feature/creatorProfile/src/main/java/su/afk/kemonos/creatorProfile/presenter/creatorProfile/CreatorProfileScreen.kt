@@ -239,6 +239,7 @@ private fun SelectedTab(
         )
 
         ProfileTab.COMMUNITY -> CommunityScreen(
+            dateMode = state.uiSettingModel.dateFormatMode,
             channels = state.communityChannels,
             onOpenChannel = { channel ->
                 onEvent(Event.OpenCommunityChannel(channel))

@@ -73,6 +73,8 @@ class SettingState {
             data class EditPostsSize(val value: PostsSize) : ChangeViewSetting
             data class ShowPreviewVideo(val value: Boolean) : ChangeViewSetting
             data class BlurImages(val value: Boolean) : ChangeViewSetting
+            data class ShowImagePreviewDownloadAction(val value: Boolean) : ChangeViewSetting
+            data class ShowImagePreviewShareAction(val value: Boolean) : ChangeViewSetting
             data class ShowCommentsInPost(val value: Boolean) : ChangeViewSetting
 
             data class EditDownloadFolderMode(val value: DownloadFolderMode) : ChangeViewSetting

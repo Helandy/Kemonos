@@ -20,6 +20,7 @@ internal fun LazyListScope.postAudioSection(
     onInfoRequested: (String) -> Unit,
     onPlay: (AttachmentDomain) -> Unit,
     onDownload: (AttachmentDomain) -> Unit,
+    onShare: (AttachmentDomain) -> Unit,
     showHeader: Boolean = true,
 ) {
     val audios = attachments.asSequence()
@@ -56,6 +57,7 @@ internal fun LazyListScope.postAudioSection(
             requestInfo = onInfoRequested,
             onPlay = onPlay,
             onDownload = onDownload,
+            onShare = onShare,
         )
     }
 }

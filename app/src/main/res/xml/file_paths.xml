@@ -3,4 +3,10 @@
     <files-path
             name="crashes"
             path="crashes/"/>
+    <cache-path
+            name="shared_media"
+            path="shared_media/"/>
+    <external-files-path
+            name="shared_media_external"
+            path="shared_media/"/>
 </paths>

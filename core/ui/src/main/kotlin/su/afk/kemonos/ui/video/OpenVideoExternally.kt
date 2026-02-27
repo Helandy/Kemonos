@@ -12,28 +12,10 @@ fun openVideoExternally(
     url: String,
     title: String? = null,
 ) {
-    val uri = url.toUri()
-    val packageManager = context.packageManager
-
-    val typedIntent = Intent(Intent.ACTION_VIEW).apply {
-        addCategory(Intent.CATEGORY_BROWSABLE)
-        addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-        setDataAndType(uri, "video/*")
+    val intent = Intent(Intent.ACTION_VIEW).apply {
+        setDataAndType(url.toUri(), "video/*")
         title?.let { putExtra(Intent.EXTRA_TITLE, it) }
-    }
-
-    val urlIntent = Intent(Intent.ACTION_VIEW, uri).apply {
-        addCategory(Intent.CATEGORY_BROWSABLE)
         addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-        title?.let { putExtra(Intent.EXTRA_TITLE, it) }
-    }
-
-    val intent = when {
-        typedIntent.resolveActivity(packageManager) != null -> typedIntent
-        urlIntent.resolveActivity(packageManager) != null -> urlIntent
-        else -> Intent.createChooser(urlIntent, title ?: "Open video").apply {
-            addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-        }
     }
 
     runCatching {

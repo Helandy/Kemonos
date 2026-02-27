@@ -44,6 +44,18 @@ internal fun ViewSettingsSection(
     )
 
     SwitchRow(
+        title = stringResource(R.string.settings_show_image_preview_download_action_title),
+        checked = ui.showImagePreviewDownloadAction,
+        onCheckedChange = { onEvent(Event.ChangeViewSetting.ShowImagePreviewDownloadAction(it)) },
+    )
+
+    SwitchRow(
+        title = stringResource(R.string.settings_show_image_preview_share_action_title),
+        checked = ui.showImagePreviewShareAction,
+        onCheckedChange = { onEvent(Event.ChangeViewSetting.ShowImagePreviewShareAction(it)) },
+    )
+
+    SwitchRow(
         title = stringResource(R.string.settings_show_comments_in_post_title),
         checked = ui.showCommentsInPost,
         onCheckedChange = { onEvent(Event.ChangeViewSetting.ShowCommentsInPost(it)) },

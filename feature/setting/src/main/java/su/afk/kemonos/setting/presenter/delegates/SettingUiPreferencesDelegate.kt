@@ -90,6 +90,14 @@ class SettingUiPreferencesDelegate @Inject constructor(
             is SettingState.Event.ChangeViewSetting.BlurImages ->
                 scope.launch { uiSetting.setBlurImages(event.value) }
 
+            /** Показывать кнопку скачивания на миниатюрах изображений в посте */
+            is SettingState.Event.ChangeViewSetting.ShowImagePreviewDownloadAction ->
+                scope.launch { uiSetting.setShowImagePreviewDownloadAction(event.value) }
+
+            /** Показывать кнопку шаринга на миниатюрах изображений в посте */
+            is SettingState.Event.ChangeViewSetting.ShowImagePreviewShareAction ->
+                scope.launch { uiSetting.setShowImagePreviewShareAction(event.value) }
+
             /** Показывать комментарии в посте */
             is SettingState.Event.ChangeViewSetting.ShowCommentsInPost ->
                 scope.launch { uiSetting.setShowCommentsInPost(event.value) }

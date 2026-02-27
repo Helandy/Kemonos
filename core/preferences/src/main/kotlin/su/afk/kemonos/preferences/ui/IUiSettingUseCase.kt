@@ -55,6 +55,12 @@ interface IUiSettingUseCase {
     /** Блюрить все картинки */
     suspend fun setBlurImages(value: Boolean)
 
+    /** Показывать кнопку скачивания на миниатюрах изображений в посте */
+    suspend fun setShowImagePreviewDownloadAction(value: Boolean)
+
+    /** Показывать кнопку шаринга на миниатюрах изображений в посте */
+    suspend fun setShowImagePreviewShareAction(value: Boolean)
+
     /** Показывать комментарии в посте */
     suspend fun setShowCommentsInPost(value: Boolean)
 

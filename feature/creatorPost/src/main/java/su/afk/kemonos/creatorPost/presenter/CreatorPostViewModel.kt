@@ -39,7 +39,6 @@ import su.afk.kemonos.ui.shared.ShareLinkBuilder
 import su.afk.kemonos.ui.shared.model.ShareTarget
 import su.afk.kemonos.ui.translate.TextTranslator
 import su.afk.kemonos.ui.translate.preprocessForTranslation
-import su.afk.kemonos.ui.uiUtils.format.audioMimeType
 import su.afk.kemonos.ui.uiUtils.format.buildFileUrl
 import java.net.URLEncoder
 
@@ -122,8 +121,7 @@ internal class CreatorPostViewModel @AssistedInject constructor(
 
             is Event.PlayAudio -> {
                 val safeName = event.name?.takeIf { it.isNotBlank() } ?: event.url.substringAfterLast('/')
-                val mime = audioMimeType(event.url)
-                setEffect(OpenAudio(event.url, safeName, mime))
+                setEffect(OpenAudio(event.url, safeName, event.mime))
             }
 
             is Event.SelectRevision -> onSelectRevision(event.revisionId)

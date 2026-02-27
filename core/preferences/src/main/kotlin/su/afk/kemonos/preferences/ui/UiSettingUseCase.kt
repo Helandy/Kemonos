@@ -22,6 +22,9 @@ import su.afk.kemonos.preferences.ui.UiSettingKey.PROFILE_POSTS_VIEW_MODE
 import su.afk.kemonos.preferences.ui.UiSettingKey.RANDOM_BUTTON_PLACEMENT
 import su.afk.kemonos.preferences.ui.UiSettingKey.SEARCH_POSTS_VIEW_MODE
 import su.afk.kemonos.preferences.ui.UiSettingKey.SHOW_COMMENTS_IN_POST
+import su.afk.kemonos.preferences.ui.UiSettingKey.SHOW_IMAGE_PREVIEW_ACTION
+import su.afk.kemonos.preferences.ui.UiSettingKey.SHOW_IMAGE_PREVIEW_DOWNLOAD_ACTION
+import su.afk.kemonos.preferences.ui.UiSettingKey.SHOW_IMAGE_PREVIEW_SHARE_ACTION
 import su.afk.kemonos.preferences.ui.UiSettingKey.SHOW_PREVIEW_VIDEO
 import su.afk.kemonos.preferences.ui.UiSettingKey.SKIP_API_CHECK_ON_LOGIN
 import su.afk.kemonos.preferences.ui.UiSettingKey.SUGGEST_RANDOM_AUTHORS
@@ -66,6 +69,12 @@ internal class UiSettingUseCase @Inject constructor(
 
             showPreviewVideo = p[SHOW_PREVIEW_VIDEO] ?: UiSettingModel.DEFAULT_SHOW_VIDEO_PREVIEW,
             blurImages = p[BLUR_IMAGES] ?: UiSettingModel.DEFAULT_BLUR_PICTURE,
+            showImagePreviewDownloadAction = p[SHOW_IMAGE_PREVIEW_DOWNLOAD_ACTION]
+                ?: p[SHOW_IMAGE_PREVIEW_ACTION]
+                ?: UiSettingModel.DEFAULT_SHOW_IMAGE_PREVIEW_DOWNLOAD_ACTION,
+            showImagePreviewShareAction = p[SHOW_IMAGE_PREVIEW_SHARE_ACTION]
+                ?: p[SHOW_IMAGE_PREVIEW_ACTION]
+                ?: UiSettingModel.DEFAULT_SHOW_IMAGE_PREVIEW_SHARE_ACTION,
             showCommentsInPost = p[SHOW_COMMENTS_IN_POST] ?: UiSettingModel.DEFAULT_SHOW_COMMENTS_IN_POST,
             experimentalCalendar = p[EXPERIMENTAL_CALENDAR] ?: UiSettingModel.DEFAULT_EXPERIMENTAL_CALENDAR,
 
@@ -179,6 +188,16 @@ internal class UiSettingUseCase @Inject constructor(
         dataStore.edit { it[BLUR_IMAGES] = value }
     }
 
+    /** Показывать кнопку скачивания на миниатюрах изображений в посте */
+    override suspend fun setShowImagePreviewDownloadAction(value: Boolean) {
+        dataStore.edit { it[SHOW_IMAGE_PREVIEW_DOWNLOAD_ACTION] = value }
+    }
+
+    /** Показывать кнопку шаринга на миниатюрах изображений в посте */
+    override suspend fun setShowImagePreviewShareAction(value: Boolean) {
+        dataStore.edit { it[SHOW_IMAGE_PREVIEW_SHARE_ACTION] = value }
+    }
+
     /** Показывать комментарии в посте */
     override suspend fun setShowCommentsInPost(value: Boolean) {
         dataStore.edit { it[SHOW_COMMENTS_IN_POST] = value }
@@ -231,6 +250,9 @@ object UiSettingKey {
 
     val SHOW_PREVIEW_VIDEO = booleanPreferencesKey("SHOW_PREVIEW_VIDEO")
     val BLUR_IMAGES = booleanPreferencesKey("BLUR_IMAGES")
+    val SHOW_IMAGE_PREVIEW_ACTION = booleanPreferencesKey("SHOW_IMAGE_PREVIEW_ACTIONS")
+    val SHOW_IMAGE_PREVIEW_DOWNLOAD_ACTION = booleanPreferencesKey("SHOW_IMAGE_PREVIEW_DOWNLOAD_ACTION")
+    val SHOW_IMAGE_PREVIEW_SHARE_ACTION = booleanPreferencesKey("SHOW_IMAGE_PREVIEW_SHARE_ACTION")
     val SHOW_COMMENTS_IN_POST = booleanPreferencesKey("SHOW_COMMENTS_IN_POST")
     val EXPERIMENTAL_CALENDAR = booleanPreferencesKey("EXPERIMENTAL_CALENDAR")
 

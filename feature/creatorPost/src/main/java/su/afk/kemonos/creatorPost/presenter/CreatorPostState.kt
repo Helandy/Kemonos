@@ -98,7 +98,7 @@ internal class CreatorPostState {
         data class VideoInfoRequested(val server: String, val path: String) : Event
         data class AudioInfoRequested(val url: String) : Event
 
-        data class PlayAudio(val url: String, val name: String?) : Event
+        data class PlayAudio(val url: String, val name: String?, val mime: String) : Event
 
         data class SelectRevision(val revisionId: Int?) : Event
 

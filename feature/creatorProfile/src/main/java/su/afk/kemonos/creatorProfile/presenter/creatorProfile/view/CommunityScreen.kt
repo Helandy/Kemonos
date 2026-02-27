@@ -11,12 +11,17 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import su.afk.kemonos.creatorProfile.api.domain.models.profileCommunity.CommunityChannel
+import su.afk.kemonos.preferences.ui.DateFormatMode
+import su.afk.kemonos.ui.R
+import su.afk.kemonos.ui.date.toUiDateTime
 
 @Composable
 internal fun CommunityScreen(
+    dateMode: DateFormatMode,
     channels: List<CommunityChannel>,
     onOpenChannel: (CommunityChannel) -> Unit,
     modifier: Modifier = Modifier
@@ -36,6 +41,20 @@ internal fun CommunityScreen(
                     fontWeight = FontWeight.SemiBold,
                     modifier = Modifier.padding(12.dp)
                 )
+
+                channel.messagesRefreshedAt
+                    ?.takeIf { it.isNotBlank() }
+                    ?.let { refreshedAt ->
+                        Text(
+                            text = stringResource(
+                                R.string.profile_community_messages_refreshed_at,
+                                refreshedAt.toUiDateTime(dateMode)
+                            ),
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            modifier = Modifier.padding(horizontal = 12.dp, vertical = 2.dp)
+                        )
+                    }
             }
         }
     }
