@@ -8,7 +8,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import su.afk.kemonos.preferences.ui.UiSettingModel
 import su.afk.kemonos.profile.R
-import su.afk.kemonos.setting.presenter.SettingState
 import su.afk.kemonos.setting.presenter.SettingState.Event
 import su.afk.kemonos.setting.presenter.view.uiSetting.SwitchRow
 import su.afk.kemonos.setting.presenter.view.uiSetting.common.SectionSpacer
@@ -67,5 +66,6 @@ internal fun ViewSettingsSection(
         onPopularPostsViewMode = { onEvent(Event.ChangeViewSetting.PopularPostsViewMode(it)) },
         onTagsPostsViewMode = { onEvent(Event.ChangeViewSetting.TagsPostsViewMode(it)) },
         onSearchPostsViewMode = { onEvent(Event.ChangeViewSetting.SearchPostsViewMode(it)) },
+        onOpenCreatorTabsOrderEditor = { onEvent(Event.OpenCreatorTabsOrderEditor) },
     )
 }

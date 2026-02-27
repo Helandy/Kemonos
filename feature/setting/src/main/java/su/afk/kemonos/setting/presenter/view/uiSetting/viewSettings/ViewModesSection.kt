@@ -11,6 +11,7 @@ import su.afk.kemonos.preferences.ui.PostsViewMode
 import su.afk.kemonos.profile.R
 import su.afk.kemonos.setting.presenter.view.uiSetting.CreatorsViewModeRow
 import su.afk.kemonos.setting.presenter.view.uiSetting.PostsViewModeRow
+import su.afk.kemonos.setting.presenter.view.uiSetting.language.AppLanguageSettingsRow
 
 @Composable
 internal fun ViewModesSection(
@@ -28,6 +29,7 @@ internal fun ViewModesSection(
     onPopularPostsViewMode: (PostsViewMode) -> Unit,
     onTagsPostsViewMode: (PostsViewMode) -> Unit,
     onSearchPostsViewMode: (PostsViewMode) -> Unit,
+    onOpenCreatorTabsOrderEditor: () -> Unit,
 ) {
     Spacer(Modifier.height(6.dp))
 
@@ -69,5 +71,11 @@ internal fun ViewModesSection(
         title = stringResource(R.string.settings_ui_posts_view_mode_search),
         value = searchPostsViewMode,
         onChange = onSearchPostsViewMode
+    )
+
+    AppLanguageSettingsRow(
+        title = stringResource(R.string.settings_ui_creator_profile_tabs_sort_title),
+        subtitle = stringResource(R.string.settings_ui_creator_profile_tabs_sort_hint),
+        onClick = onOpenCreatorTabsOrderEditor
     )
 }

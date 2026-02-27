@@ -95,6 +95,17 @@ enum class DownloadFolderMode {
     POST_TITLE_ID,           // <postTitle>_<postId>
 }
 
+enum class CreatorProfileTabKey {
+    POSTS,
+    ANNOUNCEMENTS,
+    FANCARD,
+    DMS,
+    TAGS,
+    LINKS,
+    SIMILAR,
+    COMMUNITY,
+}
+
 data class UiSettingModel(
 
     /** debug-only: пропустить проверку API при входе */
@@ -116,6 +127,8 @@ data class UiSettingModel(
     val tagsPostsViewMode: PostsViewMode = DEFAULT_POSTS_VIEW_MODE,
     /** Посты: поиск */
     val searchPostsViewMode: PostsViewMode = DEFAULT_POSTS_VIEW_MODE,
+    /** Порядок вкладок в профиле автора */
+    val creatorProfileTabsOrder: List<CreatorProfileTabKey> = DEFAULT_CREATOR_PROFILE_TABS_ORDER,
 
     /** Предлагать рандомных авторов */
     val suggestRandomAuthors: Boolean = DEFAULT_SUGGEST_RANDOM_AUTHORS,
@@ -169,6 +182,16 @@ data class UiSettingModel(
     companion object {
         val DEFAULT_CREATORS_VIEW_MODE = CreatorViewMode.LIST
         val DEFAULT_POSTS_VIEW_MODE = PostsViewMode.GRID
+        val DEFAULT_CREATOR_PROFILE_TABS_ORDER = listOf(
+            CreatorProfileTabKey.POSTS,
+            CreatorProfileTabKey.ANNOUNCEMENTS,
+            CreatorProfileTabKey.FANCARD,
+            CreatorProfileTabKey.DMS,
+            CreatorProfileTabKey.TAGS,
+            CreatorProfileTabKey.LINKS,
+            CreatorProfileTabKey.SIMILAR,
+            CreatorProfileTabKey.COMMUNITY
+        )
         val DEFAULT_POSTS_SIZE = PostsSize.MEDIUM
         const val DEFAULT_SUGGEST_RANDOM_AUTHORS = false
         val DEFAULT_TRANSLATE_TARGET = TranslateTarget.APP

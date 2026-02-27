@@ -14,6 +14,7 @@ import su.afk.kemonos.preferences.useCase.CacheKeys
 import su.afk.kemonos.preferences.useCase.CacheTimes
 import su.afk.kemonos.preferences.useCase.ICacheTimestampUseCase
 import su.afk.kemonos.setting.BuildConfig
+import su.afk.kemonos.setting.navigation.SettingIntent
 import su.afk.kemonos.setting.presenter.delegates.SettingApiDelegate
 import su.afk.kemonos.setting.presenter.delegates.SettingCacheDelegate
 import su.afk.kemonos.setting.presenter.delegates.SettingUiPreferencesDelegate
@@ -40,6 +41,7 @@ class SettingViewModel @Inject constructor(
     override fun onEvent(event: SettingState.Event) {
         when (event) {
             SettingState.Event.Back -> navManager.back()
+            SettingState.Event.OpenCreatorTabsOrderEditor -> navManager.navigate(SettingIntent.CreatorTabsOrder)
 
             is SettingState.Event.ChangeViewSetting ->
                 uiPrefsDelegate.handle(event, viewModelScope)

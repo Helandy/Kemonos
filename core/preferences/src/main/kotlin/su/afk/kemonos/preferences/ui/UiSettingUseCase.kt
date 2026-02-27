@@ -10,6 +10,7 @@ import su.afk.kemonos.preferences.ui.UiSettingKey.BLUR_IMAGES
 import su.afk.kemonos.preferences.ui.UiSettingKey.COIL_CACHE_SIZE_MB
 import su.afk.kemonos.preferences.ui.UiSettingKey.CREATORS_FAVORITE_VIEW_MODE
 import su.afk.kemonos.preferences.ui.UiSettingKey.CREATORS_VIEW_MODE
+import su.afk.kemonos.preferences.ui.UiSettingKey.CREATOR_PROFILE_TABS_ORDER
 import su.afk.kemonos.preferences.ui.UiSettingKey.DATE_FORMAT_MODE
 import su.afk.kemonos.preferences.ui.UiSettingKey.DOWNLOAD_FOLDER_MODE
 import su.afk.kemonos.preferences.ui.UiSettingKey.EXPERIMENTAL_CALENDAR
@@ -48,6 +49,7 @@ internal class UiSettingUseCase @Inject constructor(
             popularPostsViewMode = p.readEnum(POPULAR_POSTS_VIEW_MODE, UiSettingModel.DEFAULT_POSTS_VIEW_MODE),
             tagsPostsViewMode = p.readEnum(TAGS_POSTS_VIEW_MODE, UiSettingModel.DEFAULT_POSTS_VIEW_MODE),
             searchPostsViewMode = p.readEnum(SEARCH_POSTS_VIEW_MODE, UiSettingModel.DEFAULT_POSTS_VIEW_MODE),
+            creatorProfileTabsOrder = p.readTabOrder(CREATOR_PROFILE_TABS_ORDER),
 
             suggestRandomAuthors = p[SUGGEST_RANDOM_AUTHORS] ?: UiSettingModel.DEFAULT_SUGGEST_RANDOM_AUTHORS,
             translateTarget = p.readEnum(TRANSLATE_TARGET, UiSettingModel.DEFAULT_TRANSLATE_TARGET),
@@ -113,6 +115,11 @@ internal class UiSettingUseCase @Inject constructor(
 
     override suspend fun setSearchPostsViewMode(value: PostsViewMode) {
         dataStore.edit { it[SEARCH_POSTS_VIEW_MODE] = value.name }
+    }
+
+    override suspend fun setCreatorProfileTabsOrder(value: List<CreatorProfileTabKey>) {
+        val normalized = value.normalizedTabOrder()
+        dataStore.edit { it[CREATOR_PROFILE_TABS_ORDER] = normalized.joinToString(",") { it.name } }
     }
 
     /** Предлагать рандомных авторов */
@@ -208,6 +215,7 @@ object UiSettingKey {
     val POPULAR_POSTS_VIEW_MODE = stringPreferencesKey("POPULAR_POSTS_VIEW_MODE")
     val TAGS_POSTS_VIEW_MODE = stringPreferencesKey("TAGS_POSTS_VIEW_MODE")
     val SEARCH_POSTS_VIEW_MODE = stringPreferencesKey("SEARCH_POSTS_VIEW_MODE")
+    val CREATOR_PROFILE_TABS_ORDER = stringPreferencesKey("CREATOR_PROFILE_TABS_ORDER")
 
     val SUGGEST_RANDOM_AUTHORS = booleanPreferencesKey("SUGGEST_RANDOM_AUTHORS")
     val TRANSLATE_TARGET = stringPreferencesKey("TRANSLATE_TARGET")
@@ -240,4 +248,22 @@ private inline fun <reified T : Enum<T>> Preferences.readEnum(
 ): T {
     val raw = this[key] ?: return default
     return runCatching { enumValueOf<T>(raw) }.getOrDefault(default)
+}
+
+private fun Preferences.readTabOrder(key: Preferences.Key<String>): List<CreatorProfileTabKey> {
+    val raw = this[key] ?: return UiSettingModel.DEFAULT_CREATOR_PROFILE_TABS_ORDER
+    val parsed = raw.split(',')
+        .asSequence()
+        .map { it.trim() }
+        .filter { it.isNotEmpty() }
+        .mapNotNull { name -> runCatching { enumValueOf<CreatorProfileTabKey>(name) }.getOrNull() }
+        .toList()
+
+    return parsed.normalizedTabOrder()
+}
+
+private fun List<CreatorProfileTabKey>.normalizedTabOrder(): List<CreatorProfileTabKey> {
+    val orderedUnique = LinkedHashSet(this)
+    UiSettingModel.DEFAULT_CREATOR_PROFILE_TABS_ORDER.forEach { orderedUnique.add(it) }
+    return orderedUnique.toList()
 }

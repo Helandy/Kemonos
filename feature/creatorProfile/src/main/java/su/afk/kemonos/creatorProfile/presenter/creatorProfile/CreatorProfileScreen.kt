@@ -133,6 +133,7 @@ internal fun CreatorScreen(
         ProfileTabsBar(
             tabs = state.showTabs,
             selectedTab = state.selectedTab,
+            tabsOrder = state.uiSettingModel.creatorProfileTabsOrder,
             onTabSelected = { tab ->
                 onEvent(Event.TabChanged(tab))
             },

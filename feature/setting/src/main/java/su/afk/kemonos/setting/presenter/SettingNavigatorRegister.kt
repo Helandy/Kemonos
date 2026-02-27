@@ -21,5 +21,15 @@ class SettingNavigatorRegister @Inject constructor() : NavRegistrar {
                 )
             }
         }
+
+        entry<SettingIntent.CreatorTabsOrder> {
+            val viewModel = hiltViewModel<SettingViewModel>()
+            ScreenNavigator(viewModel) { state, _, event ->
+                CreatorTabsOrderScreen(
+                    state = state,
+                    onEvent = event,
+                )
+            }
+        }
     }
 }

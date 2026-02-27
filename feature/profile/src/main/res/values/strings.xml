@@ -134,6 +134,18 @@
     <string name="settings_ui_posts_view_mode_popular">Popular posts layout</string>
     <string name="settings_ui_posts_view_mode_tags">Tags posts layout</string>
     <string name="settings_ui_posts_view_mode_search">Search posts layout</string>
+    <string name="settings_ui_creator_profile_tabs_sort_title">Author profile tabs order</string>
+    <string name="settings_ui_creator_profile_tabs_sort_hint">Move tabs up or down to set custom order.</string>
+    <string name="settings_creator_tab_posts">Posts</string>
+    <string name="settings_creator_tab_announcements">Announcements</string>
+    <string name="settings_creator_tab_fancard">Fan cards</string>
+    <string name="settings_creator_tab_dms">DMs</string>
+    <string name="settings_creator_tab_tags">Tags</string>
+    <string name="settings_creator_tab_links">Links</string>
+    <string name="settings_creator_tab_similar">Similar</string>
+    <string name="settings_creator_tab_community">Community</string>
+    <string name="settings_move_up">Move up</string>
+    <string name="settings_move_down">Move down</string>
 
     <string name="settings_ui_suggest_random_authors_title">
         Suggest random creators

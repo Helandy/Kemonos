@@ -135,6 +135,20 @@
     <string name="settings_ui_posts_view_mode_popular">Вид постов в популярном</string>
     <string name="settings_ui_posts_view_mode_tags">Вид постов в тегах</string>
     <string name="settings_ui_posts_view_mode_search">Вид постов в поиске</string>
+    <string name="settings_ui_creator_profile_tabs_sort_title">Порядок вкладок профиля автора</string>
+    <string name="settings_ui_creator_profile_tabs_sort_hint">Передвигай вкладки вверх/вниз, чтобы задать свой
+        порядок.
+    </string>
+    <string name="settings_creator_tab_posts">Посты</string>
+    <string name="settings_creator_tab_announcements">Анонсы</string>
+    <string name="settings_creator_tab_fancard">Фанкард</string>
+    <string name="settings_creator_tab_dms">ЛС</string>
+    <string name="settings_creator_tab_tags">Теги</string>
+    <string name="settings_creator_tab_links">Ссылки</string>
+    <string name="settings_creator_tab_similar">Похожие</string>
+    <string name="settings_creator_tab_community">Комьюнити</string>
+    <string name="settings_move_up">Вверх</string>
+    <string name="settings_move_down">Вниз</string>
 
     <string name="settings_ui_suggest_random_authors_title">
         Предлагать случайных авторов
