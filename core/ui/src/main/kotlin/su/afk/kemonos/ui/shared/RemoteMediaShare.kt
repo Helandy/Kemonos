@@ -14,7 +14,9 @@ import java.io.IOException
 import java.util.concurrent.TimeUnit
 
 private const val SHARED_MEDIA_DIR = "shared_media"
-private const val STALE_MS = 24L * 60L * 60L * 1000L
+
+/** 1 час */
+private const val STALE_MS = 1L * 60L * 60L * 1000L
 private const val CONNECT_TIMEOUT_SEC = 20L
 private const val READ_TIMEOUT_SEC = 60L
 
