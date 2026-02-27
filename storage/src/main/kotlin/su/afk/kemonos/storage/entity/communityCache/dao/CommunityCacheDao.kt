@@ -28,6 +28,9 @@ interface CommunityCacheDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun upsert(entity: CommunityCacheEntity)
 
+    @Query("DELETE FROM community_cache WHERE cachedAt < :minCachedAt")
+    suspend fun deleteOlderThan(minCachedAt: Long)
+
     @Query("DELETE FROM community_cache")
     suspend fun clearAll()
 }
