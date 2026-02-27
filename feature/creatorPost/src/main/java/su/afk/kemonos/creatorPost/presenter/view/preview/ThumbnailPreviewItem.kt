@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Download
+import androidx.compose.material.icons.filled.Share
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -48,6 +49,9 @@ fun ThumbnailPreviewItem(
     showFileName: Boolean,
     onPreviewClick: (String) -> Unit,
     onDownloadClick: (String, String) -> Unit,
+    onShareClick: (String, String) -> Unit,
+    showDownloadAction: Boolean,
+    showShareAction: Boolean,
     blurImage: Boolean,
 ) {
     val urls = remember(preview, imgBaseUrl) { buildPreviewUrls(imgBaseUrl, preview) } ?: return
@@ -113,23 +117,48 @@ fun ThumbnailPreviewItem(
             }
         }
 
-        /** ⬇️ Download */
-        FilledIconButton(
-            onClick = { onDownloadClick(urls.fullUrl, filename) },
-            modifier = Modifier
-                .align(Alignment.BottomEnd)
-                .padding(8.dp)
-                .size(42.dp),
-            colors = IconButtonDefaults.filledIconButtonColors(
-                containerColor = MaterialTheme.colorScheme.primaryContainer,
-                contentColor = MaterialTheme.colorScheme.onPrimaryContainer
-            )
-        ) {
-            Icon(
-                imageVector = Icons.Filled.Download,
-                contentDescription = stringResource(R.string.download),
-                modifier = Modifier.size(20.dp)
-            )
+        if (showDownloadAction || showShareAction) {
+            Row(
+                modifier = Modifier
+                    .align(Alignment.BottomEnd)
+                    .padding(8.dp),
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                if (showShareAction) {
+                    FilledIconButton(
+                        onClick = { onShareClick(urls.fullUrl, filename) },
+                        modifier = Modifier.size(42.dp),
+                        colors = IconButtonDefaults.filledIconButtonColors(
+                            containerColor = MaterialTheme.colorScheme.primaryContainer,
+                            contentColor = MaterialTheme.colorScheme.onPrimaryContainer
+                        )
+                    ) {
+                        Icon(
+                            imageVector = Icons.Filled.Share,
+                            contentDescription = stringResource(R.string.share),
+                            modifier = Modifier.size(20.dp)
+                        )
+                    }
+                }
+
+                /** ⬇️ Download */
+                if (showDownloadAction) {
+                    FilledIconButton(
+                        onClick = { onDownloadClick(urls.fullUrl, filename) },
+                        modifier = Modifier.size(42.dp),
+                        colors = IconButtonDefaults.filledIconButtonColors(
+                            containerColor = MaterialTheme.colorScheme.primaryContainer,
+                            contentColor = MaterialTheme.colorScheme.onPrimaryContainer
+                        )
+                    ) {
+                        Icon(
+                            imageVector = Icons.Filled.Download,
+                            contentDescription = stringResource(R.string.download),
+                            modifier = Modifier.size(20.dp)
+                        )
+                    }
+                }
+            }
         }
     }
 }

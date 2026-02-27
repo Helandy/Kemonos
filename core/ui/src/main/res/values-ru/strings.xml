@@ -38,6 +38,7 @@
     <string name="profile_tab_community">Комьюнити</string>
     <string name="random">Случайный</string>
     <string name="share">Поделиться</string>
+    <string name="share_failed">Не удалось поделиться файлом</string>
     <string name="save">Сохранить</string>
     <string name="saved">Сохранено</string>
 
@@ -50,6 +51,7 @@
     <string name="author_blacklist_already_exists">Автор уже в черном списке</string>
     <string name="vlc_not_installed">VLC не установлен. Открываю через другое приложение…</string>
     <string name="video_open_failed">Нет приложения для видео, установите VLC</string>
+    <string name="audio_open_failed">Нет приложения для аудио</string>
 
     <string name="search">Поиск</string>
     <string name="close">Закрыть</string>
@@ -61,6 +63,7 @@
     </string>
     <string name="show_preview_file_names">Показывать имена файлов</string>
     <string name="hide_preview_file_names">Скрыть имена файлов</string>
+    <string name="profile_community_messages_refreshed_at">Обновлено: %1$s</string>
 
     <string name="next">Вперед</string>
     <string name="back">Назад</string>

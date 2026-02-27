@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Download
 import androidx.compose.material.icons.filled.PlayArrow
+import androidx.compose.material.icons.filled.Share
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -26,6 +27,7 @@ internal fun AudioInfoItem(
     requestInfo: (url: String) -> Unit,
     onPlay: (AttachmentDomain) -> Unit,
     onDownload: (AttachmentDomain) -> Unit,
+    onShare: (AttachmentDomain) -> Unit,
 ) {
     LaunchedEffect(url) {
         requestInfo(url)
@@ -110,6 +112,18 @@ internal fun AudioInfoItem(
             Spacer(Modifier.width(4.dp))
 
             // ⬇ Download
+            IconButton(
+                onClick = { onShare(audio) },
+                modifier = Modifier.size(38.dp)
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Share,
+                    contentDescription = stringResource(R.string.share),
+                    tint = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier.size(22.dp)
+                )
+            }
+
             IconButton(
                 onClick = { onDownload(audio) },
                 modifier = Modifier.size(38.dp)

@@ -163,6 +163,12 @@ data class UiSettingModel(
     /** Блюрить все картинки */
     val blurImages: Boolean = DEFAULT_BLUR_PICTURE,
 
+    /** Показывать кнопку скачивания на миниатюрах изображений в посте */
+    val showImagePreviewDownloadAction: Boolean = DEFAULT_SHOW_IMAGE_PREVIEW_DOWNLOAD_ACTION,
+
+    /** Показывать кнопку шаринга на миниатюрах изображений в посте */
+    val showImagePreviewShareAction: Boolean = DEFAULT_SHOW_IMAGE_PREVIEW_SHARE_ACTION,
+
     /** Показывать комментарии в посте */
     val showCommentsInPost: Boolean = DEFAULT_SHOW_COMMENTS_IN_POST,
 
@@ -203,6 +209,8 @@ data class UiSettingModel(
         const val DEFAULT_VIDEO_PREVIEW_SIZE = 150
         const val DEFAULT_SHOW_VIDEO_PREVIEW = true
         const val DEFAULT_BLUR_PICTURE = false
+        const val DEFAULT_SHOW_IMAGE_PREVIEW_DOWNLOAD_ACTION = true
+        const val DEFAULT_SHOW_IMAGE_PREVIEW_SHARE_ACTION = false
         const val DEFAULT_SHOW_COMMENTS_IN_POST = true
         const val DEFAULT_EXPERIMENTAL_CALENDAR = false
 

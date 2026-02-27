@@ -49,9 +49,11 @@ import su.afk.kemonos.ui.components.creator.header.CreatorHeader
 import su.afk.kemonos.ui.presenter.baseScreen.BaseScreen
 import su.afk.kemonos.ui.preview.KemonosPreviewScreen
 import su.afk.kemonos.ui.shared.ShareActions
+import su.afk.kemonos.ui.shared.openRemoteAudioInExternalApp
+import su.afk.kemonos.ui.shared.shareRemoteMedia
 import su.afk.kemonos.ui.toast.toast
+import su.afk.kemonos.ui.uiUtils.format.audioMimeType
 import su.afk.kemonos.ui.uiUtils.format.isAudioFile
-import su.afk.kemonos.ui.uiUtils.format.openAudioExternally
 import su.afk.kemonos.utils.url.buildContentUrlToDataSite
 import kotlin.math.roundToInt
 
@@ -69,6 +71,7 @@ internal fun CreatorPostScreen(state: State, onEvent: (Event) -> Unit, effect: F
     var tagsExpanded by rememberSaveable(state.postId) { mutableStateOf(true) }
     var attachmentsExpanded by rememberSaveable(state.postId) { mutableStateOf(true) }
     var commentsExpanded by rememberSaveable(state.postId) { mutableStateOf(true) }
+    var shareInProgress by remember { mutableStateOf(false) }
 
     LaunchedEffect(effect) {
         effect.collect { effect ->
@@ -78,7 +81,17 @@ internal fun CreatorPostScreen(state: State, onEvent: (Event) -> Unit, effect: F
                 is Effect.OpenGoogleTranslate -> {
                     openGoogleTranslate(context, effect.text, effect.targetLangTag)
                 }
-                is Effect.OpenAudio -> openAudioExternally(context, effect.url, effect.name, effect.mime)
+                is Effect.OpenAudio -> {
+                    val opened = openRemoteAudioInExternalApp(
+                        context = context,
+                        url = effect.url,
+                        fileName = effect.name,
+                        mime = effect.mime
+                    )
+                    if (!opened) {
+                        context.toast(context.getString(R.string.audio_open_failed))
+                    }
+                }
                 is Effect.DownloadToast -> {
                     val safeName = effect.fileName.trim().takeIf { it.isNotBlank() }
 
@@ -313,6 +326,22 @@ internal fun CreatorPostScreen(state: State, onEvent: (Event) -> Unit, effect: F
                             download = { fullUrl, fileName ->
                                 onEvent(Event.Download(fullUrl, fileName))
                             },
+                            share = { fullUrl, fileName ->
+                                scope.launch {
+                                    shareInProgress = true
+                                    val shared = try {
+                                        shareRemoteMedia(
+                                            context = context,
+                                            url = fullUrl,
+                                            fileName = fileName,
+                                            mime = "image/*"
+                                        )
+                                    } finally {
+                                        shareInProgress = false
+                                    }
+                                    if (!shared) context.toast(context.getString(R.string.share_failed))
+                                }
+                            }
                         )
                     }
                 }
@@ -362,11 +391,34 @@ internal fun CreatorPostScreen(state: State, onEvent: (Event) -> Unit, effect: F
                             onInfoRequested = { url -> onEvent(Event.AudioInfoRequested(url)) },
                             onPlay = { att ->
                                 val url = att.buildContentUrlToDataSite(fallbackBaseUrl)
-                                onEvent(Event.PlayAudio(url, att.name))
+                                onEvent(
+                                    Event.PlayAudio(
+                                        url = url,
+                                        name = att.name,
+                                        mime = audioMimeType(att.path)
+                                    )
+                                )
                             },
                             onDownload = { att ->
                                 val url = att.buildContentUrlToDataSite(fallbackBaseUrl)
                                 onEvent(Event.Download(url, att.name))
+                            },
+                            onShare = { att ->
+                                val url = att.buildContentUrlToDataSite(fallbackBaseUrl)
+                                scope.launch {
+                                    shareInProgress = true
+                                    val shared = try {
+                                        shareRemoteMedia(
+                                            context = context,
+                                            url = url,
+                                            fileName = att.name,
+                                            mime = audioMimeType(att.path)
+                                        )
+                                    } finally {
+                                        shareInProgress = false
+                                    }
+                                    if (!shared) context.toast(context.getString(R.string.share_failed))
+                                }
                             },
                             showHeader = false,
                         )
@@ -436,6 +488,34 @@ internal fun CreatorPostScreen(state: State, onEvent: (Event) -> Unit, effect: F
 
                 item {
                     Spacer(Modifier.height(72.dp))
+                }
+            }
+
+            if (shareInProgress) {
+                Box(
+                    modifier = Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Surface(
+                        shape = MaterialTheme.shapes.medium,
+                        color = MaterialTheme.colorScheme.surface.copy(alpha = 0.92f),
+                        tonalElevation = 6.dp,
+                    ) {
+                        Row(
+                            modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            CircularProgressIndicator(
+                                modifier = Modifier.size(24.dp),
+                                strokeWidth = 3.dp
+                            )
+                            Spacer(Modifier.width(12.dp))
+                            Text(
+                                text = stringResource(R.string.loading),
+                                style = MaterialTheme.typography.bodyMedium
+                            )
+                        }
+                    }
                 }
             }
 

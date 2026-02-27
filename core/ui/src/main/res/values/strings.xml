@@ -38,6 +38,7 @@
     <string name="profile_tab_community">Community</string>
     <string name="random">Random</string>
     <string name="share">Share</string>
+    <string name="share_failed">Unable to share file</string>
     <string name="save">Save</string>
     <string name="saved">Saved</string>
 
@@ -50,6 +51,7 @@
     <string name="author_blacklist_already_exists">Author is already in blacklist</string>
     <string name="vlc_not_installed">VLC is not installed. Opening it through another application…</string>
     <string name="video_open_failed">No video app found, install VLC</string>
+    <string name="audio_open_failed">No audio app found</string>
 
     <string name="search">Search</string>
     <string name="close">Close</string>
@@ -61,6 +63,7 @@
     </string>
     <string name="show_preview_file_names">Show file names</string>
     <string name="hide_preview_file_names">Hide file names</string>
+    <string name="profile_community_messages_refreshed_at">Updated: %1$s</string>
 
     <string name="next">Next</string>
     <string name="back">Back</string>

@@ -204,6 +204,8 @@
     <string name="settings_show_preview_video_title">Show video previews</string>
     <string name="settings_blur_images_title">Blur images</string>
     <string name="settings_blur_images_substring" translatable="false">Android >12</string>
+    <string name="settings_show_image_preview_download_action_title">Show download on image previews</string>
+    <string name="settings_show_image_preview_share_action_title">Show share on image previews</string>
     <string name="settings_show_comments_in_post_title">Show comments in post</string>
 
     <string name="settings_downloads_title">Downloads</string>

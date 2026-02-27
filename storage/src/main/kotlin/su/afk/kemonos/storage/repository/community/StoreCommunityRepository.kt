@@ -28,6 +28,11 @@ internal class StoreCommunityRepository @Inject constructor(
         )
     }
 
+    override suspend fun clearCacheOver7Days() {
+        val minTs = System.currentTimeMillis() - TTL_7_DAYS
+        dao.deleteOlderThan(minTs)
+    }
+
     override suspend fun clearAll() {
         dao.clearAll()
     }

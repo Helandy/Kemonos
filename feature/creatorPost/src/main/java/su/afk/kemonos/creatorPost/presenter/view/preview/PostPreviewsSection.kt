@@ -12,6 +12,7 @@ internal fun LazyListScope.postPreviewsSection(
     showNames: Boolean,
     onOpenImage: (String) -> Unit,
     download: (url: String, fileName: String) -> Unit,
+    share: (url: String, fileName: String) -> Unit,
 ) {
     val uniquePreviews = previews.distinctBy { it.previewKey() }
     if (previews.isEmpty()) return
@@ -27,6 +28,9 @@ internal fun LazyListScope.postPreviewsSection(
                 showFileName = showNames,
                 onPreviewClick = onOpenImage,
                 onDownloadClick = download,
+                onShareClick = share,
+                showDownloadAction = uiSettingModel.showImagePreviewDownloadAction,
+                showShareAction = uiSettingModel.showImagePreviewShareAction,
                 blurImage = uiSettingModel.blurImages
             )
 

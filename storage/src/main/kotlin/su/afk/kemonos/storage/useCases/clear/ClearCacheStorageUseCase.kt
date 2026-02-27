@@ -3,6 +3,7 @@ package su.afk.kemonos.storage.useCases.clear
 import su.afk.kemonos.domain.SelectedSite
 import su.afk.kemonos.storage.api.clear.IClearCacheStorageUseCase
 import su.afk.kemonos.storage.api.repository.comments.IStoreCommentsRepository
+import su.afk.kemonos.storage.api.repository.community.IStoreCommunityRepository
 import su.afk.kemonos.storage.api.repository.creatorProfile.IStoreCreatorProfileRepository
 import su.afk.kemonos.storage.api.repository.dms.IStorageDmsRepository
 import su.afk.kemonos.storage.api.repository.download.ITrackedDownloadsRepository
@@ -18,6 +19,7 @@ import javax.inject.Inject
 
 internal class ClearCacheStorageUseCase @Inject constructor(
     private val storeCommentsRepository: IStoreCommentsRepository,
+    private val storeCommunityRepository: IStoreCommunityRepository,
     private val storeCreatorProfileCacheRepository: IStoreCreatorProfileRepository,
     private val popularPostsCacheRepository: IStoragePopularPostsRepository,
     private val postStorageRepository: IStoragePostStorageRepository,
@@ -36,6 +38,8 @@ internal class ClearCacheStorageUseCase @Inject constructor(
         storeCommentsRepository.clearCacheOver7Days()
         /** Чистка информации о профиле */
         storeCreatorProfileCacheRepository.clearCacheOver7Days()
+        /** Чистка community (channels + messages) */
+        storeCommunityRepository.clearCacheOver7Days()
         /** Чистка популярных постов */
         popularPostsCacheRepository.clearCache(SelectedSite.K)
         popularPostsCacheRepository.clearCache(SelectedSite.C)
