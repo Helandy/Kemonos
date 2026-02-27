@@ -47,6 +47,9 @@ class SettingUiPreferencesDelegate @Inject constructor(
             is SettingState.Event.ChangeViewSetting.SearchPostsViewMode ->
                 scope.launch { uiSetting.setSearchPostsViewMode(event.value) }
 
+            is SettingState.Event.ChangeViewSetting.EditCreatorProfileTabsOrder ->
+                scope.launch { uiSetting.setCreatorProfileTabsOrder(event.value) }
+
             /** Способ перевода */
             is SettingState.Event.ChangeViewSetting.EventTranslateTarget ->
                 scope.launch { uiSetting.setTranslateTarget(event.value) }

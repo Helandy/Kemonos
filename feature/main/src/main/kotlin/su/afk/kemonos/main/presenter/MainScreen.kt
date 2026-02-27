@@ -88,7 +88,7 @@ internal fun MainScreen(
 
     BaseScreen(
         isScroll = showErrorScreen,
-        contentPadding = PaddingValues(12.dp),
+        contentPadding = PaddingValues(8.dp),
         contentAlignment = Alignment.TopCenter,
         floatingActionButtonEnd = if (showErrorScreen) {
             {

@@ -14,11 +14,13 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import su.afk.kemonos.creatorProfile.presenter.creatorProfile.model.ProfileTab
 import su.afk.kemonos.domain.models.Tag
+import su.afk.kemonos.preferences.ui.CreatorProfileTabKey
 
 @Composable
 internal fun ProfileTabsBar(
     tabs: List<ProfileTab>,
     selectedTab: ProfileTab,
+    tabsOrder: List<CreatorProfileTabKey>,
     onTabSelected: (ProfileTab) -> Unit,
     currentTag: Tag?,
     onTagClear: (() -> Unit)? = null,
@@ -26,16 +28,7 @@ internal fun ProfileTabsBar(
 ) {
     val scrollState = rememberScrollState()
 
-    val desiredOrder = listOf(
-        ProfileTab.POSTS,
-        ProfileTab.ANNOUNCEMENTS,
-        ProfileTab.FANCARD,
-        ProfileTab.DMS,
-        ProfileTab.TAGS,
-        ProfileTab.LINKS,
-        ProfileTab.SIMILAR,
-        ProfileTab.COMMUNITY
-    )
+    val desiredOrder = tabsOrder.map { it.toProfileTab() }
 
     /** tabs — это список вкладок динамический */
     val orderedTabs = tabs.sortedBy { tab ->
@@ -95,4 +88,15 @@ internal fun ProfileTabsBar(
             }
         }
     }
+}
+
+private fun CreatorProfileTabKey.toProfileTab(): ProfileTab = when (this) {
+    CreatorProfileTabKey.POSTS -> ProfileTab.POSTS
+    CreatorProfileTabKey.ANNOUNCEMENTS -> ProfileTab.ANNOUNCEMENTS
+    CreatorProfileTabKey.FANCARD -> ProfileTab.FANCARD
+    CreatorProfileTabKey.DMS -> ProfileTab.DMS
+    CreatorProfileTabKey.TAGS -> ProfileTab.TAGS
+    CreatorProfileTabKey.LINKS -> ProfileTab.LINKS
+    CreatorProfileTabKey.SIMILAR -> ProfileTab.SIMILAR
+    CreatorProfileTabKey.COMMUNITY -> ProfileTab.COMMUNITY
 }

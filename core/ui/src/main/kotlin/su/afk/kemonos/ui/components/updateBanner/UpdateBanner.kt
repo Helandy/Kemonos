@@ -34,7 +34,7 @@ fun UpdateBanner(
         tonalElevation = 4.dp,
         shape = MaterialTheme.shapes.medium,
     ) {
-        Column(modifier = Modifier.padding(16.dp)) {
+        Column(modifier = Modifier.padding(8.dp)) {
 
             /** Заголовок */
             Row(verticalAlignment = Alignment.CenterVertically) {
