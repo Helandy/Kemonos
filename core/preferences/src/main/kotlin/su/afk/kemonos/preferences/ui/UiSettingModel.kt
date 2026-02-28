@@ -195,8 +195,8 @@ data class UiSettingModel(
             CreatorProfileTabKey.DMS,
             CreatorProfileTabKey.TAGS,
             CreatorProfileTabKey.LINKS,
+            CreatorProfileTabKey.COMMUNITY,
             CreatorProfileTabKey.SIMILAR,
-            CreatorProfileTabKey.COMMUNITY
         )
         val DEFAULT_POSTS_SIZE = PostsSize.MEDIUM
         const val DEFAULT_SUGGEST_RANDOM_AUTHORS = false

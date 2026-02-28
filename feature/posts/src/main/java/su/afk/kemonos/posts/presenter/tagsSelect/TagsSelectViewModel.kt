@@ -9,6 +9,7 @@ import kotlinx.coroutines.launch
 import su.afk.kemonos.domain.models.PostDomain
 import su.afk.kemonos.error.error.IErrorHandlerUseCase
 import su.afk.kemonos.error.error.storage.RetryStorage
+import su.afk.kemonos.navigation.NavigationManager
 import su.afk.kemonos.navigation.storage.NavigationStorage
 import su.afk.kemonos.posts.domain.pagingSearch.GetSearchPostsPagingUseCase
 import su.afk.kemonos.posts.presenter.common.NavigateToPostDelegate
@@ -24,6 +25,7 @@ internal class TagsSelectViewModel @Inject constructor(
     private val selectedSite: ISelectedSiteUseCase,
     private val getSearchPostsPagingUseCase: GetSearchPostsPagingUseCase,
     private val navigateToPostDelegate: NavigateToPostDelegate,
+    private val navManager: NavigationManager,
     private val navigationStorage: NavigationStorage,
     private val uiSetting: IUiSettingUseCase,
     override val errorHandler: IErrorHandlerUseCase,
@@ -55,6 +57,7 @@ internal class TagsSelectViewModel @Inject constructor(
 
     override fun onEvent(event: Event) {
         when (event) {
+            Event.Back -> navManager.back()
             is Event.NavigateToPost -> navigateToPost(event.post)
         }
     }

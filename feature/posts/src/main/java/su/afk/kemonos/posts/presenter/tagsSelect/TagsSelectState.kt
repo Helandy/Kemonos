@@ -23,6 +23,7 @@ internal class TagsSelectState {
     ) : UiState
 
     sealed interface Event : UiEvent {
+        data object Back : Event
         data class NavigateToPost(val post: PostDomain) : Event
     }
 
