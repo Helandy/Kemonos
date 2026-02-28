@@ -9,8 +9,7 @@ import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalUriHandler
@@ -46,6 +45,7 @@ fun DmItem(
     val annotatedContent = remember(dm.content, linkStyle) {
         buildDmAnnotatedContent(dm.content, linkStyle)
     }
+    var collapsedHasOverflow by remember(dm.hash, dm.content) { mutableStateOf(true) }
 
     Column {
         dm.creator?.let { creator ->
@@ -71,20 +71,36 @@ fun DmItem(
                     .animateContentSize()
                     .padding(12.dp)
             ) {
-                SelectionContainer {
-                    @Suppress("DEPRECATION")
-                    ClickableText(
+                if (expanded || !collapsedHasOverflow) {
+                    SelectionContainer {
+                        @Suppress("DEPRECATION")
+                        ClickableText(
+                            text = annotatedContent,
+                            style = MaterialTheme.typography.bodyLarge.copy(
+                                color = MaterialTheme.colorScheme.onSurface
+                            ),
+                            maxLines = if (expanded) Int.MAX_VALUE else 5,
+                            overflow = if (expanded) TextOverflow.Clip else TextOverflow.Ellipsis,
+                            onClick = { offset ->
+                                val url = annotatedContent
+                                    .getStringAnnotations(URL_TAG, offset, offset)
+                                    .firstOrNull()
+                                    ?.item
+                                    ?: return@ClickableText
+                                uriHandler.openUri(url)
+                            }
+                        )
+                    }
+                } else {
+                    Text(
                         text = annotatedContent,
-                        style = MaterialTheme.typography.bodyLarge,
-                        maxLines = if (expanded) Int.MAX_VALUE else 5,
-                        overflow = if (expanded) TextOverflow.Clip else TextOverflow.Ellipsis,
-                        onClick = { offset ->
-                            val url = annotatedContent
-                                .getStringAnnotations(URL_TAG, offset, offset)
-                                .firstOrNull()
-                                ?.item
-                                ?: return@ClickableText
-                            uriHandler.openUri(url)
+                        style = MaterialTheme.typography.bodyLarge.copy(
+                            color = MaterialTheme.colorScheme.onSurface
+                        ),
+                        maxLines = 5,
+                        overflow = TextOverflow.Ellipsis,
+                        onTextLayout = { result ->
+                            collapsedHasOverflow = result.hasVisualOverflow
                         }
                     )
                 }
