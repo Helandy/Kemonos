@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.Intent
 import android.webkit.MimeTypeMap
 import androidx.core.content.FileProvider
+import androidx.core.net.toUri
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import okhttp3.OkHttpClient
@@ -62,21 +63,14 @@ suspend fun openRemoteAudioInExternalApp(
     fileName: String?,
     mime: String = "audio/*",
 ): Boolean {
-    val prepared = withContext(Dispatchers.IO) {
-        cleanupSharedMediaCache(context)
-        prepareSharedFile(context, url, fileName, mime)
-    } ?: return false
-
     return withContext(Dispatchers.Main) {
         runCatching {
             val viewIntent = Intent(Intent.ACTION_VIEW).apply {
-                setDataAndType(prepared.uri, prepared.mime)
-                addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                setDataAndType(url.toUri(), mime)
                 addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                clipData = ClipData.newUri(context.contentResolver, prepared.file.name, prepared.uri)
-                putExtra(Intent.EXTRA_TITLE, prepared.file.name)
+                putExtra(Intent.EXTRA_TITLE, fileName)
             }
-            val chooser = Intent.createChooser(viewIntent, prepared.file.name).apply {
+            val chooser = Intent.createChooser(viewIntent, fileName).apply {
                 addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
             }
             context.startActivity(chooser)
