@@ -84,11 +84,11 @@ internal fun PostsScreen(
 
             saveableStateHolder.SaveableStateProvider(key) {
                 when (page) {
-                    PostsPage.Search -> SearchPostsNavigation()
-                    PostsPage.Dm -> DmNavigation()
-                    PostsPage.Popular -> PopularPostsNavigation()
-                    PostsPage.Tags -> TagsPageNavigation()
                     PostsPage.HashLookup -> HashLookupNavigation()
+                    PostsPage.Search -> SearchPostsNavigation()
+                    PostsPage.Popular -> PopularPostsNavigation()
+                    PostsPage.Dm -> DmNavigation()
+                    PostsPage.Tags -> TagsPageNavigation()
                 }
             }
         }
