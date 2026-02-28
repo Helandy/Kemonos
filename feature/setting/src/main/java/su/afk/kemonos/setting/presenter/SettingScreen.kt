@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -15,7 +14,6 @@ import kotlinx.coroutines.flow.emptyFlow
 import su.afk.kemonos.profile.R
 import su.afk.kemonos.setting.presenter.SettingState.State
 import su.afk.kemonos.setting.presenter.view.apiSetting.ApiSettingsBlock
-import su.afk.kemonos.setting.presenter.view.bottomLink.BottomLinksBlock
 import su.afk.kemonos.setting.presenter.view.cache.CacheSettingsBlock
 import su.afk.kemonos.setting.presenter.view.uiSetting.UISettingBlock
 import su.afk.kemonos.ui.presenter.baseScreen.BaseScreen
@@ -30,8 +28,6 @@ internal fun SettingScreen(
     onEvent: (SettingState.Event) -> Unit,
     effect: Flow<SettingState.Effect>
 ) {
-    val uriHandler = LocalUriHandler.current
-
     BaseScreen(
         contentModifier = Modifier.padding(horizontal = 8.dp),
         isScroll = true,
@@ -62,17 +58,6 @@ internal fun SettingScreen(
             state = state,
             dateFormatMode = state.uiSettingModel.dateFormatMode,
             onEvent = onEvent
-        )
-
-        Spacer(Modifier.height(16.dp))
-
-        BottomLinksBlock(
-            kemonoUrl = state.kemonoUrl,
-            coomerUrl = state.coomerUrl,
-            appVersion = state.appVersion,
-            onGitHubClick = {
-                uriHandler.openUri("https://github.com/Helandy/Kemonos")
-            }
         )
     }
 }

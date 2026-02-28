@@ -15,13 +15,17 @@ import su.afk.kemonos.error.error.IErrorHandlerUseCase
 import su.afk.kemonos.error.error.storage.RetryStorage
 import su.afk.kemonos.navigation.NavigationManager
 import su.afk.kemonos.preferences.ui.IUiSettingUseCase
+import su.afk.kemonos.preferences.ui.TranslateTarget
 import su.afk.kemonos.ui.presenter.baseViewModel.BaseViewModelNew
+import su.afk.kemonos.ui.translate.TextTranslator
+import su.afk.kemonos.ui.translate.preprocessForTranslation
 
 internal class CommunityChatViewModel @AssistedInject constructor(
     @Assisted private val dest: CreatorDest.CommunityChat?,
     private val navManager: NavigationManager,
     private val navigationDelegate: NavigationDelegate,
     private val getProfileCommunityMessagesUseCase: GetProfileCommunityMessagesUseCase,
+    private val translator: TextTranslator,
     private val uiSetting: IUiSettingUseCase,
     override val errorHandler: IErrorHandlerUseCase,
     override val retryStorage: RetryStorage,
@@ -53,6 +57,7 @@ internal class CommunityChatViewModel @AssistedInject constructor(
             Event.LoadMore -> load(reset = false)
             is Event.OpenMedia -> navigationDelegate.navigateToOpenImage(event.url)
             is Event.OpenUrl -> setEffect(Effect.OpenUrl(event.url))
+            is Event.ToggleTranslate -> onToggleTranslate(event.messageId, event.text)
         }
     }
 
@@ -70,6 +75,73 @@ internal class CommunityChatViewModel @AssistedInject constructor(
 
         if (currentState.channelId.isNotBlank()) {
             load(reset = true)
+        }
+    }
+
+    private fun onToggleTranslate(messageId: String, rawText: String) {
+        if (messageId.isBlank()) return
+        val plainText = rawText.preprocessForTranslation()
+        if (plainText.isBlank()) return
+
+        val isExpanded = messageId in currentState.translateExpandedIds
+        val nextExpanded = !isExpanded
+        setState {
+            copy(
+                translateExpandedIds = if (nextExpanded) {
+                    translateExpandedIds + messageId
+                } else {
+                    translateExpandedIds - messageId
+                }
+            )
+        }
+        if (!nextExpanded) return
+
+        when (currentState.uiSettingModel.translateTarget) {
+            TranslateTarget.GOOGLE -> {
+                setState { copy(translateExpandedIds = translateExpandedIds - messageId) }
+                setEffect(
+                    Effect.OpenGoogleTranslate(
+                        text = plainText,
+                        targetLangTag = currentState.uiSettingModel.translateLanguageTag
+                    )
+                )
+                return
+            }
+
+            TranslateTarget.APP -> Unit
+        }
+
+        if (messageId in currentState.translateLoadingIds) return
+        val cached = currentState.translatedTextById[messageId]
+        if (!cached.isNullOrBlank() && currentState.translateErrorById[messageId].isNullOrBlank()) return
+
+        viewModelScope.launch {
+            setState {
+                copy(
+                    translateLoadingIds = translateLoadingIds + messageId,
+                    translateErrorById = translateErrorById - messageId
+                )
+            }
+            runCatching {
+                translator.translateAuto(
+                    text = plainText,
+                    targetLangTag = currentState.uiSettingModel.translateLanguageTag
+                )
+            }.onSuccess { translated ->
+                setState {
+                    copy(
+                        translateLoadingIds = translateLoadingIds - messageId,
+                        translatedTextById = translatedTextById + (messageId to translated)
+                    )
+                }
+            }.onFailure { e ->
+                setState {
+                    copy(
+                        translateLoadingIds = translateLoadingIds - messageId,
+                        translateErrorById = translateErrorById + (messageId to (e.message ?: "Translation error"))
+                    )
+                }
+            }
         }
     }
 

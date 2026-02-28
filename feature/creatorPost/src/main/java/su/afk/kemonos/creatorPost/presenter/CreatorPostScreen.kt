@@ -40,7 +40,6 @@ import su.afk.kemonos.creatorPost.presenter.view.swipe.SwipeArrowHint
 import su.afk.kemonos.creatorPost.presenter.view.swipe.SwipeHintDirection
 import su.afk.kemonos.creatorPost.presenter.view.swipe.rememberTikTokSwipeState
 import su.afk.kemonos.creatorPost.presenter.view.translate.PostTranslateItem
-import su.afk.kemonos.creatorPost.presenter.view.translate.openGoogleTranslate
 import su.afk.kemonos.creatorPost.presenter.view.video.postVideosSection
 import su.afk.kemonos.preferences.domainResolver.LocalDomainResolver
 import su.afk.kemonos.ui.R
@@ -51,7 +50,9 @@ import su.afk.kemonos.ui.preview.KemonosPreviewScreen
 import su.afk.kemonos.ui.shared.ShareActions
 import su.afk.kemonos.ui.shared.openRemoteAudioInExternalApp
 import su.afk.kemonos.ui.shared.shareRemoteMedia
+import su.afk.kemonos.ui.shared.view.ShareLoadingOverlay
 import su.afk.kemonos.ui.toast.toast
+import su.afk.kemonos.ui.translate.openGoogleTranslate
 import su.afk.kemonos.ui.uiUtils.format.audioMimeType
 import su.afk.kemonos.ui.uiUtils.format.isAudioFile
 import su.afk.kemonos.utils.url.buildContentUrlToDataSite
@@ -72,6 +73,32 @@ internal fun CreatorPostScreen(state: State, onEvent: (Event) -> Unit, effect: F
     var attachmentsExpanded by rememberSaveable(state.postId) { mutableStateOf(true) }
     var commentsExpanded by rememberSaveable(state.postId) { mutableStateOf(true) }
     var shareInProgress by remember { mutableStateOf(false) }
+    var shareBytesRead by remember { mutableLongStateOf(0L) }
+    var shareTotalBytes by remember { mutableLongStateOf(0L) }
+
+    fun launchShare(url: String, fileName: String?, mime: String) {
+        if (shareInProgress) return
+        scope.launch {
+            shareBytesRead = 0L
+            shareTotalBytes = 0L
+            shareInProgress = true
+            val shared = try {
+                shareRemoteMedia(
+                    context = context,
+                    url = url,
+                    fileName = fileName,
+                    mime = mime,
+                    onProgress = { bytesRead, totalBytes ->
+                        shareBytesRead = bytesRead
+                        shareTotalBytes = totalBytes
+                    }
+                )
+            } finally {
+                shareInProgress = false
+            }
+            if (!shared) context.toast(context.getString(R.string.share_failed))
+        }
+    }
 
     LaunchedEffect(effect) {
         effect.collect { effect ->
@@ -327,20 +354,7 @@ internal fun CreatorPostScreen(state: State, onEvent: (Event) -> Unit, effect: F
                                 onEvent(Event.Download(fullUrl, fileName))
                             },
                             share = { fullUrl, fileName ->
-                                scope.launch {
-                                    shareInProgress = true
-                                    val shared = try {
-                                        shareRemoteMedia(
-                                            context = context,
-                                            url = fullUrl,
-                                            fileName = fileName,
-                                            mime = "image/*"
-                                        )
-                                    } finally {
-                                        shareInProgress = false
-                                    }
-                                    if (!shared) context.toast(context.getString(R.string.share_failed))
-                                }
+                                launchShare(url = fullUrl, fileName = fileName, mime = "image/*")
                             }
                         )
                     }
@@ -405,20 +419,11 @@ internal fun CreatorPostScreen(state: State, onEvent: (Event) -> Unit, effect: F
                             },
                             onShare = { att ->
                                 val url = att.buildContentUrlToDataSite(fallbackBaseUrl)
-                                scope.launch {
-                                    shareInProgress = true
-                                    val shared = try {
-                                        shareRemoteMedia(
-                                            context = context,
-                                            url = url,
-                                            fileName = att.name,
-                                            mime = audioMimeType(att.path)
-                                        )
-                                    } finally {
-                                        shareInProgress = false
-                                    }
-                                    if (!shared) context.toast(context.getString(R.string.share_failed))
-                                }
+                                launchShare(
+                                    url = url,
+                                    fileName = att.name,
+                                    mime = audioMimeType(att.path)
+                                )
                             },
                             showHeader = false,
                         )
@@ -491,33 +496,11 @@ internal fun CreatorPostScreen(state: State, onEvent: (Event) -> Unit, effect: F
                 }
             }
 
-            if (shareInProgress) {
-                Box(
-                    modifier = Modifier.fillMaxSize(),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Surface(
-                        shape = MaterialTheme.shapes.medium,
-                        color = MaterialTheme.colorScheme.surface.copy(alpha = 0.92f),
-                        tonalElevation = 6.dp,
-                    ) {
-                        Row(
-                            modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp),
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            CircularProgressIndicator(
-                                modifier = Modifier.size(24.dp),
-                                strokeWidth = 3.dp
-                            )
-                            Spacer(Modifier.width(12.dp))
-                            Text(
-                                text = stringResource(R.string.loading),
-                                style = MaterialTheme.typography.bodyMedium
-                            )
-                        }
-                    }
-                }
-            }
+            ShareLoadingOverlay(
+                visible = shareInProgress,
+                bytesRead = shareBytesRead,
+                totalBytes = shareTotalBytes
+            )
 
             /** подсказка свайпа */
             if (swipe.direction == SwipeHintDirection.DOWN && canPrevPost) {

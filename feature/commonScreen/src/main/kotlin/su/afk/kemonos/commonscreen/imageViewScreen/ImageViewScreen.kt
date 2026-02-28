@@ -43,6 +43,7 @@ import su.afk.kemonos.ui.R
 import su.afk.kemonos.ui.imageLoader.imageProgress.IMAGE_PROGRESS_REQUEST_ID_HEADER
 import su.afk.kemonos.ui.shared.ShareActions
 import su.afk.kemonos.ui.shared.shareRemoteMedia
+import su.afk.kemonos.ui.shared.view.ShareLoadingOverlay
 import su.afk.kemonos.ui.toast.toast
 import su.afk.kemonos.ui.uiUtils.size.formatBytes
 import kotlin.math.roundToInt
@@ -59,6 +60,8 @@ internal fun ImageViewScreen(
     val doubleTapScale: Float = 3f
     var showActionsMenu by remember { mutableStateOf(false) }
     var shareInProgress by remember { mutableStateOf(false) }
+    var shareBytesRead by remember { mutableLongStateOf(0L) }
+    var shareTotalBytes by remember { mutableLongStateOf(0L) }
 
     var container by remember { mutableStateOf(IntSize.Zero) }
 
@@ -120,6 +123,30 @@ internal fun ImageViewScreen(
     /** Coil ImageLoader */
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
+
+    fun launchShare(url: String, fileName: String?, mime: String) {
+        if (shareInProgress) return
+        scope.launch {
+            shareBytesRead = 0L
+            shareTotalBytes = 0L
+            shareInProgress = true
+            val shared = try {
+                shareRemoteMedia(
+                    context = context,
+                    url = url,
+                    fileName = fileName,
+                    mime = mime,
+                    onProgress = { bytesRead, totalBytes ->
+                        shareBytesRead = bytesRead
+                        shareTotalBytes = totalBytes
+                    }
+                )
+            } finally {
+                shareInProgress = false
+            }
+            if (!shared) context.toast(context.getString(R.string.share_failed))
+        }
+    }
 
     LaunchedEffect(effect) {
         effect.collect { item ->
@@ -326,23 +353,15 @@ internal fun ImageViewScreen(
                 )
                 DropdownMenuItem(
                     text = { Text(text = stringResource(R.string.share)) },
+                    enabled = !shareInProgress,
                     onClick = {
                         showActionsMenu = false
                         val imageUrl = state.imageUrl ?: return@DropdownMenuItem
-                        scope.launch {
-                            shareInProgress = true
-                            val shared = try {
-                                shareRemoteMedia(
-                                    context = context,
-                                    url = imageUrl,
-                                    fileName = imageUrl.toUri().lastPathSegment,
-                                    mime = "image/*"
-                                )
-                            } finally {
-                                shareInProgress = false
-                            }
-                            if (!shared) context.toast(context.getString(R.string.share_failed))
-                        }
+                        launchShare(
+                            url = imageUrl,
+                            fileName = imageUrl.toUri().lastPathSegment,
+                            mime = "image/*"
+                        )
                     },
                 )
                 DropdownMenuItem(
@@ -403,32 +422,10 @@ internal fun ImageViewScreen(
             }
         }
 
-        if (shareInProgress) {
-            Box(
-                modifier = Modifier.fillMaxSize(),
-                contentAlignment = Alignment.Center
-            ) {
-                Surface(
-                    shape = MaterialTheme.shapes.medium,
-                    color = MaterialTheme.colorScheme.surface.copy(alpha = 0.92f),
-                    tonalElevation = 6.dp,
-                ) {
-                    Row(
-                        modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        CircularProgressIndicator(
-                            modifier = Modifier.size(24.dp),
-                            strokeWidth = 3.dp
-                        )
-                        Spacer(Modifier.width(12.dp))
-                        Text(
-                            text = stringResource(R.string.loading),
-                            style = MaterialTheme.typography.bodyMedium
-                        )
-                    }
-                }
-            }
-        }
+        ShareLoadingOverlay(
+            visible = shareInProgress,
+            bytesRead = shareBytesRead,
+            totalBytes = shareTotalBytes
+        )
     }
 }

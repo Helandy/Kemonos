@@ -26,8 +26,7 @@ fun RandomButton(
         modifier = modifier
             .alpha(if (enabled) 1f else 0.5f)
             .clickable(enabled = enabled) {},
-        containerColor = MaterialTheme.colorScheme.primaryContainer,
-        contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
+        containerColor = MaterialTheme.colorScheme.primary,
     ) {
         Icon(
             imageVector = Icons.Filled.Casino,
