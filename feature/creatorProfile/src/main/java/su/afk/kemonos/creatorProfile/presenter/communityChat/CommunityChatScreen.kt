@@ -5,6 +5,8 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.snapshotFlow
@@ -67,31 +69,36 @@ internal fun CommunityChatScreen(
         isLoading = state.loading,
         onRetry = { onEvent(Event.Retry) },
     ) {
-        LazyColumn(
-            state = listState,
+        Surface(
             modifier = Modifier.fillMaxSize(),
-            verticalArrangement = Arrangement.spacedBy(8.dp),
-            contentPadding = PaddingValues(vertical = 8.dp)
+            color = MaterialTheme.colorScheme.surface
         ) {
-            items(state.messages.size) { index ->
-                MessageItem(
-                    message = state.messages[index],
-                    fallbackBaseUrl = fallbackBaseUrl,
-                    dateMode = state.uiSettingModel.dateFormatMode,
-                    onOpenMedia = { url -> onEvent(Event.OpenMedia(url)) },
-                    onOpenUrl = { url -> onEvent(Event.OpenUrl(url)) },
-                )
-            }
+            LazyColumn(
+                state = listState,
+                modifier = Modifier.fillMaxSize(),
+                verticalArrangement = Arrangement.spacedBy(10.dp),
+                contentPadding = PaddingValues(horizontal = 12.dp, vertical = 10.dp)
+            ) {
+                items(state.messages.size) { index ->
+                    MessageItem(
+                        message = state.messages[index],
+                        fallbackBaseUrl = fallbackBaseUrl,
+                        dateMode = state.uiSettingModel.dateFormatMode,
+                        onOpenMedia = { url -> onEvent(Event.OpenMedia(url)) },
+                        onOpenUrl = { url -> onEvent(Event.OpenUrl(url)) },
+                    )
+                }
 
-            item {
-                if (state.loadingMore) {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(12.dp),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        CircularProgressIndicator()
+                item {
+                    if (state.loadingMore) {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(12.dp),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            CircularProgressIndicator()
+                        }
                     }
                 }
             }
