@@ -60,6 +60,8 @@ internal fun ImageViewScreen(
     val doubleTapScale: Float = 3f
     var showActionsMenu by remember { mutableStateOf(false) }
     var shareInProgress by remember { mutableStateOf(false) }
+    var shareBytesRead by remember { mutableLongStateOf(0L) }
+    var shareTotalBytes by remember { mutableLongStateOf(0L) }
 
     var container by remember { mutableStateOf(IntSize.Zero) }
 
@@ -121,6 +123,30 @@ internal fun ImageViewScreen(
     /** Coil ImageLoader */
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
+
+    fun launchShare(url: String, fileName: String?, mime: String) {
+        if (shareInProgress) return
+        scope.launch {
+            shareBytesRead = 0L
+            shareTotalBytes = 0L
+            shareInProgress = true
+            val shared = try {
+                shareRemoteMedia(
+                    context = context,
+                    url = url,
+                    fileName = fileName,
+                    mime = mime,
+                    onProgress = { bytesRead, totalBytes ->
+                        shareBytesRead = bytesRead
+                        shareTotalBytes = totalBytes
+                    }
+                )
+            } finally {
+                shareInProgress = false
+            }
+            if (!shared) context.toast(context.getString(R.string.share_failed))
+        }
+    }
 
     LaunchedEffect(effect) {
         effect.collect { item ->
@@ -327,23 +353,15 @@ internal fun ImageViewScreen(
                 )
                 DropdownMenuItem(
                     text = { Text(text = stringResource(R.string.share)) },
+                    enabled = !shareInProgress,
                     onClick = {
                         showActionsMenu = false
                         val imageUrl = state.imageUrl ?: return@DropdownMenuItem
-                        scope.launch {
-                            shareInProgress = true
-                            val shared = try {
-                                shareRemoteMedia(
-                                    context = context,
-                                    url = imageUrl,
-                                    fileName = imageUrl.toUri().lastPathSegment,
-                                    mime = "image/*"
-                                )
-                            } finally {
-                                shareInProgress = false
-                            }
-                            if (!shared) context.toast(context.getString(R.string.share_failed))
-                        }
+                        launchShare(
+                            url = imageUrl,
+                            fileName = imageUrl.toUri().lastPathSegment,
+                            mime = "image/*"
+                        )
                     },
                 )
                 DropdownMenuItem(
@@ -404,6 +422,10 @@ internal fun ImageViewScreen(
             }
         }
 
-        ShareLoadingOverlay(visible = shareInProgress)
+        ShareLoadingOverlay(
+            visible = shareInProgress,
+            bytesRead = shareBytesRead,
+            totalBytes = shareTotalBytes
+        )
     }
 }

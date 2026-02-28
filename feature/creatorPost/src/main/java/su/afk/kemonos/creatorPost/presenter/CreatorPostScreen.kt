@@ -73,6 +73,32 @@ internal fun CreatorPostScreen(state: State, onEvent: (Event) -> Unit, effect: F
     var attachmentsExpanded by rememberSaveable(state.postId) { mutableStateOf(true) }
     var commentsExpanded by rememberSaveable(state.postId) { mutableStateOf(true) }
     var shareInProgress by remember { mutableStateOf(false) }
+    var shareBytesRead by remember { mutableLongStateOf(0L) }
+    var shareTotalBytes by remember { mutableLongStateOf(0L) }
+
+    fun launchShare(url: String, fileName: String?, mime: String) {
+        if (shareInProgress) return
+        scope.launch {
+            shareBytesRead = 0L
+            shareTotalBytes = 0L
+            shareInProgress = true
+            val shared = try {
+                shareRemoteMedia(
+                    context = context,
+                    url = url,
+                    fileName = fileName,
+                    mime = mime,
+                    onProgress = { bytesRead, totalBytes ->
+                        shareBytesRead = bytesRead
+                        shareTotalBytes = totalBytes
+                    }
+                )
+            } finally {
+                shareInProgress = false
+            }
+            if (!shared) context.toast(context.getString(R.string.share_failed))
+        }
+    }
 
     LaunchedEffect(effect) {
         effect.collect { effect ->
@@ -328,20 +354,7 @@ internal fun CreatorPostScreen(state: State, onEvent: (Event) -> Unit, effect: F
                                 onEvent(Event.Download(fullUrl, fileName))
                             },
                             share = { fullUrl, fileName ->
-                                scope.launch {
-                                    shareInProgress = true
-                                    val shared = try {
-                                        shareRemoteMedia(
-                                            context = context,
-                                            url = fullUrl,
-                                            fileName = fileName,
-                                            mime = "image/*"
-                                        )
-                                    } finally {
-                                        shareInProgress = false
-                                    }
-                                    if (!shared) context.toast(context.getString(R.string.share_failed))
-                                }
+                                launchShare(url = fullUrl, fileName = fileName, mime = "image/*")
                             }
                         )
                     }
@@ -406,20 +419,11 @@ internal fun CreatorPostScreen(state: State, onEvent: (Event) -> Unit, effect: F
                             },
                             onShare = { att ->
                                 val url = att.buildContentUrlToDataSite(fallbackBaseUrl)
-                                scope.launch {
-                                    shareInProgress = true
-                                    val shared = try {
-                                        shareRemoteMedia(
-                                            context = context,
-                                            url = url,
-                                            fileName = att.name,
-                                            mime = audioMimeType(att.path)
-                                        )
-                                    } finally {
-                                        shareInProgress = false
-                                    }
-                                    if (!shared) context.toast(context.getString(R.string.share_failed))
-                                }
+                                launchShare(
+                                    url = url,
+                                    fileName = att.name,
+                                    mime = audioMimeType(att.path)
+                                )
                             },
                             showHeader = false,
                         )
@@ -492,7 +496,11 @@ internal fun CreatorPostScreen(state: State, onEvent: (Event) -> Unit, effect: F
                 }
             }
 
-            ShareLoadingOverlay(visible = shareInProgress)
+            ShareLoadingOverlay(
+                visible = shareInProgress,
+                bytesRead = shareBytesRead,
+                totalBytes = shareTotalBytes
+            )
 
             /** подсказка свайпа */
             if (swipe.direction == SwipeHintDirection.DOWN && canPrevPost) {

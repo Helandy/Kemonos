@@ -11,13 +11,33 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import su.afk.kemonos.ui.R
+import su.afk.kemonos.ui.uiUtils.size.formatBytes
 
 @Composable
 fun ShareLoadingOverlay(
     visible: Boolean,
+    bytesRead: Long = 0L,
+    totalBytes: Long = 0L,
     modifier: Modifier = Modifier,
 ) {
     if (!visible) return
+
+    val hasProgress = bytesRead > 0L || totalBytes > 0L
+    val hasKnownTotal = totalBytes > 0L
+    val progress = if (hasKnownTotal) {
+        (bytesRead.toFloat() / totalBytes.toFloat()).coerceIn(0f, 1f)
+    } else {
+        0f
+    }
+    val text = if (hasProgress) {
+        if (hasKnownTotal) {
+            "${formatBytes(bytesRead)} / ${formatBytes(totalBytes)}"
+        } else {
+            formatBytes(bytesRead)
+        }
+    } else {
+        stringResource(R.string.loading)
+    }
 
     Box(
         modifier = modifier.fillMaxSize(),
@@ -32,13 +52,21 @@ fun ShareLoadingOverlay(
                 modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                CircularProgressIndicator(
-                    modifier = Modifier.size(24.dp),
-                    strokeWidth = 3.dp
-                )
+                if (hasKnownTotal) {
+                    CircularProgressIndicator(
+                        progress = { progress },
+                        modifier = Modifier.size(24.dp),
+                        strokeWidth = 3.dp
+                    )
+                } else {
+                    CircularProgressIndicator(
+                        modifier = Modifier.size(24.dp),
+                        strokeWidth = 3.dp
+                    )
+                }
                 Spacer(Modifier.size(12.dp))
                 Text(
-                    text = stringResource(R.string.loading),
+                    text = text,
                     style = MaterialTheme.typography.bodyMedium
                 )
             }

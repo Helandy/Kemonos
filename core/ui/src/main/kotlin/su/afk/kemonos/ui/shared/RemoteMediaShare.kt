@@ -7,6 +7,7 @@ import android.webkit.MimeTypeMap
 import androidx.core.content.FileProvider
 import androidx.core.net.toUri
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.withContext
 import okhttp3.OkHttpClient
 import okhttp3.Request
@@ -33,27 +34,33 @@ suspend fun shareRemoteMedia(
     url: String,
     fileName: String?,
     mime: String = "*/*",
+    onProgress: ((bytesRead: Long, totalBytes: Long) -> Unit)? = null,
 ): Boolean {
-    val prepared = withContext(Dispatchers.IO) {
-        cleanupSharedMediaCache(context)
-        prepareSharedFile(context, url, fileName, mime)
-    } ?: return false
+    if (!shareOperationMutex.tryLock()) return false
+    try {
+        val prepared = withContext(Dispatchers.IO) {
+            cleanupSharedMediaCache(context)
+            prepareSharedFile(context, url, fileName, mime, onProgress)
+        } ?: return false
 
-    return withContext(Dispatchers.Main) {
-        runCatching {
-            val shareIntent = Intent(Intent.ACTION_SEND).apply {
-                type = prepared.mime
-                putExtra(Intent.EXTRA_STREAM, prepared.uri)
-                addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-                clipData = ClipData.newUri(context.contentResolver, prepared.file.name, prepared.uri)
-            }
+        return withContext(Dispatchers.Main) {
+            runCatching {
+                val shareIntent = Intent(Intent.ACTION_SEND).apply {
+                    type = prepared.mime
+                    putExtra(Intent.EXTRA_STREAM, prepared.uri)
+                    addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                    clipData = ClipData.newUri(context.contentResolver, prepared.file.name, prepared.uri)
+                }
 
-            val chooser = Intent.createChooser(shareIntent, null).apply {
-                addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-            }
-            context.startActivity(chooser)
-            true
-        }.getOrDefault(false)
+                val chooser = Intent.createChooser(shareIntent, null).apply {
+                    addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                }
+                context.startActivity(chooser)
+                true
+            }.getOrDefault(false)
+        }
+    } finally {
+        shareOperationMutex.unlock()
     }
 }
 
@@ -85,18 +92,32 @@ private data class PreparedSharedMedia(
     val mime: String,
 )
 
-private fun prepareSharedFile(
+private suspend fun prepareSharedFile(
     context: Context,
     url: String,
     fileName: String?,
     mime: String,
+    onProgress: ((bytesRead: Long, totalBytes: Long) -> Unit)? = null,
 ): PreparedSharedMedia? {
     val resolvedName = resolveFileName(url, fileName, mime)
     val targetDir = File(context.cacheDir, SHARED_MEDIA_DIR).apply { mkdirs() }
     val targetFile = File(targetDir, resolvedName)
+    val sourceMetaFile = File(targetDir, "${resolvedName}${SOURCE_META_SUFFIX}")
 
     val hasCachedFile = targetFile.exists() && targetFile.isFile && targetFile.length() > 0L
-    if (!hasCachedFile && !downloadToFile(url, targetFile)) return null
+    val cachedSourceUrl = runCatching {
+        if (sourceMetaFile.isFile) sourceMetaFile.readText().trim() else null
+    }.getOrNull()
+    val canReuseCachedFile = hasCachedFile && cachedSourceUrl == url
+
+    if (canReuseCachedFile) {
+        val cachedSize = targetFile.length()
+        reportProgress(onProgress, cachedSize, cachedSize)
+    } else if (!downloadToFile(url, targetFile, onProgress)) {
+        return null
+    } else {
+        runCatching { sourceMetaFile.writeText(url) }
+    }
 
     val authority = "${context.packageName}.fileprovider"
     val uri = runCatching {
@@ -107,7 +128,11 @@ private fun prepareSharedFile(
     return PreparedSharedMedia(file = targetFile, uri = uri, mime = resolvedMime)
 }
 
-private fun downloadToFile(url: String, targetFile: File): Boolean {
+private suspend fun downloadToFile(
+    url: String,
+    targetFile: File,
+    onProgress: ((bytesRead: Long, totalBytes: Long) -> Unit)? = null,
+): Boolean {
     val request = Request.Builder().url(url).build()
     val tmp = File(targetFile.parentFile, "${targetFile.name}.tmp")
 
@@ -115,9 +140,32 @@ private fun downloadToFile(url: String, targetFile: File): Boolean {
         shareHttpClient.newCall(request).execute().use { response ->
             if (!response.isSuccessful) return false
             val body = response.body
+            val totalBytes = body.contentLength().coerceAtLeast(0L)
+            var bytesRead = 0L
+            reportProgress(onProgress, 0L, totalBytes)
+            var lastReportedBytes = 0L
+            var lastReportedAtMs = 0L
             tmp.outputStream().use { out ->
-                body.byteStream().use { input -> input.copyTo(out) }
+                body.byteStream().use { input ->
+                    val buffer = ByteArray(DEFAULT_BUFFER_SIZE)
+                    var read = input.read(buffer)
+                    while (read >= 0) {
+                        out.write(buffer, 0, read)
+                        bytesRead += read
+                        val nowMs = System.currentTimeMillis()
+                        val shouldReport = bytesRead == totalBytes ||
+                                bytesRead - lastReportedBytes >= PROGRESS_MIN_DELTA_BYTES ||
+                                nowMs - lastReportedAtMs >= PROGRESS_MIN_INTERVAL_MS
+                        if (shouldReport) {
+                            reportProgress(onProgress, bytesRead, totalBytes)
+                            lastReportedBytes = bytesRead
+                            lastReportedAtMs = nowMs
+                        }
+                        read = input.read(buffer)
+                    }
+                }
             }
+            reportProgress(onProgress, bytesRead, totalBytes)
         }
 
         if (targetFile.exists() && !targetFile.delete()) {
@@ -130,6 +178,17 @@ private fun downloadToFile(url: String, targetFile: File): Boolean {
     }.getOrElse {
         runCatching { tmp.delete() }
         false
+    }
+}
+
+private suspend fun reportProgress(
+    onProgress: ((bytesRead: Long, totalBytes: Long) -> Unit)?,
+    bytesRead: Long,
+    totalBytes: Long,
+) {
+    if (onProgress == null) return
+    withContext(Dispatchers.Main.immediate) {
+        onProgress(bytesRead, totalBytes)
     }
 }
 
@@ -171,3 +230,8 @@ private fun resolveMimeType(fileName: String, fallbackMime: String): String {
     }
     return fallbackMime
 }
+
+private const val PROGRESS_MIN_DELTA_BYTES = 128 * 1024L
+private const val PROGRESS_MIN_INTERVAL_MS = 120L
+private const val SOURCE_META_SUFFIX = ".source"
+private val shareOperationMutex = Mutex()
