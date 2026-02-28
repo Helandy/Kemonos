@@ -1,9 +1,6 @@
 package su.afk.kemonos.profile.presenter.profile
 
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material3.*
@@ -20,6 +17,7 @@ import su.afk.kemonos.domain.SelectedSite
 import su.afk.kemonos.profile.R
 import su.afk.kemonos.profile.presenter.profile.ProfileState.*
 import su.afk.kemonos.profile.presenter.profile.views.*
+import su.afk.kemonos.profile.presenter.profile.views.bottomLink.BottomLinksBlock
 import su.afk.kemonos.profile.presenter.profile.views.faq.FaqBlock
 import su.afk.kemonos.ui.presenter.baseScreen.BaseScreen
 
@@ -34,7 +32,7 @@ internal fun ProfileScreen(
     val scope = rememberCoroutineScope()
 
     BaseScreen(
-        isScroll = false,
+        isScroll = true,
         isLoading = state.isLoading,
         contentModifier = Modifier.padding(horizontal = 8.dp),
     ) {
@@ -122,6 +120,10 @@ internal fun ProfileScreen(
             )
 
             FaqBlock()
+
+            BottomLinksBlock()
+
+            Spacer(Modifier.height(8.dp))
         }
 
         if (state.showLogoutConfirm) {
