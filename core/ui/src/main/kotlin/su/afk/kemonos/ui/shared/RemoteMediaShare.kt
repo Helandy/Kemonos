@@ -95,7 +95,8 @@ private fun prepareSharedFile(
     val targetDir = File(context.cacheDir, SHARED_MEDIA_DIR).apply { mkdirs() }
     val targetFile = File(targetDir, resolvedName)
 
-    if (!downloadToFile(url, targetFile)) return null
+    val hasCachedFile = targetFile.exists() && targetFile.isFile && targetFile.length() > 0L
+    if (!hasCachedFile && !downloadToFile(url, targetFile)) return null
 
     val authority = "${context.packageName}.fileprovider"
     val uri = runCatching {
