@@ -40,7 +40,6 @@ import su.afk.kemonos.creatorPost.presenter.view.swipe.SwipeArrowHint
 import su.afk.kemonos.creatorPost.presenter.view.swipe.SwipeHintDirection
 import su.afk.kemonos.creatorPost.presenter.view.swipe.rememberTikTokSwipeState
 import su.afk.kemonos.creatorPost.presenter.view.translate.PostTranslateItem
-import su.afk.kemonos.creatorPost.presenter.view.translate.openGoogleTranslate
 import su.afk.kemonos.creatorPost.presenter.view.video.postVideosSection
 import su.afk.kemonos.preferences.domainResolver.LocalDomainResolver
 import su.afk.kemonos.ui.R
@@ -53,6 +52,7 @@ import su.afk.kemonos.ui.shared.openRemoteAudioInExternalApp
 import su.afk.kemonos.ui.shared.shareRemoteMedia
 import su.afk.kemonos.ui.shared.view.ShareLoadingOverlay
 import su.afk.kemonos.ui.toast.toast
+import su.afk.kemonos.ui.translate.openGoogleTranslate
 import su.afk.kemonos.ui.uiUtils.format.audioMimeType
 import su.afk.kemonos.ui.uiUtils.format.isAudioFile
 import su.afk.kemonos.utils.url.buildContentUrlToDataSite

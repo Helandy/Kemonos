@@ -24,6 +24,7 @@ import su.afk.kemonos.deepLink.utils.openUrlInBrowser
 import su.afk.kemonos.preferences.domainResolver.LocalDomainResolver
 import su.afk.kemonos.ui.presenter.baseScreen.BaseScreen
 import su.afk.kemonos.ui.presenter.baseScreen.TopBarScroll
+import su.afk.kemonos.ui.translate.openGoogleTranslate
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -41,6 +42,7 @@ internal fun CommunityChatScreen(
         effect.collect {
             when (it) {
                 is Effect.OpenUrl -> openUrlInBrowser(context, it.url)
+                is Effect.OpenGoogleTranslate -> openGoogleTranslate(context, it.text, it.targetLangTag)
             }
         }
     }
@@ -68,6 +70,7 @@ internal fun CommunityChatScreen(
         },
         isLoading = state.loading,
         onRetry = { onEvent(Event.Retry) },
+        floatingActionButtonEnd = {}
     ) {
         Surface(
             modifier = Modifier.fillMaxSize(),
@@ -86,6 +89,13 @@ internal fun CommunityChatScreen(
                         dateMode = state.uiSettingModel.dateFormatMode,
                         onOpenMedia = { url -> onEvent(Event.OpenMedia(url)) },
                         onOpenUrl = { url -> onEvent(Event.OpenUrl(url)) },
+                        translateExpandedIds = state.translateExpandedIds,
+                        translateLoadingIds = state.translateLoadingIds,
+                        translatedTextById = state.translatedTextById,
+                        translateErrorById = state.translateErrorById,
+                        onToggleTranslate = { messageId, text ->
+                            onEvent(Event.ToggleTranslate(messageId = messageId, text = text))
+                        },
                     )
                 }
 

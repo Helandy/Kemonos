@@ -4,16 +4,15 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.ClickableText
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.ElevatedCard
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
+import androidx.compose.foundation.text.selection.SelectionContainer
+import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -27,6 +26,7 @@ import su.afk.kemonos.creatorProfile.presenter.communityChat.utils.buildMediaUrl
 import su.afk.kemonos.creatorProfile.presenter.communityChat.utils.buildMessageAnnotatedContent
 import su.afk.kemonos.creatorProfile.presenter.communityChat.utils.toUiDateTimeWithTime
 import su.afk.kemonos.preferences.ui.DateFormatMode
+import su.afk.kemonos.ui.R
 
 @Composable
 internal fun MessageItem(
@@ -35,10 +35,20 @@ internal fun MessageItem(
     dateMode: DateFormatMode,
     onOpenMedia: (String) -> Unit,
     onOpenUrl: (String) -> Unit,
+    translateExpandedIds: Set<String>,
+    translateLoadingIds: Set<String>,
+    translatedTextById: Map<String, String>,
+    translateErrorById: Map<String, String>,
+    onToggleTranslate: (String, String) -> Unit,
 ) {
     val creatorMessage = message.userRole.equals("campaign", ignoreCase = true)
     val bubbleColor = MaterialTheme.colorScheme.surfaceContainerLow
     val contentColor = MaterialTheme.colorScheme.onSurface
+    val messageId = message.messageId
+    val isTranslateExpanded = messageId in translateExpandedIds
+    val isTranslateLoading = messageId in translateLoadingIds
+    val translatedText = translatedTextById[messageId]
+    val translateError = translateErrorById[messageId]
     val userNameColor = if (creatorMessage) {
         MaterialTheme.colorScheme.primary
     } else {
@@ -116,6 +126,44 @@ internal fun MessageItem(
                         onOpenMedia = onOpenMedia,
                     )
                 }
+
+                if (text.isNotBlank()) {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth(),
+                        horizontalArrangement = Arrangement.End
+                    ) {
+                        TextButton(
+                            onClick = { onToggleTranslate(messageId, text) },
+                            contentPadding = PaddingValues(horizontal = 8.dp, vertical = 2.dp)
+                        ) {
+                            Text(
+                                text = stringResource(
+                                    if (isTranslateExpanded) R.string.translate_hide else R.string.translate_show
+                                ),
+                                style = MaterialTheme.typography.labelMedium
+                            )
+                        }
+                    }
+                }
+
+                if (isTranslateExpanded) {
+                    Text(
+                        text = when {
+                            isTranslateLoading -> stringResource(R.string.translate_model_loading)
+                            !translateError.isNullOrBlank() -> translateError
+                            !translatedText.isNullOrBlank() -> translatedText
+                            else -> stringResource(R.string.translate_hint)
+                        },
+                        modifier = Modifier.padding(top = 4.dp),
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = if (!translateError.isNullOrBlank()) {
+                            MaterialTheme.colorScheme.error
+                        } else {
+                            contentColor.copy(alpha = 0.88f)
+                        }
+                    )
+                }
             }
 
             val replies = message.replies.take(3)
@@ -142,6 +190,11 @@ internal fun MessageItem(
                                 dateMode = dateMode,
                                 onOpenMedia = onOpenMedia,
                                 onOpenUrl = onOpenUrl,
+                                translateExpandedIds = translateExpandedIds,
+                                translateLoadingIds = translateLoadingIds,
+                                translatedTextById = translatedTextById,
+                                translateErrorById = translateErrorById,
+                                onToggleTranslate = onToggleTranslate,
                             )
                         }
                     }
@@ -167,18 +220,19 @@ private fun MessageText(
         buildMessageAnnotatedContent(text, linkStyle)
     }
 
-    @Suppress("DEPRECATION")
-    ClickableText(
-        text = annotatedText,
-        style = MaterialTheme.typography.bodyMedium.copy(color = textColor),
-        modifier = modifier,
-        onClick = { offset ->
-            val url = annotatedText
-                .getStringAnnotations(URL_TAG, offset, offset)
-                .firstOrNull()
-                ?.item
-                ?: return@ClickableText
-            onOpenUrl(url)
-        }
-    )
+    SelectionContainer(modifier = modifier) {
+        @Suppress("DEPRECATION")
+        ClickableText(
+            text = annotatedText,
+            style = MaterialTheme.typography.bodyMedium.copy(color = textColor),
+            onClick = { offset ->
+                val url = annotatedText
+                    .getStringAnnotations(URL_TAG, offset, offset)
+                    .firstOrNull()
+                    ?.item
+                    ?: return@ClickableText
+                onOpenUrl(url)
+            }
+        )
+    }
 }

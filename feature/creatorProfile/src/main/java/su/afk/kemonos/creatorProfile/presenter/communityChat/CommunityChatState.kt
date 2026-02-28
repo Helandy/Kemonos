@@ -18,6 +18,10 @@ internal class CommunityChatState {
         val canLoadMore: Boolean = false,
         val offset: Int = 0,
         val messages: List<CommunityMessage> = emptyList(),
+        val translateExpandedIds: Set<String> = emptySet(),
+        val translateLoadingIds: Set<String> = emptySet(),
+        val translatedTextById: Map<String, String> = emptyMap(),
+        val translateErrorById: Map<String, String> = emptyMap(),
         val uiSettingModel: UiSettingModel = UiSettingModel(),
     ) : UiState
 
@@ -27,9 +31,17 @@ internal class CommunityChatState {
         data object LoadMore : Event
         data class OpenMedia(val url: String) : Event
         data class OpenUrl(val url: String) : Event
+        data class ToggleTranslate(
+            val messageId: String,
+            val text: String,
+        ) : Event
     }
 
     sealed interface Effect : UiEffect {
         data class OpenUrl(val url: String) : Effect
+        data class OpenGoogleTranslate(
+            val text: String,
+            val targetLangTag: String,
+        ) : Effect
     }
 }
