@@ -51,6 +51,7 @@ import su.afk.kemonos.ui.preview.KemonosPreviewScreen
 import su.afk.kemonos.ui.shared.ShareActions
 import su.afk.kemonos.ui.shared.openRemoteAudioInExternalApp
 import su.afk.kemonos.ui.shared.shareRemoteMedia
+import su.afk.kemonos.ui.shared.view.ShareLoadingOverlay
 import su.afk.kemonos.ui.toast.toast
 import su.afk.kemonos.ui.uiUtils.format.audioMimeType
 import su.afk.kemonos.ui.uiUtils.format.isAudioFile
@@ -491,33 +492,7 @@ internal fun CreatorPostScreen(state: State, onEvent: (Event) -> Unit, effect: F
                 }
             }
 
-            if (shareInProgress) {
-                Box(
-                    modifier = Modifier.fillMaxSize(),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Surface(
-                        shape = MaterialTheme.shapes.medium,
-                        color = MaterialTheme.colorScheme.surface.copy(alpha = 0.92f),
-                        tonalElevation = 6.dp,
-                    ) {
-                        Row(
-                            modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp),
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            CircularProgressIndicator(
-                                modifier = Modifier.size(24.dp),
-                                strokeWidth = 3.dp
-                            )
-                            Spacer(Modifier.width(12.dp))
-                            Text(
-                                text = stringResource(R.string.loading),
-                                style = MaterialTheme.typography.bodyMedium
-                            )
-                        }
-                    }
-                }
-            }
+            ShareLoadingOverlay(visible = shareInProgress)
 
             /** подсказка свайпа */
             if (swipe.direction == SwipeHintDirection.DOWN && canPrevPost) {
