@@ -13,7 +13,7 @@ import androidx.compose.ui.unit.dp
 import su.afk.kemonos.creatorProfile.api.domain.models.profileSimilar.SimilarCreator
 import su.afk.kemonos.preferences.domainResolver.LocalDomainResolver
 import su.afk.kemonos.preferences.ui.DateFormatMode
-import su.afk.kemonos.ui.components.creator.ProfileLinkItem
+import su.afk.kemonos.ui.components.creator.CreatorListItem
 
 @Composable
 fun SimilarCreatorsScreen(
@@ -25,7 +25,7 @@ fun SimilarCreatorsScreen(
     if (creators.isEmpty()) return
 
     val resolver = LocalDomainResolver.current
-    val imgBaseUrl = remember(creators.first().service) {
+    remember(creators.first().service) {
         resolver.imageBaseUrlByService(creators.first().service)
     }
 
@@ -34,13 +34,12 @@ fun SimilarCreatorsScreen(
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
         items(creators, key = { "${it.service}:${it.id}" }) { creator ->
-            ProfileLinkItem(
+            CreatorListItem(
                 dateMode = dateMode,
                 name = creator.name,
                 service = creator.service,
                 id = creator.id,
                 updated = creator.updated,
-                imgBaseUrl = imgBaseUrl,
                 onClick = { onClick(creator) }
             )
 

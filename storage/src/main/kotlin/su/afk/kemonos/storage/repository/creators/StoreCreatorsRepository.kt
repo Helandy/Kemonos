@@ -57,24 +57,23 @@ internal class StoreCreatorsRepository @Inject constructor(
 
     override suspend fun searchCreators(
         site: SelectedSite,
-        service: String,
+        service: String?,
         query: String,
         sort: CreatorsSort,
         ascending: Boolean,
         limit: Int,
         offset: Int
     ): List<Creators> {
-        val s = service.ifBlank { "Services" }
         val q = query.trim()
 
         return when (site) {
-            SelectedSite.K -> searchKemono(s, q, sort, ascending, limit, offset).map { it.toDomain() }
-            SelectedSite.C -> searchCoomer(s, q, sort, ascending, limit, offset).map { it.toDomain() }
+            SelectedSite.K -> searchKemono(service, q, sort, ascending, limit, offset).map { it.toDomain() }
+            SelectedSite.C -> searchCoomer(service, q, sort, ascending, limit, offset).map { it.toDomain() }
         }
     }
 
     private suspend fun searchKemono(
-        service: String,
+        service: String?,
         q: String,
         sort: CreatorsSort,
         ascending: Boolean,
@@ -99,7 +98,7 @@ internal class StoreCreatorsRepository @Inject constructor(
     }
 
     private suspend fun searchCoomer(
-        service: String,
+        service: String?,
         q: String,
         sort: CreatorsSort,
         ascending: Boolean,
@@ -125,7 +124,7 @@ internal class StoreCreatorsRepository @Inject constructor(
 
     override suspend fun randomCreators(
         site: SelectedSite,
-        service: String,
+        service: String?,
         limit: Int
     ): List<Creators> = when (site) {
         SelectedSite.K -> kemonoDao.randomCreators(service, limit).map { it.toDomain() }

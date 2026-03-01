@@ -12,13 +12,18 @@ import su.afk.kemonos.ui.presenter.baseViewModel.UiEvent
 import su.afk.kemonos.ui.presenter.baseViewModel.UiState
 
 internal class CreatorsState {
+    companion object {
+        const val ALL_SERVICES_LABEL = "Services"
+    }
+
     data class State(
         val loading: Boolean = true,
 
         /** Список сервисов для фильтра. */
-        val services: List<String> = listOf("Services"),
+        val services: List<String> = listOf(ALL_SERVICES_LABEL),
 
-        val selectedService: String = "Services",
+        val selectedService: String = ALL_SERVICES_LABEL,
+        val selectedServiceFilter: String? = null,
         val searchQuery: String = "",
         val sortedType: CreatorsSort = CreatorsSort.POPULARITY,
         val sortAscending: Boolean = false,
@@ -48,8 +53,10 @@ internal class CreatorsState {
         data object RandomClicked : Event
         data object SwitchSiteClicked : Event
 
-        data object ToggleRandomExpanded : Event
+        data object HeaderRandomExpanded : Event
     }
 
-    sealed interface Effect : UiEffect
+    sealed interface Effect : UiEffect {
+        data object ScrollToTop : Effect
+    }
 }

@@ -41,7 +41,6 @@ internal class LoadingTabsContent @Inject constructor(
         service: String,
         id: String
     ) {
-        if (service !in listOf("fanbox", "patreon", "onlyfans", "fansly", "candfans")) return
         val hasTags = getProfileTagsUseCase(service, id)
         if (hasTags.isNotEmpty()) {
             setState {
@@ -126,8 +125,6 @@ internal class LoadingTabsContent @Inject constructor(
         service: String,
         id: String
     ) {
-        if (service !in listOf("patreon", "onlyfans")) return
-
         val result = getProfileSimilarUseCase(service, id)
         if (result.isNotEmpty()) {
             setState {
@@ -147,8 +144,6 @@ internal class LoadingTabsContent @Inject constructor(
         service: String,
         id: String
     ) {
-        if (service != "patreon") return
-
         val result = getProfileCommunityChannelsUseCase(service, id)
         if (result.isNotEmpty()) {
             setState {

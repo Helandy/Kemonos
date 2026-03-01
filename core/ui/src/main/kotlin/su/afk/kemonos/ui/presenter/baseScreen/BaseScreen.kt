@@ -11,11 +11,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import coil3.compose.AsyncImage
 import su.afk.kemonos.domain.models.ErrorItem
 import su.afk.kemonos.error.error.view.DefaultErrorContent
 import su.afk.kemonos.ui.R
+import su.afk.kemonos.ui.imageLoader.LocalAppImageLoader
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -176,11 +179,24 @@ fun DefaultEmptyContent() {
             .padding(16.dp),
         contentAlignment = Alignment.Center
     ) {
-        Text(
-            text = stringResource(R.string.empty_screen),
-            style = MaterialTheme.typography.titleLarge,
-            color = MaterialTheme.colorScheme.onBackground
-        )
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Text(
+                text = stringResource(R.string.empty_screen),
+                modifier = Modifier.fillMaxWidth(),
+                textAlign = TextAlign.Center,
+                style = MaterialTheme.typography.headlineSmall,
+                color = MaterialTheme.colorScheme.onBackground
+            )
+
+            AsyncImage(
+                model = R.drawable.not_found,
+                imageLoader = LocalAppImageLoader.current,
+                contentDescription = null,
+                modifier = Modifier.size(250.dp)
+            )
+        }
     }
 }
 

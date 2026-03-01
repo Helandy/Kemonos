@@ -1,16 +1,20 @@
 package su.afk.kemonos.creators.presenter
 
+import androidx.paging.cachedIn
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
+import su.afk.kemonos.constants.Constant.SEARCH_DELAY_MILLIS
 import su.afk.kemonos.creatorProfile.api.ICreatorProfileNavigator
 import su.afk.kemonos.creators.domain.GetCreatorsPagedUseCase
-import su.afk.kemonos.creators.domain.RandomCreatorUseCase
+import su.afk.kemonos.creators.domain.random.RandomCreatorUseCase
 import su.afk.kemonos.creators.presenter.CreatorsState.*
 import su.afk.kemonos.creators.presenter.delegates.CreatorsListDelegate
 import su.afk.kemonos.creators.presenter.delegates.RandomListDelegate
+import su.afk.kemonos.creators.presenter.model.CreatorsFilters
 import su.afk.kemonos.domain.SelectedSite
 import su.afk.kemonos.domain.models.creator.CreatorsSort
 import su.afk.kemonos.domain.models.creator.FavoriteArtist
@@ -35,6 +39,48 @@ internal class CreatorsViewModel @Inject constructor(
     override val errorHandler: IErrorHandlerUseCase,
     override val retryStorage: RetryStorage,
 ) : SiteAwareBaseViewModelNew<State, Event, Effect>() {
+
+    private val creatorsFilters = MutableStateFlow(
+        CreatorsFilters(
+            service = null,
+            query = "",
+            sort = CreatorsSort.POPULARITY,
+            ascending = false,
+        )
+    )
+
+    /** Обновить фильтры в creatorsFilters */
+    private fun updateCreatorsFiltersFromState() {
+        creatorsFilters.value = CreatorsFilters(
+            service = currentState.selectedServiceFilter,
+            query = currentState.searchQuery,
+            sort = currentState.sortedType,
+            ascending = currentState.sortAscending,
+        )
+    }
+
+    private fun requestScrollToTop() {
+        setEffect(Effect.ScrollToTop)
+    }
+
+    /** Получить paging flow */
+    @OptIn(ExperimentalCoroutinesApi::class)
+    private fun bindCreatorsPaging() {
+        val creatorsPagedFlow = creatorsFilters.flatMapLatest { filters ->
+            listDelegate.creatorsPagedFlow(
+                service = filters.service,
+                searchQuery = filters.query,
+                sortedType = filters.sort,
+                sortAscending = filters.ascending,
+            )
+        }
+            .cachedIn(viewModelScope)
+
+        setState { copy(creatorsPaged = creatorsPagedFlow) }
+    }
+
+    private var searchDebounceJob: Job? = null
+
     override fun createInitialState(): State = State()
 
     override fun onRetry() {
@@ -44,7 +90,8 @@ internal class CreatorsViewModel @Inject constructor(
     override suspend fun reloadSite(site: SelectedSite) {
         setState {
             copy(
-                selectedService = "Services",
+                selectedService = CreatorsState.ALL_SERVICES_LABEL,
+                selectedServiceFilter = null,
                 searchQuery = "",
                 sortedType = CreatorsSort.POPULARITY,
                 sortAscending = false,
@@ -62,6 +109,7 @@ internal class CreatorsViewModel @Inject constructor(
     }
 
     init {
+        bindCreatorsPaging()
         observeUiSetting()
         initSiteAware()
     }
@@ -76,11 +124,7 @@ internal class CreatorsViewModel @Inject constructor(
             getAvailableServicesFilter()
 
             /** Список авторов */
-            listDelegate.creatorsFilterPaging(
-                viewModelScope,
-                { state.value },
-                ::setState,
-            )
+            updateCreatorsFiltersFromState()
 
             /** Подгрузка рандомных авторов */
             randomListDelegate.loadRandom(currentState, ::setState)
@@ -92,12 +136,18 @@ internal class CreatorsViewModel @Inject constructor(
     override fun onEvent(event: Event) {
         when (event) {
             is Event.QueryChanged -> {
-                listDelegate.searchQuery(
-                    scope = viewModelScope,
-                    state = { state.value },
-                    setState = ::setState,
-                    query = event.value,
-                )
+                setState { copy(searchQuery = event.value) }
+                searchDebounceJob?.cancel()
+
+                val trimmed = event.value.trim()
+                if (trimmed.isEmpty()) {
+                    updateCreatorsFiltersFromState()
+                } else if (trimmed.length >= 2) {
+                    searchDebounceJob = viewModelScope.launch {
+                        delay(SEARCH_DELAY_MILLIS)
+                        updateCreatorsFiltersFromState()
+                    }
+                }
 
                 /** Поиск в для рандомных авторов */
                 randomListDelegate.applyFilterToRandomCreators(
@@ -105,42 +155,37 @@ internal class CreatorsViewModel @Inject constructor(
                     state = { state.value },
                     setState = ::setState,
                 )
+                requestScrollToTop()
             }
 
             is Event.ServiceSelected -> {
-                setState { copy(selectedService = event.value) }
+                setState {
+                    copy(
+                        selectedService = event.value,
+                        selectedServiceFilter = event.value.takeUnless { it == CreatorsState.ALL_SERVICES_LABEL }
+                    )
+                }
 
-                listDelegate.creatorsFilterPaging(
-                    scope = viewModelScope,
-                    state = { state.value },
-                    setState = ::setState,
-                )
+                updateCreatorsFiltersFromState()
+                requestScrollToTop()
             }
 
             is Event.SortSelected -> {
                 setState { copy(sortedType = event.value) }
-
-                listDelegate.creatorsFilterPaging(
-                    viewModelScope,
-                    { state.value },
-                    ::setState,
-                )
+                updateCreatorsFiltersFromState()
+                requestScrollToTop()
             }
 
             Event.ToggleSortOrder -> {
                 setState { copy(sortAscending = !state.value.sortAscending) }
-
-                listDelegate.creatorsFilterPaging(
-                    viewModelScope,
-                    { state.value },
-                    ::setState,
-                )
+                updateCreatorsFiltersFromState()
+                requestScrollToTop()
             }
 
             is Event.CreatorClicked -> onCreatorClick(event.creator)
             Event.RandomClicked -> randomCreator()
             Event.SwitchSiteClicked -> switchSite()
-            Event.ToggleRandomExpanded -> setState { copy(randomExpanded = !randomExpanded) }
+            Event.HeaderRandomExpanded -> setState { copy(randomExpanded = !randomExpanded) }
         }
     }
 
@@ -152,10 +197,11 @@ internal class CreatorsViewModel @Inject constructor(
     /** Получение доступных сервисов из бд для фильтра */
     private suspend fun getAvailableServicesFilter() {
         val services = getCreatorsPagedUseCase.getServices()
+        val list = listOf(CreatorsState.ALL_SERVICES_LABEL) + services
 
         setState {
             copy(
-                services = services,
+                services = list,
             )
         }
     }
@@ -172,7 +218,7 @@ internal class CreatorsViewModel @Inject constructor(
 
     /** Получить случайного автора */
     private fun randomCreator() = viewModelScope.launch {
-        setState { copy(loading = true) }
+        setState { copy(randomExpanded = true) }
 
         try {
             val creator = randomCreatorUseCase()
@@ -184,7 +230,7 @@ internal class CreatorsViewModel @Inject constructor(
                 )
             )
         } finally {
-            setState { copy(loading = false) }
+            setState { copy(randomExpanded = false) }
         }
     }
 }

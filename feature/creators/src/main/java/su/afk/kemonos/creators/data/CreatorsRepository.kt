@@ -3,19 +3,14 @@ package su.afk.kemonos.creators.data
 import su.afk.kemonos.creators.data.api.CreatorsApi
 import su.afk.kemonos.creators.data.dto.CreatorsDto.Companion.toDomain
 import su.afk.kemonos.creators.data.dto.RandomCreatorDto.Companion.toDomain
-import su.afk.kemonos.creators.domain.model.RandomCreator
+import su.afk.kemonos.creators.domain.random.RandomCreatorModel
+import su.afk.kemonos.creators.domain.repository.ICreatorsRepository
 import su.afk.kemonos.domain.models.creator.Creators
 import su.afk.kemonos.domain.models.creator.CreatorsSort
 import su.afk.kemonos.network.util.call
 import su.afk.kemonos.preferences.site.ISelectedSiteUseCase
 import su.afk.kemonos.storage.api.repository.creators.IStoreCreatorsRepository
 import javax.inject.Inject
-
-interface ICreatorsRepository {
-    suspend fun getCreators(): List<Creators>
-    suspend fun refreshCreatorsIfNeeded(): Boolean
-    suspend fun randomCreator(): RandomCreator
-}
 
 internal class CreatorsRepository @Inject constructor(
     private val api: CreatorsApi,
@@ -28,7 +23,7 @@ internal class CreatorsRepository @Inject constructor(
 
         val cached = storeCreatorsUseCase.searchCreators(
             site = site,
-            service = "Services",
+            service = null,
             query = "",
             sort = CreatorsSort.POPULARITY,
             ascending = false,
@@ -66,7 +61,7 @@ internal class CreatorsRepository @Inject constructor(
         return true
     }
 
-    override suspend fun randomCreator(): RandomCreator = api.randomCreator().call {
+    override suspend fun randomCreator(): RandomCreatorModel = api.randomCreator().call {
         it.toDomain()
     }
 }

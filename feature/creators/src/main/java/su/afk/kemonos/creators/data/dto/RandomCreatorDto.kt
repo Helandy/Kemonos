@@ -1,7 +1,7 @@
 package su.afk.kemonos.creators.data.dto
 
 import com.google.gson.annotations.SerializedName
-import su.afk.kemonos.creators.domain.model.RandomCreator
+import su.afk.kemonos.creators.domain.random.RandomCreatorModel
 
 internal data class RandomCreatorDto(
     @SerializedName("service")
@@ -11,7 +11,7 @@ internal data class RandomCreatorDto(
     val artistId: String,
 ) {
     companion object {
-        fun RandomCreatorDto.toDomain(): RandomCreator = RandomCreator(
+        fun RandomCreatorDto.toDomain(): RandomCreatorModel = RandomCreatorModel(
             service = this.service,
             artistId = this.artistId,
         )

@@ -14,7 +14,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import su.afk.kemonos.preferences.domainResolver.LocalDomainResolver
@@ -35,7 +34,7 @@ fun CreatorListItem(
     isFresh: Boolean = false,
     onClick: () -> Unit
 ) {
-    val avatarSize = LocalWindowInfo.current.containerSize.width * 0.13f
+    val avatarSize = 110.dp
     val avatarShape = RoundedCornerShape(10.dp)
 
     val accent = getColorForFavorites(service)
@@ -78,7 +77,7 @@ fun CreatorListItem(
                 model = "$imgBaseUrl/icons/${service}/${id}",
                 contentDescription = name,
                 modifier = Modifier
-                    .size(avatarSize.dp)
+                    .size(avatarSize)
                     .clip(avatarShape),
                 contentScale = ContentScale.Crop
             )
@@ -99,59 +98,74 @@ fun CreatorListItem(
                 )
 
                 /** Чип с инфой */
-                Box(
-                    modifier = Modifier
-                        .padding(top = 4.dp)
-                        .background(
-                            color = MaterialTheme.colorScheme.background.copy(alpha = 0.8f),
-                            shape = RoundedCornerShape(6.dp)
-                        )
-                        .border(
-                            2.dp,
-                            accent,
-                            RoundedCornerShape(6.dp)
-                        )
-                        .padding(horizontal = 8.dp, vertical = 4.dp)
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier.padding(top = 6.dp)
                 ) {
-                    Column {
-                        Text(
-                            text = service,
-                            style = MaterialTheme.typography.bodyMedium,
-                            fontWeight = FontWeight.Bold,
-                            color = accent
-                        )
-
-                        favorited?.let {
+                    Box(
+                        modifier = Modifier
+                            .background(
+                                color = MaterialTheme.colorScheme.background.copy(alpha = 0.8f),
+                                shape = RoundedCornerShape(6.dp)
+                            )
+                            .border(
+                                2.dp,
+                                accent,
+                                RoundedCornerShape(6.dp)
+                            )
+                            .padding(horizontal = 8.dp, vertical = 4.dp)
+                    ) {
+                        Column {
                             Text(
-                                text = formatNumberWithSpaces(favorited),
-                                style = MaterialTheme.typography.bodySmall,
+                                text = service,
+                                style = MaterialTheme.typography.bodyMedium,
                                 fontWeight = FontWeight.Bold,
                                 color = accent
                             )
-                        }
 
-                        updated?.let {
-                            Row(
-                                verticalAlignment = Alignment.CenterVertically
-                            ) {
-                                if (isFresh) {
-                                    Text(
-                                        text = "NEW",
-                                        style = MaterialTheme.typography.labelSmall,
-                                        fontWeight = FontWeight.ExtraBold,
-                                        color = MaterialTheme.colorScheme.error.copy(alpha = 0.8f)
-                                    )
-
-                                    Spacer(Modifier.width(6.dp))
-                                }
-
+                            favorited?.let {
                                 Text(
-                                    text = updated.toUiDateTime(dateMode),
+                                    text = formatNumberWithSpaces(favorited),
                                     style = MaterialTheme.typography.bodySmall,
                                     fontWeight = FontWeight.Bold,
                                     color = accent
                                 )
                             }
+                        }
+                    }
+                    updated?.let {
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier
+                                .padding(start = 6.dp)
+                                .background(
+                                    color = MaterialTheme.colorScheme.background.copy(alpha = 0.8f),
+                                    shape = RoundedCornerShape(8.dp)
+                                )
+                                .border(
+                                    width = 1.dp,
+                                    color = MaterialTheme.colorScheme.primary,
+                                    shape = RoundedCornerShape(8.dp)
+                                )
+                                .padding(horizontal = 10.dp, vertical = 6.dp)
+                        ) {
+                            if (isFresh) {
+                                Text(
+                                    text = "NEW",
+                                    style = MaterialTheme.typography.labelSmall,
+                                    fontWeight = FontWeight.ExtraBold,
+                                    color = MaterialTheme.colorScheme.error.copy(alpha = 0.8f)
+                                )
+
+                                Spacer(Modifier.width(6.dp))
+                            }
+
+                            Text(
+                                text = "\uD83D\uDCC5 ${updated.toUiDateTime(dateMode)}",
+                                style = MaterialTheme.typography.bodySmall,
+                                fontWeight = FontWeight.Bold,
+                                color = MaterialTheme.colorScheme.primary,
+                            )
                         }
                     }
                 }

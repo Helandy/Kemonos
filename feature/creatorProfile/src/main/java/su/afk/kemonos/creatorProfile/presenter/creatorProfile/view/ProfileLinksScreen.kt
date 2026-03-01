@@ -13,7 +13,7 @@ import androidx.compose.ui.unit.dp
 import su.afk.kemonos.creatorProfile.api.domain.models.profileLinks.ProfileLink
 import su.afk.kemonos.preferences.domainResolver.LocalDomainResolver
 import su.afk.kemonos.preferences.ui.DateFormatMode
-import su.afk.kemonos.ui.components.creator.ProfileLinkItem
+import su.afk.kemonos.ui.components.creator.CreatorListItem
 
 @Composable
 fun ProfileLinksScreen(
@@ -25,20 +25,19 @@ fun ProfileLinksScreen(
     if (links.isEmpty()) return
 
     val resolver = LocalDomainResolver.current
-    val imgBaseUrl = remember(links.first().service) { resolver.imageBaseUrlByService(links.first().service) }
+    remember(links.first().service) { resolver.imageBaseUrlByService(links.first().service) }
 
     LazyColumn(
         modifier = modifier.fillMaxSize(),
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
         items(links, key = { it.id }) { link ->
-            ProfileLinkItem(
+            CreatorListItem(
                 dateMode = dateMode,
                 name = link.name,
                 service = link.service,
                 id = link.id,
                 updated = link.updated,
-                imgBaseUrl = imgBaseUrl,
                 onClick = { onClick(link) }
             )
 

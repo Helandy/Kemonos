@@ -13,7 +13,7 @@ interface IStoreCreatorsRepository {
 
     suspend fun searchCreators(
         site: SelectedSite,
-        service: String,
+        service: String?,
         query: String,
         sort: CreatorsSort,
         ascending: Boolean,
@@ -23,7 +23,7 @@ interface IStoreCreatorsRepository {
 
     suspend fun randomCreators(
         site: SelectedSite,
-        service: String,
+        service: String?,
         limit: Int,
     ): List<Creators>
 
