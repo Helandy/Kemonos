@@ -8,7 +8,6 @@ import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -18,7 +17,7 @@ import kotlinx.coroutines.flow.Flow
 import su.afk.kemonos.preferences.domainResolver.LocalDomainResolver
 import su.afk.kemonos.profile.R
 import su.afk.kemonos.profile.presenter.blacklist.AuthorsBlacklistState.*
-import su.afk.kemonos.ui.components.creator.ProfileLinkItem
+import su.afk.kemonos.ui.components.creator.CreatorListItem
 import su.afk.kemonos.ui.presenter.baseScreen.BaseScreen
 import su.afk.kemonos.ui.presenter.baseScreen.CenterBackTopBar
 import su.afk.kemonos.ui.presenter.baseScreen.TopBarScroll
@@ -30,7 +29,7 @@ internal fun AuthorsBlacklistScreen(
     effect: Flow<Effect>,
     onEvent: (Event) -> Unit,
 ) {
-    val domainResolver = LocalDomainResolver.current
+    LocalDomainResolver.current
 
     val filteredItems = if (state.query.isBlank()) {
         state.items
@@ -91,22 +90,16 @@ internal fun AuthorsBlacklistScreen(
                     items = filteredItems,
                     key = { "${it.service}:${it.creatorId}" }
                 ) { item ->
-                    val imgBaseUrl = remember(item.service) {
-                        domainResolver.imageBaseUrlByService(item.service)
-                    }
-
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Box(modifier = Modifier.weight(1f)) {
-                            ProfileLinkItem(
+                            CreatorListItem(
                                 dateMode = state.uiSettingModel.dateFormatMode,
                                 name = item.creatorName,
                                 service = item.service,
                                 id = item.creatorId,
-                                updated = null,
-                                imgBaseUrl = imgBaseUrl,
                                 onClick = {
                                     onEvent(
                                         Event.OpenProfile(
