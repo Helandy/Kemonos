@@ -5,7 +5,7 @@ import dagger.Module
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import su.afk.kemonos.creators.data.CreatorsRepository
-import su.afk.kemonos.creators.data.ICreatorsRepository
+import su.afk.kemonos.creators.domain.repository.ICreatorsRepository
 import javax.inject.Singleton
 
 @Module

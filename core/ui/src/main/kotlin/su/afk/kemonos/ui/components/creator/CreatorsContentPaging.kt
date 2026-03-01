@@ -3,9 +3,9 @@ package su.afk.kemonos.ui.components.creator
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.GridItemSpan
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.LazyListState
+import androidx.compose.foundation.lazy.grid.*
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -29,6 +29,8 @@ fun CreatorsContentPaging(
     isFreshProvider: ((FavoriteArtist) -> Boolean)? = null,
     expanded: Boolean? = null,
     onClickRandomHeader: (() -> Unit)? = null,
+    listState: LazyListState = rememberLazyListState(),
+    gridState: LazyGridState = rememberLazyGridState(),
 ) {
     fun updatedFor(item: FavoriteArtist): String? = updatedProvider?.invoke(item)
     fun freshFor(item: FavoriteArtist): Boolean = isFreshProvider?.invoke(item) ?: false
@@ -37,6 +39,7 @@ fun CreatorsContentPaging(
     when (viewMode) {
         CreatorViewMode.LIST -> {
             LazyColumn(
+                state = listState,
                 contentPadding = PaddingValues(bottom = 8.dp),
             ) {
                 randomCreatorsSection(
@@ -78,6 +81,7 @@ fun CreatorsContentPaging(
 
         CreatorViewMode.GRID -> {
             LazyVerticalGrid(
+                state = gridState,
                 columns = GridCells.Adaptive(minSize = 160.dp),
                 verticalArrangement = Arrangement.spacedBy(6.dp),
                 horizontalArrangement = Arrangement.spacedBy(6.dp),

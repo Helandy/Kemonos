@@ -24,7 +24,7 @@ internal class RandomListDelegate @Inject constructor(
                 )
             }
         } else {
-            val service = state.selectedService
+            val service = state.selectedServiceFilter
 
             setState { copy(randomSuggestionsLoading = true) }
 

@@ -5,5 +5,5 @@ import su.afk.kemonos.creators.ICreatorsNavigator
 import javax.inject.Inject
 
 class CreatorsNavigator @Inject constructor() : ICreatorsNavigator {
-    override fun getCreatorsDest(): NavKey = CreatorsDest
+    override fun getCreatorsDest(): NavKey = CreatorsDestination
 }

@@ -4,7 +4,7 @@ import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import kotlinx.coroutines.flow.Flow
-import su.afk.kemonos.creators.data.ICreatorsRepository
+import su.afk.kemonos.creators.domain.repository.ICreatorsRepository
 import su.afk.kemonos.domain.models.creator.Creators
 import su.afk.kemonos.domain.models.creator.CreatorsSort
 import su.afk.kemonos.preferences.site.ISelectedSiteUseCase
@@ -20,7 +20,7 @@ internal class GetCreatorsPagedUseCase @Inject constructor(
     suspend fun checkFreshCache(): Boolean = repository.refreshCreatorsIfNeeded()
 
     fun paging(
-        service: String,
+        service: String?,
         query: String,
         sort: CreatorsSort,
         ascending: Boolean
@@ -44,12 +44,9 @@ internal class GetCreatorsPagedUseCase @Inject constructor(
             }
         ).flow
 
-    suspend fun getServices(): List<String> {
-        val list = store.getDistinctServices(site = selectedSite.getSite())
-        return listOf("Services") + list
-    }
+    suspend fun getServices(): List<String> = store.getDistinctServices(site = selectedSite.getSite())
 
-    suspend fun getRandomCreatorsFromStorage(service: String, limit: Int): List<Creators> {
+    suspend fun getRandomCreatorsFromStorage(service: String?, limit: Int): List<Creators> {
         return store.randomCreators(
             site = selectedSite.getSite(),
             service = service,

@@ -8,10 +8,12 @@ import su.afk.kemonos.network.textInterceptor.HeaderText
 
 internal interface CreatorsApi {
 
+    /** Список всех авторов */
     @HeaderText
     @GET("v1/creators")
     suspend fun getCreators(): Response<List<CreatorsDto>>
 
+    /** Получить рандомного автора */
     @HeaderText
     @GET("v1/artists/random")
     suspend fun randomCreator(): Response<RandomCreatorDto>

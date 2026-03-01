@@ -16,6 +16,7 @@ dependencies {
     implementation(project(":core:network"))
     implementation(project(":core:ui"))
     implementation(project(":core:error"))
+    implementation(project(":core:utils"))
 
     implementation(project(":storage-api"))
     implementation(project(":feature:creators-api"))

@@ -146,7 +146,7 @@ fun CreatorListItem(
                                 }
 
                                 Text(
-                                    text = updated.toUiDateTime(dateMode),
+                                    text = "\uD83D\uDCC5 ${updated.toUiDateTime(dateMode)}",
                                     style = MaterialTheme.typography.bodySmall,
                                     fontWeight = FontWeight.Bold,
                                     color = accent

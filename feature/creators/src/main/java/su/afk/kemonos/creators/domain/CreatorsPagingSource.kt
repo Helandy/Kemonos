@@ -10,7 +10,7 @@ import su.afk.kemonos.storage.api.repository.creators.IStoreCreatorsRepository
 internal class CreatorsPagingSource(
     private val site: SelectedSite,
     private val store: IStoreCreatorsRepository,
-    private val service: String,
+    private val service: String?,
     private val query: String,
     private val sort: CreatorsSort,
     private val ascending: Boolean,
