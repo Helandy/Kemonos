@@ -41,7 +41,6 @@ internal class LoadingTabsContent @Inject constructor(
         service: String,
         id: String
     ) {
-        if (service !in listOf("fanbox", "patreon", "onlyfans", "fansly", "candfans")) return
         val hasTags = getProfileTagsUseCase(service, id)
         if (hasTags.isNotEmpty()) {
             setState {

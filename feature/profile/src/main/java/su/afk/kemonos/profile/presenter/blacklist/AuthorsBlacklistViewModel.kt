@@ -3,13 +3,17 @@ package su.afk.kemonos.profile.presenter.blacklist
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import su.afk.kemonos.creatorProfile.api.ICreatorProfileNavigator
+import su.afk.kemonos.domain.SelectedSite
 import su.afk.kemonos.error.error.IErrorHandlerUseCase
 import su.afk.kemonos.error.error.storage.RetryStorage
 import su.afk.kemonos.navigation.NavigationManager
+import su.afk.kemonos.preferences.domainResolver.IDomainResolver
+import su.afk.kemonos.preferences.site.ISelectedSiteUseCase
 import su.afk.kemonos.preferences.ui.IUiSettingUseCase
 import su.afk.kemonos.profile.presenter.blacklist.AuthorsBlacklistState.*
 import su.afk.kemonos.storage.api.repository.blacklist.IStoreBlacklistedAuthorsRepository
@@ -21,6 +25,8 @@ internal class AuthorsBlacklistViewModel @Inject constructor(
     private val navManager: NavigationManager,
     private val creatorProfileNavigator: ICreatorProfileNavigator,
     private val blacklistedAuthorsRepository: IStoreBlacklistedAuthorsRepository,
+    private val domainResolver: IDomainResolver,
+    private val selectedSiteUseCase: ISelectedSiteUseCase,
     private val uiSetting: IUiSettingUseCase,
     override val errorHandler: IErrorHandlerUseCase,
     override val retryStorage: RetryStorage,
@@ -83,6 +89,10 @@ internal class AuthorsBlacklistViewModel @Inject constructor(
     }
 
     private fun openProfile(service: String, creatorId: String) = viewModelScope.launch {
+        val targetSite = siteByService(service)
+        selectedSiteUseCase.setSite(targetSite)
+        selectedSiteUseCase.selectedSite.first { it == targetSite }
+
         navManager.navigate(
             creatorProfileNavigator.getCreatorProfileDest(
                 service = service,
@@ -90,5 +100,15 @@ internal class AuthorsBlacklistViewModel @Inject constructor(
                 isFresh = false
             )
         )
+    }
+
+    private fun siteByService(service: String): SelectedSite {
+        val targetBase = domainResolver.baseUrlByService(service)
+        val coomerBase = domainResolver.baseUrlByService(COOMER_REFERENCE_SERVICE)
+        return if (targetBase == coomerBase) SelectedSite.C else SelectedSite.K
+    }
+
+    private companion object {
+        const val COOMER_REFERENCE_SERVICE = "onlyfans"
     }
 }
