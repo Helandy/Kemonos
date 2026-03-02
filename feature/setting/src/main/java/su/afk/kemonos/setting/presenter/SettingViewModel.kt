@@ -42,6 +42,14 @@ class SettingViewModel @Inject constructor(
         when (event) {
             SettingState.Event.Back -> navManager.back()
             SettingState.Event.OpenCreatorTabsOrderEditor -> navManager.navigate(SettingIntent.CreatorTabsOrder)
+            SettingState.Event.OpenUiSettings -> navManager.navigate(SettingIntent.Ui)
+            SettingState.Event.OpenTranslateSettings -> navManager.navigate(SettingIntent.Translate)
+            SettingState.Event.OpenNetworkSettings -> navManager.navigate(SettingIntent.Network)
+            SettingState.Event.OpenDatabaseSettings -> navManager.navigate(SettingIntent.Database)
+            SettingState.Event.OpenDownloadSettings -> navManager.navigate(SettingIntent.Downloads)
+            SettingState.Event.OpenDebugStorageSettings -> {
+                if (BuildConfig.DEBUG) navManager.navigate(SettingIntent.DebugStorage)
+            }
 
             is SettingState.Event.ChangeViewSetting ->
                 uiPrefsDelegate.handle(event, viewModelScope)

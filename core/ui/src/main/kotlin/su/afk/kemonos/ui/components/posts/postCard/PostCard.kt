@@ -15,6 +15,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import su.afk.kemonos.domain.models.PostDomain
 import su.afk.kemonos.preferences.domainResolver.LocalDomainResolver
+import su.afk.kemonos.preferences.ui.PostsSize
 import su.afk.kemonos.preferences.ui.PostsSize.Companion.isSmall
 import su.afk.kemonos.preferences.ui.PostsSize.Companion.toPaddingInCornerBadge
 import su.afk.kemonos.preferences.ui.UiSettingModel
@@ -29,6 +30,7 @@ fun PostCard(
     onClick: () -> Unit,
     showFavCount: Boolean = false,
     uiSettingModel: UiSettingModel,
+    postsSize: PostsSize = uiSettingModel.postsSize,
 ) {
     val resolver = LocalDomainResolver.current
     val imgBaseUrl = remember(post.service) { resolver.imageBaseUrlByService(post.service) }
@@ -67,7 +69,7 @@ fun PostCard(
                 CornerBadge(
                     text = "❤ ${meta.favCount}",
                     modifier = Modifier.align(Alignment.TopEnd)
-                        .padding(uiSettingModel.postsSize.toPaddingInCornerBadge())
+                        .padding(postsSize.toPaddingInCornerBadge())
                 )
             }
 
@@ -76,16 +78,16 @@ fun PostCard(
                 CornerBadge(
                     text = "🎬 ${meta.videoCount}",
                     modifier = Modifier.align(Alignment.BottomEnd)
-                        .padding(uiSettingModel.postsSize.toPaddingInCornerBadge())
+                        .padding(postsSize.toPaddingInCornerBadge())
                 )
             }
 
             /** Число вложений */
-            if (post.attachments.isNotEmpty() && uiSettingModel.postsSize.isSmall()) {
+            if (post.attachments.isNotEmpty() && postsSize.isSmall()) {
                 CornerBadge(
                     text = "\uD83D\uDCCE ${post.attachments.size}",
                     modifier = Modifier.align(Alignment.BottomStart)
-                        .padding(uiSettingModel.postsSize.toPaddingInCornerBadge())
+                        .padding(postsSize.toPaddingInCornerBadge())
                 )
             }
         }
@@ -112,7 +114,7 @@ fun PostCard(
                     overflow = TextOverflow.Ellipsis
                 )
 
-                if (post.attachments.isNotEmpty() && uiSettingModel.postsSize.isSmall().not()) {
+                if (post.attachments.isNotEmpty() && postsSize.isSmall().not()) {
                     Text(
                         text = stringResource(R.string.attachments_count, post.attachments.size),
                         style = MaterialTheme.typography.labelSmall,

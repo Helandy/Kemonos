@@ -17,7 +17,6 @@ import su.afk.kemonos.domain.SelectedSite
 import su.afk.kemonos.profile.R
 import su.afk.kemonos.profile.presenter.profile.ProfileState.*
 import su.afk.kemonos.profile.presenter.profile.views.*
-import su.afk.kemonos.profile.presenter.profile.views.bottomLink.BottomLinksBlock
 import su.afk.kemonos.profile.presenter.profile.views.faq.FaqBlock
 import su.afk.kemonos.ui.presenter.baseScreen.BaseScreen
 
@@ -120,8 +119,6 @@ internal fun ProfileScreen(
             )
 
             FaqBlock()
-
-            BottomLinksBlock()
 
             Spacer(Modifier.height(8.dp))
         }

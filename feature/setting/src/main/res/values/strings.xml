@@ -1,0 +1,197 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="setting">Setting</string>
+    <string name="settings_hub_subtitle">Pick a section to configure app behavior.</string>
+    <string name="settings_hub_ui_subtitle">Theme, language, view modes, and debug options.</string>
+    <string name="settings_hub_translate_subtitle">Translation mode and target language.</string>
+    <string name="settings_hub_network_title">Network &amp; API</string>
+    <string name="settings_hub_network_subtitle">API domains and connection-related options.</string>
+    <string name="settings_hub_database_title">Database &amp; cache</string>
+    <string name="settings_hub_database_subtitle">Cache size limits and cached data cleanup.</string>
+    <string name="settings_hub_downloads_subtitle">How downloaded files are named and organized.</string>
+    <string name="settings_hub_version">GitHub Version: %1$s</string>
+
+    <!-- Cache -->
+    <string name="settings_cache_title">Data cache</string>
+    <string name="settings_cache_hint">
+        The app manages caching automatically.
+        Clearing the cache may help if data is outdated or content is displayed incorrectly.
+    </string>
+
+    <string name="settings_cache_never">no data</string>
+    <string name="settings_cache_last">Last updated: %1$s</string>
+    <string name="settings_cache_next">Valid until: %1$s</string>
+    <string name="settings_cache_clear">Clear</string>
+
+    <!-- Cache categories -->
+    <string name="settings_cache_tags_kemono">Tags (Kemono)</string>
+    <string name="settings_cache_tags_coomer">Tags (Coomer)</string>
+
+    <string name="settings_cache_creators_kemono">Creators (Kemono)</string>
+    <string name="settings_cache_creators_coomer">Creators (Coomer)</string>
+
+    <string name="settings_cache_creator_posts_pages">Creator profile posts</string>
+    <string name="settings_cache_post_contents">Full posts (content)</string>
+
+    <string name="settings_cache_popular_kemono">Popular</string>
+    <string name="settings_cache_fav_posts_kemono">Favorite posts</string>
+    <string name="settings_cache_fav_authors_kemono">Favorite creators</string>
+
+    <string name="settings_cache_profiles">Creator profiles</string>
+    <string name="settings_github_ideas">Bugs/Ideas/Suggestions — please leave them on GitHub</string>
+
+    <!--    setting ui -->
+    <string name="settings_ui_title">Interface</string>
+    <string name="settings_ui_hint">Display and behavior settings.</string>
+    <!-- UI settings -->
+    <string name="settings_ui_creators_view_mode">Creators view</string>
+    <string name="settings_ui_creators_favorite_view_mode">Creators favorites view</string>
+
+    <!-- Creator view mode -->
+    <string name="settings_ui_view_mode_list">List</string>
+    <string name="settings_ui_view_mode_grid">Grid</string>
+
+    <string name="settings_debug_skip_api_check_title">Skip API check on login</string>
+    <string name="settings_debug_skip_api_check_hint">Debug only</string>
+
+    <string name="settings_ui_posts_view_mode">Posts layout</string>
+    <string name="settings_ui_posts_view_mode_profile">Profile posts layout</string>
+    <string name="settings_ui_posts_view_mode_favorite">Favorites posts layout</string>
+    <string name="settings_ui_posts_view_mode_popular">Popular posts layout</string>
+    <string name="settings_ui_posts_view_mode_tags">Tags posts layout</string>
+    <string name="settings_ui_posts_view_mode_search">Search posts layout</string>
+    <string name="settings_ui_creator_profile_tabs_sort_title">Author profile tabs order</string>
+    <string name="settings_ui_creator_profile_tabs_sort_hint">Long press and drag cards to reorder tabs. Use toggles to
+        hide specific tabs.
+    </string>
+    <string name="settings_ui_creator_profile_tabs_posts_locked_hint">Posts tab is always visible</string>
+    <string name="settings_creator_tab_posts">Posts</string>
+    <string name="settings_creator_tab_announcements">Announcements</string>
+    <string name="settings_creator_tab_fancard">Fan cards</string>
+    <string name="settings_creator_tab_dms">DMs</string>
+    <string name="settings_creator_tab_tags">Tags</string>
+    <string name="settings_creator_tab_links">Links</string>
+    <string name="settings_creator_tab_similar">Similar</string>
+    <string name="settings_creator_tab_community">Community</string>
+    <string name="settings_move_up">Move up</string>
+    <string name="settings_move_down">Move down</string>
+
+    <string name="settings_ui_suggest_random_authors_title">
+        Suggest random creators
+    </string>
+
+    <string name="settings_translate_title">Translation</string>
+    <string name="settings_translate_app">In-app</string>
+    <string name="settings_translate_google">Google</string>
+
+    <string name="settings_random_button_title">“Random” button</string>
+    <string name="settings_random_button_screen">On screen</string>
+    <string name="settings_random_button_search">In search</string>
+    <string name="settings_theme_title">Theme</string>
+    <string name="settings_theme_system">System</string>
+    <string name="settings_theme_light">Light</string>
+    <string name="settings_theme_dark">Dark</string>
+
+    <string name="settings_translate_language_title">Translation language</string>
+    <string name="settings_translate_language_system">System</string>
+    <string name="settings_translate_language_choose">Choose</string>
+    <string name="settings_translate_language_system_hint">
+        Device language will be used: %1$s
+    </string>
+    <string name="settings_translate_language_current">
+        Selected: %1$s
+    </string>
+
+    <!-- UI Settings sections -->
+    <string name="settings_debug_title">Debug</string>
+    <string name="settings_ui_general_title">General</string>
+    <string name="settings_random_section_title">Random</string>
+    <string name="settings_view_modes_section_title">View modes</string>
+
+
+    <string name="settings_ui_date_format_title">Date format</string>
+    <string name="settings_ui_app_language_title">App language</string>
+    <string name="settings_ui_app_language_subtitle">Open Android language settings for this app</string>
+    <string name="settings_ui_deep_links_title">Deep links</string>
+    <string name="settings_ui_deep_links_subtitle">Open Android app settings, then enable “Open supported links”.
+    </string>
+
+    <string name="settings_cache_sizes_title">Cache</string>
+
+    <string name="settings_cache_images_size_title">Image cache size</string>
+    <string name="settings_cache_video_previews_size_title">Video previews cache size</string>
+
+    <string name="settings_cache_size_value_mb">%1$d MB</string>
+
+    <string name="settings_posts_appearance_title">Posts</string>
+
+    <string name="settings_posts_size_title">Grid post size</string>
+    <string name="settings_posts_size_profile_title">Grid size: profile posts</string>
+    <string name="settings_posts_size_favorite_title">Grid size: favorite posts</string>
+    <string name="settings_posts_size_popular_title">Grid size: popular posts</string>
+    <string name="settings_posts_size_tags_title">Grid size: tags posts</string>
+    <string name="settings_posts_size_search_title">Grid size: search posts</string>
+    <string name="settings_posts_size_small">S</string>
+    <string name="settings_posts_size_medium">M</string>
+    <string name="settings_posts_size_large">L</string>
+
+    <string name="settings_show_preview_video_title">Show video previews</string>
+    <string name="settings_blur_images_title">Blur images</string>
+    <string name="settings_blur_images_substring" translatable="false">Android >12</string>
+    <string name="settings_show_image_preview_download_action_title">Show download on image previews</string>
+    <string name="settings_show_image_preview_share_action_title">Show share on image previews</string>
+    <string name="settings_show_comments_in_post_title">Show comments in post</string>
+
+    <string name="settings_downloads_title">Downloads</string>
+
+    <string name="settings_download_folder_mode_title">Folder structure</string>
+
+    <string name="settings_download_folder_creator">Creator</string>
+    <string name="settings_download_folder_creator_post_id">Creator / ID</string>
+    <string name="settings_download_folder_creator_post_title">Creator / Title</string>
+
+    <string name="settings_download_folder_post_id">ID</string>
+    <string name="settings_download_folder_post_title">Title</string>
+    <string name="settings_download_folder_default">Default</string>
+
+    <string name="settings_download_add_service_title">Add service prefix</string>
+
+    <string name="settings_use_external_metadata_title">
+        Use external video metadata
+    </string>
+    <string name="settings_use_external_metadata_subtitle">
+        Load pre-generated video frames and metadata instead of fetching them locally
+    </string>
+
+    <string name="settings_experimental_calendar_title">New calendar for popular posts</string>
+    <string name="settings_experimental_calendar_hint">Adds a calendar picker to browse popular posts by date.</string>
+
+    <string name="settings_links_title">Links</string>
+    <string name="settings_browser_title">Open links in</string>
+
+    <string name="settings_browser_system_title">System default</string>
+    <string name="settings_browser_system_hint">Use the browser set in Android settings.</string>
+
+    <string name="settings_browser_chrome_title">Google Chrome</string>
+    <string name="settings_browser_chrome_hint">Always open links in Chrome (if installed).</string>
+
+    <string name="settings_browser_custom_title">Specific browser</string>
+    <string name="settings_browser_custom_not_selected">Not selected</string>
+
+    <string name="settings_experiments_title">Experimentals</string>
+    <string name="settings_debug_storage_title">Storage info</string>
+    <string name="settings_debug_storage_loading">Loading…</string>
+
+    <string name="settings_debug_storage_cache_dir">cacheDir</string>
+    <string name="settings_debug_storage_files_dir">filesDir</string>
+    <string name="settings_debug_storage_ext_cache_dir">externalCacheDir</string>
+    <string name="settings_debug_storage_ext_files_dir">externalFilesDir</string>
+    <string name="settings_debug_storage_top_cache_folders_title">Top cache folders (top 5)</string>
+
+    <string name="settings_debug_storage_coil_custom">Coil disk cache (custom)</string>
+    <string name="settings_debug_storage_coil_actual">Coil disk cache (actual)</string>
+    <string name="settings_debug_storage_coil_default">Coil disk cache (default builder)</string>
+
+    <string name="settings_debug_storage_video_frames">Video frames cache</string>
+
+</resources>

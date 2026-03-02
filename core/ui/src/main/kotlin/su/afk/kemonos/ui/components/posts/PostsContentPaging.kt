@@ -7,6 +7,7 @@ import su.afk.kemonos.domain.models.PostDomain
 import su.afk.kemonos.domain.models.Tag
 import su.afk.kemonos.error.error.LocalErrorMapper
 import su.afk.kemonos.error.error.view.DefaultErrorContent
+import su.afk.kemonos.preferences.ui.PostsSize
 import su.afk.kemonos.preferences.ui.PostsViewMode
 import su.afk.kemonos.preferences.ui.UiSettingModel
 import su.afk.kemonos.ui.presenter.baseScreen.DefaultEmptyContent
@@ -21,6 +22,7 @@ fun PostsContentPaging(
     onPostClick: (PostDomain) -> Unit,
     onRetry: () -> Unit,
     showFavCount: Boolean = false,
+    gridPostsSize: PostsSize = uiSettingModel.postsSize,
 ) {
     val errorMapper = LocalErrorMapper.current
 
@@ -28,6 +30,7 @@ fun PostsContentPaging(
         PostsViewMode.GRID -> {
             PostsGridPaging(
                 uiSettingModel = uiSettingModel,
+                gridPostsSize = gridPostsSize,
                 posts = posts,
                 postClick = onPostClick,
                 showFavCount = showFavCount,

@@ -84,6 +84,15 @@
     <string name="coomer">Coomer</string>
 
     <string name="setting">Setting</string>
+    <string name="settings_hub_subtitle">Pick a section to configure app behavior.</string>
+    <string name="settings_hub_ui_subtitle">Theme, language, view modes, and debug options.</string>
+    <string name="settings_hub_translate_subtitle">Translation mode and target language.</string>
+    <string name="settings_hub_network_title">Network &amp; API</string>
+    <string name="settings_hub_network_subtitle">API domains and connection-related options.</string>
+    <string name="settings_hub_database_title">Database &amp; cache</string>
+    <string name="settings_hub_database_subtitle">Cache size limits and cached data cleanup.</string>
+    <string name="settings_hub_downloads_subtitle">How downloaded files are named and organized.</string>
+    <string name="settings_hub_version">GitHub Version: %1$s</string>
 
     <!-- Cache -->
     <string name="settings_cache_title">Data cache</string>
@@ -112,7 +121,7 @@
     <string name="settings_cache_fav_authors_kemono">Favorite creators</string>
 
     <string name="settings_cache_profiles">Creator profiles</string>
-    <string name="settings_github_ideas">Bugs/ideas/suggestions — please leave them on GitHub</string>
+    <string name="settings_github_ideas">Bugs/Ideas/Suggestions — please leave them on GitHub</string>
 
     <!--    setting ui -->
     <string name="settings_ui_title">Interface</string>

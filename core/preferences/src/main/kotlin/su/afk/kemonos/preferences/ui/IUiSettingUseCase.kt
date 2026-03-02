@@ -21,6 +21,7 @@ interface IUiSettingUseCase {
     suspend fun setTagsPostsViewMode(value: PostsViewMode)
     suspend fun setSearchPostsViewMode(value: PostsViewMode)
     suspend fun setCreatorProfileTabsOrder(value: List<CreatorProfileTabKey>)
+    suspend fun setCreatorProfileHiddenTabs(value: Set<CreatorProfileTabKey>)
 
     /** Предлагать рандомных авторов */
     suspend fun setSuggestRandomAuthors(value: Boolean)
@@ -42,6 +43,21 @@ interface IUiSettingUseCase {
 
     /** Размер постов в сетке */
     suspend fun setPostsSize(value: PostsSize)
+
+    /** Размер постов в сетке: профиль автора */
+    suspend fun setProfilePostsGridSize(value: PostsSize)
+
+    /** Размер постов в сетке: избранное */
+    suspend fun setFavoritePostsGridSize(value: PostsSize)
+
+    /** Размер постов в сетке: популярное */
+    suspend fun setPopularPostsGridSize(value: PostsSize)
+
+    /** Размер постов в сетке: теги */
+    suspend fun setTagsPostsGridSize(value: PostsSize)
+
+    /** Размер постов в сетке: поиск */
+    suspend fun setSearchPostsGridSize(value: PostsSize)
 
     /** Размер кэша картинок (MB) */
     suspend fun setCoilCacheSizeMb(value: Int)

@@ -1,0 +1,195 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="setting">Настройки</string>
+    <string name="settings_hub_subtitle">Выберите раздел для настройки поведения приложения.</string>
+    <string name="settings_hub_ui_subtitle">Тема, язык, режимы отображения и debug-опции.</string>
+    <string name="settings_hub_translate_subtitle">Режим перевода и язык назначения.</string>
+    <string name="settings_hub_network_title">Сеть и API</string>
+    <string name="settings_hub_network_subtitle">Домены API и сетевые параметры.</string>
+    <string name="settings_hub_database_title">База данных и кэш</string>
+    <string name="settings_hub_database_subtitle">Лимиты кэша и очистка сохраненных данных.</string>
+    <string name="settings_hub_downloads_subtitle">Как именуются и структурируются скачанные файлы.</string>
+    <string name="settings_hub_version">GitHub Версия: %1$s</string>
+
+    <!-- Cache -->
+    <string name="settings_cache_title">Кэш данных</string>
+    <string name="settings_cache_hint">
+        Приложение автоматически управляет кэшированием.
+        Очистка кэша может помочь при некорректном отображении или устаревших данных.
+    </string>
+
+    <string name="settings_cache_never">нет данных</string>
+    <string name="settings_cache_last">Последнее обновление: %1$s</string>
+    <string name="settings_cache_next">Актуально до: %1$s</string>
+    <string name="settings_cache_clear">Очистить</string>
+
+    <!-- Cache categories -->
+    <string name="settings_cache_tags_kemono">Теги (Kemono)</string>
+    <string name="settings_cache_tags_coomer">Теги (Coomer)</string>
+
+    <string name="settings_cache_creators_kemono">Авторы (Kemono)</string>
+    <string name="settings_cache_creators_coomer">Авторы (Coomer)</string>
+
+    <string name="settings_cache_creator_posts_pages">Посты в профилях авторов</string>
+    <string name="settings_cache_post_contents">Полные посты (контент)</string>
+
+    <string name="settings_cache_popular_kemono">Популярное</string>
+    <string name="settings_cache_fav_posts_kemono">Избранные посты</string>
+    <string name="settings_cache_fav_authors_kemono">Избранные авторы</string>
+
+    <string name="settings_cache_profiles">Профили авторов</string>
+    <string name="settings_github_ideas">Ошибки/Идеи/Предложения — оставляйте на GitHub</string>
+
+    <!--    setting ui -->
+    <string name="settings_ui_title">Интерфейс</string>
+    <string name="settings_ui_hint">Настройки отображения и поведения приложения.</string>
+    <!-- UI настройки -->
+    <string name="settings_ui_creators_view_mode">Вид авторов</string>
+    <string name="settings_ui_creators_favorite_view_mode">Вид авторов в избранном</string>
+
+    <!-- Режим отображения авторов -->
+    <string name="settings_ui_view_mode_list">Список</string>
+    <string name="settings_ui_view_mode_grid">Сетка</string>
+
+    <string name="settings_debug_skip_api_check_title">Пропустить проверку API при входе</string>
+    <string name="settings_debug_skip_api_check_hint">Только для Debug</string>
+
+    <string name="settings_ui_posts_view_mode">Отображение постов</string>
+
+    <string name="settings_ui_posts_view_mode_profile">Вид постов в профиле</string>
+    <string name="settings_ui_posts_view_mode_favorite">Вид постов в избранном</string>
+    <string name="settings_ui_posts_view_mode_popular">Вид постов в популярном</string>
+    <string name="settings_ui_posts_view_mode_tags">Вид постов в тегах</string>
+    <string name="settings_ui_posts_view_mode_search">Вид постов в поиске</string>
+    <string name="settings_ui_creator_profile_tabs_sort_title">Порядок вкладок профиля автора</string>
+    <string name="settings_ui_creator_profile_tabs_sort_hint">Зажми и перетаскивай карточки для сортировки.
+        Переключателями можно скрыть конкретные вкладки.
+    </string>
+    <string name="settings_ui_creator_profile_tabs_posts_locked_hint">Вкладка «Посты» всегда видима</string>
+    <string name="settings_creator_tab_posts">Посты</string>
+    <string name="settings_creator_tab_announcements">Анонсы</string>
+    <string name="settings_creator_tab_fancard">Фанкард</string>
+    <string name="settings_creator_tab_dms">ЛС</string>
+    <string name="settings_creator_tab_tags">Теги</string>
+    <string name="settings_creator_tab_links">Ссылки</string>
+    <string name="settings_creator_tab_similar">Похожие</string>
+    <string name="settings_creator_tab_community">Комьюнити</string>
+    <string name="settings_move_up">Вверх</string>
+    <string name="settings_move_down">Вниз</string>
+
+    <string name="settings_ui_suggest_random_authors_title">
+        Предлагать случайных авторов
+    </string>
+
+    <string name="settings_translate_title">Перевод</string>
+    <string name="settings_translate_app">В приложении</string>
+    <string name="settings_translate_google">Google</string>
+
+    <string name="settings_random_button_title">Кнопка “Случайный”</string>
+    <string name="settings_random_button_screen">На экране</string>
+    <string name="settings_random_button_search">В поиске</string>
+    <string name="settings_theme_title">Тема</string>
+    <string name="settings_theme_system">Системная</string>
+    <string name="settings_theme_light">Светлая</string>
+    <string name="settings_theme_dark">Темная</string>
+
+    <string name="settings_translate_language_title">Язык перевода</string>
+    <string name="settings_translate_language_system">Системный</string>
+    <string name="settings_translate_language_choose">Выбрать</string>
+    <string name="settings_translate_language_system_hint">
+        Используется язык устройства: %1$s
+    </string>
+    <string name="settings_translate_language_current">
+        Выбран: %1$s
+    </string>
+
+    <string name="settings_debug_title">Debug</string>
+    <string name="settings_ui_general_title">Общие</string>
+    <string name="settings_random_section_title">Случайное</string>
+    <string name="settings_view_modes_section_title">Отображение</string>
+
+    <string name="settings_ui_date_format_title">Формат даты</string>
+    <string name="settings_ui_app_language_title">Язык приложения</string>
+    <string name="settings_ui_app_language_subtitle">Открыть настройки языка Android для этого приложения</string>
+    <string name="settings_ui_deep_links_title">Deep links</string>
+    <string name="settings_ui_deep_links_subtitle">Откройте настройки приложения Android и включите «Открывать
+        поддерживаемые ссылки».
+    </string>
+
+    <string name="settings_cache_sizes_title">Кэш</string>
+
+    <string name="settings_cache_images_size_title">Размер кэша картинок</string>
+    <string name="settings_cache_video_previews_size_title">Размер кэша превью видео</string>
+
+    <string name="settings_cache_size_value_mb">%1$d МБ</string>
+
+    <string name="settings_posts_appearance_title">Посты</string>
+
+    <string name="settings_posts_size_title">Размер постов в сетке</string>
+    <string name="settings_posts_size_profile_title">Размер сетки: посты профиля</string>
+    <string name="settings_posts_size_favorite_title">Размер сетки: избранные посты</string>
+    <string name="settings_posts_size_popular_title">Размер сетки: популярные посты</string>
+    <string name="settings_posts_size_tags_title">Размер сетки: посты тегов</string>
+    <string name="settings_posts_size_search_title">Размер сетки: посты поиска</string>
+    <string name="settings_posts_size_small">S</string>
+    <string name="settings_posts_size_medium">M</string>
+    <string name="settings_posts_size_large">L</string>
+
+    <string name="settings_show_preview_video_title">Показывать превью видео</string>
+    <string name="settings_blur_images_title">Размывать изображения</string>
+    <string name="settings_show_image_preview_download_action_title">Показывать скачивание на превью изображений
+    </string>
+    <string name="settings_show_image_preview_share_action_title">Показывать шаринг на превью изображений</string>
+    <string name="settings_show_comments_in_post_title">Показывать комментарии в посте</string>
+
+    <string name="settings_downloads_title">Скачивание</string>
+
+    <string name="settings_download_folder_mode_title">Структура папок</string>
+
+    <string name="settings_download_folder_creator">Автор</string>
+    <string name="settings_download_folder_creator_post_id">Автор / ID</string>
+    <string name="settings_download_folder_creator_post_title">Автор / Заголовок</string>
+
+    <string name="settings_download_folder_post_id">ID</string>
+    <string name="settings_download_folder_post_title">Заголовок</string>
+    <string name="settings_download_folder_default">По умолчанию</string>
+
+    <string name="settings_download_add_service_title">Добавлять префикс сервиса</string>
+
+    <string name="settings_use_external_metadata_title">Использовать внешние метаданные видео</string>
+    <string name="settings_use_external_metadata_subtitle">
+        Получать готовые кадры и данные видео вместо самостоятельной загрузки
+    </string>
+
+    <string name="settings_experimental_calendar_title">Новый календарь популярных постов</string>
+    <string name="settings_experimental_calendar_hint">Добавляет выбор даты для просмотра популярных постов.</string>
+
+    <string name="settings_links_title">Ссылки</string>
+    <string name="settings_browser_title">Открывать ссылки в</string>
+
+    <string name="settings_browser_system_title">По умолчанию (система)</string>
+    <string name="settings_browser_system_hint">Использовать браузер из настроек Android.</string>
+
+    <string name="settings_browser_chrome_title">Google Chrome</string>
+    <string name="settings_browser_chrome_hint">Всегда открывать в Chrome (если установлен).</string>
+
+    <string name="settings_browser_custom_title">Конкретный браузер</string>
+    <string name="settings_browser_custom_not_selected">Не выбран</string>
+
+    <string name="settings_experiments_title">Эксперементальные</string>
+    <string name="settings_debug_storage_title">Информация о хранилище</string>
+    <string name="settings_debug_storage_loading">Загрузка…</string>
+
+    <string name="settings_debug_storage_cache_dir">cacheDir</string>
+    <string name="settings_debug_storage_files_dir">filesDir</string>
+    <string name="settings_debug_storage_ext_cache_dir">externalCacheDir</string>
+    <string name="settings_debug_storage_ext_files_dir">externalFilesDir</string>
+    <string name="settings_debug_storage_top_cache_folders_title">Топ папок cache (топ 5)</string>
+
+    <string name="settings_debug_storage_coil_custom">Coil disk cache (custom)</string>
+    <string name="settings_debug_storage_coil_actual">Coil disk cache (actual)</string>
+    <string name="settings_debug_storage_coil_default">Coil disk cache (default builder)</string>
+
+    <string name="settings_debug_storage_video_frames">Кэш кадров видео</string>
+
+</resources>

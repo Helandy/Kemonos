@@ -10,16 +10,21 @@ import su.afk.kemonos.preferences.ui.UiSettingKey.BLUR_IMAGES
 import su.afk.kemonos.preferences.ui.UiSettingKey.COIL_CACHE_SIZE_MB
 import su.afk.kemonos.preferences.ui.UiSettingKey.CREATORS_FAVORITE_VIEW_MODE
 import su.afk.kemonos.preferences.ui.UiSettingKey.CREATORS_VIEW_MODE
+import su.afk.kemonos.preferences.ui.UiSettingKey.CREATOR_PROFILE_HIDDEN_TABS
 import su.afk.kemonos.preferences.ui.UiSettingKey.CREATOR_PROFILE_TABS_ORDER
 import su.afk.kemonos.preferences.ui.UiSettingKey.DATE_FORMAT_MODE
 import su.afk.kemonos.preferences.ui.UiSettingKey.DOWNLOAD_FOLDER_MODE
 import su.afk.kemonos.preferences.ui.UiSettingKey.EXPERIMENTAL_CALENDAR
+import su.afk.kemonos.preferences.ui.UiSettingKey.FAVORITE_POSTS_GRID_SIZE
 import su.afk.kemonos.preferences.ui.UiSettingKey.FAVORITE_POSTS_VIEW_MODE
+import su.afk.kemonos.preferences.ui.UiSettingKey.POPULAR_POSTS_GRID_SIZE
 import su.afk.kemonos.preferences.ui.UiSettingKey.POPULAR_POSTS_VIEW_MODE
 import su.afk.kemonos.preferences.ui.UiSettingKey.POSTS_SIZE
 import su.afk.kemonos.preferences.ui.UiSettingKey.PREVIEW_VIDEO_SIZE_MB
+import su.afk.kemonos.preferences.ui.UiSettingKey.PROFILE_POSTS_GRID_SIZE
 import su.afk.kemonos.preferences.ui.UiSettingKey.PROFILE_POSTS_VIEW_MODE
 import su.afk.kemonos.preferences.ui.UiSettingKey.RANDOM_BUTTON_PLACEMENT
+import su.afk.kemonos.preferences.ui.UiSettingKey.SEARCH_POSTS_GRID_SIZE
 import su.afk.kemonos.preferences.ui.UiSettingKey.SEARCH_POSTS_VIEW_MODE
 import su.afk.kemonos.preferences.ui.UiSettingKey.SHOW_COMMENTS_IN_POST
 import su.afk.kemonos.preferences.ui.UiSettingKey.SHOW_IMAGE_PREVIEW_ACTION
@@ -28,6 +33,7 @@ import su.afk.kemonos.preferences.ui.UiSettingKey.SHOW_IMAGE_PREVIEW_SHARE_ACTIO
 import su.afk.kemonos.preferences.ui.UiSettingKey.SHOW_PREVIEW_VIDEO
 import su.afk.kemonos.preferences.ui.UiSettingKey.SKIP_API_CHECK_ON_LOGIN
 import su.afk.kemonos.preferences.ui.UiSettingKey.SUGGEST_RANDOM_AUTHORS
+import su.afk.kemonos.preferences.ui.UiSettingKey.TAGS_POSTS_GRID_SIZE
 import su.afk.kemonos.preferences.ui.UiSettingKey.TAGS_POSTS_VIEW_MODE
 import su.afk.kemonos.preferences.ui.UiSettingKey.TRANSLATE_LANGUAGE_TAG
 import su.afk.kemonos.preferences.ui.UiSettingKey.TRANSLATE_TARGET
@@ -39,6 +45,8 @@ internal class UiSettingUseCase @Inject constructor(
 ) : IUiSettingUseCase {
 
     override val prefs: Flow<UiSettingModel> = dataStore.data.map { p ->
+        val legacyPostsSize = p.readEnum(POSTS_SIZE, UiSettingModel.DEFAULT_POSTS_SIZE)
+
         UiSettingModel(
             skipApiCheckOnLogin = p[SKIP_API_CHECK_ON_LOGIN] ?: false,
             creatorsViewMode = p.readEnum(CREATORS_VIEW_MODE, UiSettingModel.DEFAULT_CREATORS_VIEW_MODE),
@@ -53,6 +61,7 @@ internal class UiSettingUseCase @Inject constructor(
             tagsPostsViewMode = p.readEnum(TAGS_POSTS_VIEW_MODE, UiSettingModel.DEFAULT_POSTS_VIEW_MODE),
             searchPostsViewMode = p.readEnum(SEARCH_POSTS_VIEW_MODE, UiSettingModel.DEFAULT_POSTS_VIEW_MODE),
             creatorProfileTabsOrder = p.readTabOrder(CREATOR_PROFILE_TABS_ORDER),
+            creatorProfileHiddenTabs = p.readHiddenTabs(CREATOR_PROFILE_HIDDEN_TABS),
 
             suggestRandomAuthors = p[SUGGEST_RANDOM_AUTHORS] ?: UiSettingModel.DEFAULT_SUGGEST_RANDOM_AUTHORS,
             translateTarget = p.readEnum(TRANSLATE_TARGET, UiSettingModel.DEFAULT_TRANSLATE_TARGET),
@@ -62,7 +71,12 @@ internal class UiSettingUseCase @Inject constructor(
 
             dateFormatMode = p.readEnum(DATE_FORMAT_MODE, UiSettingModel.DEFAULT_DATE_FORMAT_MODE),
 
-            postsSize = p.readEnum(POSTS_SIZE, UiSettingModel.DEFAULT_POSTS_SIZE),
+            postsSize = legacyPostsSize,
+            profilePostsGridSize = p.readEnum(PROFILE_POSTS_GRID_SIZE, legacyPostsSize),
+            favoritePostsGridSize = p.readEnum(FAVORITE_POSTS_GRID_SIZE, legacyPostsSize),
+            popularPostsGridSize = p.readEnum(POPULAR_POSTS_GRID_SIZE, legacyPostsSize),
+            tagsPostsGridSize = p.readEnum(TAGS_POSTS_GRID_SIZE, legacyPostsSize),
+            searchPostsGridSize = p.readEnum(SEARCH_POSTS_GRID_SIZE, legacyPostsSize),
 
             coilCacheSizeMb = p[COIL_CACHE_SIZE_MB] ?: UiSettingModel.DEFAULT_COIL_CACHE_SIZE,
             previewVideoSizeMb = p[PREVIEW_VIDEO_SIZE_MB] ?: UiSettingModel.DEFAULT_VIDEO_PREVIEW_SIZE,
@@ -131,6 +145,13 @@ internal class UiSettingUseCase @Inject constructor(
         dataStore.edit { it[CREATOR_PROFILE_TABS_ORDER] = normalized.joinToString(",") { it.name } }
     }
 
+    override suspend fun setCreatorProfileHiddenTabs(value: Set<CreatorProfileTabKey>) {
+        val normalized = value.normalizedHiddenTabs()
+        dataStore.edit {
+            it[CREATOR_PROFILE_HIDDEN_TABS] = normalized.joinToString(",") { tab -> tab.name }
+        }
+    }
+
     /** Предлагать рандомных авторов */
     override suspend fun setSuggestRandomAuthors(value: Boolean) {
         dataStore.edit {
@@ -166,6 +187,26 @@ internal class UiSettingUseCase @Inject constructor(
     /** Размер постов в сетке */
     override suspend fun setPostsSize(value: PostsSize) {
         dataStore.edit { it[POSTS_SIZE] = value.name }
+    }
+
+    override suspend fun setProfilePostsGridSize(value: PostsSize) {
+        dataStore.edit { it[PROFILE_POSTS_GRID_SIZE] = value.name }
+    }
+
+    override suspend fun setFavoritePostsGridSize(value: PostsSize) {
+        dataStore.edit { it[FAVORITE_POSTS_GRID_SIZE] = value.name }
+    }
+
+    override suspend fun setPopularPostsGridSize(value: PostsSize) {
+        dataStore.edit { it[POPULAR_POSTS_GRID_SIZE] = value.name }
+    }
+
+    override suspend fun setTagsPostsGridSize(value: PostsSize) {
+        dataStore.edit { it[TAGS_POSTS_GRID_SIZE] = value.name }
+    }
+
+    override suspend fun setSearchPostsGridSize(value: PostsSize) {
+        dataStore.edit { it[SEARCH_POSTS_GRID_SIZE] = value.name }
     }
 
     /** Размер кэша картинок (MB) */
@@ -235,6 +276,7 @@ object UiSettingKey {
     val TAGS_POSTS_VIEW_MODE = stringPreferencesKey("TAGS_POSTS_VIEW_MODE")
     val SEARCH_POSTS_VIEW_MODE = stringPreferencesKey("SEARCH_POSTS_VIEW_MODE")
     val CREATOR_PROFILE_TABS_ORDER = stringPreferencesKey("CREATOR_PROFILE_TABS_ORDER")
+    val CREATOR_PROFILE_HIDDEN_TABS = stringPreferencesKey("CREATOR_PROFILE_HIDDEN_TABS")
 
     val SUGGEST_RANDOM_AUTHORS = booleanPreferencesKey("SUGGEST_RANDOM_AUTHORS")
     val TRANSLATE_TARGET = stringPreferencesKey("TRANSLATE_TARGET")
@@ -245,6 +287,11 @@ object UiSettingKey {
     val DATE_FORMAT_MODE = stringPreferencesKey("DATE_FORMAT_MODE")
 
     val POSTS_SIZE = stringPreferencesKey("POSTS_SIZE")
+    val PROFILE_POSTS_GRID_SIZE = stringPreferencesKey("PROFILE_POSTS_GRID_SIZE")
+    val FAVORITE_POSTS_GRID_SIZE = stringPreferencesKey("FAVORITE_POSTS_GRID_SIZE")
+    val POPULAR_POSTS_GRID_SIZE = stringPreferencesKey("POPULAR_POSTS_GRID_SIZE")
+    val TAGS_POSTS_GRID_SIZE = stringPreferencesKey("TAGS_POSTS_GRID_SIZE")
+    val SEARCH_POSTS_GRID_SIZE = stringPreferencesKey("SEARCH_POSTS_GRID_SIZE")
 
     val PREVIEW_VIDEO_SIZE_MB = intPreferencesKey("PREVIEW_VIDEO_SIZE_MB")
 
@@ -284,8 +331,22 @@ private fun Preferences.readTabOrder(key: Preferences.Key<String>): List<Creator
     return parsed.normalizedTabOrder()
 }
 
+private fun Preferences.readHiddenTabs(key: Preferences.Key<String>): Set<CreatorProfileTabKey> {
+    val raw = this[key] ?: return UiSettingModel.DEFAULT_CREATOR_PROFILE_HIDDEN_TABS
+    return raw.split(',')
+        .asSequence()
+        .map { it.trim() }
+        .filter { it.isNotEmpty() }
+        .mapNotNull { name -> runCatching { enumValueOf<CreatorProfileTabKey>(name) }.getOrNull() }
+        .toSet()
+        .normalizedHiddenTabs()
+}
+
 private fun List<CreatorProfileTabKey>.normalizedTabOrder(): List<CreatorProfileTabKey> {
     val orderedUnique = LinkedHashSet(this)
     UiSettingModel.DEFAULT_CREATOR_PROFILE_TABS_ORDER.forEach { orderedUnique.add(it) }
     return orderedUnique.toList()
 }
+
+private fun Set<CreatorProfileTabKey>.normalizedHiddenTabs(): Set<CreatorProfileTabKey> =
+    this.filterTo(mutableSetOf()) { it != CreatorProfileTabKey.POSTS }

@@ -11,7 +11,6 @@ android {
     }
 
     buildFeatures {
-        compose = true
         buildConfig = true
     }
 }
@@ -29,5 +28,4 @@ dependencies {
 
     implementation(project(":storage-api"))
     implementation(project(":feature:setting-api"))
-    implementation(project(":feature:profile"))
 }

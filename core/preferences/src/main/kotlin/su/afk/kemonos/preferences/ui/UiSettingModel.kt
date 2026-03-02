@@ -129,6 +129,8 @@ data class UiSettingModel(
     val searchPostsViewMode: PostsViewMode = DEFAULT_POSTS_VIEW_MODE,
     /** Порядок вкладок в профиле автора */
     val creatorProfileTabsOrder: List<CreatorProfileTabKey> = DEFAULT_CREATOR_PROFILE_TABS_ORDER,
+    /** Скрытые вкладки в профиле автора (POSTS всегда видим) */
+    val creatorProfileHiddenTabs: Set<CreatorProfileTabKey> = DEFAULT_CREATOR_PROFILE_HIDDEN_TABS,
 
     /** Предлагать рандомных авторов */
     val suggestRandomAuthors: Boolean = DEFAULT_SUGGEST_RANDOM_AUTHORS,
@@ -150,6 +152,16 @@ data class UiSettingModel(
 
     /** Размер постов в сетке */
     val postsSize: PostsSize = DEFAULT_POSTS_SIZE,
+    /** Размер постов в сетке: профиль автора */
+    val profilePostsGridSize: PostsSize = DEFAULT_POSTS_SIZE,
+    /** Размер постов в сетке: избранное */
+    val favoritePostsGridSize: PostsSize = DEFAULT_POSTS_SIZE,
+    /** Размер постов в сетке: популярное */
+    val popularPostsGridSize: PostsSize = DEFAULT_POSTS_SIZE,
+    /** Размер постов в сетке: теги */
+    val tagsPostsGridSize: PostsSize = DEFAULT_POSTS_SIZE,
+    /** Размер постов в сетке: поиск */
+    val searchPostsGridSize: PostsSize = DEFAULT_POSTS_SIZE,
 
     /** Размер кэша картинок */
     val coilCacheSizeMb: Int = DEFAULT_COIL_CACHE_SIZE,
@@ -198,6 +210,7 @@ data class UiSettingModel(
             CreatorProfileTabKey.COMMUNITY,
             CreatorProfileTabKey.SIMILAR,
         )
+        val DEFAULT_CREATOR_PROFILE_HIDDEN_TABS: Set<CreatorProfileTabKey> = emptySet()
         val DEFAULT_POSTS_SIZE = PostsSize.MEDIUM
         const val DEFAULT_SUGGEST_RANDOM_AUTHORS = false
         val DEFAULT_TRANSLATE_TARGET = TranslateTarget.APP

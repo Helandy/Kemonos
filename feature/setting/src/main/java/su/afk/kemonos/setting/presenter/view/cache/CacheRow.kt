@@ -10,7 +10,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import su.afk.kemonos.preferences.model.CacheTimeUi
 import su.afk.kemonos.preferences.ui.DateFormatMode
-import su.afk.kemonos.profile.R
+import su.afk.kemonos.setting.R
 import su.afk.kemonos.ui.date.toUiDateTime
 import su.afk.kemonos.ui.preview.KemonosPreviewScreen
 
@@ -51,7 +51,7 @@ internal fun CacheRow(
                 }
             }
 
-            OutlinedButton(
+            FilledTonalButton(
                 onClick = onClear,
                 enabled = !busy
             ) {

@@ -84,6 +84,15 @@
     <string name="coomer">Coomer</string>
 
     <string name="setting">Настройки</string>
+    <string name="settings_hub_subtitle">Выберите раздел для настройки поведения приложения.</string>
+    <string name="settings_hub_ui_subtitle">Тема, язык, режимы отображения и debug-опции.</string>
+    <string name="settings_hub_translate_subtitle">Режим перевода и язык назначения.</string>
+    <string name="settings_hub_network_title">Сеть и API</string>
+    <string name="settings_hub_network_subtitle">Домены API и сетевые параметры.</string>
+    <string name="settings_hub_database_title">База данных и кэш</string>
+    <string name="settings_hub_database_subtitle">Лимиты кэша и очистка сохраненных данных.</string>
+    <string name="settings_hub_downloads_subtitle">Как именуются и структурируются скачанные файлы.</string>
+    <string name="settings_hub_version">GitHub Версия: %1$s</string>
 
     <!-- Cache -->
     <string name="settings_cache_title">Кэш данных</string>
@@ -112,7 +121,7 @@
     <string name="settings_cache_fav_authors_kemono">Избранные авторы</string>
 
     <string name="settings_cache_profiles">Профили авторов</string>
-    <string name="settings_github_ideas">Ошибки/идеи/предложения — оставляйте на GitHub</string>
+    <string name="settings_github_ideas">Ошибки/Идеи/Предложения — оставляйте на GitHub</string>
 
     <!--    setting ui -->
     <string name="settings_ui_title">Интерфейс</string>
