@@ -1,4 +1,4 @@
-package su.afk.kemonos.setting.presenter
+package su.afk.kemonos.setting.presenter.screens
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -9,7 +9,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import su.afk.kemonos.profile.R
+import su.afk.kemonos.setting.R
 import su.afk.kemonos.setting.presenter.SettingState.Event
 import su.afk.kemonos.setting.presenter.SettingState.State
 import su.afk.kemonos.setting.presenter.view.uiSetting.CreatorProfileTabsOrderEditor

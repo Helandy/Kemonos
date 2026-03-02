@@ -40,6 +40,7 @@ internal fun TagsPostsScreen(
         PostsContentPaging(
             postsViewMode = state.uiSettingModel.tagsPostsViewMode,
             uiSettingModel = state.uiSettingModel,
+            gridPostsSize = state.uiSettingModel.tagsPostsGridSize,
             posts = posts,
             currentTag = null,
             onPostClick = { onEvent(Event.NavigateToPost(it)) },

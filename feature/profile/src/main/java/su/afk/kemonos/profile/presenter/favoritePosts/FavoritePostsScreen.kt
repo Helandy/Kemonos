@@ -124,6 +124,7 @@ internal fun FavoritePostsScreen(
                 PostsContentPaging(
                     postsViewMode = state.uiSettingModel.favoritePostsViewMode,
                     uiSettingModel = state.uiSettingModel,
+                    gridPostsSize = state.uiSettingModel.favoritePostsGridSize,
                     posts = posts,
                     onPostClick = { onEvent(Event.NavigateToPost(it)) },
                     showFavCount = false,
@@ -182,9 +183,9 @@ private fun FavoritePostsGroupedList(
 
         PostsViewMode.GRID -> {
             LazyVerticalGrid(
-                columns = GridCells.Adaptive(minSize = uiSettingModel.postsSize.toDp()),
-                verticalArrangement = Arrangement.spacedBy(uiSettingModel.postsSize.toArrangement()),
-                horizontalArrangement = Arrangement.spacedBy(uiSettingModel.postsSize.toArrangement()),
+                columns = GridCells.Adaptive(minSize = uiSettingModel.favoritePostsGridSize.toDp()),
+                verticalArrangement = Arrangement.spacedBy(uiSettingModel.favoritePostsGridSize.toArrangement()),
+                horizontalArrangement = Arrangement.spacedBy(uiSettingModel.favoritePostsGridSize.toArrangement()),
                 contentPadding = PaddingValues(vertical = 8.dp),
             ) {
                 groups.forEach { group ->

@@ -10,7 +10,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import su.afk.kemonos.preferences.ui.CreatorViewMode
-import su.afk.kemonos.profile.R
+import su.afk.kemonos.setting.R
+import su.afk.kemonos.setting.presenter.view.uiSetting.common.settingsSegmentedButtonColors
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -36,12 +37,14 @@ internal fun CreatorsViewModeRow(
                 selected = value == CreatorViewMode.LIST,
                 onClick = { onChange(CreatorViewMode.LIST) },
                 shape = SegmentedButtonDefaults.itemShape(index = 0, count = 2),
+                colors = settingsSegmentedButtonColors(),
                 label = { Text(stringResource(R.string.settings_ui_view_mode_list)) },
             )
             SegmentedButton(
                 selected = value == CreatorViewMode.GRID,
                 onClick = { onChange(CreatorViewMode.GRID) },
                 shape = SegmentedButtonDefaults.itemShape(index = 1, count = 2),
+                colors = settingsSegmentedButtonColors(),
                 label = { Text(stringResource(R.string.settings_ui_view_mode_grid)) },
             )
         }

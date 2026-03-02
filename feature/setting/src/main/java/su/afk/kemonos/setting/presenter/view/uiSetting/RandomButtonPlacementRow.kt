@@ -10,7 +10,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import su.afk.kemonos.preferences.ui.RandomButtonPlacement
-import su.afk.kemonos.profile.R
+import su.afk.kemonos.setting.R
+import su.afk.kemonos.setting.presenter.view.uiSetting.common.settingsSegmentedButtonColors
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -35,12 +36,14 @@ internal fun RandomButtonPlacementRow(
                 selected = value == RandomButtonPlacement.SCREEN,
                 onClick = { onChange(RandomButtonPlacement.SCREEN) },
                 shape = SegmentedButtonDefaults.itemShape(index = 0, count = 2),
+                colors = settingsSegmentedButtonColors(),
                 label = { Text(stringResource(R.string.settings_random_button_screen)) },
             )
             SegmentedButton(
                 selected = value == RandomButtonPlacement.SEARCH_BAR,
                 onClick = { onChange(RandomButtonPlacement.SEARCH_BAR) },
                 shape = SegmentedButtonDefaults.itemShape(index = 1, count = 2),
+                colors = settingsSegmentedButtonColors(),
                 label = { Text(stringResource(R.string.settings_random_button_search)) },
             )
         }

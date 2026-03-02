@@ -10,7 +10,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import su.afk.kemonos.preferences.ui.AppThemeMode
-import su.afk.kemonos.profile.R
+import su.afk.kemonos.setting.R
+import su.afk.kemonos.setting.presenter.view.uiSetting.common.settingsSegmentedButtonColors
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -35,18 +36,21 @@ internal fun AppThemeModeRow(
                 selected = value == AppThemeMode.SYSTEM,
                 onClick = { onChange(AppThemeMode.SYSTEM) },
                 shape = SegmentedButtonDefaults.itemShape(index = 0, count = 3),
+                colors = settingsSegmentedButtonColors(),
                 label = { Text(stringResource(R.string.settings_theme_system)) },
             )
             SegmentedButton(
                 selected = value == AppThemeMode.LIGHT,
                 onClick = { onChange(AppThemeMode.LIGHT) },
                 shape = SegmentedButtonDefaults.itemShape(index = 1, count = 3),
+                colors = settingsSegmentedButtonColors(),
                 label = { Text(stringResource(R.string.settings_theme_light)) },
             )
             SegmentedButton(
                 selected = value == AppThemeMode.DARK,
                 onClick = { onChange(AppThemeMode.DARK) },
                 shape = SegmentedButtonDefaults.itemShape(index = 2, count = 3),
+                colors = settingsSegmentedButtonColors(),
                 label = { Text(stringResource(R.string.settings_theme_dark)) },
             )
         }

@@ -43,6 +43,21 @@ interface IUiSettingUseCase {
     /** Размер постов в сетке */
     suspend fun setPostsSize(value: PostsSize)
 
+    /** Размер постов в сетке: профиль автора */
+    suspend fun setProfilePostsGridSize(value: PostsSize)
+
+    /** Размер постов в сетке: избранное */
+    suspend fun setFavoritePostsGridSize(value: PostsSize)
+
+    /** Размер постов в сетке: популярное */
+    suspend fun setPopularPostsGridSize(value: PostsSize)
+
+    /** Размер постов в сетке: теги */
+    suspend fun setTagsPostsGridSize(value: PostsSize)
+
+    /** Размер постов в сетке: поиск */
+    suspend fun setSearchPostsGridSize(value: PostsSize)
+
     /** Размер кэша картинок (MB) */
     suspend fun setCoilCacheSizeMb(value: Int)
 

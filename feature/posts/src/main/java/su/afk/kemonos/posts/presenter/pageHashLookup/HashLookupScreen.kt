@@ -180,6 +180,7 @@ internal fun HashLookupScreen(
             PostsContentPaging(
                 uiSettingModel = state.uiSettingModel,
                 postsViewMode = state.uiSettingModel.searchPostsViewMode,
+                gridPostsSize = state.uiSettingModel.searchPostsGridSize,
                 posts = posts,
                 currentTag = null,
                 onPostClick = { onEvent(Event.NavigateToPost(it)) },

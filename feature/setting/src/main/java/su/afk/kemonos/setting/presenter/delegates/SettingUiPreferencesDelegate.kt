@@ -47,6 +47,26 @@ class SettingUiPreferencesDelegate @Inject constructor(
             is SettingState.Event.ChangeViewSetting.SearchPostsViewMode ->
                 scope.launch { uiSetting.setSearchPostsViewMode(event.value) }
 
+            /** Размер сетки постов: профиль */
+            is SettingState.Event.ChangeViewSetting.ProfilePostsGridSize ->
+                scope.launch { uiSetting.setProfilePostsGridSize(event.value) }
+
+            /** Размер сетки постов: избранное */
+            is SettingState.Event.ChangeViewSetting.FavoritePostsGridSize ->
+                scope.launch { uiSetting.setFavoritePostsGridSize(event.value) }
+
+            /** Размер сетки постов: популярное */
+            is SettingState.Event.ChangeViewSetting.PopularPostsGridSize ->
+                scope.launch { uiSetting.setPopularPostsGridSize(event.value) }
+
+            /** Размер сетки постов: теги */
+            is SettingState.Event.ChangeViewSetting.TagsPostsGridSize ->
+                scope.launch { uiSetting.setTagsPostsGridSize(event.value) }
+
+            /** Размер сетки постов: поиск */
+            is SettingState.Event.ChangeViewSetting.SearchPostsGridSize ->
+                scope.launch { uiSetting.setSearchPostsGridSize(event.value) }
+
             is SettingState.Event.ChangeViewSetting.EditCreatorProfileTabsOrder ->
                 scope.launch { uiSetting.setCreatorProfileTabsOrder(event.value) }
 

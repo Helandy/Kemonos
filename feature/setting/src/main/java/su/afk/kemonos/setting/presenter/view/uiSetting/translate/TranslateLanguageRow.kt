@@ -11,7 +11,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
-import su.afk.kemonos.profile.R
+import su.afk.kemonos.setting.R
+import su.afk.kemonos.setting.presenter.view.uiSetting.common.settingsSegmentedButtonColors
 import java.util.*
 
 private data class LangOption(
@@ -83,6 +84,7 @@ internal fun TranslateLanguageRow(
                     selected = isSystem,
                     onClick = { onChange("") },
                     shape = SegmentedButtonDefaults.itemShape(index = 0, count = 2),
+                    colors = settingsSegmentedButtonColors(),
                     label = {
                         Text(stringResource(R.string.settings_translate_language_system))
                     }
@@ -91,6 +93,7 @@ internal fun TranslateLanguageRow(
                     selected = !isSystem,
                     onClick = { expanded = true },
                     shape = SegmentedButtonDefaults.itemShape(index = 1, count = 2),
+                    colors = settingsSegmentedButtonColors(),
                     label = {
                         Text(stringResource(R.string.settings_translate_language_choose))
                     }

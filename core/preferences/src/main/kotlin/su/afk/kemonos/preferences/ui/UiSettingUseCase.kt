@@ -14,12 +14,16 @@ import su.afk.kemonos.preferences.ui.UiSettingKey.CREATOR_PROFILE_TABS_ORDER
 import su.afk.kemonos.preferences.ui.UiSettingKey.DATE_FORMAT_MODE
 import su.afk.kemonos.preferences.ui.UiSettingKey.DOWNLOAD_FOLDER_MODE
 import su.afk.kemonos.preferences.ui.UiSettingKey.EXPERIMENTAL_CALENDAR
+import su.afk.kemonos.preferences.ui.UiSettingKey.FAVORITE_POSTS_GRID_SIZE
 import su.afk.kemonos.preferences.ui.UiSettingKey.FAVORITE_POSTS_VIEW_MODE
+import su.afk.kemonos.preferences.ui.UiSettingKey.POPULAR_POSTS_GRID_SIZE
 import su.afk.kemonos.preferences.ui.UiSettingKey.POPULAR_POSTS_VIEW_MODE
 import su.afk.kemonos.preferences.ui.UiSettingKey.POSTS_SIZE
 import su.afk.kemonos.preferences.ui.UiSettingKey.PREVIEW_VIDEO_SIZE_MB
+import su.afk.kemonos.preferences.ui.UiSettingKey.PROFILE_POSTS_GRID_SIZE
 import su.afk.kemonos.preferences.ui.UiSettingKey.PROFILE_POSTS_VIEW_MODE
 import su.afk.kemonos.preferences.ui.UiSettingKey.RANDOM_BUTTON_PLACEMENT
+import su.afk.kemonos.preferences.ui.UiSettingKey.SEARCH_POSTS_GRID_SIZE
 import su.afk.kemonos.preferences.ui.UiSettingKey.SEARCH_POSTS_VIEW_MODE
 import su.afk.kemonos.preferences.ui.UiSettingKey.SHOW_COMMENTS_IN_POST
 import su.afk.kemonos.preferences.ui.UiSettingKey.SHOW_IMAGE_PREVIEW_ACTION
@@ -28,6 +32,7 @@ import su.afk.kemonos.preferences.ui.UiSettingKey.SHOW_IMAGE_PREVIEW_SHARE_ACTIO
 import su.afk.kemonos.preferences.ui.UiSettingKey.SHOW_PREVIEW_VIDEO
 import su.afk.kemonos.preferences.ui.UiSettingKey.SKIP_API_CHECK_ON_LOGIN
 import su.afk.kemonos.preferences.ui.UiSettingKey.SUGGEST_RANDOM_AUTHORS
+import su.afk.kemonos.preferences.ui.UiSettingKey.TAGS_POSTS_GRID_SIZE
 import su.afk.kemonos.preferences.ui.UiSettingKey.TAGS_POSTS_VIEW_MODE
 import su.afk.kemonos.preferences.ui.UiSettingKey.TRANSLATE_LANGUAGE_TAG
 import su.afk.kemonos.preferences.ui.UiSettingKey.TRANSLATE_TARGET
@@ -39,6 +44,8 @@ internal class UiSettingUseCase @Inject constructor(
 ) : IUiSettingUseCase {
 
     override val prefs: Flow<UiSettingModel> = dataStore.data.map { p ->
+        val legacyPostsSize = p.readEnum(POSTS_SIZE, UiSettingModel.DEFAULT_POSTS_SIZE)
+
         UiSettingModel(
             skipApiCheckOnLogin = p[SKIP_API_CHECK_ON_LOGIN] ?: false,
             creatorsViewMode = p.readEnum(CREATORS_VIEW_MODE, UiSettingModel.DEFAULT_CREATORS_VIEW_MODE),
@@ -62,7 +69,12 @@ internal class UiSettingUseCase @Inject constructor(
 
             dateFormatMode = p.readEnum(DATE_FORMAT_MODE, UiSettingModel.DEFAULT_DATE_FORMAT_MODE),
 
-            postsSize = p.readEnum(POSTS_SIZE, UiSettingModel.DEFAULT_POSTS_SIZE),
+            postsSize = legacyPostsSize,
+            profilePostsGridSize = p.readEnum(PROFILE_POSTS_GRID_SIZE, legacyPostsSize),
+            favoritePostsGridSize = p.readEnum(FAVORITE_POSTS_GRID_SIZE, legacyPostsSize),
+            popularPostsGridSize = p.readEnum(POPULAR_POSTS_GRID_SIZE, legacyPostsSize),
+            tagsPostsGridSize = p.readEnum(TAGS_POSTS_GRID_SIZE, legacyPostsSize),
+            searchPostsGridSize = p.readEnum(SEARCH_POSTS_GRID_SIZE, legacyPostsSize),
 
             coilCacheSizeMb = p[COIL_CACHE_SIZE_MB] ?: UiSettingModel.DEFAULT_COIL_CACHE_SIZE,
             previewVideoSizeMb = p[PREVIEW_VIDEO_SIZE_MB] ?: UiSettingModel.DEFAULT_VIDEO_PREVIEW_SIZE,
@@ -168,6 +180,26 @@ internal class UiSettingUseCase @Inject constructor(
         dataStore.edit { it[POSTS_SIZE] = value.name }
     }
 
+    override suspend fun setProfilePostsGridSize(value: PostsSize) {
+        dataStore.edit { it[PROFILE_POSTS_GRID_SIZE] = value.name }
+    }
+
+    override suspend fun setFavoritePostsGridSize(value: PostsSize) {
+        dataStore.edit { it[FAVORITE_POSTS_GRID_SIZE] = value.name }
+    }
+
+    override suspend fun setPopularPostsGridSize(value: PostsSize) {
+        dataStore.edit { it[POPULAR_POSTS_GRID_SIZE] = value.name }
+    }
+
+    override suspend fun setTagsPostsGridSize(value: PostsSize) {
+        dataStore.edit { it[TAGS_POSTS_GRID_SIZE] = value.name }
+    }
+
+    override suspend fun setSearchPostsGridSize(value: PostsSize) {
+        dataStore.edit { it[SEARCH_POSTS_GRID_SIZE] = value.name }
+    }
+
     /** Размер кэша картинок (MB) */
     override suspend fun setCoilCacheSizeMb(value: Int) {
         dataStore.edit { it[COIL_CACHE_SIZE_MB] = value.coerceAtLeast(0) }
@@ -245,6 +277,11 @@ object UiSettingKey {
     val DATE_FORMAT_MODE = stringPreferencesKey("DATE_FORMAT_MODE")
 
     val POSTS_SIZE = stringPreferencesKey("POSTS_SIZE")
+    val PROFILE_POSTS_GRID_SIZE = stringPreferencesKey("PROFILE_POSTS_GRID_SIZE")
+    val FAVORITE_POSTS_GRID_SIZE = stringPreferencesKey("FAVORITE_POSTS_GRID_SIZE")
+    val POPULAR_POSTS_GRID_SIZE = stringPreferencesKey("POPULAR_POSTS_GRID_SIZE")
+    val TAGS_POSTS_GRID_SIZE = stringPreferencesKey("TAGS_POSTS_GRID_SIZE")
+    val SEARCH_POSTS_GRID_SIZE = stringPreferencesKey("SEARCH_POSTS_GRID_SIZE")
 
     val PREVIEW_VIDEO_SIZE_MB = intPreferencesKey("PREVIEW_VIDEO_SIZE_MB")
 

@@ -150,6 +150,16 @@ data class UiSettingModel(
 
     /** Размер постов в сетке */
     val postsSize: PostsSize = DEFAULT_POSTS_SIZE,
+    /** Размер постов в сетке: профиль автора */
+    val profilePostsGridSize: PostsSize = DEFAULT_POSTS_SIZE,
+    /** Размер постов в сетке: избранное */
+    val favoritePostsGridSize: PostsSize = DEFAULT_POSTS_SIZE,
+    /** Размер постов в сетке: популярное */
+    val popularPostsGridSize: PostsSize = DEFAULT_POSTS_SIZE,
+    /** Размер постов в сетке: теги */
+    val tagsPostsGridSize: PostsSize = DEFAULT_POSTS_SIZE,
+    /** Размер постов в сетке: поиск */
+    val searchPostsGridSize: PostsSize = DEFAULT_POSTS_SIZE,
 
     /** Размер кэша картинок */
     val coilCacheSizeMb: Int = DEFAULT_COIL_CACHE_SIZE,

@@ -45,6 +45,12 @@ class SettingState {
     sealed interface Event : UiEvent {
         data object Back : Event
         data object OpenCreatorTabsOrderEditor : Event
+        data object OpenUiSettings : Event
+        data object OpenTranslateSettings : Event
+        data object OpenNetworkSettings : Event
+        data object OpenDatabaseSettings : Event
+        data object OpenDownloadSettings : Event
+        data object OpenDebugStorageSettings : Event
 
         sealed interface ChangeViewSetting : Event {
             data class SkipApiCheckOnLogin(val value: Boolean) : ChangeViewSetting
@@ -59,6 +65,11 @@ class SettingState {
             data class PopularPostsViewMode(val value: PostsViewMode) : ChangeViewSetting
             data class TagsPostsViewMode(val value: PostsViewMode) : ChangeViewSetting
             data class SearchPostsViewMode(val value: PostsViewMode) : ChangeViewSetting
+            data class ProfilePostsGridSize(val value: PostsSize) : ChangeViewSetting
+            data class FavoritePostsGridSize(val value: PostsSize) : ChangeViewSetting
+            data class PopularPostsGridSize(val value: PostsSize) : ChangeViewSetting
+            data class TagsPostsGridSize(val value: PostsSize) : ChangeViewSetting
+            data class SearchPostsGridSize(val value: PostsSize) : ChangeViewSetting
             data class EditCreatorProfileTabsOrder(val value: List<CreatorProfileTabKey>) : ChangeViewSetting
 
             data class EventTranslateTarget(val value: TranslateTarget) : ChangeViewSetting

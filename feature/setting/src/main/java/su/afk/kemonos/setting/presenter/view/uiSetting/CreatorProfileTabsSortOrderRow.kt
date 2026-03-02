@@ -21,7 +21,7 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import su.afk.kemonos.preferences.ui.CreatorProfileTabKey
-import su.afk.kemonos.profile.R
+import su.afk.kemonos.setting.R
 
 @Composable
 internal fun CreatorProfileTabsOrderEditor(

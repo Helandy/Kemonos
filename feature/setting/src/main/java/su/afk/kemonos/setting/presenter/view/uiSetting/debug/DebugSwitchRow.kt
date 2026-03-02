@@ -9,6 +9,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import su.afk.kemonos.setting.presenter.view.uiSetting.common.settingsSwitchColors
 
 @Composable
 internal fun DebugSwitchRow(
@@ -35,7 +36,8 @@ internal fun DebugSwitchRow(
 
         Switch(
             checked = checked,
-            onCheckedChange = onCheckedChange
+            onCheckedChange = onCheckedChange,
+            colors = settingsSwitchColors(),
         )
     }
 

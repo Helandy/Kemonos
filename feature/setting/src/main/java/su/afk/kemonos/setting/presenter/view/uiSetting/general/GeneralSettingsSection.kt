@@ -1,26 +1,23 @@
 package su.afk.kemonos.setting.presenter.view.uiSetting.general
 
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.height
-import androidx.compose.runtime.Composable
+import androidx.compose.foundation.layout.*
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import su.afk.kemonos.preferences.ui.AppThemeMode
 import su.afk.kemonos.preferences.ui.DateFormatMode
 import su.afk.kemonos.preferences.ui.RandomButtonPlacement
-import su.afk.kemonos.profile.R
-import su.afk.kemonos.setting.presenter.view.uiSetting.AppThemeModeRow
-import su.afk.kemonos.setting.presenter.view.uiSetting.RandomButtonPlacementRow
-import su.afk.kemonos.setting.presenter.view.uiSetting.SwitchRow
+import su.afk.kemonos.setting.R
 import su.afk.kemonos.setting.presenter.view.uiSetting.common.SectionSpacer
 import su.afk.kemonos.setting.presenter.view.uiSetting.common.SettingsSectionTitle
-import su.afk.kemonos.setting.presenter.view.uiSetting.date.DateFormatRow
-import su.afk.kemonos.setting.presenter.view.uiSetting.language.AppLanguageSettingsRow
-import su.afk.kemonos.setting.presenter.view.uiSetting.language.openAppDeepLinksSettingsSafely
-import su.afk.kemonos.setting.presenter.view.uiSetting.language.openAppLanguageSettingsSafely
+import su.afk.kemonos.setting.presenter.view.uiSetting.common.settingsSegmentedButtonColors
+import su.afk.kemonos.setting.presenter.view.uiSetting.common.settingsSwitchColors
+import java.util.*
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun GeneralSettingsSection(
     suggestRandomAuthors: Boolean,
@@ -32,53 +29,193 @@ internal fun GeneralSettingsSection(
     randomButtonPlace: RandomButtonPlacement,
     onRandomButtonPlace: (RandomButtonPlacement) -> Unit,
 ) {
-    val context = LocalContext.current
-
     SectionSpacer()
     SettingsSectionTitle(text = stringResource(R.string.settings_ui_general_title))
-    Spacer(Modifier.height(6.dp))
-
-    AppLanguageSettingsRow(
-        title = stringResource(R.string.settings_ui_app_language_title),
-        subtitle = stringResource(R.string.settings_ui_app_language_subtitle),
-        onClick = { context.openAppLanguageSettingsSafely() }
-    )
-
     Spacer(Modifier.height(8.dp))
 
-    AppLanguageSettingsRow(
-        title = stringResource(R.string.settings_ui_deep_links_title),
-        subtitle = stringResource(R.string.settings_ui_deep_links_subtitle),
-        onClick = { context.openAppDeepLinksSettingsSafely() }
-    )
+    ElevatedCard(modifier = Modifier.fillMaxWidth()) {
+        Column(modifier = Modifier.padding(vertical = 8.dp)) {
+            ThemeModeSetting(
+                value = appThemeMode,
+                onChange = onAppThemeMode,
+            )
 
-    Spacer(Modifier.height(8.dp))
+            HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp))
 
-    AppThemeModeRow(
-        value = appThemeMode,
-        onChange = onAppThemeMode
-    )
+            DateFormatSetting(
+                value = dateFormatMode,
+                onChange = onDateFormatMode,
+            )
+        }
+    }
 
-    Spacer(Modifier.height(8.dp))
+    Spacer(Modifier.height(12.dp))
 
-    DateFormatRow(
-        title = stringResource(R.string.settings_ui_date_format_title),
-        value = dateFormatMode,
-        onChange = onDateFormatMode
-    )
+    ElevatedCard(modifier = Modifier.fillMaxWidth()) {
+        Column(modifier = Modifier.padding(vertical = 8.dp)) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp, vertical = 8.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+                Column(modifier = Modifier.weight(1f)) {
+                    Text(
+                        text = stringResource(R.string.settings_ui_suggest_random_authors_title),
+                        style = MaterialTheme.typography.bodyLarge,
+                    )
+                }
 
-    Spacer(Modifier.height(8.dp))
+                Switch(
+                    checked = suggestRandomAuthors,
+                    onCheckedChange = onSuggestRandomAuthors,
+                    colors = settingsSwitchColors(),
+                )
+            }
 
-    SwitchRow(
-        title = stringResource(R.string.settings_ui_suggest_random_authors_title),
-        checked = suggestRandomAuthors,
-        onCheckedChange = onSuggestRandomAuthors,
-    )
+            HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp))
 
-    Spacer(Modifier.height(8.dp))
+            RandomPlacementSetting(
+                value = randomButtonPlace,
+                onChange = onRandomButtonPlace,
+            )
+        }
+    }
+}
 
-    RandomButtonPlacementRow(
-        value = randomButtonPlace,
-        onChange = onRandomButtonPlace
-    )
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun ThemeModeSetting(
+    value: AppThemeMode,
+    onChange: (AppThemeMode) -> Unit,
+) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp, vertical = 8.dp)
+    ) {
+        Text(
+            text = stringResource(R.string.settings_theme_title),
+            style = MaterialTheme.typography.bodyLarge,
+        )
+
+        Spacer(Modifier.height(8.dp))
+
+        SingleChoiceSegmentedButtonRow(modifier = Modifier.fillMaxWidth()) {
+            SegmentedButton(
+                selected = value == AppThemeMode.SYSTEM,
+                onClick = { onChange(AppThemeMode.SYSTEM) },
+                shape = SegmentedButtonDefaults.itemShape(index = 0, count = 3),
+                colors = settingsSegmentedButtonColors(),
+                label = { Text(stringResource(R.string.settings_theme_system)) },
+            )
+            SegmentedButton(
+                selected = value == AppThemeMode.LIGHT,
+                onClick = { onChange(AppThemeMode.LIGHT) },
+                shape = SegmentedButtonDefaults.itemShape(index = 1, count = 3),
+                colors = settingsSegmentedButtonColors(),
+                label = { Text(stringResource(R.string.settings_theme_light)) },
+            )
+            SegmentedButton(
+                selected = value == AppThemeMode.DARK,
+                onClick = { onChange(AppThemeMode.DARK) },
+                shape = SegmentedButtonDefaults.itemShape(index = 2, count = 3),
+                colors = settingsSegmentedButtonColors(),
+                label = { Text(stringResource(R.string.settings_theme_dark)) },
+            )
+        }
+    }
+}
+
+@Composable
+private fun DateFormatSetting(
+    value: DateFormatMode,
+    onChange: (DateFormatMode) -> Unit,
+) {
+    var expanded by remember { mutableStateOf(false) }
+
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp, vertical = 8.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(12.dp),
+    ) {
+        Text(
+            text = stringResource(R.string.settings_ui_date_format_title),
+            style = MaterialTheme.typography.bodyLarge,
+            modifier = Modifier.weight(1f),
+        )
+
+        Box {
+            OutlinedButton(onClick = { expanded = true }) {
+                Text(
+                    text = value.example(Locale.getDefault()),
+                    style = MaterialTheme.typography.bodyMedium,
+                )
+            }
+
+            DropdownMenu(
+                expanded = expanded,
+                onDismissRequest = { expanded = false },
+            ) {
+                DateFormatMode.entries.forEach { mode ->
+                    DropdownMenuItem(
+                        text = {
+                            Column {
+                                Text(mode.example(Locale.getDefault()))
+                                Text(
+                                    text = mode.pattern,
+                                    style = MaterialTheme.typography.labelSmall,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                )
+                            }
+                        },
+                        onClick = {
+                            expanded = false
+                            onChange(mode)
+                        }
+                    )
+                }
+            }
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun RandomPlacementSetting(
+    value: RandomButtonPlacement,
+    onChange: (RandomButtonPlacement) -> Unit,
+) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp, vertical = 8.dp)
+    ) {
+        Text(
+            text = stringResource(R.string.settings_random_button_title),
+            style = MaterialTheme.typography.bodyLarge,
+        )
+
+        Spacer(Modifier.height(8.dp))
+
+        SingleChoiceSegmentedButtonRow(modifier = Modifier.fillMaxWidth()) {
+            SegmentedButton(
+                selected = value == RandomButtonPlacement.SCREEN,
+                onClick = { onChange(RandomButtonPlacement.SCREEN) },
+                shape = SegmentedButtonDefaults.itemShape(index = 0, count = 2),
+                colors = settingsSegmentedButtonColors(),
+                label = { Text(stringResource(R.string.settings_random_button_screen)) },
+            )
+            SegmentedButton(
+                selected = value == RandomButtonPlacement.SEARCH_BAR,
+                onClick = { onChange(RandomButtonPlacement.SEARCH_BAR) },
+                shape = SegmentedButtonDefaults.itemShape(index = 1, count = 2),
+                colors = settingsSegmentedButtonColors(),
+                label = { Text(stringResource(R.string.settings_random_button_search)) },
+            )
+        }
+    }
 }

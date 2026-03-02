@@ -9,7 +9,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import su.afk.kemonos.profile.R
+import su.afk.kemonos.setting.R
 import kotlin.math.roundToInt
 
 private val CacheSizeOptionsMb = listOf(100, 150, 300, 500)

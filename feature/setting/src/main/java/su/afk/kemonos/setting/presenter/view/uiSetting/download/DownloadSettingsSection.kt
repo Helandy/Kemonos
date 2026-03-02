@@ -7,7 +7,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import su.afk.kemonos.preferences.ui.DownloadFolderMode
-import su.afk.kemonos.profile.R
+import su.afk.kemonos.setting.R
 import su.afk.kemonos.setting.presenter.view.uiSetting.SwitchRow
 import su.afk.kemonos.setting.presenter.view.uiSetting.common.SectionSpacer
 import su.afk.kemonos.setting.presenter.view.uiSetting.common.SettingsSectionTitle

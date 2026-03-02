@@ -12,6 +12,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
 import su.afk.kemonos.preferences.ui.DownloadFolderMode
+import su.afk.kemonos.setting.presenter.view.uiSetting.common.settingsRadioButtonColors
 import su.afk.kemonos.utils.download.normalizeForFolder
 
 private data class PathExample(
@@ -52,7 +53,8 @@ internal fun DownloadFolderModeRow(
             ) {
                 RadioButton(
                     selected = value == mode,
-                    onClick = { onChange(mode) }
+                    onClick = { onChange(mode) },
+                    colors = settingsRadioButtonColors(),
                 )
 
                 Spacer(Modifier.width(8.dp))

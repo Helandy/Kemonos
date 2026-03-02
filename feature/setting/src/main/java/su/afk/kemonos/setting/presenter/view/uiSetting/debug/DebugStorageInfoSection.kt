@@ -15,7 +15,7 @@ import androidx.compose.ui.unit.dp
 import coil3.ImageLoader
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import su.afk.kemonos.profile.R
+import su.afk.kemonos.setting.R
 import su.afk.kemonos.setting.presenter.view.uiSetting.common.SectionSpacer
 import su.afk.kemonos.setting.presenter.view.uiSetting.common.SettingsSectionTitle
 import su.afk.kemonos.ui.imageLoader.LocalAppImageLoader

@@ -55,6 +55,7 @@ internal fun PopularPostsScreen(
         PostsContentPaging(
             postsViewMode = state.uiSettingModel.popularPostsViewMode,
             uiSettingModel = state.uiSettingModel,
+            gridPostsSize = state.uiSettingModel.popularPostsGridSize,
             posts = posts,
             currentTag = null,
             onPostClick = { onEvent(Event.NavigateToPost(it)) },

@@ -140,6 +140,7 @@ internal fun SearchPostsScreen(
         PostsContentPaging(
             postsViewMode = state.uiSettingModel.searchPostsViewMode,
             uiSettingModel = state.uiSettingModel,
+            gridPostsSize = state.uiSettingModel.searchPostsGridSize,
             posts = posts,
             currentTag = null,
             onPostClick = { onEvent(Event.NavigateToPost(it)) },

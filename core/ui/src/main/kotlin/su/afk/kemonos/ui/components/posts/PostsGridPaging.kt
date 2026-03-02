@@ -11,6 +11,7 @@ import androidx.paging.LoadState
 import androidx.paging.compose.LazyPagingItems
 import su.afk.kemonos.domain.models.ErrorItem
 import su.afk.kemonos.domain.models.PostDomain
+import su.afk.kemonos.preferences.ui.PostsSize
 import su.afk.kemonos.preferences.ui.PostsSize.Companion.toArrangement
 import su.afk.kemonos.preferences.ui.PostsSize.Companion.toDp
 import su.afk.kemonos.preferences.ui.UiSettingModel
@@ -20,6 +21,7 @@ import su.afk.kemonos.ui.paging.PagingAppendStateItem
 @Composable
 internal fun PostsGridPaging(
     uiSettingModel: UiSettingModel,
+    gridPostsSize: PostsSize,
     posts: LazyPagingItems<PostDomain>,
     postClick: (PostDomain) -> Unit,
     showFavCount: Boolean,
@@ -30,10 +32,10 @@ internal fun PostsGridPaging(
     val gridState = rememberSaveable(saver = LazyGridState.Saver) { LazyGridState() }
 
     LazyVerticalGrid(
-        columns = GridCells.Adaptive(minSize = uiSettingModel.postsSize.toDp()),
+        columns = GridCells.Adaptive(minSize = gridPostsSize.toDp()),
         state = gridState,
-        verticalArrangement = Arrangement.spacedBy(uiSettingModel.postsSize.toArrangement()),
-        horizontalArrangement = Arrangement.spacedBy(uiSettingModel.postsSize.toArrangement())
+        verticalArrangement = Arrangement.spacedBy(gridPostsSize.toArrangement()),
+        horizontalArrangement = Arrangement.spacedBy(gridPostsSize.toArrangement())
     ) {
         items(
             count = posts.itemCount,
@@ -45,6 +47,7 @@ internal fun PostsGridPaging(
                 onClick = { postClick(post) },
                 showFavCount = showFavCount,
                 uiSettingModel = uiSettingModel,
+                postsSize = gridPostsSize,
             )
         }
 

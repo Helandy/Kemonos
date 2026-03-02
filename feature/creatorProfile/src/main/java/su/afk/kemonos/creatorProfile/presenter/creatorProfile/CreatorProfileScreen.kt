@@ -182,6 +182,7 @@ private fun SelectedTab(
         ProfileTab.POSTS -> PostsContentPaging(
             postsViewMode = state.uiSettingModel.profilePostsViewMode,
             uiSettingModel = state.uiSettingModel,
+            gridPostsSize = state.uiSettingModel.profilePostsGridSize,
             posts = posts,
             currentTag = state.currentTag,
             onPostClick = {
