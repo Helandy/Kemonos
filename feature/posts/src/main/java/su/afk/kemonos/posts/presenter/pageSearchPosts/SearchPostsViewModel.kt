@@ -18,6 +18,7 @@ import su.afk.kemonos.posts.presenter.pageSearchPosts.SearchPostsState.*
 import su.afk.kemonos.preferences.site.ISelectedSiteUseCase
 import su.afk.kemonos.preferences.ui.IUiSettingUseCase
 import su.afk.kemonos.storage.api.repository.blacklist.IStoreBlacklistedAuthorsRepository
+import su.afk.kemonos.storage.api.repository.blacklist.blacklistKey
 import su.afk.kemonos.storage.api.repository.postsSearchHistory.IStoragePostsSearchHistoryRepository
 import su.afk.kemonos.ui.components.posts.filter.PostMediaFilter
 import su.afk.kemonos.ui.components.posts.filter.matchesMediaFilter
@@ -236,7 +237,4 @@ internal class SearchPostsViewModel @Inject constructor(
     private fun navigateToPost(post: PostDomain) {
         navigateToPostDelegate.navigateToPost(post)
     }
-
-    private fun blacklistKey(service: String, creatorId: String): String =
-        "${service.lowercase()}:$creatorId"
 }

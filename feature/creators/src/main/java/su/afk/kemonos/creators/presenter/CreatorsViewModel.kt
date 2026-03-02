@@ -118,7 +118,7 @@ internal class CreatorsViewModel @Inject constructor(
         setState { copy(loading = true) }
         try {
             /** Проверка свежий ли кэш (если нет загружаем с сети) */
-            checkFreshCache()
+            getCreatorsPagedUseCase.checkFreshCache()
 
             /** Получение доступных сервисов из бд для фильтра */
             getAvailableServicesFilter()
@@ -187,11 +187,6 @@ internal class CreatorsViewModel @Inject constructor(
             Event.SwitchSiteClicked -> switchSite()
             Event.HeaderRandomExpanded -> setState { copy(randomExpanded = !randomExpanded) }
         }
-    }
-
-    /** Проверка свежий ли кэш */
-    private suspend fun checkFreshCache() {
-        getCreatorsPagedUseCase.checkFreshCache()
     }
 
     /** Получение доступных сервисов из бд для фильтра */
