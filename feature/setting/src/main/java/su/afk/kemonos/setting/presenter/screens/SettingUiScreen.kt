@@ -16,11 +16,11 @@ import su.afk.kemonos.setting.BuildConfig
 import su.afk.kemonos.setting.R
 import su.afk.kemonos.setting.presenter.SettingState.Event
 import su.afk.kemonos.setting.presenter.SettingState.State
-import su.afk.kemonos.setting.presenter.view.uiSetting.common.SectionSpacer
-import su.afk.kemonos.setting.presenter.view.uiSetting.debug.DebugSettingsSection
-import su.afk.kemonos.setting.presenter.view.uiSetting.general.GeneralSettingsSection
-import su.afk.kemonos.setting.presenter.view.uiSetting.language.AppLanguageSettingsRow
-import su.afk.kemonos.setting.presenter.view.uiSetting.viewSettings.ViewSettingsSection
+import su.afk.kemonos.setting.presenter.view.common.SectionSpacer
+import su.afk.kemonos.setting.presenter.view.debug.DebugSettingsSection
+import su.afk.kemonos.setting.presenter.view.general.GeneralSettingsSection
+import su.afk.kemonos.setting.presenter.view.language.AppLanguageSettingsRow
+import su.afk.kemonos.setting.presenter.view.viewSettings.ViewSettingsSection
 import su.afk.kemonos.ui.presenter.baseScreen.BaseScreen
 import su.afk.kemonos.ui.presenter.baseScreen.CenterBackTopBar
 import su.afk.kemonos.ui.presenter.baseScreen.TopBarScroll

@@ -69,6 +69,8 @@ class SettingUiPreferencesDelegate @Inject constructor(
 
             is SettingState.Event.ChangeViewSetting.EditCreatorProfileTabsOrder ->
                 scope.launch { uiSetting.setCreatorProfileTabsOrder(event.value) }
+            is SettingState.Event.ChangeViewSetting.EditCreatorProfileHiddenTabs ->
+                scope.launch { uiSetting.setCreatorProfileHiddenTabs(event.value) }
 
             /** Способ перевода */
             is SettingState.Event.ChangeViewSetting.EventTranslateTarget ->

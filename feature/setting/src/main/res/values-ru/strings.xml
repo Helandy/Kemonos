@@ -62,9 +62,10 @@
     <string name="settings_ui_posts_view_mode_tags">Вид постов в тегах</string>
     <string name="settings_ui_posts_view_mode_search">Вид постов в поиске</string>
     <string name="settings_ui_creator_profile_tabs_sort_title">Порядок вкладок профиля автора</string>
-    <string name="settings_ui_creator_profile_tabs_sort_hint">Передвигай вкладки вверх/вниз, чтобы задать свой
-        порядок.
+    <string name="settings_ui_creator_profile_tabs_sort_hint">Зажми и перетаскивай карточки для сортировки.
+        Переключателями можно скрыть конкретные вкладки.
     </string>
+    <string name="settings_ui_creator_profile_tabs_posts_locked_hint">Вкладка «Посты» всегда видима</string>
     <string name="settings_creator_tab_posts">Посты</string>
     <string name="settings_creator_tab_announcements">Анонсы</string>
     <string name="settings_creator_tab_fancard">Фанкард</string>
@@ -183,6 +184,7 @@
     <string name="settings_debug_storage_files_dir">filesDir</string>
     <string name="settings_debug_storage_ext_cache_dir">externalCacheDir</string>
     <string name="settings_debug_storage_ext_files_dir">externalFilesDir</string>
+    <string name="settings_debug_storage_top_cache_folders_title">Топ папок cache (топ 5)</string>
 
     <string name="settings_debug_storage_coil_custom">Coil disk cache (custom)</string>
     <string name="settings_debug_storage_coil_actual">Coil disk cache (actual)</string>

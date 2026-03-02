@@ -21,6 +21,7 @@ internal fun ProfileTabsBar(
     tabs: List<ProfileTab>,
     selectedTab: ProfileTab,
     tabsOrder: List<CreatorProfileTabKey>,
+    hiddenTabs: Set<CreatorProfileTabKey>,
     onTabSelected: (ProfileTab) -> Unit,
     currentTag: Tag?,
     onTagClear: (() -> Unit)? = null,
@@ -34,6 +35,9 @@ internal fun ProfileTabsBar(
     val orderedTabs = tabs.sortedBy { tab ->
         desiredOrder.indexOf(tab).let { if (it == -1) Int.MAX_VALUE else it }
     }
+    val visibleTabs = orderedTabs.filter { tab ->
+        tab.toCreatorProfileTabKey() !in hiddenTabs
+    }
 
     Row(
         modifier = modifier
@@ -42,7 +46,7 @@ internal fun ProfileTabsBar(
             .padding(vertical = 4.dp),
         horizontalArrangement = Arrangement.spacedBy(6.dp)
     ) {
-        orderedTabs.forEach { tab ->
+        visibleTabs.forEach { tab ->
             val isSelected = tab == selectedTab
 
             /** Показываем кастомный чип если выбрали тег */
@@ -99,4 +103,15 @@ private fun CreatorProfileTabKey.toProfileTab(): ProfileTab = when (this) {
     CreatorProfileTabKey.LINKS -> ProfileTab.LINKS
     CreatorProfileTabKey.SIMILAR -> ProfileTab.SIMILAR
     CreatorProfileTabKey.COMMUNITY -> ProfileTab.COMMUNITY
+}
+
+private fun ProfileTab.toCreatorProfileTabKey(): CreatorProfileTabKey = when (this) {
+    ProfileTab.POSTS -> CreatorProfileTabKey.POSTS
+    ProfileTab.ANNOUNCEMENTS -> CreatorProfileTabKey.ANNOUNCEMENTS
+    ProfileTab.FANCARD -> CreatorProfileTabKey.FANCARD
+    ProfileTab.DMS -> CreatorProfileTabKey.DMS
+    ProfileTab.TAGS -> CreatorProfileTabKey.TAGS
+    ProfileTab.LINKS -> CreatorProfileTabKey.LINKS
+    ProfileTab.SIMILAR -> CreatorProfileTabKey.SIMILAR
+    ProfileTab.COMMUNITY -> CreatorProfileTabKey.COMMUNITY
 }

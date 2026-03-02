@@ -1,5 +1,7 @@
 package su.afk.kemonos.setting.presenter.screens
 
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable
@@ -9,7 +11,10 @@ import androidx.compose.ui.unit.dp
 import su.afk.kemonos.setting.R
 import su.afk.kemonos.setting.presenter.SettingState.Event
 import su.afk.kemonos.setting.presenter.SettingState.State
-import su.afk.kemonos.setting.presenter.view.uiSetting.translate.TranslateSettingsSection
+import su.afk.kemonos.setting.presenter.view.common.SectionSpacer
+import su.afk.kemonos.setting.presenter.view.common.SettingsSectionTitle
+import su.afk.kemonos.setting.presenter.view.translate.TranslateLanguageRow
+import su.afk.kemonos.setting.presenter.view.translate.TranslateTargetRow
 import su.afk.kemonos.ui.presenter.baseScreen.BaseScreen
 import su.afk.kemonos.ui.presenter.baseScreen.CenterBackTopBar
 import su.afk.kemonos.ui.presenter.baseScreen.TopBarScroll
@@ -33,13 +38,27 @@ internal fun SettingTranslateScreen(
             )
         },
     ) {
-        val ui = state.uiSettingModel
 
-        TranslateSettingsSection(
-            translateTarget = ui.translateTarget,
-            translateLanguageTag = ui.translateLanguageTag,
-            onTranslateTarget = { onEvent(Event.ChangeViewSetting.EventTranslateTarget(it)) },
-            onTranslateLanguageTag = { onEvent(Event.ChangeViewSetting.TranslateLanguageTag(it)) },
+        SectionSpacer()
+        SettingsSectionTitle(text = stringResource(R.string.settings_translate_title))
+        Spacer(Modifier.height(6.dp))
+
+        TranslateTargetRow(
+            title = stringResource(R.string.settings_translate_title),
+            value = state.uiSettingModel.translateTarget,
+            onChange = {
+                onEvent(Event.ChangeViewSetting.EventTranslateTarget(it))
+            }
+        )
+
+        Spacer(Modifier.height(8.dp))
+
+        TranslateLanguageRow(
+            title = stringResource(R.string.settings_translate_language_title),
+            languageTag = state.uiSettingModel.translateLanguageTag,
+            onChange = {
+                onEvent(Event.ChangeViewSetting.TranslateLanguageTag(it))
+            },
         )
     }
 }

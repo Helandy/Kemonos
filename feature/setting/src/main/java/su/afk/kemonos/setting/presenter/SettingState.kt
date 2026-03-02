@@ -71,6 +71,7 @@ class SettingState {
             data class TagsPostsGridSize(val value: PostsSize) : ChangeViewSetting
             data class SearchPostsGridSize(val value: PostsSize) : ChangeViewSetting
             data class EditCreatorProfileTabsOrder(val value: List<CreatorProfileTabKey>) : ChangeViewSetting
+            data class EditCreatorProfileHiddenTabs(val value: Set<CreatorProfileTabKey>) : ChangeViewSetting
 
             data class EventTranslateTarget(val value: TranslateTarget) : ChangeViewSetting
             data class EventRandomButtonPlacement(val value: RandomButtonPlacement) : ChangeViewSetting

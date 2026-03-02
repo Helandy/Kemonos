@@ -61,7 +61,10 @@
     <string name="settings_ui_posts_view_mode_tags">Tags posts layout</string>
     <string name="settings_ui_posts_view_mode_search">Search posts layout</string>
     <string name="settings_ui_creator_profile_tabs_sort_title">Author profile tabs order</string>
-    <string name="settings_ui_creator_profile_tabs_sort_hint">Move tabs up or down to set custom order.</string>
+    <string name="settings_ui_creator_profile_tabs_sort_hint">Long press and drag cards to reorder tabs. Use toggles to
+        hide specific tabs.
+    </string>
+    <string name="settings_ui_creator_profile_tabs_posts_locked_hint">Posts tab is always visible</string>
     <string name="settings_creator_tab_posts">Posts</string>
     <string name="settings_creator_tab_announcements">Announcements</string>
     <string name="settings_creator_tab_fancard">Fan cards</string>
@@ -183,6 +186,7 @@
     <string name="settings_debug_storage_files_dir">filesDir</string>
     <string name="settings_debug_storage_ext_cache_dir">externalCacheDir</string>
     <string name="settings_debug_storage_ext_files_dir">externalFilesDir</string>
+    <string name="settings_debug_storage_top_cache_folders_title">Top cache folders (top 5)</string>
 
     <string name="settings_debug_storage_coil_custom">Coil disk cache (custom)</string>
     <string name="settings_debug_storage_coil_actual">Coil disk cache (actual)</string>

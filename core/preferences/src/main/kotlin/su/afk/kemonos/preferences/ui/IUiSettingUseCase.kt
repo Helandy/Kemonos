@@ -21,6 +21,7 @@ interface IUiSettingUseCase {
     suspend fun setTagsPostsViewMode(value: PostsViewMode)
     suspend fun setSearchPostsViewMode(value: PostsViewMode)
     suspend fun setCreatorProfileTabsOrder(value: List<CreatorProfileTabKey>)
+    suspend fun setCreatorProfileHiddenTabs(value: Set<CreatorProfileTabKey>)
 
     /** Предлагать рандомных авторов */
     suspend fun setSuggestRandomAuthors(value: Boolean)
