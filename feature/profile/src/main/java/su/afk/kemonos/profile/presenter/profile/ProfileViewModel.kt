@@ -14,7 +14,7 @@ import su.afk.kemonos.navigation.NavigationManager
 import su.afk.kemonos.navigation.storage.NavigationStorage
 import su.afk.kemonos.preferences.ui.IUiSettingUseCase
 import su.afk.kemonos.profile.domain.favorites.fresh.IFreshFavoriteArtistsUpdatesUseCase
-import su.afk.kemonos.profile.navigation.AuthDest
+import su.afk.kemonos.profile.navigation.AuthDestination
 import su.afk.kemonos.profile.presenter.profile.ProfileState.*
 import su.afk.kemonos.profile.presenter.profile.delegate.LogoutDelegate
 import su.afk.kemonos.profile.utils.Const.KEY_SELECT_SITE
@@ -118,19 +118,19 @@ internal class ProfileViewModel @Inject constructor(
     /** Логин */
     private fun onLoginClick(site: SelectedSite) {
         navigationStorage.put(KEY_SELECT_SITE, site)
-        navigationManager.navigate(AuthDest.Login)
+        navigationManager.navigate(AuthDestination.Login)
     }
 
     /** Любимые профили */
     private fun onFavoriteProfilesNavigate(site: SelectedSite) {
         navigationStorage.put(KEY_SELECT_SITE, site)
-        navigationManager.navigate(AuthDest.FavoriteProfiles)
+        navigationManager.navigate(AuthDestination.FavoriteProfiles)
     }
 
     /** Любимые посты */
     private fun onFavoritePostNavigate(site: SelectedSite) {
         navigationStorage.put(KEY_SELECT_SITE, site)
-        navigationManager.navigate(AuthDest.FavoritePosts)
+        navigationManager.navigate(AuthDestination.FavoritePosts)
     }
 
     /** Настройки */
@@ -138,7 +138,7 @@ internal class ProfileViewModel @Inject constructor(
 
     private fun navigateToDownloads() = navigationManager.navigate(downloadNavigator.getDownloadsDest())
 
-    private fun navigateToAuthorsBlacklist() = navigationManager.navigate(AuthDest.AuthorsBlacklist)
+    private fun navigateToAuthorsBlacklist() = navigationManager.navigate(AuthDestination.AuthorsBlacklist)
 
     private fun onKeysClick() {
     }

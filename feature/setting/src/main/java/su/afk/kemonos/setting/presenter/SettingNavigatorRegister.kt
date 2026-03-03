@@ -6,13 +6,13 @@ import androidx.navigation3.runtime.NavKey
 import jakarta.inject.Inject
 import su.afk.kemonos.navigation.NavRegistrar
 import su.afk.kemonos.navigation.NavigationManager
-import su.afk.kemonos.setting.navigation.SettingIntent
+import su.afk.kemonos.setting.navigation.SettingDestination
 import su.afk.kemonos.setting.presenter.screens.*
 import su.afk.kemonos.ui.presenter.baseViewModel.ScreenNavigator
 
 class SettingNavigatorRegister @Inject constructor() : NavRegistrar {
     override fun register(builder: EntryProviderScope<NavKey>, nav: NavigationManager) = with(builder) {
-        entry<SettingIntent.Open> {
+        entry<SettingDestination.Open> {
             val viewModel = hiltViewModel<SettingViewModel>()
             ScreenNavigator(viewModel) { state, effect, event ->
                 SettingScreen(
@@ -23,7 +23,7 @@ class SettingNavigatorRegister @Inject constructor() : NavRegistrar {
             }
         }
 
-        entry<SettingIntent.Ui> {
+        entry<SettingDestination.Ui> {
             val viewModel = hiltViewModel<SettingViewModel>()
             ScreenNavigator(viewModel) { state, _, event ->
                 SettingUiScreen(
@@ -33,7 +33,7 @@ class SettingNavigatorRegister @Inject constructor() : NavRegistrar {
             }
         }
 
-        entry<SettingIntent.Translate> {
+        entry<SettingDestination.Translate> {
             val viewModel = hiltViewModel<SettingViewModel>()
             ScreenNavigator(viewModel) { state, _, event ->
                 SettingTranslateScreen(
@@ -43,7 +43,7 @@ class SettingNavigatorRegister @Inject constructor() : NavRegistrar {
             }
         }
 
-        entry<SettingIntent.Network> {
+        entry<SettingDestination.Network> {
             val viewModel = hiltViewModel<SettingViewModel>()
             ScreenNavigator(viewModel) { state, _, event ->
                 SettingNetworkScreen(
@@ -53,7 +53,7 @@ class SettingNavigatorRegister @Inject constructor() : NavRegistrar {
             }
         }
 
-        entry<SettingIntent.Database> {
+        entry<SettingDestination.Database> {
             val viewModel = hiltViewModel<SettingViewModel>()
             ScreenNavigator(viewModel) { state, _, event ->
                 SettingDatabaseScreen(
@@ -63,7 +63,7 @@ class SettingNavigatorRegister @Inject constructor() : NavRegistrar {
             }
         }
 
-        entry<SettingIntent.Downloads> {
+        entry<SettingDestination.Downloads> {
             val viewModel = hiltViewModel<SettingViewModel>()
             ScreenNavigator(viewModel) { state, _, event ->
                 SettingDownloadsScreen(
@@ -73,7 +73,7 @@ class SettingNavigatorRegister @Inject constructor() : NavRegistrar {
             }
         }
 
-        entry<SettingIntent.DebugStorage> {
+        entry<SettingDestination.DebugStorage> {
             val viewModel = hiltViewModel<SettingViewModel>()
             ScreenNavigator(viewModel) { state, _, event ->
                 SettingDebugStorageScreen(
@@ -83,7 +83,7 @@ class SettingNavigatorRegister @Inject constructor() : NavRegistrar {
             }
         }
 
-        entry<SettingIntent.CreatorTabsOrder> {
+        entry<SettingDestination.CreatorTabsOrder> {
             val viewModel = hiltViewModel<SettingViewModel>()
             ScreenNavigator(viewModel) { state, _, event ->
                 CreatorTabsOrderScreen(

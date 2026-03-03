@@ -2,7 +2,7 @@ package su.afk.kemonos.setting.navigation
 
 import androidx.navigation3.runtime.NavKey
 
-internal object SettingIntent {
+internal object SettingDestination {
     object Open : NavKey
     object Ui : NavKey
     object Translate : NavKey
