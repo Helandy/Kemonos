@@ -10,6 +10,9 @@ interface IStoreFavoritePostsRepository {
     suspend fun pageSearchGrouped(site: SelectedSite, query: String, limit: Int, offset: Int): List<PostDomain>
 
     suspend fun getAll(site: SelectedSite): List<PostDomain>
+
+    /** Уникальные ключи авторов в формате `service:userId` для grouped-режима. */
+    suspend fun getAllAuthorCompositeKeys(site: SelectedSite): Set<String>
     suspend fun replaceAll(site: SelectedSite, items: List<PostDomain>)
 
     suspend fun clear(site: SelectedSite)

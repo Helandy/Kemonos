@@ -36,6 +36,10 @@ internal class StoreFavoritePostsRepository @Inject constructor(
     override suspend fun getAll(site: SelectedSite): List<PostDomain> =
         dao.getAll(site).map(mapper::toDomain)
 
+    /** Возвращает уникальные ключи авторов в формате "service:userId". */
+    override suspend fun getAllAuthorCompositeKeys(site: SelectedSite): Set<String> =
+        dao.getDistinctAuthorCompositeKeys(site).toSet()
+
     override suspend fun replaceAll(site: SelectedSite, items: List<PostDomain>) {
         dao.replaceAll(site, items.map { mapper.toEntity(site, it) })
         cacheTimestamps.updateCacheTimestamp(cacheKey(site))

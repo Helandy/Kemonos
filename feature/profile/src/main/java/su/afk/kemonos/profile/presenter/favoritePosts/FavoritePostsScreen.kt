@@ -19,17 +19,19 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.paging.LoadState
+import androidx.paging.PagingData
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.emptyFlow
+import kotlinx.coroutines.flow.flowOf
 import su.afk.kemonos.domain.models.PostDomain
 import su.afk.kemonos.error.error.LocalErrorMapper
 import su.afk.kemonos.preferences.ui.PostsSize.Companion.toArrangement
 import su.afk.kemonos.preferences.ui.PostsSize.Companion.toDp
 import su.afk.kemonos.preferences.ui.PostsViewMode
 import su.afk.kemonos.preferences.ui.UiSettingModel
-import su.afk.kemonos.profile.presenter.favoritePosts.FavoritePostsState.*
+import su.afk.kemonos.profile.presenter.favoritePosts.FavoritePostsState.Event
+import su.afk.kemonos.profile.presenter.favoritePosts.FavoritePostsState.State
+import su.afk.kemonos.profile.presenter.favoritePosts.model.AuthorGroup
 import su.afk.kemonos.ui.R
 import su.afk.kemonos.ui.components.creator.CreatorListItem
 import su.afk.kemonos.ui.components.posts.PostsContentPaging
@@ -46,10 +48,7 @@ import su.afk.kemonos.profile.R as ProfileR
 internal fun FavoritePostsScreen(
     state: State,
     onEvent: (Event) -> Unit,
-    effect: Flow<Effect>,
 ) {
-    LocalErrorMapper.current
-
     val focusManager = LocalFocusManager.current
     val posts = state.posts.collectAsLazyPagingItems()
     val pullState = rememberPullToRefreshState()
@@ -137,6 +136,7 @@ internal fun FavoritePostsScreen(
 }
 
 @Composable
+/** Рендер grouped-режима: сначала хедер автора, затем его посты (list/grid). */
 private fun FavoritePostsGroupedList(
     uiSettingModel: UiSettingModel,
     postsViewMode: PostsViewMode,
@@ -193,7 +193,7 @@ private fun FavoritePostsGroupedList(
                         key = "header:${group.service}:${group.userId}",
                         span = { GridItemSpan(maxLineSpan) }
                     ) {
-                        Box(modifier = Modifier.padding(top = 12.dp, bottom = 8.dp)) {
+                        Box(modifier = Modifier.padding(top = 6.dp, bottom = 4.dp)) {
                             CreatorListItem(
                                 dateMode = uiSettingModel.dateFormatMode,
                                 service = group.service,
@@ -226,6 +226,7 @@ private fun FavoritePostsGroupedList(
     }
 }
 
+/** Строит стабильные группы постов по ключу "service:userId". */
 private fun buildAuthorGroups(
     items: List<PostDomain>,
     authorNamesByKey: Map<String, String>,
@@ -255,6 +256,7 @@ private fun androidx.compose.foundation.lazy.LazyListScope.appendStateItem(
 }
 
 @Composable
+/** Унифицированный футер append-state (loading/error/retry) для paging списка постов. */
 private fun AppendStateContent(
     posts: LazyPagingItems<PostDomain>,
 ) {
@@ -301,21 +303,77 @@ private fun AppendStateContent(
     }
 }
 
-private data class AuthorGroup(
-    val service: String,
-    val userId: String,
-    val authorName: String,
-    val posts: MutableList<PostDomain>,
-)
-
 @Preview("PreviewFavoritePostsScreen")
 @Composable
 private fun PreviewFavoritePostsScreen() {
+    val previewPosts = previewFavoritePosts()
     KemonosPreviewScreen {
         FavoritePostsScreen(
-            state = State(),
+            state = State(
+                searchQuery = "cosplay",
+                uiSettingModel = UiSettingModel(
+                    favoritePostsViewMode = PostsViewMode.GRID,
+                ),
+                posts = flowOf(PagingData.from(previewPosts)),
+                authorNamesByKey = previewAuthorNames(previewPosts),
+            ),
             onEvent = {},
-            effect = emptyFlow(),
         )
     }
 }
+
+@Preview("PreviewFavoritePostsGroupedScreen")
+@Composable
+private fun PreviewFavoritePostsGroupedScreen() {
+    val previewPosts = previewFavoritePosts()
+    KemonosPreviewScreen {
+        FavoritePostsScreen(
+            state = State(
+                groupByAuthorEnabled = true,
+                uiSettingModel = UiSettingModel(
+                    favoritePostsViewMode = PostsViewMode.LIST,
+                ),
+                posts = flowOf(PagingData.from(previewPosts)),
+                authorNamesByKey = previewAuthorNames(previewPosts),
+            ),
+            onEvent = {},
+        )
+    }
+}
+
+private fun previewFavoritePosts(): List<PostDomain> = listOf(
+    PostDomain.default().copy(
+        id = "1201",
+        userId = "lana",
+        service = "onlyfans",
+        title = "Morning set",
+        favedSeq = 1201,
+    ),
+    PostDomain.default().copy(
+        id = "1200",
+        userId = "lana",
+        service = "onlyfans",
+        title = "Studio photos",
+        favedSeq = 1200,
+    ),
+    PostDomain.default().copy(
+        id = "1199",
+        userId = "mia",
+        service = "patreon",
+        title = "Behind the scenes",
+        favedSeq = 1199,
+    ),
+    PostDomain.default().copy(
+        id = "1198",
+        userId = "aria",
+        service = "fanbox",
+        title = "Sketch pack",
+        favedSeq = 1198,
+    ),
+)
+
+private fun previewAuthorNames(posts: List<PostDomain>): Map<String, String> =
+    posts.associate { post ->
+        val key = "${post.service}:${post.userId}"
+        key to post.userId.replaceFirstChar { it.uppercaseChar() }
+    }

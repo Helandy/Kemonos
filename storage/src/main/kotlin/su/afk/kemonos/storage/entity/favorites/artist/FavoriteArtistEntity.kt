@@ -9,7 +9,9 @@ import su.afk.kemonos.domain.models.creator.FavoriteArtist
     tableName = "favorite_artists",
     primaryKeys = ["site", "service", "id"],
     indices = [
-        Index(value = ["site", "favedSeq"])
+        Index(value = ["site", "favedSeq"]),
+        Index(value = ["site", "updated"]),
+        Index(value = ["site", "lastImported"]),
     ]
 )
 data class FavoriteArtistEntity(

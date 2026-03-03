@@ -52,11 +52,12 @@ internal class FavoritePostsViewModel @Inject constructor(
     private val groupByAuthorFlow = MutableStateFlow(false)
     private var observeSearchJob: Job? = null
 
+    /** Повторная попытка должна обновлять данные, но не переинициализировать выбранный сайт. */
     override fun onRetry() {
-        loadSelectedSite()
+        onEvent(Event.Load(refresh = true))
     }
 
-    /** UI настройки */
+    /** Подписка на UI-настройки (вид/размер карточек, формат даты и т.д.). */
     private fun observeUiSetting() {
         uiSetting.prefs.distinctUntilChanged()
             .onEach { model ->
@@ -84,12 +85,14 @@ internal class FavoritePostsViewModel @Inject constructor(
         }
     }
 
+    /** Обновляет строку поиска в state и flow (реальный запрос уходит с debounce). */
     private fun onSearchQueryChanged(query: String) {
         searchQueryFlow.value = query
         setState { copy(searchQuery = query) }
     }
 
     @OptIn(FlowPreview::class)
+    /** Единый пайплайн фильтров/поиска, который пересоздает paging flow при изменениях. */
     private fun startObserveSearchOnce() {
         if (observeSearchJob != null) return
 
@@ -128,27 +131,38 @@ internal class FavoritePostsViewModel @Inject constructor(
     }
 
 
+    /**
+     * Инициализация экрана: выбираем сайт из navigation args, иначе берём уже активный в app state.
+     * Затем синхронизируем favorites и запускаем observe-пайплайн фильтров/поиска.
+     */
     private fun loadSelectedSite() = viewModelScope.launch {
-        val selectSite = navigationStorage.consume<SelectedSite>(KEY_SELECT_SITE) ?: SelectedSite.K
+        val selectSite = navigationStorage.consume<SelectedSite>(KEY_SELECT_SITE)
+            ?: selectedSiteUseCase.getSite()
 
         selectedSiteUseCase.setSiteAndAwait(selectSite)
 
         setState { copy(selectSite = selectSite) }
 
         load(refresh = false)
-        loadAuthorNames()
 
         startObserveSearchOnce()
 
         searchQueryFlow.value = currentState.searchQuery
     }
 
-    private fun loadAuthorNames() = viewModelScope.launch {
+    /**
+     * Загружает отображаемые имена авторов для grouped-режима.
+     * Использует легковесные composite-keys из БД без чтения полных PostDomain.
+     */
+    private suspend fun loadAuthorNames() {
         val compositeKeys = runCatching {
-            storeFavoritePostsRepository.getAll(currentState.selectSite).mapTo(linkedSetOf()) { post ->
-                "${post.service}:${post.userId}"
-            }
+            storeFavoritePostsRepository.getAllAuthorCompositeKeys(currentState.selectSite)
         }.getOrDefault(emptySet())
+
+        if (compositeKeys.isEmpty()) {
+            setState { copy(authorNamesByKey = emptyMap()) }
+            return
+        }
 
         val namesByKey = runCatching {
             storeCreatorsRepository.getNamesByCompositeKeys(
@@ -160,14 +174,20 @@ internal class FavoritePostsViewModel @Inject constructor(
         setState { copy(authorNamesByKey = namesByKey) }
     }
 
-    /** Получить избранные посты */
+    /** Синхронизирует favorite posts с сетью и обновляет ancillary state. */
     private fun load(refresh: Boolean = false) = viewModelScope.launch {
+        if (currentState.loading) return@launch
+
         setState { copy(loading = true) }
 
         runCatching {
             getFavoritePostsUseCase(site = currentState.selectSite, refresh = refresh)
         }.onFailure { t ->
             errorHandler.parse(t)
+        }
+
+        if (currentState.groupByAuthorEnabled || currentState.authorNamesByKey.isEmpty()) {
+            loadAuthorNames()
         }
 
         setState { copy(loading = false) }
@@ -229,7 +249,7 @@ internal class FavoritePostsViewModel @Inject constructor(
         setState { copy(groupByAuthorEnabled = enableGrouping) }
         groupByAuthorFlow.value = enableGrouping
         if (enableGrouping && currentState.authorNamesByKey.isEmpty()) {
-            loadAuthorNames()
+            viewModelScope.launch { loadAuthorNames() }
         }
     }
 

@@ -10,6 +10,7 @@ import su.afk.kemonos.domain.SelectedSite
     indices = [
         Index(value = ["site", "userId"]),
         Index(value = ["site", "cachedAt"]),
+        Index(value = ["site", "favedSeq", "id"]),
     ]
 )
 data class FavoritePostEntity(

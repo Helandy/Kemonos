@@ -24,8 +24,7 @@ interface FavoritePostsDao {
     SELECT * FROM favorite_posts
     WHERE site = :site
     ORDER BY
-        service ASC,
-        userId ASC,
+        -- grouped-режим группирует уже на UI, поэтому порядок должен совпадать с обычным feed
         CASE WHEN favedSeq IS NULL THEN 0 ELSE 1 END,
         favedSeq DESC,
         id DESC
@@ -54,8 +53,7 @@ interface FavoritePostsDao {
     WHERE site = :site
       AND title LIKE '%' || :query || '%'
     ORDER BY
-        service ASC,
-        userId ASC,
+        -- grouped-режим с поиском также должен сохранять обычную сортировку по дате
         CASE WHEN favedSeq IS NULL THEN 0 ELSE 1 END,
         favedSeq DESC,
         id DESC
@@ -82,20 +80,12 @@ interface FavoritePostsDao {
 
     @Query(
         """
-    SELECT
-        site, id, userId, service,
-        NULL AS title, NULL AS content, NULL AS added, NULL AS published, NULL AS edited,
-        NULL AS incompleteRewardsJson,
-        NULL AS pollJson,
-        NULL AS fileName, NULL AS filePath, NULL AS attachmentsJson, NULL AS tagsJson,
-        NULL AS nextId, NULL AS prevId, NULL AS favedSeq, NULL AS favCount,
-        '' AS substring,
-        0 AS cachedAt
-    FROM favorite_posts
-    WHERE site = :site
-    """
+        SELECT DISTINCT service || ':' || userId
+        FROM favorite_posts
+        WHERE site = :site
+        """
     )
-    suspend fun getAllKeysAsEntities(site: SelectedSite): List<FavoritePostEntity>
+    suspend fun getDistinctAuthorCompositeKeys(site: SelectedSite): List<String>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertAll(items: List<FavoritePostEntity>)
