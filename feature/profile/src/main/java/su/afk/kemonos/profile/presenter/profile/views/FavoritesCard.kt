@@ -5,7 +5,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Dashboard
-import androidx.compose.material.icons.filled.GroupWork
+import androidx.compose.material.icons.filled.Groups
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -38,7 +38,7 @@ internal fun FavoritesCard(
 
         ProfileActionCard(
             title = stringResource(R.string.profile_favorites_profiles),
-            icon = Icons.Filled.GroupWork,
+            icon = Icons.Filled.Groups,
             badgeCount = updatesCount,
             enabled = enabled,
             onClick = onFavoriteProfiles,

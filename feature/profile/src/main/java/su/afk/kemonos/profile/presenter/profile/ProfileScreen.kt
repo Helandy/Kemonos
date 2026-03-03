@@ -20,7 +20,6 @@ import su.afk.kemonos.profile.api.model.Login
 import su.afk.kemonos.profile.presenter.profile.ProfileState.Event
 import su.afk.kemonos.profile.presenter.profile.ProfileState.State
 import su.afk.kemonos.profile.presenter.profile.views.*
-import su.afk.kemonos.profile.presenter.profile.views.faq.FaqBlock
 import su.afk.kemonos.ui.date.toUiDateTime
 import su.afk.kemonos.ui.presenter.baseScreen.BaseScreen
 import su.afk.kemonos.ui.preview.KemonosPreviewScreen
@@ -122,7 +121,7 @@ internal fun ProfileScreen(
             DownloadsButton(onClick = { onEvent(Event.NavigateToDownloads) })
             AuthorsBlacklistButton(onClick = { onEvent(Event.NavigateToAuthorsBlacklist) })
             SettingsButton(onClick = { onEvent(Event.NavigateToSettings) })
-            FaqBlock()
+            FaqButton(onClick = { onEvent(Event.NavigateToFaq) })
             Spacer(Modifier.height(8.dp))
         }
 

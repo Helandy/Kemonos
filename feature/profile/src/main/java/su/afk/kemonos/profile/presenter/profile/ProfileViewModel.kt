@@ -19,6 +19,7 @@ import su.afk.kemonos.profile.domain.favorites.fresh.IFreshFavoriteArtistsUpdate
 import su.afk.kemonos.profile.navigation.AuthDestination
 import su.afk.kemonos.profile.presenter.profile.ProfileState.*
 import su.afk.kemonos.profile.presenter.profile.delegate.LogoutDelegate
+import su.afk.kemonos.profile.presenter.profile.model.AuthSnapshot
 import su.afk.kemonos.profile.utils.Const.KEY_SELECT_SITE
 import su.afk.kemonos.setting.api.useCase.IGetSettingDestinationUseCase
 import su.afk.kemonos.ui.presenter.baseViewModel.BaseViewModelNew
@@ -56,6 +57,7 @@ internal class ProfileViewModel @Inject constructor(
             Event.NavigateToDownloads -> navigateToDownloads()
             Event.NavigateToSettings -> navigateToSettings()
             Event.NavigateToAuthorsBlacklist -> navigateToAuthorsBlacklist()
+            Event.NavigateToFaq -> navigateToFaq()
         }
     }
 
@@ -149,6 +151,8 @@ internal class ProfileViewModel @Inject constructor(
 
     private fun navigateToAuthorsBlacklist() = navigationManager.navigate(AuthDestination.AuthorsBlacklist)
 
+    private fun navigateToFaq() = navigationManager.navigate(AuthDestination.Faq)
+
     private fun refreshFavoritesCounters() {
         setState {
             copy(
@@ -158,13 +162,4 @@ internal class ProfileViewModel @Inject constructor(
             )
         }
     }
-
-    private data class AuthSnapshot(
-        val isKemonoAuthorized: Boolean,
-        val isCoomerAuthorized: Boolean,
-        val kemonoLogin: su.afk.kemonos.profile.api.model.Login?,
-        val coomerLogin: su.afk.kemonos.profile.api.model.Login?,
-        val kemonoUpdatedFavoritesCount: Int,
-        val coomerUpdatedFavoritesCount: Int,
-    )
 }

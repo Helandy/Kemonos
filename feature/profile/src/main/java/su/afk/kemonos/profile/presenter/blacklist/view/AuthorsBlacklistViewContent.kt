@@ -1,6 +1,7 @@
 package su.afk.kemonos.profile.presenter.blacklist.view
 
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -28,7 +29,10 @@ internal fun RemoveAuthorDialog(
         },
         confirmButton = {
             TextButton(onClick = onConfirm) {
-                Text(stringResource(R.string.profile_authors_blacklist_remove_confirm))
+                Text(
+                    text = stringResource(R.string.profile_authors_blacklist_remove_confirm),
+                    color = MaterialTheme.colorScheme.error
+                )
             }
         },
         dismissButton = {

@@ -14,4 +14,6 @@ internal object AuthDestination {
     object FavoritePosts : NavKey
 
     object AuthorsBlacklist : NavKey
+
+    object Faq : NavKey
 }

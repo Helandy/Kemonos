@@ -37,6 +37,7 @@ internal class ProfileState {
         data object NavigateToDownloads : Event
         data object NavigateToSettings : Event
         data object NavigateToAuthorsBlacklist : Event
+        data object NavigateToFaq : Event
     }
 
     sealed interface Effect : UiEffect
