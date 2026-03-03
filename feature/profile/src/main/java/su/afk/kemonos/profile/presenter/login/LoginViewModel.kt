@@ -12,7 +12,7 @@ import su.afk.kemonos.navigation.storage.NavigationStorage
 import su.afk.kemonos.preferences.site.ISelectedSiteUseCase
 import su.afk.kemonos.profile.domain.login.LoginResult
 import su.afk.kemonos.profile.domain.login.LoginUseCase
-import su.afk.kemonos.profile.navigation.AuthDest
+import su.afk.kemonos.profile.navigation.AuthDestination
 import su.afk.kemonos.profile.presenter.login.LoginState.*
 import su.afk.kemonos.profile.utils.AppCredentialStore
 import su.afk.kemonos.profile.utils.Const.KEY_SELECT_SITE
@@ -140,7 +140,7 @@ internal class LoginViewModel @Inject constructor(
     /** навигация на регистрацию */
     private fun onNavigateToRegisterClick() {
         navigationStorage.put(KEY_SELECT_SITE, currentState.selectSite)
-        navigationManager.replace(AuthDest.Register)
+        navigationManager.replace(AuthDestination.Register)
     }
 
     suspend fun savePassword(activity: Activity, username: String, password: String) {
@@ -148,7 +148,7 @@ internal class LoginViewModel @Inject constructor(
     }
 
     fun navigateAfterLogin() {
-        navigationManager.popBackTo(AuthDest.Profile)
+        navigationManager.popBackTo(AuthDestination.Profile)
     }
 
     fun pickPassword(activity: Activity) = viewModelScope.launch {

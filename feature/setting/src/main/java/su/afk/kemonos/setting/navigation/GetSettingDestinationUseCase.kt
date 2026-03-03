@@ -5,5 +5,5 @@ import su.afk.kemonos.setting.api.useCase.IGetSettingDestinationUseCase
 import javax.inject.Inject
 
 class GetSettingDestinationUseCase @Inject constructor() : IGetSettingDestinationUseCase {
-    override fun invoke(): NavKey = SettingIntent.Open
+    override fun invoke(): NavKey = SettingDestination.Open
 }

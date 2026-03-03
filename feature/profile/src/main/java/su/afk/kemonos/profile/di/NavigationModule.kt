@@ -6,14 +6,14 @@ import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import dagger.multibindings.IntoSet
 import su.afk.kemonos.navigation.NavRegistrar
-import su.afk.kemonos.profile.api.domain.IProfileNavigator
-import su.afk.kemonos.profile.navigation.ProfileNavigator
+import su.afk.kemonos.profile.api.domain.IGetProfileDestinationUseCase
+import su.afk.kemonos.profile.navigation.GetGetProfileDestinationUseCase
 import su.afk.kemonos.profile.presenter.blacklist.AuthorsBlacklistNavigatorRegister
-import su.afk.kemonos.profile.presenter.favoritePosts.FavoritePostsNavigator
+import su.afk.kemonos.profile.presenter.favoritePosts.FavoritePostsNavigatorRegister
 import su.afk.kemonos.profile.presenter.favoriteProfiles.FavoriteProfilesRegister
-import su.afk.kemonos.profile.presenter.login.LoginNavigator
+import su.afk.kemonos.profile.presenter.login.LoginNavigatorRegister
 import su.afk.kemonos.profile.presenter.profile.ProfileNavigatorRegister
-import su.afk.kemonos.profile.presenter.register.RegisterNavigator
+import su.afk.kemonos.profile.presenter.register.RegisterNavigatorRegister
 import javax.inject.Singleton
 
 @Module
@@ -26,11 +26,11 @@ interface NavigationModule {
 
     @Binds
     @IntoSet
-    fun bindProfileLogin(impl: LoginNavigator): NavRegistrar
+    fun bindProfileLogin(impl: LoginNavigatorRegister): NavRegistrar
 
     @Binds
     @IntoSet
-    fun bindRegisterNavigator(impl: RegisterNavigator): NavRegistrar
+    fun bindRegisterNavigator(impl: RegisterNavigatorRegister): NavRegistrar
 
     @Binds
     @IntoSet
@@ -38,7 +38,7 @@ interface NavigationModule {
 
     @Binds
     @IntoSet
-    fun bindFavoritePostsNavigator(impl: FavoritePostsNavigator): NavRegistrar
+    fun bindFavoritePostsNavigator(impl: FavoritePostsNavigatorRegister): NavRegistrar
 
     @Binds
     @IntoSet
@@ -46,5 +46,5 @@ interface NavigationModule {
 
     @Binds
     @Singleton
-    fun bindProfileNavigator(impl: ProfileNavigator): IProfileNavigator
+    fun bindProfileNavigator(impl: GetGetProfileDestinationUseCase): IGetProfileDestinationUseCase
 }

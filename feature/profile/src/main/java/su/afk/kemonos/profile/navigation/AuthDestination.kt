@@ -2,7 +2,7 @@ package su.afk.kemonos.profile.navigation
 
 import androidx.navigation3.runtime.NavKey
 
-internal object AuthDest {
+internal object AuthDestination {
     object Profile : NavKey
 
     object Login : NavKey

@@ -17,7 +17,6 @@ internal class AuthorsBlacklistState {
 
     sealed interface Event : UiEvent {
         data object Back : Event
-        data object Retry : Event
         data class QueryChanged(val value: String) : Event
         data class OpenProfile(val service: String, val creatorId: String) : Event
         data class RequestRemoveAuthor(val author: BlacklistedAuthor) : Event

@@ -6,12 +6,12 @@ import androidx.navigation3.runtime.NavKey
 import jakarta.inject.Inject
 import su.afk.kemonos.navigation.NavRegistrar
 import su.afk.kemonos.navigation.NavigationManager
-import su.afk.kemonos.profile.navigation.AuthDest
+import su.afk.kemonos.profile.navigation.AuthDestination
 import su.afk.kemonos.ui.presenter.baseViewModel.ScreenNavigator
 
 class FavoriteProfilesRegister @Inject constructor() : NavRegistrar {
     override fun register(builder: EntryProviderScope<NavKey>, nav: NavigationManager) = with(builder) {
-        entry<AuthDest.FavoriteProfiles> {
+        entry<AuthDestination.FavoriteProfiles> {
             val viewModel = hiltViewModel<FavoriteProfilesViewModel>()
             ScreenNavigator(viewModel) { state, effect, onEventSent ->
                 FavoriteProfilesScreen(

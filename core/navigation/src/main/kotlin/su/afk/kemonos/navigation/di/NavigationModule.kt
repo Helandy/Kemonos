@@ -10,7 +10,7 @@ import su.afk.kemonos.main.api.IMainNavigator
 import su.afk.kemonos.navigation.NavigationManager
 import su.afk.kemonos.navigation.tab.BottomTab
 import su.afk.kemonos.posts.api.IPostsNavigator
-import su.afk.kemonos.profile.api.domain.IProfileNavigator
+import su.afk.kemonos.profile.api.domain.IGetProfileDestinationUseCase
 import javax.inject.Singleton
 
 @Module
@@ -24,7 +24,7 @@ object NavigationModule {
     fun provideTabRoots(
         creatorsNavigator: ICreatorsNavigator,
         postsNavigator: IPostsNavigator,
-        profileNavigator: IProfileNavigator,
+        profileNavigator: IGetProfileDestinationUseCase,
     ): @JvmSuppressWildcards Map<BottomTab, NavKey> = mapOf(
         BottomTab.CREATORS to creatorsNavigator.getCreatorsDest(),
         BottomTab.POSTS to postsNavigator.getPostsDest(),

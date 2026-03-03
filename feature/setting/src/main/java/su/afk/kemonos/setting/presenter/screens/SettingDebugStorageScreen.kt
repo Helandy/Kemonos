@@ -10,6 +10,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -18,12 +19,11 @@ import su.afk.kemonos.setting.presenter.SettingState.Event
 import su.afk.kemonos.setting.presenter.SettingState.State
 import su.afk.kemonos.setting.presenter.view.common.SectionSpacer
 import su.afk.kemonos.setting.presenter.view.common.SettingsSectionTitle
+import su.afk.kemonos.setting.presenter.view.debug.CacheFolderInfo
 import su.afk.kemonos.setting.presenter.view.debug.DebugPathBlock
 import su.afk.kemonos.setting.presenter.view.debug.StorageInfo
 import su.afk.kemonos.setting.presenter.view.debug.collectStorageInfo
 import su.afk.kemonos.ui.imageLoader.LocalAppImageLoader
-import su.afk.kemonos.ui.presenter.baseScreen.BaseScreen
-import su.afk.kemonos.ui.presenter.baseScreen.CenterBackTopBar
 import su.afk.kemonos.ui.presenter.baseScreen.TopBarScroll
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -31,27 +31,23 @@ import su.afk.kemonos.ui.presenter.baseScreen.TopBarScroll
 internal fun SettingDebugStorageScreen(
     state: State,
     onEvent: (Event) -> Unit,
+    initialInfo: StorageInfo? = null,
 ) {
     val imageLoader = LocalAppImageLoader.current
 
-    BaseScreen(
-        contentModifier = Modifier.padding(horizontal = 8.dp),
-        isScroll = true,
+    SettingsScreenScaffold(
+        title = stringResource(R.string.settings_debug_storage_title),
+        onBack = { onEvent(Event.Back) },
         isLoading = state.loading,
+        contentModifier = Modifier.padding(horizontal = 8.dp),
         topBarScroll = TopBarScroll.Pinned,
-        customTopBar = { scrollBehavior ->
-            CenterBackTopBar(
-                title = stringResource(R.string.settings_debug_storage_title),
-                onBack = { onEvent(Event.Back) },
-                scrollBehavior = scrollBehavior,
-            )
-        },
     ) {
         val context = LocalContext.current
 
-        var info by remember { mutableStateOf<StorageInfo?>(null) }
+        var info by remember(initialInfo) { mutableStateOf(initialInfo) }
 
-        LaunchedEffect(imageLoader) {
+        LaunchedEffect(imageLoader, initialInfo) {
+            if (initialInfo != null) return@LaunchedEffect
             info = withContext(Dispatchers.IO) { collectStorageInfo(context) }
         }
 
@@ -109,5 +105,43 @@ internal fun SettingDebugStorageScreen(
                 )
             }
         }
+    }
+}
+
+@Preview(name = "Setting Debug Storage", showBackground = true)
+@Composable
+private fun PreviewSettingDebugStorageScreen() {
+    SettingsPreview {
+        SettingDebugStorageScreen(
+            state = previewSettingState(),
+            onEvent = {},
+            initialInfo = StorageInfo(
+                cacheDirPath = "/data/user/0/su.afk.kemonos/cache",
+                cacheDirMb = 248,
+                filesDirPath = "/data/user/0/su.afk.kemonos/files",
+                filesDirMb = 31,
+                externalCacheDirPath = "/storage/emulated/0/Android/data/su.afk.kemonos/cache",
+                externalCacheDirMb = 84,
+                externalFilesDirPath = "/storage/emulated/0/Android/data/su.afk.kemonos/files",
+                externalFilesDirMb = 16,
+                topCacheFolders = listOf(
+                    CacheFolderInfo(
+                        name = "image_cache",
+                        path = "/data/user/0/su.afk.kemonos/cache/image_cache",
+                        sizeMb = 182,
+                    ),
+                    CacheFolderInfo(
+                        name = "video_previews",
+                        path = "/data/user/0/su.afk.kemonos/cache/video_previews",
+                        sizeMb = 46,
+                    ),
+                    CacheFolderInfo(
+                        name = "http_cache",
+                        path = "/data/user/0/su.afk.kemonos/cache/http_cache",
+                        sizeMb = 20,
+                    ),
+                ),
+            ),
+        )
     }
 }

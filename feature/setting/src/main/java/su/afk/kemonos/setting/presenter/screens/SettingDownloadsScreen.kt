@@ -7,6 +7,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import su.afk.kemonos.setting.R
 import su.afk.kemonos.setting.presenter.SettingState.Event
@@ -15,8 +16,6 @@ import su.afk.kemonos.setting.presenter.view.SwitchRow
 import su.afk.kemonos.setting.presenter.view.common.SectionSpacer
 import su.afk.kemonos.setting.presenter.view.common.SettingsSectionTitle
 import su.afk.kemonos.setting.presenter.view.download.DownloadFolderModeRow
-import su.afk.kemonos.ui.presenter.baseScreen.BaseScreen
-import su.afk.kemonos.ui.presenter.baseScreen.CenterBackTopBar
 import su.afk.kemonos.ui.presenter.baseScreen.TopBarScroll
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -25,18 +24,12 @@ internal fun SettingDownloadsScreen(
     state: State,
     onEvent: (Event) -> Unit,
 ) {
-    BaseScreen(
-        contentModifier = Modifier.padding(horizontal = 8.dp),
-        isScroll = true,
+    SettingsScreenScaffold(
+        title = stringResource(R.string.settings_downloads_title),
+        onBack = { onEvent(Event.Back) },
         isLoading = state.loading,
+        contentModifier = Modifier.padding(horizontal = 8.dp),
         topBarScroll = TopBarScroll.Pinned,
-        customTopBar = { scrollBehavior ->
-            CenterBackTopBar(
-                title = stringResource(R.string.settings_downloads_title),
-                onBack = { onEvent(Event.Back) },
-                scrollBehavior = scrollBehavior,
-            )
-        },
     ) {
         SectionSpacer()
         SettingsSectionTitle(text = stringResource(R.string.settings_downloads_title))
@@ -55,6 +48,17 @@ internal fun SettingDownloadsScreen(
             value = state.uiSettingModel.downloadFolderMode,
             addServiceName = state.uiSettingModel.addServiceName,
             onChange = { onEvent(Event.ChangeViewSetting.EditDownloadFolderMode(it)) }
+        )
+    }
+}
+
+@Preview(name = "Setting Downloads", showBackground = true)
+@Composable
+private fun PreviewSettingDownloadsScreen() {
+    SettingsPreview {
+        SettingDownloadsScreen(
+            state = previewSettingState(),
+            onEvent = {},
         )
     }
 }

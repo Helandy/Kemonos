@@ -6,12 +6,12 @@ import androidx.navigation3.runtime.NavKey
 import jakarta.inject.Inject
 import su.afk.kemonos.navigation.NavRegistrar
 import su.afk.kemonos.navigation.NavigationManager
-import su.afk.kemonos.profile.navigation.AuthDest
+import su.afk.kemonos.profile.navigation.AuthDestination
 import su.afk.kemonos.ui.presenter.baseViewModel.ScreenNavigator
 
-class LoginNavigator @Inject constructor() : NavRegistrar {
+class LoginNavigatorRegister @Inject constructor() : NavRegistrar {
     override fun register(builder: EntryProviderScope<NavKey>, nav: NavigationManager) = with(builder) {
-        entry<AuthDest.Login> {
+        entry<AuthDestination.Login> {
             val viewModel = hiltViewModel<LoginViewModel>()
             ScreenNavigator(viewModel) { state, effect, event ->
                 LoginScreen(

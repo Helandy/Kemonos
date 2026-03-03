@@ -14,7 +14,7 @@ import su.afk.kemonos.preferences.useCase.CacheKeys
 import su.afk.kemonos.preferences.useCase.CacheTimes
 import su.afk.kemonos.preferences.useCase.ICacheTimestampUseCase
 import su.afk.kemonos.setting.BuildConfig
-import su.afk.kemonos.setting.navigation.SettingIntent
+import su.afk.kemonos.setting.navigation.SettingDestination
 import su.afk.kemonos.setting.presenter.delegates.SettingApiDelegate
 import su.afk.kemonos.setting.presenter.delegates.SettingCacheDelegate
 import su.afk.kemonos.setting.presenter.delegates.SettingUiPreferencesDelegate
@@ -41,15 +41,13 @@ class SettingViewModel @Inject constructor(
     override fun onEvent(event: SettingState.Event) {
         when (event) {
             SettingState.Event.Back -> navManager.back()
-            SettingState.Event.OpenCreatorTabsOrderEditor -> navManager.navigate(SettingIntent.CreatorTabsOrder)
-            SettingState.Event.OpenUiSettings -> navManager.navigate(SettingIntent.Ui)
-            SettingState.Event.OpenTranslateSettings -> navManager.navigate(SettingIntent.Translate)
-            SettingState.Event.OpenNetworkSettings -> navManager.navigate(SettingIntent.Network)
-            SettingState.Event.OpenDatabaseSettings -> navManager.navigate(SettingIntent.Database)
-            SettingState.Event.OpenDownloadSettings -> navManager.navigate(SettingIntent.Downloads)
-            SettingState.Event.OpenDebugStorageSettings -> {
-                if (BuildConfig.DEBUG) navManager.navigate(SettingIntent.DebugStorage)
-            }
+            SettingState.Event.OpenCreatorTabsOrderEditor -> navManager.navigate(SettingDestination.CreatorTabsOrder)
+            SettingState.Event.OpenUiSettings -> navManager.navigate(SettingDestination.Ui)
+            SettingState.Event.OpenTranslateSettings -> navManager.navigate(SettingDestination.Translate)
+            SettingState.Event.OpenNetworkSettings -> navManager.navigate(SettingDestination.Network)
+            SettingState.Event.OpenDatabaseSettings -> navManager.navigate(SettingDestination.Database)
+            SettingState.Event.OpenDownloadSettings -> navManager.navigate(SettingDestination.Downloads)
+            SettingState.Event.OpenDebugStorageSettings -> navManager.navigate(SettingDestination.DebugStorage)
 
             is SettingState.Event.ChangeViewSetting ->
                 uiPrefsDelegate.handle(event, viewModelScope)

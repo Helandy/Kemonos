@@ -12,7 +12,7 @@ import su.afk.kemonos.navigation.storage.NavigationStorage
 import su.afk.kemonos.preferences.site.ISelectedSiteUseCase
 import su.afk.kemonos.profile.domain.register.RegisterResult
 import su.afk.kemonos.profile.domain.register.RegisterUseCase
-import su.afk.kemonos.profile.navigation.AuthDest
+import su.afk.kemonos.profile.navigation.AuthDestination
 import su.afk.kemonos.profile.presenter.register.RegisterState.*
 import su.afk.kemonos.profile.utils.AppCredentialStore
 import su.afk.kemonos.profile.utils.Const.KEY_SELECT_SITE
@@ -132,7 +132,7 @@ internal class RegisterViewModel @Inject constructor(
 
     private fun onNavigateToLoginClick() {
         navigationStorage.put(KEY_SELECT_SITE, currentState.selectSite)
-        navigationManager.replace(AuthDest.Login)
+        navigationManager.replace(AuthDestination.Login)
     }
 
     suspend fun savePassword(activity: Activity, username: String, password: String) {
@@ -145,6 +145,6 @@ internal class RegisterViewModel @Inject constructor(
         pendingNavigateToLogin = false
 
         navigationStorage.put(KEY_SELECT_SITE, currentState.selectSite)
-        navigationManager.navigate(AuthDest.Login)
+        navigationManager.navigate(AuthDestination.Login)
     }
 }

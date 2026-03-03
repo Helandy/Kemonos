@@ -21,12 +21,12 @@ import su.afk.kemonos.setting.BuildConfig
 import su.afk.kemonos.setting.R
 import su.afk.kemonos.setting.presenter.SettingState.Event
 import su.afk.kemonos.setting.presenter.SettingState.State
+import su.afk.kemonos.setting.presenter.screens.SettingsPreview
+import su.afk.kemonos.setting.presenter.screens.SettingsScreenScaffold
+import su.afk.kemonos.setting.presenter.screens.previewSettingState
 import su.afk.kemonos.setting.presenter.view.language.openAppDeepLinksSettingsSafely
 import su.afk.kemonos.setting.presenter.view.language.openAppLanguageSettingsSafely
-import su.afk.kemonos.ui.presenter.baseScreen.BaseScreen
-import su.afk.kemonos.ui.presenter.baseScreen.CenterBackTopBar
 import su.afk.kemonos.ui.presenter.baseScreen.TopBarScroll
-import su.afk.kemonos.ui.preview.KemonosPreviewScreen
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -37,19 +37,58 @@ internal fun SettingScreen(
 ) {
     val context = LocalContext.current
 
-    BaseScreen(
-        contentModifier = Modifier.padding(horizontal = 12.dp),
-        isScroll = true,
+    SettingsScreenScaffold(
+        title = stringResource(R.string.setting),
+        onBack = { onEvent(Event.Back) },
         isLoading = state.loading,
+        contentModifier = Modifier.padding(horizontal = 12.dp),
         topBarScroll = TopBarScroll.ExitUntilCollapsed,
-        customTopBar = { scrollBehavior ->
-            CenterBackTopBar(
-                title = stringResource(R.string.setting),
-                onBack = { onEvent(Event.Back) },
-                scrollBehavior = scrollBehavior,
-            )
-        },
     ) {
+        val hubItems = listOf(
+            SettingHubEntry(
+                icon = Icons.Outlined.Settings,
+                title = stringResource(R.string.settings_ui_title),
+                subtitle = stringResource(R.string.settings_hub_ui_subtitle),
+                onClick = { onEvent(Event.OpenUiSettings) },
+            ),
+            SettingHubEntry(
+                icon = Icons.Outlined.Info,
+                title = stringResource(R.string.settings_translate_title),
+                subtitle = stringResource(R.string.settings_hub_translate_subtitle),
+                onClick = { onEvent(Event.OpenTranslateSettings) },
+            ),
+            SettingHubEntry(
+                icon = Icons.Outlined.Link,
+                title = stringResource(R.string.settings_hub_network_title),
+                subtitle = stringResource(R.string.settings_hub_network_subtitle),
+                onClick = { onEvent(Event.OpenNetworkSettings) },
+            ),
+            SettingHubEntry(
+                icon = Icons.Outlined.FolderOpen,
+                title = stringResource(R.string.settings_hub_database_title),
+                subtitle = stringResource(R.string.settings_hub_database_subtitle),
+                onClick = { onEvent(Event.OpenDatabaseSettings) },
+            ),
+            SettingHubEntry(
+                icon = Icons.Outlined.Download,
+                title = stringResource(R.string.settings_downloads_title),
+                subtitle = stringResource(R.string.settings_hub_downloads_subtitle),
+                onClick = { onEvent(Event.OpenDownloadSettings) },
+            ),
+            SettingHubEntry(
+                icon = Icons.Outlined.Language,
+                title = stringResource(R.string.settings_ui_app_language_title),
+                subtitle = stringResource(R.string.settings_ui_app_language_subtitle),
+                onClick = { context.openAppLanguageSettingsSafely() },
+            ),
+            SettingHubEntry(
+                icon = Icons.AutoMirrored.Outlined.OpenInNew,
+                title = stringResource(R.string.settings_ui_deep_links_title),
+                subtitle = stringResource(R.string.settings_ui_deep_links_subtitle),
+                onClick = { context.openAppDeepLinksSettingsSafely() },
+            ),
+        )
+
         Text(
             text = stringResource(R.string.settings_hub_subtitle),
             style = MaterialTheme.typography.bodyMedium,
@@ -60,54 +99,14 @@ internal fun SettingScreen(
         Column(
             verticalArrangement = Arrangement.spacedBy(10.dp)
         ) {
-            SettingsHubItem(
-                icon = Icons.Outlined.Settings,
-                title = stringResource(R.string.settings_ui_title),
-                subtitle = stringResource(R.string.settings_hub_ui_subtitle),
-                onClick = { onEvent(Event.OpenUiSettings) }
-            )
-
-            SettingsHubItem(
-                icon = Icons.Outlined.Info,
-                title = stringResource(R.string.settings_translate_title),
-                subtitle = stringResource(R.string.settings_hub_translate_subtitle),
-                onClick = { onEvent(Event.OpenTranslateSettings) }
-            )
-
-            SettingsHubItem(
-                icon = Icons.Outlined.Link,
-                title = stringResource(R.string.settings_hub_network_title),
-                subtitle = stringResource(R.string.settings_hub_network_subtitle),
-                onClick = { onEvent(Event.OpenNetworkSettings) }
-            )
-
-            SettingsHubItem(
-                icon = Icons.Outlined.FolderOpen,
-                title = stringResource(R.string.settings_hub_database_title),
-                subtitle = stringResource(R.string.settings_hub_database_subtitle),
-                onClick = { onEvent(Event.OpenDatabaseSettings) }
-            )
-
-            SettingsHubItem(
-                icon = Icons.Outlined.Download,
-                title = stringResource(R.string.settings_downloads_title),
-                subtitle = stringResource(R.string.settings_hub_downloads_subtitle),
-                onClick = { onEvent(Event.OpenDownloadSettings) }
-            )
-
-            SettingsHubItem(
-                icon = Icons.Outlined.Language,
-                title = stringResource(R.string.settings_ui_app_language_title),
-                subtitle = stringResource(R.string.settings_ui_app_language_subtitle),
-                onClick = { context.openAppLanguageSettingsSafely() }
-            )
-
-            SettingsHubItem(
-                icon = Icons.AutoMirrored.Outlined.OpenInNew,
-                title = stringResource(R.string.settings_ui_deep_links_title),
-                subtitle = stringResource(R.string.settings_ui_deep_links_subtitle),
-                onClick = { context.openAppDeepLinksSettingsSafely() }
-            )
+            hubItems.forEach { item ->
+                SettingsHubItem(
+                    icon = item.icon,
+                    title = item.title,
+                    subtitle = item.subtitle,
+                    onClick = item.onClick,
+                )
+            }
         }
 
         Spacer(Modifier.height(10.dp))
@@ -131,6 +130,13 @@ internal fun SettingScreen(
         Spacer(Modifier.height(24.dp))
     }
 }
+
+private data class SettingHubEntry(
+    val icon: ImageVector,
+    val title: String,
+    val subtitle: String,
+    val onClick: () -> Unit,
+)
 
 @Composable
 private fun SettingsHubItem(
@@ -182,9 +188,9 @@ private fun SettingsHubItem(
 @Preview("PreviewSettingScreen")
 @Composable
 private fun PreviewSettingScreen() {
-    KemonosPreviewScreen {
+    SettingsPreview {
         SettingScreen(
-            state = State().copy(loading = false),
+            state = previewSettingState(),
             onEvent = {},
             effect = emptyFlow(),
         )

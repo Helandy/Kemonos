@@ -200,6 +200,34 @@ fun DefaultEmptyContent() {
     }
 }
 
+@Composable
+fun EmptyContentCenter() {
+    Box(
+        modifier = Modifier
+            .fillMaxSize().padding(bottom = 16.dp),
+        contentAlignment = Alignment.Center
+    ) {
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Text(
+                text = stringResource(R.string.empty_screen),
+                modifier = Modifier.fillMaxWidth().padding(bottom = 32.dp),
+                textAlign = TextAlign.Center,
+                style = MaterialTheme.typography.headlineSmall,
+                color = MaterialTheme.colorScheme.onBackground
+            )
+
+            AsyncImage(
+                model = R.drawable.not_found,
+                imageLoader = LocalAppImageLoader.current,
+                contentDescription = null,
+                modifier = Modifier.size(250.dp)
+            )
+        }
+    }
+}
+
 /**
  * topBar не реагирует на скролл
  * pinned (обычно не “уезжает”)

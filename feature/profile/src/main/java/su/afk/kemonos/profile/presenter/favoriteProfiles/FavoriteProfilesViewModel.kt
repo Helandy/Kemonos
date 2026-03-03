@@ -15,6 +15,7 @@ import su.afk.kemonos.navigation.NavigationManager
 import su.afk.kemonos.navigation.storage.NavigationStorage
 import su.afk.kemonos.preferences.favoriteProfiles.IFavoriteProfilesFiltersUseCase
 import su.afk.kemonos.preferences.site.ISelectedSiteUseCase
+import su.afk.kemonos.preferences.site.setSiteAndAwait
 import su.afk.kemonos.preferences.ui.IUiSettingUseCase
 import su.afk.kemonos.profile.api.domain.IGetFavoriteArtistsUseCase
 import su.afk.kemonos.profile.api.domain.favoriteProfiles.FavoriteSortedType
@@ -114,8 +115,7 @@ internal class FavoriteProfilesViewModel @Inject constructor(
     private fun loadSelectedSite() = viewModelScope.launch {
         val site = navigationStorage.consume<SelectedSite>(KEY_SELECT_SITE) ?: SelectedSite.K
 
-        selectedSiteUseCase.setSite(site)
-        selectedSiteUseCase.selectedSite.first { it == site }
+        selectedSiteUseCase.setSiteAndAwait(site)
 
         val savedFilters = favoriteProfilesFiltersUseCase.read(site)
         val restoredSortType = runCatching {

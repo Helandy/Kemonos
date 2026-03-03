@@ -7,13 +7,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import su.afk.kemonos.setting.R
 import su.afk.kemonos.setting.presenter.SettingState.Event
 import su.afk.kemonos.setting.presenter.SettingState.State
 import su.afk.kemonos.ui.components.input.BaseUrlDomainField
-import su.afk.kemonos.ui.presenter.baseScreen.BaseScreen
-import su.afk.kemonos.ui.presenter.baseScreen.CenterBackTopBar
 import su.afk.kemonos.ui.presenter.baseScreen.TopBarScroll
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -22,18 +21,12 @@ internal fun SettingNetworkScreen(
     state: State,
     onEvent: (Event) -> Unit,
 ) {
-    BaseScreen(
-        contentModifier = Modifier.padding(horizontal = 8.dp),
-        isScroll = true,
+    SettingsScreenScaffold(
+        title = stringResource(R.string.settings_hub_network_title),
+        onBack = { onEvent(Event.Back) },
         isLoading = state.loading,
+        contentModifier = Modifier.padding(horizontal = 8.dp),
         topBarScroll = TopBarScroll.Pinned,
-        customTopBar = { scrollBehavior ->
-            CenterBackTopBar(
-                title = stringResource(R.string.settings_hub_network_title),
-                onBack = { onEvent(Event.Back) },
-                scrollBehavior = scrollBehavior,
-            )
-        },
     ) {
         Column {
             Text(
@@ -125,5 +118,16 @@ internal fun SettingNetworkScreen(
                 )
             }
         }
+    }
+}
+
+@Preview(name = "Setting Network", showBackground = true)
+@Composable
+private fun PreviewSettingNetworkScreen() {
+    SettingsPreview {
+        SettingNetworkScreen(
+            state = previewSettingState(),
+            onEvent = {},
+        )
     }
 }

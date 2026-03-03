@@ -1,6 +1,7 @@
 package su.afk.kemonos.preferences.site
 
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import su.afk.kemonos.domain.SelectedSite
@@ -17,6 +18,12 @@ internal class SelectedSiteUseCase @Inject constructor(
     }
 
     override fun getSite(): SelectedSite = selectedSite.value
+}
+
+/** Устанавливает сайт и ждёт, пока [selectedSite] действительно отдаст это значение. */
+suspend fun ISelectedSiteUseCase.setSiteAndAwait(site: SelectedSite) {
+    setSite(site)
+    selectedSite.first { it == site }
 }
 
 /**

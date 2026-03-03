@@ -16,6 +16,7 @@ import su.afk.kemonos.error.error.storage.RetryStorage
 import su.afk.kemonos.navigation.NavigationManager
 import su.afk.kemonos.navigation.storage.NavigationStorage
 import su.afk.kemonos.preferences.site.ISelectedSiteUseCase
+import su.afk.kemonos.preferences.site.setSiteAndAwait
 import su.afk.kemonos.preferences.ui.IUiSettingUseCase
 import su.afk.kemonos.profile.domain.favorites.GetFavoritePostsUseCase
 import su.afk.kemonos.profile.domain.favorites.posts.GetFavoritePostsPagingUseCase
@@ -130,8 +131,7 @@ internal class FavoritePostsViewModel @Inject constructor(
     private fun loadSelectedSite() = viewModelScope.launch {
         val selectSite = navigationStorage.consume<SelectedSite>(KEY_SELECT_SITE) ?: SelectedSite.K
 
-        selectedSiteUseCase.setSite(selectSite)
-        selectedSiteUseCase.selectedSite.first { it == selectSite }
+        selectedSiteUseCase.setSiteAndAwait(selectSite)
 
         setState { copy(selectSite = selectSite) }
 

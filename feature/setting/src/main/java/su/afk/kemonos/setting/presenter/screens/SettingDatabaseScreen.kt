@@ -10,6 +10,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import su.afk.kemonos.domain.SelectedSite
 import su.afk.kemonos.setting.R
@@ -19,8 +20,6 @@ import su.afk.kemonos.setting.presenter.view.CacheSizeSliderRow
 import su.afk.kemonos.setting.presenter.view.cache.CacheRow
 import su.afk.kemonos.setting.presenter.view.common.SectionSpacer
 import su.afk.kemonos.setting.presenter.view.common.SettingsSectionTitle
-import su.afk.kemonos.ui.presenter.baseScreen.BaseScreen
-import su.afk.kemonos.ui.presenter.baseScreen.CenterBackTopBar
 import su.afk.kemonos.ui.presenter.baseScreen.TopBarScroll
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -29,18 +28,12 @@ internal fun SettingDatabaseScreen(
     state: State,
     onEvent: (Event) -> Unit,
 ) {
-    BaseScreen(
-        contentModifier = Modifier.padding(horizontal = 8.dp),
-        isScroll = true,
+    SettingsScreenScaffold(
+        title = stringResource(R.string.settings_hub_database_title),
+        onBack = { onEvent(Event.Back) },
         isLoading = state.loading,
+        contentModifier = Modifier.padding(horizontal = 8.dp),
         topBarScroll = TopBarScroll.Pinned,
-        customTopBar = { scrollBehavior ->
-            CenterBackTopBar(
-                title = stringResource(R.string.settings_hub_database_title),
-                onBack = { onEvent(Event.Back) },
-                scrollBehavior = scrollBehavior,
-            )
-        },
     ) {
         SectionSpacer()
         SettingsSectionTitle(text = stringResource(R.string.settings_cache_sizes_title))
@@ -157,5 +150,16 @@ internal fun SettingDatabaseScreen(
                 showDivider = false,
             )
         }
+    }
+}
+
+@Preview(name = "Setting Database", showBackground = true)
+@Composable
+private fun PreviewSettingDatabaseScreen() {
+    SettingsPreview {
+        SettingDatabaseScreen(
+            state = previewSettingState(),
+            onEvent = {},
+        )
     }
 }
