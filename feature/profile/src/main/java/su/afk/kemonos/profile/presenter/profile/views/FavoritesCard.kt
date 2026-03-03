@@ -1,13 +1,14 @@
 package su.afk.kemonos.profile.presenter.profile.views
 
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
-import androidx.compose.material3.Badge
-import androidx.compose.material3.Card
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Dashboard
+import androidx.compose.material.icons.filled.GroupWork
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -21,67 +22,34 @@ import su.afk.kemonos.ui.preview.KemonosPreviewScreen
 internal fun FavoritesCard(
     titleId: Int,
     updatesCount: Int,
+    enabled: Boolean,
     onFavoriteProfiles: () -> Unit,
     onFavoritePosts: () -> Unit,
 ) {
-    Text(
-        text = stringResource(titleId),
-        style = MaterialTheme.typography.titleSmall,
-        fontWeight = FontWeight.Medium
-    )
-
     Column(
         modifier = Modifier.fillMaxWidth(),
-        verticalArrangement = Arrangement.spacedBy(12.dp)
+        verticalArrangement = Arrangement.spacedBy(10.dp),
     ) {
-        Card(
-            modifier = Modifier.clickable { onFavoriteProfiles() }
-        ) {
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(12.dp),
-                contentAlignment = Alignment.Center,
-            ) {
-                Text(
-                    text = stringResource(R.string.profile_favorites_profiles),
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.Medium
-                )
+        Text(
+            text = stringResource(titleId),
+            style = MaterialTheme.typography.titleMedium,
+            fontWeight = FontWeight.SemiBold,
+        )
 
-                if (updatesCount > 0) {
-                    Badge(
-                        modifier = Modifier
-                            .align(Alignment.TopEnd)
-                            .offset(x = 6.dp, y = (-6).dp),
-                        containerColor = MaterialTheme.colorScheme.error,
-                        contentColor = MaterialTheme.colorScheme.onError
-                    ) {
-                        Text(
-                            text = updatesCount.toString(),
-                            style = MaterialTheme.typography.labelSmall,
-                        )
-                    }
-                }
-            }
-        }
+        ProfileActionCard(
+            title = stringResource(R.string.profile_favorites_profiles),
+            icon = Icons.Filled.GroupWork,
+            badgeCount = updatesCount,
+            enabled = enabled,
+            onClick = onFavoriteProfiles,
+        )
 
-        Card(
-            modifier = Modifier.clickable { onFavoritePosts() }
-        ) {
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(12.dp),
-                contentAlignment = Alignment.Center
-            ) {
-                Text(
-                    text = stringResource(R.string.profile_favorites_posts),
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.Medium
-                )
-            }
-        }
+        ProfileActionCard(
+            title = stringResource(R.string.profile_favorites_posts),
+            icon = Icons.Filled.Dashboard,
+            enabled = enabled,
+            onClick = onFavoritePosts,
+        )
     }
 }
 
@@ -92,6 +60,7 @@ private fun PreviewFavoritesCard() {
         FavoritesCard(
             titleId = R.string.profile_favorites_title_coomer,
             updatesCount = 1,
+            enabled = true,
             onFavoriteProfiles = {},
             onFavoritePosts = {},
         )

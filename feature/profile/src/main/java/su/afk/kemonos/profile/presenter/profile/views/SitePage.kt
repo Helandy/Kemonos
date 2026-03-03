@@ -22,7 +22,7 @@ internal fun SitePage(
     onFavoriteProfiles: () -> Unit,
     onFavoritePosts: () -> Unit,
 ) {
-    Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+    Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
         SiteAccountCard(
             dateMode = dateMode,
             title = title,
@@ -32,16 +32,15 @@ internal fun SitePage(
             onLogoutClick = onLogoutClick,
         )
 
-        if (isLoggedIn) {
-            FavoritesCard(
-                titleId = if (site == SelectedSite.C)
-                    R.string.profile_favorites_title_coomer
-                else
-                    R.string.profile_favorites_title_kemono,
-                onFavoriteProfiles = onFavoriteProfiles,
-                onFavoritePosts = onFavoritePosts,
-                updatesCount = updatedFavoritesCount
-            )
-        }
+        FavoritesCard(
+            titleId = if (site == SelectedSite.C)
+                R.string.profile_favorites_title_coomer
+            else
+                R.string.profile_favorites_title_kemono,
+            enabled = isLoggedIn,
+            onFavoriteProfiles = onFavoriteProfiles,
+            onFavoritePosts = onFavoritePosts,
+            updatesCount = updatedFavoritesCount
+        )
     }
 }
