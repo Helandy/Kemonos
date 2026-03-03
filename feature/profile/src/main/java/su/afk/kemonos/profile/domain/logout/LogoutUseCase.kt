@@ -1,7 +1,7 @@
 package su.afk.kemonos.profile.domain.logout
 
 import retrofit2.HttpException
-import su.afk.kemonos.profile.data.IAuthRepository
+import su.afk.kemonos.profile.domain.IAuthRepository
 import java.io.IOException
 import javax.inject.Inject
 

@@ -18,7 +18,6 @@ class RegisterNavigatorRegister @Inject constructor() : NavRegistrar {
                     state = state,
                     effect = effect,
                     onEvent = event,
-                    savePassword = viewModel::savePassword,
                 )
             }
         }
