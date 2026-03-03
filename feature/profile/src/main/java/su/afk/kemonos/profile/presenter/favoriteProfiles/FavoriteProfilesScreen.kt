@@ -11,25 +11,29 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.paging.LoadState
+import androidx.paging.PagingData
 import androidx.paging.compose.collectAsLazyPagingItems
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.emptyFlow
+import kotlinx.coroutines.flow.flowOf
+import su.afk.kemonos.domain.models.creator.FavoriteArtist
+import su.afk.kemonos.preferences.ui.CreatorViewMode
+import su.afk.kemonos.preferences.ui.UiSettingModel
 import su.afk.kemonos.profile.R
 import su.afk.kemonos.profile.api.domain.favoriteProfiles.FreshFavoriteArtistKey
-import su.afk.kemonos.profile.presenter.favoriteProfiles.FavoriteProfilesState.*
+import su.afk.kemonos.profile.presenter.favoriteProfiles.FavoriteProfilesState.Event
+import su.afk.kemonos.profile.presenter.favoriteProfiles.FavoriteProfilesState.State
 import su.afk.kemonos.profile.presenter.favoriteProfiles.views.favoriteProfilesSortOptions
 import su.afk.kemonos.profile.presenter.favoriteProfiles.views.uiDateBySort
 import su.afk.kemonos.ui.components.creator.CreatorsContentPaging
 import su.afk.kemonos.ui.components.searchBar.SearchBarNew
 import su.afk.kemonos.ui.presenter.baseScreen.BaseScreen
 import su.afk.kemonos.ui.presenter.baseScreen.CenterBackTopBar
-import su.afk.kemonos.ui.presenter.baseScreen.DefaultEmptyContent
+import su.afk.kemonos.ui.presenter.baseScreen.EmptyContentCenter
 import su.afk.kemonos.ui.presenter.baseScreen.TopBarScroll
 import su.afk.kemonos.ui.preview.KemonosPreviewScreen
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-internal fun FavoriteProfilesScreen(state: State, onEvent: (Event) -> Unit, effect: Flow<Effect>) {
+internal fun FavoriteProfilesScreen(state: State, onEvent: (Event) -> Unit) {
     val sortOptions = favoriteProfilesSortOptions()
     val pullState = rememberPullToRefreshState()
     val pagingItems = state.artistsPaged.collectAsLazyPagingItems()
@@ -66,7 +70,7 @@ internal fun FavoriteProfilesScreen(state: State, onEvent: (Event) -> Unit, effe
         )
 
         if (pagingIsEmpty) {
-            DefaultEmptyContent()
+            EmptyContentCenter()
         }
 
         PullToRefreshBox(
@@ -106,11 +110,62 @@ internal fun FavoriteProfilesScreen(state: State, onEvent: (Event) -> Unit, effe
 @Preview("PreviewFavoriteProfilesScreen")
 @Composable
 private fun PreviewFavoriteProfilesScreen() {
+    val artists = previewFavoriteArtists()
     KemonosPreviewScreen {
         FavoriteProfilesScreen(
-            state = State(),
+            state = State(
+                services = listOf("Services", "onlyfans", "patreon", "fanbox"),
+                selectedService = "Services",
+                searchQuery = "a",
+                artistsPaged = flowOf(PagingData.from(artists)),
+                freshSet = setOf(
+                    FreshFavoriteArtistKey(
+                        name = artists.first().name,
+                        service = artists.first().service,
+                        id = artists.first().id,
+                    )
+                ),
+                uiSettingModel = UiSettingModel(
+                    creatorsFavoriteViewMode = CreatorViewMode.LIST,
+                ),
+            ),
             onEvent = {},
-            effect = emptyFlow(),
         )
     }
 }
+
+private fun previewFavoriteArtists(): List<FavoriteArtist> = listOf(
+    FavoriteArtist(
+        favedSeq = 2501,
+        id = "lana",
+        indexed = "2026-03-01T10:00:00Z",
+        lastImported = "2026-03-01T10:00:00Z",
+        name = "Lana Bloom",
+        publicId = "lana-bloom",
+        relationId = 1,
+        service = "onlyfans",
+        updated = "2026-03-01T10:00:00Z",
+    ),
+    FavoriteArtist(
+        favedSeq = 2500,
+        id = "mia",
+        indexed = "2026-02-28T10:00:00Z",
+        lastImported = "2026-02-28T10:00:00Z",
+        name = "Mia Rae",
+        publicId = "mia-rae",
+        relationId = 2,
+        service = "patreon",
+        updated = "2026-02-28T10:00:00Z",
+    ),
+    FavoriteArtist(
+        favedSeq = 2499,
+        id = "aria",
+        indexed = "2026-02-27T10:00:00Z",
+        lastImported = "2026-02-27T10:00:00Z",
+        name = "Aria Sketch",
+        publicId = "aria-sketch",
+        relationId = 3,
+        service = "fanbox",
+        updated = "2026-02-27T10:00:00Z",
+    ),
+)

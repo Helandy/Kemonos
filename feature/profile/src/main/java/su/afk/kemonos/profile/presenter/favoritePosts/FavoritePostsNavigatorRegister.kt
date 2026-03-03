@@ -13,11 +13,10 @@ class FavoritePostsNavigatorRegister @Inject constructor() : NavRegistrar {
     override fun register(builder: EntryProviderScope<NavKey>, nav: NavigationManager) = with(builder) {
         entry<AuthDestination.FavoritePosts> {
             val viewModel = hiltViewModel<FavoritePostsViewModel>()
-            ScreenNavigator(viewModel) { state, effect, event ->
+            ScreenNavigator(viewModel) { state, _, event ->
                 FavoritePostsScreen(
                     state = state,
                     onEvent = event,
-                    effect = effect,
                 )
             }
         }

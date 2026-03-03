@@ -85,6 +85,7 @@ internal class FavoriteProfilesViewModel @Inject constructor(
         }
     }
 
+    /** Подписка на UI-настройки (вид карточек, формат даты и т.д.). */
     private fun observeUiSetting() {
         uiSetting.prefs
             .distinctUntilChanged()
@@ -92,6 +93,7 @@ internal class FavoriteProfilesViewModel @Inject constructor(
             .launchIn(viewModelScope)
     }
 
+    /** Запускает observe-пайплайн поиска только один раз за lifecycle VM. */
     private fun startObserveSearch() {
         if (observeJob != null) return
 
@@ -99,21 +101,26 @@ internal class FavoriteProfilesViewModel @Inject constructor(
     }
 
     @OptIn(FlowPreview::class)
+    /** Debounce + trim + distinct для поиска, после чего пересоздаем paging flow. */
     private fun observeSearch(): Job {
         return searchQueryFlow
             .debounce(500L)
             .map { it.trim() }
             .distinctUntilChanged()
             .onEach { q ->
-                // важно: state.searchQuery должен совпадать с тем, что реально используем
                 setState { copy(searchQuery = q) }
                 requestPaging()
             }
             .launchIn(viewModelScope)
     }
 
+    /**
+     * Инициализирует сайт/фильтры и запускает первичный refresh+paging.
+     * Если сайт не передали через навигацию, используем текущий выбранный сайт приложения.
+     */
     private fun loadSelectedSite() = viewModelScope.launch {
-        val site = navigationStorage.consume<SelectedSite>(KEY_SELECT_SITE) ?: SelectedSite.K
+        val site = navigationStorage.consume<SelectedSite>(KEY_SELECT_SITE)
+            ?: selectedSiteUseCase.getSite()
 
         selectedSiteUseCase.setSiteAndAwait(site)
 
@@ -139,6 +146,7 @@ internal class FavoriteProfilesViewModel @Inject constructor(
         requestPaging()
     }
 
+    /** Пересоздает Flow пейджинга из локального Room с текущими фильтрами/sort. */
     private fun requestPaging() {
         val s = currentState.selectedService
         val q = currentState.searchQuery
@@ -159,7 +167,10 @@ internal class FavoriteProfilesViewModel @Inject constructor(
         }
     }
 
+    /** Обновляет кэш из сети и синхронизирует UI-метаданные (services + freshSet). */
     private fun load(refresh: Boolean) = viewModelScope.launch {
+        if (currentState.loading || currentState.refreshing) return@launch
+
         setState { copy(loading = !refresh, refreshing = refresh) }
 
         runCatching {

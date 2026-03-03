@@ -48,6 +48,7 @@ internal object DatabaseKemonoModule {
                 KemonoFrom10To11,
                 KemonoFrom11To12,
                 KemonoFrom12To13,
+                KemonoFrom13To14,
             )
             .build()
 

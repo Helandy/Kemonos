@@ -13,10 +13,9 @@ class FavoriteProfilesRegister @Inject constructor() : NavRegistrar {
     override fun register(builder: EntryProviderScope<NavKey>, nav: NavigationManager) = with(builder) {
         entry<AuthDestination.FavoriteProfiles> {
             val viewModel = hiltViewModel<FavoriteProfilesViewModel>()
-            ScreenNavigator(viewModel) { state, effect, onEventSent ->
+            ScreenNavigator(viewModel) { state, _, onEventSent ->
                 FavoriteProfilesScreen(
                     state = state,
-                    effect = effect,
                     onEvent = onEventSent,
                 )
             }

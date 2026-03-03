@@ -6,6 +6,7 @@ import su.afk.kemonos.domain.models.PostDomain
 import su.afk.kemonos.domain.models.creator.FavoriteArtist
 import su.afk.kemonos.network.util.call
 import su.afk.kemonos.profile.api.domain.favoriteProfiles.FavoriteSortedType
+import su.afk.kemonos.profile.data.FavoritesRepository.Companion.MIN_POST_SEARCH_QUERY_LENGTH
 import su.afk.kemonos.profile.data.api.FavoritesApi
 import su.afk.kemonos.profile.data.dto.favorites.artist.FavoriteArtistDto.Companion.toDomain
 import su.afk.kemonos.storage.api.repository.favorites.artist.IStoreFavoriteArtistsRepository
@@ -49,6 +50,7 @@ internal class FavoritesRepository @Inject constructor(
     private val postsStore: IStoreFavoritePostsRepository,
 ) : IFavoritesRepository {
 
+    /** Пагинация favorite artists из локального Room-кэша. */
     override suspend fun pageFavoriteArtists(
         site: SelectedSite,
         service: String,
@@ -72,6 +74,10 @@ internal class FavoritesRepository @Inject constructor(
     override suspend fun getDistinctServices(site: SelectedSite): List<String> =
         artistsStore.getDistinctServices(site)
 
+    /**
+     * Пагинация favorite posts из локального Room-кэша.
+     * Для короткого запроса (< [MIN_POST_SEARCH_QUERY_LENGTH]) отключаем LIKE-поиск ради скорости.
+     */
     override suspend fun pageFavoritePosts(
         site: SelectedSite,
         query: String?,
@@ -80,7 +86,7 @@ internal class FavoritesRepository @Inject constructor(
         offset: Int,
     ): List<PostDomain> {
         val q = query?.trim().orEmpty()
-        return if (q.length >= 2) {
+        return if (q.length >= MIN_POST_SEARCH_QUERY_LENGTH) {
             if (groupByAuthor) {
                 postsStore.pageSearchGrouped(site = site, query = q, limit = limit, offset = offset)
             } else {
@@ -95,6 +101,7 @@ internal class FavoritesRepository @Inject constructor(
         }
     }
 
+    /** Возвращает favorite artists с учетом freshness кэша и флага принудительного refresh. */
     override suspend fun getFavoriteArtists(
         site: SelectedSite,
         getOldCache: Boolean,
@@ -107,17 +114,16 @@ internal class FavoritesRepository @Inject constructor(
         return refreshFavoriteArtists(site)
     }
 
+    /** Принудительно обновляет favorite artists из сети и полностью синхронизирует Room-кэш. */
     override suspend fun refreshFavoriteArtists(site: SelectedSite): List<FavoriteArtist> {
         api.getFavoriteArtists().call { list ->
             val network = list.map { it.toDomain() }
-
-            if (network.isNotEmpty()) {
-                artistsStore.replaceAll(site, network)
-            }
+            artistsStore.replaceAll(site, network)
             return network
         }
     }
 
+    /** Возвращает favorite posts из кэша или сети и синхронизирует Room-кэш. */
     override suspend fun getFavoritePosts(site: SelectedSite, refresh: Boolean): List<PostDomain> {
         if (!refresh && postsStore.isCacheFresh(site)) {
             return postsStore.getAll(site)
@@ -125,12 +131,12 @@ internal class FavoritesRepository @Inject constructor(
 
         return api.getFavoritePosts().call { list ->
             val network = list.map { it.toDomain() }
-
-            if (network.isNotEmpty()) {
-                postsStore.replaceAll(site, network)
-            }
-
+            postsStore.replaceAll(site, network)
             network
         }
+    }
+
+    private companion object {
+        private const val MIN_POST_SEARCH_QUERY_LENGTH = 2
     }
 }
