@@ -73,6 +73,25 @@
     <string name="profile_account_logged_in_name">Logged in as %1$s</string>
     <string name="profile_account_logged_in_date">Joined: %1$s</string>
     <string name="profile_logout_button">Logout</string>
+    <string name="profile_faq_screen_title">Help &amp; FAQ</string>
+    <string name="profile_faq_header_title">Frequently asked questions</string>
+    <string name="profile_faq_header_subtitle">Quick answers about downloads, playback, and data differences.</string>
+    <string name="profile_faq_q1_title">Why is there no download everything button?</string>
+    <string name="profile_faq_q1_body">Mass downloads heavily load content hosts and can slow access for everyone. You
+        can still download files post by post.
+    </string>
+    <string name="profile_faq_q2_title">Does the app have its own video player?</string>
+    <string name="profile_faq_q2_body">Not yet. For stable playback, open videos in a dedicated player like VLC or your
+        preferred app.
+    </string>
+    <string name="profile_faq_q3_title">How do I listen to audio files?</string>
+    <string name="profile_faq_q3_body">For online audio playback, use VLC. The app will open the media stream in VLC or
+        another compatible external player.
+    </string>
+    <string name="profile_faq_q4_title">The website and app show different data. What should I do?</string>
+    <string name="profile_faq_q4_body">Please open an issue and include an example link. This helps reproduce the
+        mismatch and fix it faster.
+    </string>
 
     <!-- LogoutDialog -->
     <string name="logout_title">Log out of %1$s?</string>

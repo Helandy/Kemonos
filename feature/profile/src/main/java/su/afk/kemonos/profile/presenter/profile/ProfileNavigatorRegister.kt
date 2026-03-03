@@ -13,10 +13,9 @@ class ProfileNavigatorRegister @Inject constructor() : NavRegistrar {
     override fun register(builder: EntryProviderScope<NavKey>, nav: NavigationManager) = with(builder) {
         entry<AuthDestination.Profile> {
             val viewModel = hiltViewModel<ProfileViewModel>()
-            ScreenNavigator(viewModel) { state, effect, event ->
+            ScreenNavigator(viewModel) { state, _, event ->
                 ProfileScreen(
                     state = state,
-                    effect = effect,
                     onEvent = event,
                 )
             }

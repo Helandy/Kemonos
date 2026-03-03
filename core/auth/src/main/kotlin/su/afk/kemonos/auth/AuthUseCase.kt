@@ -1,6 +1,7 @@
 package su.afk.kemonos.auth
 
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
 import su.afk.kemonos.domain.SelectedSite
 import su.afk.kemonos.profile.api.model.Login
@@ -10,7 +11,7 @@ class ObserveAuthStateUseCase @Inject constructor(
     private val authLocalDataSource: IAuthLocalDataSource,
 ) {
     operator fun invoke(): Flow<AuthState> =
-        authLocalDataSource.authState
+        authLocalDataSource.authState.distinctUntilChanged()
 }
 
 class IsAuthKemonoUseCase @Inject constructor(

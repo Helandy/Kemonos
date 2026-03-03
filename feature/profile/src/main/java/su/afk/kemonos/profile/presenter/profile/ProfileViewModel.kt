@@ -1,10 +1,12 @@
 package su.afk.kemonos.profile.presenter.profile
 
+import androidx.navigation3.runtime.NavKey
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.launch
 import su.afk.kemonos.auth.ObserveAuthStateUseCase
 import su.afk.kemonos.domain.SelectedSite
 import su.afk.kemonos.download.api.IDownloadNavigator
@@ -17,6 +19,7 @@ import su.afk.kemonos.profile.domain.favorites.fresh.IFreshFavoriteArtistsUpdate
 import su.afk.kemonos.profile.navigation.AuthDestination
 import su.afk.kemonos.profile.presenter.profile.ProfileState.*
 import su.afk.kemonos.profile.presenter.profile.delegate.LogoutDelegate
+import su.afk.kemonos.profile.presenter.profile.model.AuthSnapshot
 import su.afk.kemonos.profile.utils.Const.KEY_SELECT_SITE
 import su.afk.kemonos.setting.api.useCase.IGetSettingDestinationUseCase
 import su.afk.kemonos.ui.presenter.baseViewModel.BaseViewModelNew
@@ -37,9 +40,10 @@ internal class ProfileViewModel @Inject constructor(
 ) : BaseViewModelNew<State, Event, Effect>() {
 
     override fun createInitialState(): State = State()
+    private var authObserveJob: Job? = null
 
     override fun onRetry() {
-        observeAuth()
+        refreshFavoritesCounters()
     }
 
     override fun onEvent(event: Event) {
@@ -53,17 +57,13 @@ internal class ProfileViewModel @Inject constructor(
             Event.NavigateToDownloads -> navigateToDownloads()
             Event.NavigateToSettings -> navigateToSettings()
             Event.NavigateToAuthorsBlacklist -> navigateToAuthorsBlacklist()
-            Event.KeysClick -> onKeysClick()
-            Event.ReviewDMsClick -> onReviewDMsClick()
-            Event.ExportFavoritesClick -> onExportFavoritesClick()
-            Event.ChangeUsernameClick -> onChangeUsernameClick()
-            Event.ChangePasswordClick -> onChangePasswordClick()
+            Event.NavigateToFaq -> navigateToFaq()
         }
     }
 
     init {
         observeUiSetting()
-        observeAuth()
+        startObserveAuth()
     }
 
     /** UI настройки */
@@ -75,28 +75,37 @@ internal class ProfileViewModel @Inject constructor(
             .launchIn(viewModelScope)
     }
 
-    /** Проверка авторизации */
-    private fun observeAuth() = viewModelScope.launch {
-        observeAuthStateUseCase().distinctUntilChanged().collect { auth ->
-            val isKemono = auth.isKemonoAuthorized
-            val isCoomer = auth.isCoomerAuthorized
+    /** Подписка на auth-state. Важно запускать только один collector на lifecycle VM. */
+    private fun startObserveAuth() {
+        if (authObserveJob != null) return
 
-            val kCount = freshUpdatesUseCase.get(SelectedSite.K).size
-            val cCount = freshUpdatesUseCase.get(SelectedSite.C).size
-
-            setState {
-                copy(
-                    isLoading = false,
-                    isLoginKemono = isKemono,
-                    isLoginCoomer = isCoomer,
-                    isLogin = isKemono || isCoomer,
+        authObserveJob = observeAuthStateUseCase()
+            .map { auth ->
+                AuthSnapshot(
+                    isKemonoAuthorized = auth.isKemonoAuthorized,
+                    isCoomerAuthorized = auth.isCoomerAuthorized,
                     kemonoLogin = auth.kemono.user,
                     coomerLogin = auth.coomer.user,
-                    kemonoUpdatedFavoritesCount = kCount,
-                    coomerUpdatedFavoritesCount = cCount,
+                    kemonoUpdatedFavoritesCount = freshUpdatesUseCase.get(SelectedSite.K).size,
+                    coomerUpdatedFavoritesCount = freshUpdatesUseCase.get(SelectedSite.C).size,
                 )
             }
-        }
+            .distinctUntilChanged()
+            .onEach { snapshot ->
+                setState {
+                    copy(
+                        isLoading = false,
+                        isLoginKemono = snapshot.isKemonoAuthorized,
+                        isLoginCoomer = snapshot.isCoomerAuthorized,
+                        isLogin = snapshot.isKemonoAuthorized || snapshot.isCoomerAuthorized,
+                        kemonoLogin = snapshot.kemonoLogin,
+                        coomerLogin = snapshot.coomerLogin,
+                        kemonoUpdatedFavoritesCount = snapshot.kemonoUpdatedFavoritesCount,
+                        coomerUpdatedFavoritesCount = snapshot.coomerUpdatedFavoritesCount,
+                    )
+                }
+            }
+            .launchIn(viewModelScope)
     }
 
     /** Выйти */
@@ -117,20 +126,22 @@ internal class ProfileViewModel @Inject constructor(
 
     /** Логин */
     private fun onLoginClick(site: SelectedSite) {
-        navigationStorage.put(KEY_SELECT_SITE, site)
-        navigationManager.navigate(AuthDestination.Login)
+        navigateWithSelectedSite(site = site, destination = AuthDestination.Login)
     }
 
     /** Любимые профили */
     private fun onFavoriteProfilesNavigate(site: SelectedSite) {
-        navigationStorage.put(KEY_SELECT_SITE, site)
-        navigationManager.navigate(AuthDestination.FavoriteProfiles)
+        navigateWithSelectedSite(site = site, destination = AuthDestination.FavoriteProfiles)
     }
 
     /** Любимые посты */
     private fun onFavoritePostNavigate(site: SelectedSite) {
+        navigateWithSelectedSite(site = site, destination = AuthDestination.FavoritePosts)
+    }
+
+    private fun navigateWithSelectedSite(site: SelectedSite, destination: NavKey) {
         navigationStorage.put(KEY_SELECT_SITE, site)
-        navigationManager.navigate(AuthDestination.FavoritePosts)
+        navigationManager.navigate(destination)
     }
 
     /** Настройки */
@@ -140,18 +151,15 @@ internal class ProfileViewModel @Inject constructor(
 
     private fun navigateToAuthorsBlacklist() = navigationManager.navigate(AuthDestination.AuthorsBlacklist)
 
-    private fun onKeysClick() {
-    }
+    private fun navigateToFaq() = navigationManager.navigate(AuthDestination.Faq)
 
-    private fun onReviewDMsClick() {
-    }
-
-    private fun onExportFavoritesClick() {
-    }
-
-    private fun onChangeUsernameClick() {
-    }
-
-    private fun onChangePasswordClick() {
+    private fun refreshFavoritesCounters() {
+        setState {
+            copy(
+                isLoading = false,
+                kemonoUpdatedFavoritesCount = freshUpdatesUseCase.get(SelectedSite.K).size,
+                coomerUpdatedFavoritesCount = freshUpdatesUseCase.get(SelectedSite.C).size,
+            )
+        }
     }
 }
