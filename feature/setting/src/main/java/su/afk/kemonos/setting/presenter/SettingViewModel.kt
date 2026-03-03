@@ -47,9 +47,7 @@ class SettingViewModel @Inject constructor(
             SettingState.Event.OpenNetworkSettings -> navManager.navigate(SettingIntent.Network)
             SettingState.Event.OpenDatabaseSettings -> navManager.navigate(SettingIntent.Database)
             SettingState.Event.OpenDownloadSettings -> navManager.navigate(SettingIntent.Downloads)
-            SettingState.Event.OpenDebugStorageSettings -> {
-                if (BuildConfig.DEBUG) navManager.navigate(SettingIntent.DebugStorage)
-            }
+            SettingState.Event.OpenDebugStorageSettings -> navManager.navigate(SettingIntent.DebugStorage)
 
             is SettingState.Event.ChangeViewSetting ->
                 uiPrefsDelegate.handle(event, viewModelScope)

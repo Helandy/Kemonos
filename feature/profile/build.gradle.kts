@@ -14,6 +14,7 @@ android {
         buildConfig = true
     }
 }
+
 dependencies {
     implementation(libs.bundles.retrofit)
     implementation(libs.bundles.coil)

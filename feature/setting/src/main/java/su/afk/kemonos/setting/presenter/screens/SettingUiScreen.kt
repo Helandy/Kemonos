@@ -11,6 +11,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import su.afk.kemonos.setting.BuildConfig
 import su.afk.kemonos.setting.R
@@ -21,8 +22,6 @@ import su.afk.kemonos.setting.presenter.view.debug.DebugSettingsSection
 import su.afk.kemonos.setting.presenter.view.general.GeneralSettingsSection
 import su.afk.kemonos.setting.presenter.view.language.AppLanguageSettingsRow
 import su.afk.kemonos.setting.presenter.view.viewSettings.ViewSettingsSection
-import su.afk.kemonos.ui.presenter.baseScreen.BaseScreen
-import su.afk.kemonos.ui.presenter.baseScreen.CenterBackTopBar
 import su.afk.kemonos.ui.presenter.baseScreen.TopBarScroll
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -33,18 +32,12 @@ internal fun SettingUiScreen(
 ) {
     val ui = state.uiSettingModel
 
-    BaseScreen(
-        contentModifier = Modifier.padding(horizontal = 8.dp),
-        isScroll = true,
+    SettingsScreenScaffold(
+        title = stringResource(R.string.settings_ui_title),
+        onBack = { onEvent(Event.Back) },
         isLoading = state.loading,
+        contentModifier = Modifier.padding(horizontal = 8.dp),
         topBarScroll = TopBarScroll.ExitUntilCollapsed,
-        customTopBar = { scrollBehavior ->
-            CenterBackTopBar(
-                title = stringResource(R.string.settings_ui_title),
-                onBack = { onEvent(Event.Back) },
-                scrollBehavior = scrollBehavior,
-            )
-        },
     ) {
         val interactionSource = remember { MutableInteractionSource() }
 
@@ -97,5 +90,16 @@ internal fun SettingUiScreen(
         )
 
         SectionSpacer()
+    }
+}
+
+@Preview(name = "Setting UI", showBackground = true)
+@Composable
+private fun PreviewSettingUiScreen() {
+    SettingsPreview {
+        SettingUiScreen(
+            state = previewSettingState(),
+            onEvent = {},
+        )
     }
 }
