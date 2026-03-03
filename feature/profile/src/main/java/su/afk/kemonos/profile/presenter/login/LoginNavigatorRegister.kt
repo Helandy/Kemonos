@@ -18,9 +18,6 @@ class LoginNavigatorRegister @Inject constructor() : NavRegistrar {
                     state = state,
                     effect = effect,
                     onEvent = event,
-                    pickPassword = viewModel::pickPassword,
-                    savePassword = viewModel::savePassword,
-                    navigateAfterLogin = viewModel::navigateAfterLogin,
                 )
             }
         }

@@ -1,6 +1,5 @@
 package su.afk.kemonos.profile.presenter.login
 
-import android.app.Activity
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import su.afk.kemonos.domain.SelectedSite
@@ -14,7 +13,6 @@ import su.afk.kemonos.profile.domain.login.LoginResult
 import su.afk.kemonos.profile.domain.login.LoginUseCase
 import su.afk.kemonos.profile.navigation.AuthDestination
 import su.afk.kemonos.profile.presenter.login.LoginState.*
-import su.afk.kemonos.profile.utils.AppCredentialStore
 import su.afk.kemonos.profile.utils.Const.KEY_SELECT_SITE
 import su.afk.kemonos.ui.presenter.baseViewModel.BaseViewModelNew
 import javax.inject.Inject
@@ -25,20 +23,23 @@ internal class LoginViewModel @Inject constructor(
     private val navigationManager: NavigationManager,
     private val navigationStorage: NavigationStorage,
     private val selectedSiteProvider: ISelectedSiteUseCase,
-    private val credentialStore: AppCredentialStore,
     override val errorHandler: IErrorHandlerUseCase,
     override val retryStorage: RetryStorage,
 ) : BaseViewModelNew<State, Event, Effect>() {
 
+    /** Начальное состояние экрана логина. */
     override fun createInitialState(): State = State()
 
     private var credentialsRequested = false
+    private var pendingNavigateAfterPasswordSave = false
 
+    /** Очищает отображаемую ошибку после retry из общего error-слоя. */
     override fun onRetry() {
         super.onRetry()
         setState { copy(isLoading = false, error = null) }
     }
 
+    /** Инициализирует текущий сайт из navigation storage и синхронизирует его в preferences. */
     init {
         val selectSite = navigationStorage.consume<SelectedSite>(KEY_SELECT_SITE)
 
@@ -59,6 +60,7 @@ internal class LoginViewModel @Inject constructor(
         }
     }
 
+    /** Центральная обработка UI-событий экрана логина. */
     override fun onEvent(event: Event) {
         when (event) {
             Event.Back -> navigationManager.back()
@@ -85,10 +87,14 @@ internal class LoginViewModel @Inject constructor(
 
             Event.LoginClick -> onLoginClick()
             Event.NavigateToRegisterClick -> onNavigateToRegisterClick()
+            Event.NavigateToProfile -> navigateAfterLogin()
             Event.RequestSavedCredentials -> requestSavedCredentials()
+            is Event.CredentialsPicked -> onCredentialsPicked(event.username, event.password)
+            Event.PasswordSaveFinished -> onPasswordSaveFinished()
         }
     }
 
+    /** Запускает логин: валидация, сетевой запрос и дальнейшая навигация/сохранение credentials. */
     private fun onLoginClick() = viewModelScope.launch {
         if (currentState.isLoading) return@launch
 
@@ -105,6 +111,7 @@ internal class LoginViewModel @Inject constructor(
 
                 val shouldAskToSave = !currentState.filledFromCredentialManager
                 if (shouldAskToSave) {
+                    pendingNavigateAfterPasswordSave = true
                     setEffect(
                         Effect.SavePasswordAndNavigate(
                             username = currentState.username,
@@ -137,38 +144,40 @@ internal class LoginViewModel @Inject constructor(
         }
     }
 
-    /** навигация на регистрацию */
+    /** Переход на экран регистрации с сохранением выбранного сайта. */
     private fun onNavigateToRegisterClick() {
         navigationStorage.put(KEY_SELECT_SITE, currentState.selectSite)
         navigationManager.replace(AuthDestination.Register)
     }
 
-    suspend fun savePassword(activity: Activity, username: String, password: String) {
-        credentialStore.savePassword(activity, username, password)
-    }
-
-    fun navigateAfterLogin() {
+    /** Завершает auth-flow и возвращает пользователя на профиль. */
+    private fun navigateAfterLogin() {
         navigationManager.popBackTo(AuthDestination.Profile)
     }
 
-    fun pickPassword(activity: Activity) = viewModelScope.launch {
-        val cred = runCatching { credentialStore.pickPassword(activity) }.getOrNull() ?: return@launch
-
+    /** Принимает выбранные системным credential manager данные и инициирует повторный вход. */
+    private fun onCredentialsPicked(username: String, password: String) {
         setState {
             copy(
-                username = cred.id,
-                password = cred.password,
+                username = username,
+                password = password,
                 filledFromCredentialManager = true,
                 usernameError = null,
                 passwordError = null,
                 error = null
             )
         }
-
         onLoginClick()
     }
 
-    /** Использовать существуюющие креды */
+    /** Завершает навигацию после попытки сохранения пароля, если она действительно ожидалась. */
+    private fun onPasswordSaveFinished() {
+        if (!pendingNavigateAfterPasswordSave) return
+        pendingNavigateAfterPasswordSave = false
+        navigateAfterLogin()
+    }
+
+    /** Однократно запрашивает подсказку сохраненных credentials для пустой формы. */
     private fun requestSavedCredentials() {
         if (credentialsRequested) return
         if (currentState.username.isNotBlank() || currentState.password.isNotBlank()) return

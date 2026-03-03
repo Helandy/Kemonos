@@ -5,6 +5,7 @@ import dagger.Module
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import su.afk.kemonos.profile.data.*
+import su.afk.kemonos.profile.domain.IAuthRepository
 import javax.inject.Singleton
 
 @Module

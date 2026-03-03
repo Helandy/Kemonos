@@ -1,6 +1,5 @@
 package su.afk.kemonos.profile.presenter.register
 
-import android.app.Activity
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import su.afk.kemonos.domain.SelectedSite
@@ -14,7 +13,6 @@ import su.afk.kemonos.profile.domain.register.RegisterResult
 import su.afk.kemonos.profile.domain.register.RegisterUseCase
 import su.afk.kemonos.profile.navigation.AuthDestination
 import su.afk.kemonos.profile.presenter.register.RegisterState.*
-import su.afk.kemonos.profile.utils.AppCredentialStore
 import su.afk.kemonos.profile.utils.Const.KEY_SELECT_SITE
 import su.afk.kemonos.ui.presenter.baseViewModel.BaseViewModelNew
 import javax.inject.Inject
@@ -25,20 +23,22 @@ internal class RegisterViewModel @Inject constructor(
     private val navigationManager: NavigationManager,
     private val navigationStorage: NavigationStorage,
     private val selectedSiteProvider: ISelectedSiteUseCase,
-    private val credentialStore: AppCredentialStore,
     override val errorHandler: IErrorHandlerUseCase,
     override val retryStorage: RetryStorage,
 ) : BaseViewModelNew<State, Event, Effect>() {
 
+    /** Начальное состояние экрана регистрации. */
     override fun createInitialState(): State = State()
 
     private var pendingNavigateToLogin = false
 
+    /** Очищает отображаемую ошибку после retry из общего error-слоя. */
     override fun onRetry() {
         super.onRetry()
         setState { copy(isLoading = false, error = null) }
     }
 
+    /** Инициализирует текущий сайт из navigation storage и синхронизирует его в preferences. */
     init {
         val selectSite = navigationStorage.consume<SelectedSite>(KEY_SELECT_SITE)
 
@@ -59,6 +59,7 @@ internal class RegisterViewModel @Inject constructor(
         }
     }
 
+    /** Центральная обработка UI-событий экрана регистрации. */
     override fun onEvent(event: Event) {
         when (event) {
             Event.Back -> navigationManager.back()
@@ -96,8 +97,11 @@ internal class RegisterViewModel @Inject constructor(
         }
     }
 
+    /** Запускает регистрацию: локальная валидация, сетевой вызов и эффект сохранения credentials. */
     private fun onRegisterClick() {
         viewModelScope.launch {
+            if (currentState.isLoading) return@launch
+
             setState { copy(isLoading = true, error = null) }
 
             when (val result = registerUseCase(
@@ -107,7 +111,6 @@ internal class RegisterViewModel @Inject constructor(
             )) {
                 is RegisterResult.Success -> {
                     setState { copy(isLoading = false) }
-
                     pendingNavigateToLogin = true
                     setEffect(Effect.SavePassword(currentState.username, currentState.password))
                 }
@@ -130,21 +133,17 @@ internal class RegisterViewModel @Inject constructor(
         }
     }
 
+    /** Явный переход на экран логина с сохранением выбранного сайта. */
     private fun onNavigateToLoginClick() {
         navigationStorage.put(KEY_SELECT_SITE, currentState.selectSite)
         navigationManager.replace(AuthDestination.Login)
     }
 
-    suspend fun savePassword(activity: Activity, username: String, password: String) {
-        credentialStore.savePassword(activity, username, password)
-    }
-
-    /** Вызывается из UI когда сохранение (попытка) завершено */
+    /** Завершает post-register flow после попытки сохранения пароля. */
     private fun onPasswordSaveFinished() {
         if (!pendingNavigateToLogin) return
         pendingNavigateToLogin = false
-
         navigationStorage.put(KEY_SELECT_SITE, currentState.selectSite)
-        navigationManager.navigate(AuthDestination.Login)
+        navigationManager.replace(AuthDestination.Login)
     }
 }

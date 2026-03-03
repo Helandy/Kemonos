@@ -1,6 +1,7 @@
 package su.afk.kemonos.profile.data
 
 import retrofit2.HttpException
+import retrofit2.Response
 import su.afk.kemonos.auth.ClearAuthUseCase
 import su.afk.kemonos.auth.SaveAuthSiteUseCase
 import su.afk.kemonos.domain.SelectedSite
@@ -13,16 +14,11 @@ import su.afk.kemonos.profile.data.api.AuthenticationApi
 import su.afk.kemonos.profile.data.dto.RegisterDto
 import su.afk.kemonos.profile.data.dto.login.LoginDto
 import su.afk.kemonos.profile.data.dto.login.LoginResponseDto.Companion.toDomain
+import su.afk.kemonos.profile.domain.IAuthRepository
 import su.afk.kemonos.profile.domain.login.LoginRemoteResult
 import su.afk.kemonos.profile.domain.register.RegisterRemoteResult
 import su.afk.kemonos.profile.utils.extractSessionCookie
 import javax.inject.Inject
-
-interface IAuthRepository {
-    suspend fun register(username: String, password: String): RegisterRemoteResult
-    suspend fun login(username: String, password: String): LoginRemoteResult
-    suspend fun logout(): Boolean
-}
 
 internal class AuthRepository @Inject constructor(
     private val api: AuthenticationApi,
@@ -31,8 +27,10 @@ internal class AuthRepository @Inject constructor(
     private val clearAuthUseCase: ClearAuthUseCase,
 ) : IAuthRepository {
 
+    /** Текущий сайт, с которым работает auth-flow в этот момент. */
     private fun currentSite(): SelectedSite = selectedSiteProvider.getSite()
 
+    /** Регистрация нового пользователя. */
     override suspend fun register(
         username: String,
         password: String
@@ -46,24 +44,27 @@ internal class AuthRepository @Inject constructor(
         )
 
         if (response.isSuccessful) {
+            if (response.body() == false) {
+                return RegisterRemoteResult.Error(
+                    response.toErrorItem(
+                        title = "Registration error",
+                        defaultMessage = "Registration failed",
+                    )
+                )
+            }
             return RegisterRemoteResult.Success
         }
 
         val code = response.code()
-        if (code == 400 || code == 401) {
-            val body = response.errorBody()?.safeString()
-            val message = body?.extractBackendMessage() ?: "Registration failed"
-
-            val req = response.raw().request
-
+        if (code in 400..499) {
             return RegisterRemoteResult.Error(
-                ErrorItem(
+                response.toErrorItem(
                     title = "Registration error",
-                    message = message,
-                    code = code,
-                    url = req.url.toString(),
-                    method = req.method,
-                    body = body,
+                    defaultMessage = if (code == 409) {
+                        "Username already exists"
+                    } else {
+                        "Registration failed"
+                    },
                 )
             )
         }
@@ -71,6 +72,7 @@ internal class AuthRepository @Inject constructor(
         throw HttpException(response)
     }
 
+    /** Логин пользователя, извлечение session cookie и сохранение auth-состояния. */
     override suspend fun login(username: String, password: String): LoginRemoteResult {
         val site = currentSite()
 
@@ -113,20 +115,15 @@ internal class AuthRepository @Inject constructor(
         }
 
         val code = response.code()
-        if (code == 400 || code == 401) {
-            val body = response.errorBody()?.safeString()
-            val message = body?.extractBackendMessage()
-                ?: if (code == 401) "Invalid username or password." else "Login failed."
-
-            val req = response.raw().request
+        if (code in 400..499) {
             return LoginRemoteResult.Error(
-                ErrorItem(
+                response.toErrorItem(
                     title = "Login failed",
-                    message = message,
-                    code = code,
-                    url = req.url.toString(),
-                    method = req.method,
-                    body = body,
+                    defaultMessage = if (code == 401) {
+                        "Invalid username or password."
+                    } else {
+                        "Login failed."
+                    },
                 )
             )
         }
@@ -134,6 +131,7 @@ internal class AuthRepository @Inject constructor(
         throw HttpException(response)
     }
 
+    /** Logout на сервере и очистка локальной auth-сессии для текущего сайта. */
     override suspend fun logout(): Boolean {
         val site = currentSite()
         val response = api.logout()
@@ -143,5 +141,24 @@ internal class AuthRepository @Inject constructor(
         } else {
             false
         }
+    }
+
+    /** Унифицированный маппинг retrofit-ошибки в доменный ErrorItem. */
+    private fun <T> Response<T>.toErrorItem(
+        title: String,
+        defaultMessage: String,
+    ): ErrorItem {
+        val body = errorBody()?.safeString()
+        val request = raw().request
+
+        return ErrorItem(
+            title = title,
+            message = body?.extractBackendMessage() ?: defaultMessage,
+            code = code(),
+            url = request.url.toString(),
+            method = request.method,
+            requestId = headers()["x-request-id"] ?: headers()["X-Request-Id"],
+            body = body,
+        )
     }
 }

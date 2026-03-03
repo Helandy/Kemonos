@@ -31,7 +31,10 @@ internal class LoginState {
         data class PasswordChanged(val value: String) : Event
         data object LoginClick : Event
         data object NavigateToRegisterClick : Event
+        data object NavigateToProfile : Event
         data object RequestSavedCredentials : Event
+        data class CredentialsPicked(val username: String, val password: String) : Event
+        data object PasswordSaveFinished : Event
     }
 
     sealed interface Effect : UiEffect {

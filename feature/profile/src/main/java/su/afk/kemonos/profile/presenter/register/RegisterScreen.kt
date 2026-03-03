@@ -1,28 +1,36 @@
 package su.afk.kemonos.profile.presenter.register
 
+import android.app.Activity
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Visibility
+import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.input.VisualTransformation
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.emptyFlow
 import su.afk.kemonos.domain.SelectedSite
 import su.afk.kemonos.profile.R
+import su.afk.kemonos.profile.presenter.auth.savePasswordCredential
 import su.afk.kemonos.profile.presenter.register.RegisterState.*
+import su.afk.kemonos.profile.presenter.register.RegisterState.State
 import su.afk.kemonos.profile.presenter.register.util.confirmErrorRes
 import su.afk.kemonos.profile.presenter.register.util.passwordErrorRes
 import su.afk.kemonos.profile.presenter.register.util.usernameErrorRes
 import su.afk.kemonos.ui.R.drawable
 import su.afk.kemonos.ui.presenter.baseScreen.BaseScreen
 import su.afk.kemonos.ui.presenter.baseScreen.CenterBackTopBar
+import su.afk.kemonos.ui.preview.KemonosPreviewScreen
 import su.afk.kemonos.ui.uiUtils.findActivity
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -31,22 +39,11 @@ internal fun RegisterScreen(
     state: State,
     effect: Flow<Effect>,
     onEvent: (Event) -> Unit,
-    savePassword: suspend (android.app.Activity, String, String) -> Unit,
 ) {
     val context = LocalContext.current
     val activity = remember(context) { context.findActivity() }
 
-    LaunchedEffect(effect, activity) {
-        effect.collect { item ->
-            val a = activity ?: return@collect
-            when (item) {
-                is Effect.SavePassword -> {
-                    savePassword(a, item.username, item.password)
-                    onEvent(Event.PasswordSaveFinished)
-                }
-            }
-        }
-    }
+    HandleRegisterEffects(effect = effect, activity = activity, onEvent = onEvent)
 
     BaseScreen(
         isScroll = false,
@@ -65,110 +62,185 @@ internal fun RegisterScreen(
             modifier = Modifier.fillMaxWidth(),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            val logoRes = when (state.selectSite) {
-                SelectedSite.K -> drawable.kemono_logo
-                SelectedSite.C -> drawable.coomer_logo
-            }
-
-            Image(
-                painter = painterResource(id = logoRes),
-                contentDescription = null,
-                modifier = Modifier.size(72.dp)
-                    .padding(bottom = 12.dp),
-            )
+            RegisterLogo(selectSite = state.selectSite)
 
             Spacer(Modifier.height(12.dp))
 
-            /** Карточка */
-            Card(
-                modifier = Modifier.fillMaxWidth(),
-                shape = MaterialTheme.shapes.medium
-            ) {
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(12.dp),
-                    verticalArrangement = Arrangement.spacedBy(8.dp)
-                ) {
-
-                    OutlinedTextField(
-                        value = state.username,
-                        onValueChange = { onEvent(Event.UsernameChanged(it)) },
-                        label = { Text(stringResource(R.string.login_username_label)) },
-                        singleLine = true,
-                        modifier = Modifier.fillMaxWidth(),
-                        isError = state.usernameError != null,
-                        supportingText = {
-                            state.usernameError?.let { code ->
-                                Text(stringResource(usernameErrorRes(code)))
-                            }
-                        }
-                    )
-
-                    OutlinedTextField(
-                        value = state.password,
-                        onValueChange = { onEvent(Event.PasswordChanged(it)) },
-                        label = { Text(stringResource(R.string.login_password_label)) },
-                        visualTransformation = PasswordVisualTransformation(),
-                        singleLine = true,
-                        modifier = Modifier.fillMaxWidth(),
-                        isError = state.passwordError != null,
-                        supportingText = {
-                            state.passwordError?.let { code ->
-                                Text(stringResource(passwordErrorRes(code)))
-                            }
-                        }
-                    )
-
-                    OutlinedTextField(
-                        value = state.confirm,
-                        onValueChange = { onEvent(Event.ConfirmChanged(it)) },
-                        label = { Text(stringResource(R.string.register_confirm_label)) },
-                        visualTransformation = PasswordVisualTransformation(),
-                        singleLine = true,
-                        modifier = Modifier.fillMaxWidth(),
-                        isError = state.confirmError != null,
-                        supportingText = {
-                            state.confirmError?.let { code ->
-                                Text(stringResource(confirmErrorRes(code)))
-                            }
-                        }
-                    )
-
-                    /** Text error */
-                    state.error?.let {
-                        Text(
-                            text = state.error?.message ?: stringResource(R.string.login_error_unknown),
-                            color = MaterialTheme.colorScheme.error,
-                            modifier = Modifier.fillMaxWidth()
-                        )
-                    }
-
-                    Button(
-                        onClick = { onEvent(Event.RegisterClick) },
-                        modifier = Modifier.fillMaxWidth(),
-                        enabled = !state.isLoading
-                    ) {
-                        if (state.isLoading) {
-                            CircularProgressIndicator(
-                                modifier = Modifier.size(20.dp),
-                                strokeWidth = 2.dp
-                            )
-                        } else {
-                            Text(stringResource(R.string.register_button_create))
-                        }
-                    }
-                }
-            }
+            RegisterFormCard(state = state, onEvent = onEvent)
 
             Spacer(Modifier.height(12.dp))
 
-            /** login */
             TextButton(
                 onClick = { onEvent(Event.NavigateToLoginClick) }
             ) {
                 Text(stringResource(R.string.register_button_login))
             }
         }
+    }
+}
+
+@Composable
+private fun HandleRegisterEffects(
+    effect: Flow<Effect>,
+    activity: Activity?,
+    onEvent: (Event) -> Unit,
+) {
+    LaunchedEffect(effect, activity) {
+        effect.collect { item ->
+            when (item) {
+                is Effect.SavePassword -> {
+                    val a = activity ?: return@collect
+                    runCatching { savePasswordCredential(a, item.username, item.password) }
+                    onEvent(Event.PasswordSaveFinished)
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun RegisterLogo(selectSite: SelectedSite) {
+    val logoRes = when (selectSite) {
+        SelectedSite.K -> drawable.kemono_logo
+        SelectedSite.C -> drawable.coomer_logo
+    }
+    Image(
+        painter = painterResource(id = logoRes),
+        contentDescription = null,
+        modifier = Modifier
+            .size(72.dp)
+            .padding(bottom = 12.dp),
+    )
+}
+
+@Composable
+private fun RegisterFormCard(
+    state: State,
+    onEvent: (Event) -> Unit,
+) {
+    var passwordVisible by remember { mutableStateOf(false) }
+    var confirmVisible by remember { mutableStateOf(false) }
+
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        shape = MaterialTheme.shapes.medium,
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(12.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp),
+        ) {
+            OutlinedTextField(
+                value = state.username,
+                onValueChange = { onEvent(Event.UsernameChanged(it)) },
+                label = { Text(stringResource(R.string.login_username_label)) },
+                singleLine = true,
+                modifier = Modifier.fillMaxWidth(),
+                isError = state.usernameError != null,
+                supportingText = {
+                    state.usernameError?.let { code ->
+                        Text(stringResource(usernameErrorRes(code)))
+                    }
+                },
+            )
+
+            OutlinedTextField(
+                value = state.password,
+                onValueChange = { onEvent(Event.PasswordChanged(it)) },
+                label = { Text(stringResource(R.string.login_password_label)) },
+                visualTransformation = if (passwordVisible) {
+                    VisualTransformation.None
+                } else {
+                    PasswordVisualTransformation()
+                },
+                trailingIcon = {
+                    val icon = if (passwordVisible) {
+                        Icons.Default.VisibilityOff
+                    } else {
+                        Icons.Default.Visibility
+                    }
+                    IconButton(onClick = { passwordVisible = !passwordVisible }) {
+                        Icon(imageVector = icon, contentDescription = null)
+                    }
+                },
+                singleLine = true,
+                modifier = Modifier.fillMaxWidth(),
+                isError = state.passwordError != null,
+                supportingText = {
+                    state.passwordError?.let { code ->
+                        Text(stringResource(passwordErrorRes(code)))
+                    }
+                },
+            )
+
+            OutlinedTextField(
+                value = state.confirm,
+                onValueChange = { onEvent(Event.ConfirmChanged(it)) },
+                label = { Text(stringResource(R.string.register_confirm_label)) },
+                visualTransformation = if (confirmVisible) {
+                    VisualTransformation.None
+                } else {
+                    PasswordVisualTransformation()
+                },
+                trailingIcon = {
+                    val icon = if (confirmVisible) {
+                        Icons.Default.VisibilityOff
+                    } else {
+                        Icons.Default.Visibility
+                    }
+                    IconButton(onClick = { confirmVisible = !confirmVisible }) {
+                        Icon(imageVector = icon, contentDescription = null)
+                    }
+                },
+                singleLine = true,
+                modifier = Modifier.fillMaxWidth(),
+                isError = state.confirmError != null,
+                supportingText = {
+                    state.confirmError?.let { code ->
+                        Text(stringResource(confirmErrorRes(code)))
+                    }
+                },
+            )
+
+            state.error?.let {
+                Text(
+                    text = it.message,
+                    color = MaterialTheme.colorScheme.error,
+                    modifier = Modifier.fillMaxWidth(),
+                )
+            }
+
+            Button(
+                onClick = { onEvent(Event.RegisterClick) },
+                modifier = Modifier.fillMaxWidth(),
+                enabled = !state.isLoading,
+            ) {
+                if (state.isLoading) {
+                    CircularProgressIndicator(
+                        modifier = Modifier.size(20.dp),
+                        strokeWidth = 2.dp,
+                    )
+                } else {
+                    Text(stringResource(R.string.register_button_create))
+                }
+            }
+        }
+    }
+}
+
+@Preview(name = "RegisterScreen")
+@Composable
+private fun PreviewRegisterScreen() {
+    KemonosPreviewScreen {
+        RegisterScreen(
+            state = State(
+                username = "new_user",
+                password = "password123",
+                confirm = "password123",
+            ),
+            effect = emptyFlow(),
+            onEvent = {},
+        )
     }
 }
