@@ -9,9 +9,9 @@ import su.afk.kemonos.navigation.NavigationManager
 import su.afk.kemonos.navigation.storage.NavigationStorage
 import su.afk.kemonos.posts.api.tags.Tags
 import su.afk.kemonos.posts.domain.usecase.GetAllTagsUseCase
-import su.afk.kemonos.posts.navigation.PostsDest
+import su.afk.kemonos.posts.navigation.PostsDestination
 import su.afk.kemonos.posts.presenter.pageTags.TagsPageState.*
-import su.afk.kemonos.posts.presenter.util.Const.KEY_SELECTED_TAG
+import su.afk.kemonos.posts.util.Const.TAGS_SELECTED_NAV_KEY
 import su.afk.kemonos.preferences.site.ISelectedSiteUseCase
 import su.afk.kemonos.ui.presenter.changeSite.SiteAwareBaseViewModelNew
 import javax.inject.Inject
@@ -29,7 +29,9 @@ internal class TagsPageViewModel @Inject constructor(
     override fun createInitialState(): State = State()
 
     override fun onRetry() {
-        onEvent(Event.Retry)
+        viewModelScope.launch {
+            load(site = site.value, forceRefresh = true)
+        }
     }
 
     init {
@@ -39,49 +41,65 @@ internal class TagsPageViewModel @Inject constructor(
     override fun onEvent(event: Event) {
         when (event) {
             is Event.SearchQueryChanged -> onSearchQueryChanged(event.value)
+            Event.PullRefresh -> onPullRefresh()
             is Event.SelectTag -> navigateToSelectTag(event.tag)
             Event.SwitchSite -> switchSite()
-            Event.Retry -> viewModelScope.launch {
-                load(site = site.value)
-            }
         }
     }
 
     override suspend fun reloadSite(site: SelectedSite) {
         setState { copy(searchQuery = "") }
-        load(site = site)
+        load(site = site, forceRefresh = false)
     }
 
     private fun onSearchQueryChanged(newQuery: String) {
-        setState { copy(searchQuery = newQuery) }
-
         val filtered = filterTags(all = currentState.allTags, query = newQuery)
-        setState { copy(filteredTags = filtered) }
+        setState {
+            copy(
+                searchQuery = newQuery,
+                filteredTags = filtered,
+            )
+        }
     }
 
-    private suspend fun load(site: SelectedSite) {
+    private suspend fun load(site: SelectedSite, forceRefresh: Boolean) {
         setState { copy(loading = true) }
-        val loadedTags = getAllTagsUseCase(site)
+
+        val loadedTags = try {
+            getAllTagsUseCase(site = site, forceRefresh = forceRefresh)
+        } finally {
+            setState { copy(loading = false) }
+        }
 
         setState {
             copy(
-                loading = false,
                 allTags = loadedTags,
-                filteredTags = filterTags(all = loadedTags, query = searchQuery)
+                filteredTags = filterTags(all = loadedTags, query = searchQuery),
             )
+        }
+    }
+
+    private fun onPullRefresh() {
+        viewModelScope.launch {
+            load(site = site.value, forceRefresh = true)
         }
     }
 
     private fun filterTags(all: List<Tags>, query: String): List<Tags> {
         val q = query.trim()
-        if (q.isEmpty()) return all
-        if (q.length < 2) return all
-        return all.filter { it.tags.orEmpty().contains(q, ignoreCase = true) }
+        if (q.length < MIN_QUERY_LENGTH) return all
+        return all.filter { tag ->
+            tag.tags?.contains(q, ignoreCase = true) == true
+        }
     }
 
     private fun navigateToSelectTag(tag: String?) {
-        setState { copy(selectTag = tag.orEmpty()) }
-        navigationStorage.put(KEY_SELECTED_TAG, tag.orEmpty())
-        navManager.navigate(PostsDest.TagsSelect)
+        val normalizedTag = tag?.trim()?.ifEmpty { null } ?: return
+        navigationStorage.put(TAGS_SELECTED_NAV_KEY, normalizedTag)
+        navManager.navigate(PostsDestination.TagsSelect)
+    }
+
+    companion object {
+        const val MIN_QUERY_LENGTH = 2
     }
 }

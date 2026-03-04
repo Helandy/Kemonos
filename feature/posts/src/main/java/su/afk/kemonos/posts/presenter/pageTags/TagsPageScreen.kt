@@ -12,6 +12,8 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
+import androidx.compose.material3.pulltorefresh.PullToRefreshBox
+import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.key
 import androidx.compose.runtime.remember
@@ -38,18 +40,19 @@ internal fun TagsPageScreen(
     onEvent: (Event) -> Unit,
 ) {
     val isPageLoading = state.loading || siteSwitching
-    val hasActiveSearch = remember(state.searchQuery) {
-        state.searchQuery.trim().length >= 2
-    }
+    val hasActiveSearch = state.searchQuery.trim().length >= 2
+    val isEmptyResult = hasActiveSearch && state.filteredTags.isEmpty()
+    val topBarScrollMode = if (isEmptyResult) TopBarScroll.Pinned else TopBarScroll.EnterAlways
+    val pullState = rememberPullToRefreshState()
 
     val chunkedTags = remember(state.filteredTags) {
-        state.filteredTags.sortedByDescending { it.count }.chunked(50)
+        state.filteredTags.chunked(50)
     }
     val focusManager = LocalFocusManager.current
 
     BaseScreen(
         topBarWindowInsets = WindowInsets(0),
-        topBarScroll = TopBarScroll.EnterAlways,
+        topBarScroll = topBarScrollMode,
         contentPadding = PaddingValues(horizontal = 8.dp),
         isScroll = false,
         topBar = {
@@ -73,25 +76,34 @@ internal fun TagsPageScreen(
                 onToggleSite = { onEvent(Event.SwitchSite) },
             )
         },
-        isLoading = isPageLoading,
-        isEmpty = hasActiveSearch && state.filteredTags.isEmpty(),
+        isLoading = isPageLoading && state.allTags.isEmpty(),
+        isEmpty = isEmptyResult,
     ) {
-        LazyColumn(
-            verticalArrangement = Arrangement.spacedBy(8.dp),
+        PullToRefreshBox(
+            modifier = Modifier
+                .fillMaxSize()
+                .weight(1f),
+            state = pullState,
+            isRefreshing = isPageLoading,
+            onRefresh = { onEvent(Event.PullRefresh) },
         ) {
-            items(chunkedTags) { rowTags ->
-                FlowRow(
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
-                    verticalArrangement = Arrangement.spacedBy(8.dp),
-                ) {
-                    rowTags.forEach { tag ->
-                        key(tag.hashCode()) {
-                            TagChip(
-                                tag = tag,
-                                onClick = {
-                                    onEvent(Event.SelectTag(tag.tags))
-                                }
-                            )
+            LazyColumn(
+                verticalArrangement = Arrangement.spacedBy(8.dp),
+            ) {
+                items(chunkedTags) { rowTags ->
+                    FlowRow(
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                        verticalArrangement = Arrangement.spacedBy(8.dp),
+                    ) {
+                        rowTags.forEach { tag ->
+                            key(tag.tags.orEmpty()) {
+                                TagChip(
+                                    tag = tag,
+                                    onClick = {
+                                        onEvent(Event.SelectTag(tag.tags))
+                                    }
+                                )
+                            }
                         }
                     }
                 }
@@ -106,7 +118,7 @@ internal fun TagChip(
     onClick: () -> Unit
 ) {
     Text(
-        text = "#${tag.tags} (${tag.count})",
+        text = "#${tag.tags.orEmpty()} (${tag.count ?: 0})",
         color = MaterialTheme.colorScheme.primary,
         style = MaterialTheme.typography.bodyMedium,
         modifier = Modifier

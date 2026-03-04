@@ -27,7 +27,7 @@ import su.afk.kemonos.storage.entity.tags.dao.CoomerTagsDao
 
         PostsPopularCacheEntity::class,
     ],
-    version = 8,
+    version = 10,
     exportSchema = false
 )
 internal abstract class CoomerDatabase : RoomDatabase() {

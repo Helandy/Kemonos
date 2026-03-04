@@ -3,7 +3,7 @@ package su.afk.kemonos.posts.presenter.pageDm
 import androidx.paging.PagingData
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
-import su.afk.kemonos.posts.domain.model.dms.DmDomain
+import su.afk.kemonos.posts.api.dms.DmDomain
 import su.afk.kemonos.preferences.ui.UiSettingModel
 import su.afk.kemonos.ui.presenter.baseViewModel.UiEffect
 import su.afk.kemonos.ui.presenter.baseViewModel.UiEvent
@@ -19,6 +19,7 @@ internal class DmState {
     sealed interface Event : UiEvent {
         data class SearchQueryChanged(val value: String) : Event
         data object SearchSubmitted : Event
+        data object PullRefresh : Event
         data class NavigateToProfile(val service: String, val id: String) : Event
         data object SwitchSite : Event
     }

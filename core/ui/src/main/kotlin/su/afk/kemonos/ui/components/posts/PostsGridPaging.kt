@@ -1,16 +1,19 @@
 package su.afk.kemonos.ui.components.posts
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyGridState
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.ui.unit.dp
 import androidx.paging.LoadState
 import androidx.paging.compose.LazyPagingItems
 import su.afk.kemonos.domain.models.ErrorItem
 import su.afk.kemonos.domain.models.PostDomain
+import su.afk.kemonos.domain.models.PostDomain.Companion.stableKey
 import su.afk.kemonos.preferences.ui.PostsSize
 import su.afk.kemonos.preferences.ui.PostsSize.Companion.toArrangement
 import su.afk.kemonos.preferences.ui.PostsSize.Companion.toDp
@@ -27,6 +30,7 @@ internal fun PostsGridPaging(
     showFavCount: Boolean,
     appendLoadState: LoadState,
     onRetryAppend: () -> Unit,
+    header: (@Composable () -> Unit)? = null,
     parseError: (Throwable) -> ErrorItem,
 ) {
     val gridState = rememberSaveable(saver = LazyGridState.Saver) { LazyGridState() }
@@ -34,12 +38,19 @@ internal fun PostsGridPaging(
     LazyVerticalGrid(
         columns = GridCells.Adaptive(minSize = gridPostsSize.toDp()),
         state = gridState,
+        contentPadding = PaddingValues(bottom = 72.dp),
         verticalArrangement = Arrangement.spacedBy(gridPostsSize.toArrangement()),
         horizontalArrangement = Arrangement.spacedBy(gridPostsSize.toArrangement())
     ) {
+        if (header != null) {
+            item(span = { GridItemSpan(maxLineSpan) }) {
+                header()
+            }
+        }
+
         items(
             count = posts.itemCount,
-            key = { index -> posts.peek(index)?.id ?: "placeholder_$index" }
+            key = { index -> posts.peek(index)?.stableKey() ?: "placeholder_$index" }
         ) { index ->
             val post = posts[index] ?: return@items
             PostCard(

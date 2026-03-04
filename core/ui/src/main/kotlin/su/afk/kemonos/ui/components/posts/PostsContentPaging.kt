@@ -21,6 +21,7 @@ fun PostsContentPaging(
     currentTag: Tag?,
     onPostClick: (PostDomain) -> Unit,
     onRetry: () -> Unit,
+    header: (@Composable () -> Unit)? = null,
     showFavCount: Boolean = false,
     gridPostsSize: PostsSize = uiSettingModel.postsSize,
 ) {
@@ -36,6 +37,7 @@ fun PostsContentPaging(
                 showFavCount = showFavCount,
                 appendLoadState = posts.loadState.append,
                 onRetryAppend = { posts.retry() },
+                header = header,
                 parseError = errorMapper::map
             )
         }
@@ -48,6 +50,7 @@ fun PostsContentPaging(
                 showFavCount = showFavCount,
                 appendLoadState = posts.loadState.append,
                 onRetryAppend = { posts.retry() },
+                header = header,
                 parseError = errorMapper::map
             )
         }

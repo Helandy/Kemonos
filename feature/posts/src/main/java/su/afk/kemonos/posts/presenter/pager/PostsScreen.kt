@@ -11,14 +11,11 @@ import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.distinctUntilChanged
-import su.afk.kemonos.posts.presenter.pageDm.DmNavigation
-import su.afk.kemonos.posts.presenter.pageHashLookup.HashLookupNavigation
-import su.afk.kemonos.posts.presenter.pagePopularPosts.PopularPostsNavigation
-import su.afk.kemonos.posts.presenter.pageSearchPosts.SearchPostsNavigation
-import su.afk.kemonos.posts.presenter.pageTags.TagsPageNavigation
 import su.afk.kemonos.posts.presenter.pager.PostsPagerState.*
-import su.afk.kemonos.posts.presenter.pager.model.ALL_POSTS_PAGES
-import su.afk.kemonos.posts.presenter.pager.model.PostsPage
+import su.afk.kemonos.posts.presenter.pager.model.FALLBACK_POSTS_PAGE_DESCRIPTOR
+import su.afk.kemonos.posts.presenter.pager.model.POSTS_PAGES
+import su.afk.kemonos.posts.presenter.pager.model.POSTS_PAGE_DESCRIPTORS
+import su.afk.kemonos.posts.presenter.pager.model.indexOfOrPopular
 import su.afk.kemonos.posts.presenter.pager.views.PagerTabs
 import su.afk.kemonos.ui.presenter.baseScreen.BaseScreen
 import su.afk.kemonos.ui.presenter.baseScreen.TopBarScroll
@@ -30,15 +27,17 @@ internal fun PostsScreen(
     effect: Flow<Effect>,
     onEvent: (Event) -> Unit,
 ) {
-    val pages = ALL_POSTS_PAGES
+    val pageDescriptors = POSTS_PAGE_DESCRIPTORS
+    val pages = POSTS_PAGES
+    val fallbackDescriptor = FALLBACK_POSTS_PAGE_DESCRIPTOR
 
     val pagerState = rememberPagerState(
-        initialPage = pages.indexOf(state.currentPage).coerceAtLeast(0),
+        initialPage = pages.indexOfOrPopular(state.currentPage),
         pageCount = { pages.size }
     )
 
     // State -> Pager
-    val targetIndex = pages.indexOf(state.currentPage).coerceAtLeast(0)
+    val targetIndex = pages.indexOfOrPopular(state.currentPage)
     LaunchedEffect(targetIndex) {
         if (pagerState.currentPage != targetIndex) {
             pagerState.animateScrollToPage(targetIndex)
@@ -50,8 +49,8 @@ internal fun PostsScreen(
         snapshotFlow { pagerState.settledPage }
             .distinctUntilChanged()
             .collect { settledIndex ->
-                val page = pages.getOrNull(settledIndex) ?: PostsPage.Popular
-                onEvent(Event.SetPage(page))
+                val descriptor = pageDescriptors.getOrNull(settledIndex) ?: fallbackDescriptor
+                onEvent(Event.SetPage(descriptor.page))
             }
     }
 
@@ -62,6 +61,7 @@ internal fun PostsScreen(
         topBarScroll = TopBarScroll.None,
     ) {
         PagerTabs(
+            pages = pages,
             currentPage = state.currentPage,
             onTabSelected = { page ->
                 onEvent(Event.SetPage(page))
@@ -72,24 +72,10 @@ internal fun PostsScreen(
             state = pagerState,
             modifier = Modifier.fillMaxWidth().weight(1f)
         ) { pageIndex ->
-            val page = pages.getOrNull(pageIndex) ?: PostsPage.Popular
+            val descriptor = pageDescriptors.getOrNull(pageIndex) ?: fallbackDescriptor
 
-            val key = when (page) {
-                PostsPage.Search -> "posts_page_search"
-                PostsPage.Dm -> "posts_page_dm"
-                PostsPage.Popular -> "posts_page_popular"
-                PostsPage.Tags -> "posts_page_tags"
-                PostsPage.HashLookup -> "posts_page_hash_lookup"
-            }
-
-            saveableStateHolder.SaveableStateProvider(key) {
-                when (page) {
-                    PostsPage.HashLookup -> HashLookupNavigation()
-                    PostsPage.Search -> SearchPostsNavigation()
-                    PostsPage.Popular -> PopularPostsNavigation()
-                    PostsPage.Dm -> DmNavigation()
-                    PostsPage.Tags -> TagsPageNavigation()
-                }
+            saveableStateHolder.SaveableStateProvider(descriptor.saveKey) {
+                descriptor.content()
             }
         }
     }

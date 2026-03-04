@@ -9,7 +9,7 @@ import su.afk.kemonos.storage.entity.blacklist.BlacklistedAuthorEntity
 
 @Dao
 internal interface BlacklistedAuthorsDao {
-    @Query("SELECT * FROM blacklisted_authors ORDER BY creatorName ASC")
+    @Query("SELECT * FROM blacklisted_authors ORDER BY createdAt DESC")
     fun observeAll(): Flow<List<BlacklistedAuthorEntity>>
 
     @Query(

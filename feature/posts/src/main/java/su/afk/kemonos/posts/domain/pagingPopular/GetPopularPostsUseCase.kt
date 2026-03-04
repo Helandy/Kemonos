@@ -10,18 +10,19 @@ import su.afk.kemonos.domain.SelectedSite
 import su.afk.kemonos.domain.models.PostDomain
 import su.afk.kemonos.domain.models.PostDomain.Companion.stableKey
 import su.afk.kemonos.posts.api.popular.PopularPosts
-import su.afk.kemonos.posts.data.PostsRepository
 import su.afk.kemonos.posts.domain.model.popular.Period
+import su.afk.kemonos.posts.domain.repository.IPostsRepository
 import javax.inject.Inject
 
 internal class GetPopularPostsUseCase @Inject constructor(
-    private val repository: PostsRepository,
+    private val repository: IPostsRepository,
 ) {
     operator fun invoke(
         site: SelectedSite,
         date: String?,
         period: Period,
         onMeta: (PopularPosts) -> Unit,
+        forceRefresh: Boolean = false,
     ): Flow<PagingData<PostDomain>> {
 
         return Pager(
@@ -39,6 +40,7 @@ internal class GetPopularPostsUseCase @Inject constructor(
                     period = period,
                     pageSize = PAGE_SIZE,
                     onMeta = onMeta,
+                    forceRefresh = forceRefresh,
                 )
             }
         ).flow.map { pagingData ->
@@ -54,4 +56,3 @@ internal class GetPopularPostsUseCase @Inject constructor(
         const val PAGE_SIZE = 50
     }
 }
-

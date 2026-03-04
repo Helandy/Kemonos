@@ -1,7 +1,7 @@
 <resources>
     <string name="posts_tab_dm">DM</string>
     <string name="posts_tab_popular">Популярное</string>
-    <string name="posts_tab_hash_lookup">Hash Lookup</string>
+    <string name="posts_tab_hash_lookup">Hash</string>
 
     <string name="hash_lookup_title">Hash Lookup</string>
     <string name="hash_lookup_search_files">Search Files</string>
@@ -15,11 +15,28 @@
     <string name="hash_lookup_result_posts_count">Посты: %1$s</string>
     <string name="hash_lookup_post_meta">Сервис: %1$s User: %2$s Post ID: %3$s</string>
 
+    <string name="hash_lookup_sha256_placeholder">Вставьте SHA256 или выберите файл выше</string>
+    <string name="hash_lookup_error_title">Ошибка поиска</string>
+    <string name="hash_lookup_error_empty_response">Сервер вернул пустой ответ. Попробуйте позже.</string>
+    <string name="hash_lookup_result_title">Результат поиска</string>
+    <string name="hash_lookup_result_id_label">ID файла</string>
+    <string name="hash_lookup_result_hash_label">SHA256</string>
+    <string name="hash_lookup_result_mime_label">MIME</string>
+    <string name="hash_lookup_result_ext_label">Расширение</string>
+    <string name="hash_lookup_result_size_label">Размер</string>
+    <string name="hash_lookup_result_posts_label">Найдено постов</string>
+    <string name="hash_lookup_no_posts_for_hash">Хэш найден, но связанных постов пока нет.</string>
+    <string name="hash_lookup_subtitle">Поиск метаданных файла и связанных постов по SHA256</string>
+    <string name="hash_lookup_hash_length">Длина: %1$s / 64</string>
+    <string name="hash_lookup_try_again">Повторить</string>
+    <string name="hash_lookup_empty_title">Связанных постов нет</string>
+    <string name="hash_lookup_posts_section_title">Связанные посты</string>
+
     <string name="popular_period_day">День</string>
     <string name="popular_period_week">Неделя</string>
     <string name="popular_period_month">Месяц</string>
 
     <!-- Описание диапазона популярных постов -->
-    <string name="popular_range_single">Популярные посты за %1$s</string>
-    <string name="popular_range_range">Популярные посты с %1$s по %2$s</string>
+    <string name="popular_range_single">Популярное за %1$s</string>
+    <string name="popular_range_range">Популярное с %1$s по %2$s</string>
 </resources>

@@ -33,7 +33,7 @@ internal fun TagsRow(
     FlowRow(
         modifier = Modifier.padding(bottom = 8.dp),
         horizontalArrangement = Arrangement.spacedBy(8.dp),
-        verticalArrangement = Arrangement.spacedBy(6.dp)
+        verticalArrangement = Arrangement.spacedBy(0.dp)
     ) {
         tags.forEach { tag ->
             Surface(

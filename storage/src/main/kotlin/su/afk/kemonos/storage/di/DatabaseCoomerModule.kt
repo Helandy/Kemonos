@@ -32,6 +32,8 @@ internal object DatabaseCoomerModule {
                 CoomerFrom5To6,
                 CoomerFrom6To7,
                 CoomerFrom7To8,
+                CoomerFrom8To9,
+                CoomerFrom9To10,
             )
             .build()
 

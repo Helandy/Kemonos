@@ -29,6 +29,7 @@ internal class PopularPostsState {
 
     sealed interface Event : UiEvent {
         data class LoadPopular(val date: String?, val period: Period) : Event
+        data object PullRefresh : Event
         data class PeriodSlotClick(val period: Period, val slot: PopularNavSlot) : Event
         data class NavigateToPost(val post: PostDomain) : Event
         data object SwitchSite : Event

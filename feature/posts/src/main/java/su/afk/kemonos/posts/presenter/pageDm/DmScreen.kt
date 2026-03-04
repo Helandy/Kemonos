@@ -5,6 +5,8 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.*
+import androidx.compose.material3.pulltorefresh.PullToRefreshBox
+import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -17,7 +19,7 @@ import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import kotlinx.coroutines.flow.Flow
 import su.afk.kemonos.domain.SelectedSite
-import su.afk.kemonos.posts.domain.model.dms.DmDomain
+import su.afk.kemonos.posts.api.dms.DmDomain
 import su.afk.kemonos.posts.presenter.pageDm.DmState.*
 import su.afk.kemonos.posts.presenter.pageDm.DmState.State
 import su.afk.kemonos.ui.R
@@ -26,6 +28,7 @@ import su.afk.kemonos.ui.components.dm.DmCreatorUi
 import su.afk.kemonos.ui.components.dm.DmItem
 import su.afk.kemonos.ui.components.dm.DmUiItem
 import su.afk.kemonos.ui.presenter.baseScreen.BaseScreen
+import su.afk.kemonos.ui.presenter.baseScreen.EmptyContentCenter
 import su.afk.kemonos.ui.presenter.baseScreen.TopBarScroll
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -39,13 +42,16 @@ internal fun DmScreen(
 ) {
     val dms = state.dms.collectAsLazyPagingItems()
     val focusManager = LocalFocusManager.current
+    val pullState = rememberPullToRefreshState()
 
     val isPageLoading = dms.loadState.refresh is LoadState.Loading
     val isBusy = isPageLoading || siteSwitching
+    val isEmptyResult = dms.itemCount == 0 && dms.loadState.refresh !is LoadState.Loading
+    val topBarScrollMode = if (isEmptyResult) TopBarScroll.Pinned else TopBarScroll.EnterAlways
 
     BaseScreen(
         topBarWindowInsets = WindowInsets(0),
-        topBarScroll = TopBarScroll.EnterAlways,
+        topBarScroll = topBarScrollMode,
         contentPadding = PaddingValues(horizontal = 8.dp),
         isScroll = false,
         topBar = {
@@ -71,17 +77,26 @@ internal fun DmScreen(
                 onToggleSite = { onEvent(Event.SwitchSite) },
             )
         },
-        isLoading = isPageLoading,
+        isLoading = isPageLoading && dms.itemCount == 0,
     ) {
-        DmContent(
-            dms = dms,
-            dateMode = state.uiSettingModel.dateFormatMode,
-            onProfileClick = { service, id ->
-                onEvent(Event.NavigateToProfile(service, id))
-            },
-            onRetry = { dms.retry() },
-            modifier = Modifier.fillMaxSize(),
-        )
+        PullToRefreshBox(
+            modifier = Modifier
+                .fillMaxSize()
+                .weight(1f),
+            state = pullState,
+            isRefreshing = isBusy,
+            onRefresh = { onEvent(Event.PullRefresh) },
+        ) {
+            DmContent(
+                dms = dms,
+                dateMode = state.uiSettingModel.dateFormatMode,
+                onProfileClick = { service, id ->
+                    onEvent(Event.NavigateToProfile(service, id))
+                },
+                onRetry = { dms.retry() },
+                modifier = Modifier.fillMaxSize(),
+            )
+        }
     }
 }
 
@@ -97,16 +112,7 @@ private fun DmContent(
     val isEmpty = dms.itemCount == 0 && dms.loadState.refresh !is LoadState.Loading
 
     if (isEmpty) {
-        Box(
-            modifier = modifier,
-            contentAlignment = Alignment.Center
-        ) {
-            Text(
-                text = stringResource(R.string.dm_empty),
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.7f)
-            )
-        }
+        EmptyContentCenter()
         return
     }
 

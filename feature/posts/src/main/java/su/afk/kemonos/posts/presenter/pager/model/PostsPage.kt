@@ -13,11 +13,3 @@ internal sealed class PostsPage(
     data object Dm : PostsPage(R.string.posts_tab_dm)
     data object Tags : PostsPage(CommonR.string.tags)
 }
-
-internal val ALL_POSTS_PAGES: List<PostsPage> = listOf(
-    PostsPage.HashLookup,
-    PostsPage.Search,
-    PostsPage.Popular,
-    PostsPage.Dm,
-    PostsPage.Tags,
-)

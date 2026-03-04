@@ -5,9 +5,9 @@ import androidx.room.Index
 
 @Entity(
     tableName = "posts_search_cache",
-    primaryKeys = ["queryKey", "offset", "id"],
+    primaryKeys = ["queryKey", "offset", "service", "userId", "id"],
     indices = [
-        Index(value = ["queryKey", "offset"]),
+        Index(value = ["queryKey", "offset", "indexInPage"]),
         Index(value = ["updatedAt"])
     ]
 )

@@ -2,8 +2,12 @@ package su.afk.kemonos.posts.presenter.pagePopularPosts
 
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.pulltorefresh.PullToRefreshBox
+import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.paging.LoadState
 import androidx.paging.compose.collectAsLazyPagingItems
@@ -26,13 +30,16 @@ internal fun PopularPostsScreen(
     onEvent: (Event) -> Unit,
 ) {
     val posts = state.posts.collectAsLazyPagingItems()
+    val pullState = rememberPullToRefreshState()
 
     val isPageLoading = posts.loadState.refresh is LoadState.Loading
     val isBusy = isPageLoading || siteSwitching
+    val isEmptyResult = posts.itemCount == 0 && posts.loadState.refresh !is LoadState.Loading
+    val topBarScrollMode = if (isEmptyResult) TopBarScroll.Pinned else TopBarScroll.EnterAlways
 
     BaseScreen(
         topBarWindowInsets = WindowInsets(0),
-        topBarScroll = TopBarScroll.EnterAlways,
+        topBarScroll = topBarScrollMode,
         contentPadding = PaddingValues(horizontal = 8.dp),
         isScroll = false,
         topBar = {
@@ -50,17 +57,26 @@ internal fun PopularPostsScreen(
                 onToggleSite = { onEvent(Event.SwitchSite) },
             )
         },
-        isLoading = isPageLoading,
+        isLoading = isPageLoading && posts.itemCount == 0,
     ) {
-        PostsContentPaging(
-            postsViewMode = state.uiSettingModel.popularPostsViewMode,
-            uiSettingModel = state.uiSettingModel,
-            gridPostsSize = state.uiSettingModel.popularPostsGridSize,
-            posts = posts,
-            currentTag = null,
-            onPostClick = { onEvent(Event.NavigateToPost(it)) },
-            onRetry = { posts.retry() },
-            showFavCount = true
-        )
+        PullToRefreshBox(
+            modifier = Modifier
+                .fillMaxSize()
+                .weight(1f),
+            state = pullState,
+            isRefreshing = isBusy,
+            onRefresh = { onEvent(Event.PullRefresh) },
+        ) {
+            PostsContentPaging(
+                postsViewMode = state.uiSettingModel.popularPostsViewMode,
+                uiSettingModel = state.uiSettingModel,
+                gridPostsSize = state.uiSettingModel.popularPostsGridSize,
+                posts = posts,
+                currentTag = null,
+                onPostClick = { onEvent(Event.NavigateToPost(it)) },
+                onRetry = { posts.retry() },
+                showFavCount = true
+            )
+        }
     }
 }

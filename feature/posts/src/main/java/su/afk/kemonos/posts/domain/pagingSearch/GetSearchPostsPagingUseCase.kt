@@ -9,17 +9,21 @@ import kotlinx.coroutines.flow.map
 import su.afk.kemonos.domain.SelectedSite
 import su.afk.kemonos.domain.models.PostDomain
 import su.afk.kemonos.domain.models.PostDomain.Companion.stableKey
-import su.afk.kemonos.posts.data.PostsRepository
+import su.afk.kemonos.posts.domain.repository.IPostsRepository
 import javax.inject.Inject
 
 internal class GetSearchPostsPagingUseCase @Inject constructor(
-    private val repository: PostsRepository,
+    private val repository: IPostsRepository,
 ) {
     operator fun invoke(
         tag: String?,
         search: String?,
         site: SelectedSite,
+        forceRefresh: Boolean = false,
     ): Flow<PagingData<PostDomain>> {
+        val normalizedTag = tag?.trim()?.ifEmpty { null }
+        val normalizedSearch = search?.trim()?.ifEmpty { null }
+
         return Pager(
             config = PagingConfig(
                 pageSize = PAGE_SIZE,
@@ -31,9 +35,10 @@ internal class GetSearchPostsPagingUseCase @Inject constructor(
                 SearchPostsPagingSource(
                     repository = repository,
                     site = site,
-                    tag = tag,
-                    search = search,
+                    tag = normalizedTag,
+                    search = normalizedSearch,
                     pageSize = PAGE_SIZE,
+                    forceRefresh = forceRefresh,
                 )
             }
         ).flow.map { pagingData ->

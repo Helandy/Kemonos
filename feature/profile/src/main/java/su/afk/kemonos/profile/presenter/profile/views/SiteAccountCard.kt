@@ -74,8 +74,9 @@ internal fun SiteAccountCard(
 
             if (isLoggedIn && login != null) {
                 Text(
-                    text = stringResource(R.string.profile_account_logged_in_name, login.username),
+                    text = login.username,
                     style = MaterialTheme.typography.bodyMedium,
+                    fontWeight = FontWeight.SemiBold,
                     textAlign = TextAlign.Center,
                     modifier = Modifier.fillMaxWidth(),
                 )

@@ -6,13 +6,10 @@ import su.afk.kemonos.error.error.IErrorHandlerUseCase
 import su.afk.kemonos.posts.api.apiCheck.ApiCheckForAllSitesResult
 import su.afk.kemonos.posts.api.apiCheck.SingleSiteCheck
 import su.afk.kemonos.posts.data.api.PostsApi
+import su.afk.kemonos.posts.domain.repository.ICheckApiRepository
 import su.afk.kemonos.preferences.site.ISelectedSiteUseCase
 import su.afk.kemonos.preferences.site.withSite
 import javax.inject.Inject
-
-interface ICheckApiRepository {
-    suspend fun getApiCheckForSites(sitesToCheck: Set<SelectedSite>): ApiCheckForAllSitesResult
-}
 
 internal class CheckApiRepository @Inject constructor(
     private val api: PostsApi,

@@ -5,16 +5,17 @@ import androidx.paging.PagingState
 import su.afk.kemonos.domain.SelectedSite
 import su.afk.kemonos.domain.models.PostDomain
 import su.afk.kemonos.posts.api.popular.PopularPosts
-import su.afk.kemonos.posts.data.PostsRepository
 import su.afk.kemonos.posts.domain.model.popular.Period
+import su.afk.kemonos.posts.domain.repository.IPostsRepository
 
 internal class PopularPostsPagingSource(
-    private val repository: PostsRepository,
+    private val repository: IPostsRepository,
     private val site: SelectedSite,
     private val date: String?,
     private val period: Period,
     private val pageSize: Int,
     private val onMeta: (PopularPosts) -> Unit,
+    private val forceRefresh: Boolean,
 ) : PagingSource<Int, PostDomain>() {
 
     override fun getRefreshKey(state: PagingState<Int, PostDomain>): Int? {
@@ -33,6 +34,7 @@ internal class PopularPostsPagingSource(
             date = date,
             period = period,
             offset = offset,
+            forceRefresh = forceRefresh,
         )
 
         if (pageIndex == 0) {
@@ -44,7 +46,7 @@ internal class PopularPostsPagingSource(
 
         /** конец понимаем по total count (лучше чем items.size < pageSize) */
         val total = popular.props.count
-        val nextKey = if (offset + items.size >= total) null else pageIndex + 1
+        val nextKey = if (items.isEmpty() || offset + items.size >= total) null else pageIndex + 1
 
         LoadResult.Page(
             data = items,

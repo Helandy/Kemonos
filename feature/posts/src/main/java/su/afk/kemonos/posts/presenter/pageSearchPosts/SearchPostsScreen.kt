@@ -8,6 +8,8 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Casino
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.*
+import androidx.compose.material3.pulltorefresh.PullToRefreshBox
+import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalFocusManager
@@ -41,84 +43,87 @@ internal fun SearchPostsScreen(
 
     val isPageLoading = posts.loadState.refresh is LoadState.Loading
     val isBusy = isPageLoading || siteSwitching
+    val isEmptyResult = posts.itemCount == 0
 
     val focusManager = LocalFocusManager.current
 
     val placement = state.uiSettingModel.randomButtonPlacement
     val showRandomInSearchBar = placement == RandomButtonPlacement.SEARCH_BAR
     val showRandomFab = placement == RandomButtonPlacement.SCREEN
+    val topBarScrollMode = if (isEmptyResult) TopBarScroll.Pinned else TopBarScroll.EnterAlways
+    val pullState = rememberPullToRefreshState()
 
     BaseScreen(
         topBarWindowInsets = WindowInsets(0),
-        topBarScroll = TopBarScroll.EnterAlways,
+        topBarScroll = topBarScrollMode,
         contentPadding = PaddingValues(horizontal = 8.dp),
         isScroll = false,
         topBar = {
-            PostsSearchBarWithMediaFilters(
-                query = state.searchQuery,
-                onQueryChange = { onEvent(Event.SearchQueryChanged(it)) },
-                mediaFilter = state.mediaFilter,
-                onToggleHasVideo = { onEvent(Event.ToggleHasVideo) },
-                onToggleHasAttachments = { onEvent(Event.ToggleHasAttachments) },
-                onToggleHasImages = { onEvent(Event.ToggleHasImages) },
-                label = stringResource(R.string.search),
-                showMediaFiltersInfoTooltip = true,
-                trailingIcon = {
-                    if (showRandomInSearchBar) {
-                        IconButton(
-                            onClick = { onEvent(Event.RandomPost) },
-                            enabled = !isBusy,
-                        ) {
-                            Icon(
-                                imageVector = Icons.Filled.Casino,
-                                contentDescription = stringResource(R.string.random),
-                                tint = MaterialTheme.colorScheme.primary
+                PostsSearchBarWithMediaFilters(
+                    query = state.searchQuery,
+                    onQueryChange = { onEvent(Event.SearchQueryChanged(it)) },
+                    mediaFilter = state.mediaFilter,
+                    onToggleHasVideo = { onEvent(Event.ToggleHasVideo) },
+                    onToggleHasAttachments = { onEvent(Event.ToggleHasAttachments) },
+                    onToggleHasImages = { onEvent(Event.ToggleHasImages) },
+                    label = stringResource(R.string.search),
+                    showMediaFiltersInfoTooltip = true,
+                    trailingIcon = {
+                        if (showRandomInSearchBar) {
+                            IconButton(
+                                onClick = { onEvent(Event.RandomPost) },
+                                enabled = !isBusy,
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Filled.Casino,
+                                    contentDescription = stringResource(R.string.random),
+                                    tint = MaterialTheme.colorScheme.primary
+                                )
+                            }
+                        }
+                    },
+                    onSearch = {
+                        focusManager.clearFocus()
+                        onEvent(Event.SearchSubmitted)
+                    },
+                    bottomPadding = 0
+                )
+                if (state.recentSearches.isNotEmpty()) {
+                    LazyRow(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    ) {
+                        itemsIndexed(
+                            items = state.recentSearches,
+                            key = { index, query -> "$query-$index" }
+                        ) { _, query ->
+                            InputChip(
+                                selected = false,
+                                onClick = {
+                                    focusManager.clearFocus()
+                                    onEvent(Event.RecentSearchSelected(query))
+                                },
+                                label = {
+                                    Text(
+                                        text = query,
+                                        maxLines = 1,
+                                        overflow = TextOverflow.Ellipsis,
+                                        modifier = Modifier.widthIn(max = 180.dp)
+                                    )
+                                },
+                                trailingIcon = {
+                                    Icon(
+                                        imageVector = Icons.Filled.Close,
+                                        contentDescription = "Remove search",
+                                        modifier = Modifier
+                                            .size(16.dp)
+                                            .clickable { onEvent(Event.RemoveRecentSearch(query)) }
+                                    )
+                                }
                             )
                         }
                     }
-                },
-                onSearch = {
-                    focusManager.clearFocus()
-                    onEvent(Event.SearchSubmitted)
-                },
-                bottomPadding = 0
-            )
-            if (state.recentSearches.isNotEmpty()) {
-                LazyRow(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
-                ) {
-                    itemsIndexed(
-                        items = state.recentSearches,
-                        key = { index, query -> "$query-$index" }
-                    ) { _, query ->
-                        InputChip(
-                            selected = false,
-                            onClick = {
-                                focusManager.clearFocus()
-                                onEvent(Event.RecentSearchSelected(query))
-                            },
-                            label = {
-                                Text(
-                                    text = query,
-                                    maxLines = 1,
-                                    overflow = TextOverflow.Ellipsis,
-                                    modifier = Modifier.widthIn(max = 180.dp)
-                                )
-                            },
-                            trailingIcon = {
-                                Icon(
-                                    imageVector = Icons.Filled.Close,
-                                    contentDescription = "Remove search",
-                                    modifier = Modifier
-                                        .size(16.dp)
-                                        .clickable { onEvent(Event.RemoveRecentSearch(query)) }
-                                )
-                            }
-                        )
-                    }
                 }
-            }
         },
         floatingActionButtonStart = {
             SiteToggleFab(
@@ -136,15 +141,23 @@ internal fun SearchPostsScreen(
             }
         },
     ) {
-        /** Контент */
-        PostsContentPaging(
-            postsViewMode = state.uiSettingModel.searchPostsViewMode,
-            uiSettingModel = state.uiSettingModel,
-            gridPostsSize = state.uiSettingModel.searchPostsGridSize,
-            posts = posts,
-            currentTag = null,
-            onPostClick = { onEvent(Event.NavigateToPost(it)) },
-            onRetry = { posts.retry() },
-        )
+        PullToRefreshBox(
+            modifier = Modifier
+                .fillMaxSize()
+                .weight(1f),
+            state = pullState,
+            isRefreshing = isBusy,
+            onRefresh = { onEvent(Event.PullRefresh) },
+        ) {
+            PostsContentPaging(
+                postsViewMode = state.uiSettingModel.searchPostsViewMode,
+                uiSettingModel = state.uiSettingModel,
+                gridPostsSize = state.uiSettingModel.searchPostsGridSize,
+                posts = posts,
+                currentTag = null,
+                onPostClick = { onEvent(Event.NavigateToPost(it)) },
+                onRetry = { posts.retry() },
+            )
+        }
     }
 }
