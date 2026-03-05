@@ -2,11 +2,11 @@ package su.afk.kemonos.creatorProfile.domain.paging
 
 import androidx.paging.PagingSource
 import androidx.paging.PagingState
-import su.afk.kemonos.creatorProfile.data.CreatorsRepository
+import su.afk.kemonos.creatorProfile.domain.repository.ICreatorsRepository
 import su.afk.kemonos.domain.models.PostDomain
 
 internal class ProfilePostsPagingSource(
-    private val repository: CreatorsRepository,
+    private val repository: ICreatorsRepository,
     private val service: String,
     private val id: String,
     private val tag: String?,

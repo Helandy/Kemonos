@@ -1,7 +1,7 @@
 package su.afk.kemonos.creatorProfile.domain.useCase
 
 import su.afk.kemonos.creatorProfile.api.IGetProfileUseCase
-import su.afk.kemonos.creatorProfile.data.IProfileRepository
+import su.afk.kemonos.creatorProfile.domain.repository.IProfileRepository
 import su.afk.kemonos.domain.models.Profile
 import javax.inject.Inject
 

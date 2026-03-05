@@ -3,7 +3,6 @@ package su.afk.kemonos.storage.repository.creatorProfileCache
 import su.afk.kemonos.preferences.useCase.CacheTimes.TTL_7_DAYS
 import su.afk.kemonos.storage.api.repository.creatorProfile.CreatorProfileCacheType
 import su.afk.kemonos.storage.api.repository.creatorProfile.IStoreCreatorProfileRepository
-import su.afk.kemonos.storage.entity.creatorProfileCache.CreatorProfileCacheEntity
 import su.afk.kemonos.storage.entity.creatorProfileCache.dao.CreatorProfileCacheDao
 import javax.inject.Inject
 
@@ -13,21 +12,19 @@ internal class StoreCreatorProfileRepository @Inject constructor(
 
     override suspend fun getFreshJsonOrNull(service: String, id: String, type: CreatorProfileCacheType): String? {
         val minTs = System.currentTimeMillis() - TTL_7_DAYS
-        return dao.getFresh(service = service, profileId = id, type = type, minCachedAt = minTs)?.json
+        return dao.getFresh(service = service, profileId = id, type = type, minCachedAt = minTs)
     }
 
     override suspend fun getJsonOrNull(service: String, id: String, type: CreatorProfileCacheType): String? =
-        dao.get(service = service, profileId = id, type = type)?.json
+        dao.get(service = service, profileId = id, type = type)
 
     override suspend fun putJson(service: String, id: String, type: CreatorProfileCacheType, json: String) {
         dao.upsert(
-            CreatorProfileCacheEntity(
-                service = service,
-                profileId = id,
-                type = type,
-                json = json,
-                cachedAt = System.currentTimeMillis(),
-            )
+            service = service,
+            profileId = id,
+            type = type,
+            json = json,
+            cachedAt = System.currentTimeMillis(),
         )
     }
 

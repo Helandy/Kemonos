@@ -4,10 +4,12 @@ import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
+import su.afk.kemonos.creatorProfile.data.CreatorsRepository
 import su.afk.kemonos.creatorProfile.data.FavoritesCreatorRepository
-import su.afk.kemonos.creatorProfile.data.IFavoritesCreatorRepository
-import su.afk.kemonos.creatorProfile.data.IProfileRepository
 import su.afk.kemonos.creatorProfile.data.ProfileRepository
+import su.afk.kemonos.creatorProfile.domain.repository.ICreatorsRepository
+import su.afk.kemonos.creatorProfile.domain.repository.IFavoritesCreatorRepository
+import su.afk.kemonos.creatorProfile.domain.repository.IProfileRepository
 import javax.inject.Singleton
 
 @Module
@@ -20,5 +22,9 @@ internal interface RepositoryModule {
 
     @Binds
     @Singleton
-    fun bindCreatorsRepository(impl: ProfileRepository): IProfileRepository
+    fun bindCreatorsDataRepository(impl: CreatorsRepository): ICreatorsRepository
+
+    @Binds
+    @Singleton
+    fun bindProfileRepository(impl: ProfileRepository): IProfileRepository
 }

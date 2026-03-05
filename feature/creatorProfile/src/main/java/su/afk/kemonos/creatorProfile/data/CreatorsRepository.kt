@@ -17,6 +17,7 @@ import su.afk.kemonos.creatorProfile.data.dto.profileFanCards.ProfileFanCardsDto
 import su.afk.kemonos.creatorProfile.data.dto.profileLinks.ProfileLinksDto.Companion.toDomain
 import su.afk.kemonos.creatorProfile.data.dto.profileSimilar.SimilarCreatorDto.Companion.toDomain
 import su.afk.kemonos.creatorProfile.data.dto.profileTags.TagDto.Companion.toDomain
+import su.afk.kemonos.creatorProfile.domain.repository.ICreatorsRepository
 import su.afk.kemonos.creatorProfile.util.Utils.queryKey
 import su.afk.kemonos.data.dto.PostUnifiedDto.Companion.toDomain
 import su.afk.kemonos.domain.models.PostDomain
@@ -36,17 +37,17 @@ internal class CreatorsRepository @Inject constructor(
     private val communityCacheStore: IStoreCommunityRepository,
     private val cacheJson: CreatorProfileCacheJson,
     private val postsCache: IStorageCreatorPostsRepository,
-) {
+) : ICreatorsRepository {
     companion object {
         private const val COMMUNITY_PAGE_SIZE = 150
     }
 
     /** Профиль посты и поиск */
-    suspend fun getProfilePosts(
+    override suspend fun getProfilePosts(
         service: String,
         id: String,
-        search: String? = null,
-        tag: String? = null,
+        search: String?,
+        tag: String?,
         offset: Int,
     ): List<PostDomain> {
         val qk = queryKey(service, id, search, tag)
@@ -70,159 +71,162 @@ internal class CreatorsRepository @Inject constructor(
     }
 
     /** ЛС профиля (кэш 7 дней) */
-    suspend fun getProfileDms(service: String, id: String): List<Dm> {
+    override suspend fun getProfileDms(service: String, id: String): List<Dm> {
         cacheStore.getFreshJsonOrNull(service, id, CreatorProfileCacheType.DMS)
             ?.let { return cacheJson.dmsFromJson(it) }
 
         val fromNet = safeCallOrNull(
             api = { api.getProfileDms(service, id) },
             mapper = { dto -> dto.toDomain() }
-        ) ?: emptyList()
+        )
 
-        if (fromNet.isNotEmpty()) {
+        if (fromNet != null) {
             cacheStore.putJson(
                 service,
                 id,
                 CreatorProfileCacheType.DMS,
-                cacheJson.dmsToJson(fromNet)
+                cacheJson.dmsToJson(fromNet),
             )
         }
 
-        return fromNet
+        return fromNet ?: emptyList()
     }
 
     /** Tags профиля (кэш 7 дней) */
-    suspend fun getProfileTags(service: String, id: String): List<Tag> {
+    override suspend fun getProfileTags(service: String, id: String): List<Tag> {
         cacheStore.getFreshJsonOrNull(service, id, CreatorProfileCacheType.TAGS)
             ?.let { return cacheJson.tagsFromJson(it) }
 
         val fromNet = safeCallOrNull(
             api = { api.getProfileTags(service, id) },
             mapper = { dto -> dto.toDomain() }
-        ) ?: emptyList()
+        )
 
-        if (fromNet.isNotEmpty()) {
+        if (fromNet != null) {
             cacheStore.putJson(
                 service,
                 id,
                 CreatorProfileCacheType.TAGS,
-                cacheJson.tagsToJson(fromNet)
+                cacheJson.tagsToJson(fromNet),
             )
         }
 
-        return fromNet
+        return fromNet ?: emptyList()
     }
 
     /** Announcements профиля (кэш 7 дней) */
-    suspend fun getProfileAnnouncements(service: String, id: String): List<ProfileAnnouncement> {
+    override suspend fun getProfileAnnouncements(service: String, id: String): List<ProfileAnnouncement> {
         cacheStore.getFreshJsonOrNull(service, id, CreatorProfileCacheType.ANNOUNCEMENTS)
             ?.let { return cacheJson.announcementsFromJson(it) }
 
         val fromNet = safeCallOrNull(
             api = { api.getProfileAnnouncements(service, id) },
             mapper = { dto -> dto.toDomain() }
-        ) ?: emptyList()
+        )
 
-        if (fromNet.isNotEmpty()) {
+        if (fromNet != null) {
             cacheStore.putJson(
                 service,
                 id,
                 CreatorProfileCacheType.ANNOUNCEMENTS,
-                cacheJson.announcementsToJson(fromNet)
+                cacheJson.announcementsToJson(fromNet),
             )
         }
 
-        return fromNet
+        return fromNet ?: emptyList()
     }
 
     /** FanCards профиля (кэш 7 дней) */
-    suspend fun getProfileFanCards(service: String, id: String): List<ProfileFanCard> {
+    override suspend fun getProfileFanCards(service: String, id: String): List<ProfileFanCard> {
         cacheStore.getFreshJsonOrNull(service, id, CreatorProfileCacheType.FANCARDS)
             ?.let { return cacheJson.fanCardsFromJson(it) }
 
         val fromNet = safeCallOrNull(
             api = { api.getProfileFanCards(service, id) },
             mapper = { dto -> dto.toDomain() }
-        ) ?: emptyList()
+        )
 
-        if (fromNet.isNotEmpty()) {
+        if (fromNet != null) {
             cacheStore.putJson(
                 service,
                 id,
                 CreatorProfileCacheType.FANCARDS,
-                cacheJson.fanCardsToJson(fromNet)
+                cacheJson.fanCardsToJson(fromNet),
             )
         }
 
-        return fromNet
+        return fromNet ?: emptyList()
     }
 
     /** Links профиля (кэш 7 дней) */
-    suspend fun getProfileLinks(service: String, id: String): List<ProfileLink> {
+    override suspend fun getProfileLinks(service: String, id: String): List<ProfileLink> {
         cacheStore.getFreshJsonOrNull(service, id, CreatorProfileCacheType.LINKS)
             ?.let { return cacheJson.linksFromJson(it) }
 
         val fromNet = safeCallOrNull(
             api = { api.getProfileLinks(service, id) },
             mapper = { dto -> dto.toDomain() }
-        ) ?: emptyList()
+        )
 
-        if (fromNet.isNotEmpty()) {
+        if (fromNet != null) {
             cacheStore.putJson(
                 service,
                 id,
                 CreatorProfileCacheType.LINKS,
-                cacheJson.linksToJson(fromNet)
+                cacheJson.linksToJson(fromNet),
             )
         }
 
-        return fromNet
+        return fromNet ?: emptyList()
     }
 
     /** Similar creators */
-    suspend fun getProfileSimilar(service: String, id: String): List<SimilarCreator> {
+    override suspend fun getProfileSimilar(service: String, id: String): List<SimilarCreator> {
         cacheStore.getFreshJsonOrNull(service, id, CreatorProfileCacheType.SIMILAR)
             ?.let { return cacheJson.similarFromJson(it) }
 
         val fromNet = safeCallOrNull(
             api = { api.getProfileRecommended(service, id) },
             mapper = { dto -> dto.toDomain() }
-        ) ?: emptyList()
+        )
 
-        if (fromNet.isNotEmpty()) {
+        if (fromNet != null) {
             cacheStore.putJson(
                 service = service,
                 id = id,
                 type = CreatorProfileCacheType.SIMILAR,
-                json = cacheJson.similarToJson(fromNet)
+                json = cacheJson.similarToJson(fromNet),
             )
         }
 
-        return fromNet
+        return fromNet ?: emptyList()
     }
 
-    suspend fun getProfileCommunityChannels(service: String, id: String): List<CommunityChannel> {
+    override suspend fun getProfileCommunityChannels(service: String, id: String): List<CommunityChannel> {
         communityCacheStore.getFreshJsonOrNull(service, id, CommunityCacheType.CHANNELS)
             ?.let { return cacheJson.communityChannelsFromJson(it) }
 
-        val fromNet = safeCallOrNull(
-            api = { api.getProfileCommunityChannels(service, id) },
-            mapper = { dto -> dto.toDomain() }
-        ) ?: emptyList()
+        val fromNet = runCatching {
+            val response = api.getProfileCommunityChannels(service, id)
+            when {
+                response.code() == 404 -> emptyList()
+                else -> response.call { list -> list.map { it.toDomain() } }
+            }
+        }.getOrNull()
 
-        if (fromNet.isNotEmpty()) {
+        if (fromNet != null) {
             communityCacheStore.putJson(
                 service = service,
                 id = id,
                 type = CommunityCacheType.CHANNELS,
-                json = cacheJson.communityChannelsToJson(fromNet)
+                json = cacheJson.communityChannelsToJson(fromNet),
             )
         }
 
-        return fromNet
+        return fromNet ?: emptyList()
     }
 
-    suspend fun getProfileCommunityMessages(
+    override suspend fun getProfileCommunityMessages(
         service: String,
         channelId: String,
         offset: Int
@@ -235,19 +239,19 @@ internal class CreatorsRepository @Inject constructor(
         val fromNet = safeCallOrNull(
             api = { api.getProfileCommunityMessages(service, channelId, if (offset == 0) null else offset) },
             mapper = { dto -> dto.toDomain() }
-        ) ?: emptyList()
+        )
 
-        if (offset == 0 && fromNet.isNotEmpty()) {
+        if (offset == 0 && fromNet != null) {
             communityCacheStore.putJson(
                 service = service,
                 id = channelId,
                 type = CommunityCacheType.MESSAGES_PAGE0,
-                json = cacheJson.communityMessagesToJson(fromNet)
+                json = cacheJson.communityMessagesToJson(fromNet),
             )
         }
 
-        return fromNet
+        return fromNet ?: emptyList()
     }
 
-    fun nextCommunityOffset(currentOffset: Int): Int = currentOffset + COMMUNITY_PAGE_SIZE
+    override fun nextCommunityOffset(currentOffset: Int): Int = currentOffset + COMMUNITY_PAGE_SIZE
 }

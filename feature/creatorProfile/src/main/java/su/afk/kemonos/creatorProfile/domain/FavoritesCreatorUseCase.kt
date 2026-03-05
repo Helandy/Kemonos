@@ -1,6 +1,6 @@
 package su.afk.kemonos.creatorProfile.domain
 
-import su.afk.kemonos.creatorProfile.data.IFavoritesCreatorRepository
+import su.afk.kemonos.creatorProfile.domain.repository.IFavoritesCreatorRepository
 import su.afk.kemonos.preferences.site.ISelectedSiteUseCase
 import su.afk.kemonos.profile.api.domain.IIsCreatorFavoriteUseCase
 import javax.inject.Inject

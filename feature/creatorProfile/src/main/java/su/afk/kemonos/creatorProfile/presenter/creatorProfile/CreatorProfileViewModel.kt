@@ -26,6 +26,7 @@ import su.afk.kemonos.error.error.toFavoriteToastBar
 import su.afk.kemonos.navigation.NavigationManager
 import su.afk.kemonos.preferences.GetKemonoRootUrlUseCase
 import su.afk.kemonos.preferences.IGetCurrentSiteRootUrlUseCase
+import su.afk.kemonos.preferences.ui.CreatorProfileTabKey
 import su.afk.kemonos.preferences.ui.IUiSettingUseCase
 import su.afk.kemonos.storage.api.repository.blacklist.BlacklistedAuthor
 import su.afk.kemonos.storage.api.repository.blacklist.IStoreBlacklistedAuthorsRepository
@@ -56,6 +57,11 @@ internal class CreatorProfileViewModel @AssistedInject constructor(
     private var observeBlacklistJob: Job? = null
 
     override fun createInitialState(): CreatorProfileState.State = CreatorProfileState.State()
+
+    private data class TabCheckSpec(
+        val key: CreatorProfileTabKey,
+        val loader: suspend () -> Unit,
+    )
 
     override fun onEvent(event: CreatorProfileState.Event) {
         when (event) {
@@ -125,11 +131,22 @@ internal class CreatorProfileViewModel @AssistedInject constructor(
 
     private fun loadAll() {
         viewModelScope.launch {
-            setState { copy(loading = true) }
-            getProfileInfo()
-            setTabsToProfile()
-            isCreatorFavorite()
-            loadProfileAndPosts()
+            loadAllInternal()
+        }
+    }
+
+    private suspend fun loadAllInternal() = coroutineScope {
+        setState { copy(loading = true) }
+        try {
+            val profileAndTabs = async {
+                getProfileInfo()
+                setTabsToProfile()
+            }
+            val favorite = async { isCreatorFavorite() }
+            val posts = async { loadProfileAndPosts() }
+
+            awaitAll(profileAndTabs, favorite, posts)
+        } finally {
             setState { copy(loading = false) }
         }
     }
@@ -150,7 +167,7 @@ internal class CreatorProfileViewModel @AssistedInject constructor(
     }
 
     /** Получение информации о Профиле */
-    fun getProfileInfo() = viewModelScope.launch {
+    private suspend fun getProfileInfo() {
         val profile = getProfileUseCase(currentState.service, currentState.id)
 
         setState {
@@ -163,7 +180,7 @@ internal class CreatorProfileViewModel @AssistedInject constructor(
     }
 
     /** Загрузка постов на странице */
-    fun loadProfileAndPosts() = viewModelScope.launch {
+    private fun loadProfileAndPosts() {
         val pagingFlow = getProfilePostsPagingUseCase(
             service = currentState.service,
             id = currentState.id,
@@ -180,26 +197,40 @@ internal class CreatorProfileViewModel @AssistedInject constructor(
                     }.cachedIn(viewModelScope)
                 } else {
                     pagingFlow.cachedIn(viewModelScope)
-                },
-                loading = false,
+                }
             )
         }
     }
 
     /** Какие вкладки отображать */
-    fun setTabsToProfile() = viewModelScope.launch {
+    private suspend fun setTabsToProfile() = coroutineScope {
+        val hiddenTabs = currentState.uiSettingModel.creatorProfileHiddenTabs
+        fun isTabEnabled(tab: CreatorProfileTabKey): Boolean = tab !in hiddenTabs
+
         /** базовый набор табов */
         val tabs = mutableListOf(ProfileTab.POSTS)
         /** Лс */
-        currentState.countDm?.let { if (it > 0) tabs.add(ProfileTab.DMS) }
+        if (isTabEnabled(CreatorProfileTabKey.DMS)) {
+            currentState.countDm?.let { if (it > 0) tabs.add(ProfileTab.DMS) }
+        }
 
-        setState { copy(showTabs = tabs) }
+        setState {
+            val nextSelectedTab = if (selectedTab.toCreatorProfileTabKey() in hiddenTabs) {
+                ProfileTab.POSTS
+            } else {
+                selectedTab
+            }
+            copy(
+                showTabs = tabs,
+                selectedTab = nextSelectedTab,
+            )
+        }
 
         val service = currentState.service
         val id = currentState.id
 
         val checks = listOf(
-            async {
+            TabCheckSpec(CreatorProfileTabKey.DMS) {
                 loadingTabsContent.checkDms(
                     countDm = currentState.countDm,
                     setState = ::setState,
@@ -207,50 +238,56 @@ internal class CreatorProfileViewModel @AssistedInject constructor(
                     id = id
                 )
             },
-            async {
+            TabCheckSpec(CreatorProfileTabKey.FANCARD) {
                 loadingTabsContent.checkFanCard(
                     setState = ::setState,
                     service = service,
                     id = id
                 )
             },
-            async {
+            TabCheckSpec(CreatorProfileTabKey.ANNOUNCEMENTS) {
                 loadingTabsContent.checkAnnouncements(
                     setState = ::setState,
                     service = service,
                     id = id
                 )
             },
-            async {
+            TabCheckSpec(CreatorProfileTabKey.TAGS) {
                 loadingTabsContent.checkTags(
                     setState = ::setState,
                     service = service,
                     id = id
                 )
             },
-            async {
+            TabCheckSpec(CreatorProfileTabKey.LINKS) {
                 loadingTabsContent.checkLinks(
                     setState = ::setState,
                     service = service,
                     id = id
                 )
             },
-            async {
+            TabCheckSpec(CreatorProfileTabKey.SIMILAR) {
                 loadingTabsContent.checkSimilar(
                     setState = ::setState,
                     service = service,
                     id = id
                 )
             },
-            async {
+            TabCheckSpec(CreatorProfileTabKey.COMMUNITY) {
                 loadingTabsContent.checkCommunity(
                     setState = ::setState,
                     service = service,
                     id = id
                 )
-            }
+            },
         )
-        checks.awaitAll()
+
+        checks
+            .asSequence()
+            .filter { isTabEnabled(it.key) }
+            .map { async { it.loader() } }
+            .toList()
+            .awaitAll()
     }
 
     private fun openCommunityChannel(channel: CommunityChannel) {
@@ -320,28 +357,28 @@ internal class CreatorProfileViewModel @AssistedInject constructor(
             )
         }
 
-        loadProfileAndPosts()
+        viewModelScope.launch { loadProfileAndPosts() }
     }
 
     private fun toggleHasVideo() {
         setState {
             copy(mediaFilter = mediaFilter.copy(hasVideo = !mediaFilter.hasVideo))
         }
-        loadProfileAndPosts()
+        viewModelScope.launch { loadProfileAndPosts() }
     }
 
     private fun toggleHasAttachments() {
         setState {
             copy(mediaFilter = mediaFilter.copy(hasAttachments = !mediaFilter.hasAttachments))
         }
-        loadProfileAndPosts()
+        viewModelScope.launch { loadProfileAndPosts() }
     }
 
     private fun toggleHasImages() {
         setState {
             copy(mediaFilter = mediaFilter.copy(hasImages = !mediaFilter.hasImages))
         }
-        loadProfileAndPosts()
+        viewModelScope.launch { loadProfileAndPosts() }
     }
 
     /** избранное */
@@ -368,7 +405,7 @@ internal class CreatorProfileViewModel @AssistedInject constructor(
     }
 
     /** проверит в избранном ли автор */
-    fun isCreatorFavorite() = viewModelScope.launch {
+    private suspend fun isCreatorFavorite() {
         val isShowAvailable = likeDelegate.creatorIsAvailableLike()
         if (isShowAvailable) {
             val favorite = likeDelegate.isCreatorFavorite(
@@ -389,7 +426,7 @@ internal class CreatorProfileViewModel @AssistedInject constructor(
         )
         postsCache.clearQuery(qk)
 
-        loadAll()
+        loadAllInternal()
     }
 
     /** Копирование в буфер */
@@ -437,5 +474,16 @@ internal class CreatorProfileViewModel @AssistedInject constructor(
             )
         )
         setEffect(CreatorProfileState.Effect.AddedToBlacklist)
+    }
+
+    private fun ProfileTab.toCreatorProfileTabKey(): CreatorProfileTabKey = when (this) {
+        ProfileTab.POSTS -> CreatorProfileTabKey.POSTS
+        ProfileTab.ANNOUNCEMENTS -> CreatorProfileTabKey.ANNOUNCEMENTS
+        ProfileTab.FANCARD -> CreatorProfileTabKey.FANCARD
+        ProfileTab.DMS -> CreatorProfileTabKey.DMS
+        ProfileTab.TAGS -> CreatorProfileTabKey.TAGS
+        ProfileTab.LINKS -> CreatorProfileTabKey.LINKS
+        ProfileTab.SIMILAR -> CreatorProfileTabKey.SIMILAR
+        ProfileTab.COMMUNITY -> CreatorProfileTabKey.COMMUNITY
     }
 }
