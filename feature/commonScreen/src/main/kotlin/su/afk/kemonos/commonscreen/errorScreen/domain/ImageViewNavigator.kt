@@ -1,7 +1,7 @@
 package su.afk.kemonos.commonscreen.errorScreen.domain
 
 import androidx.navigation3.runtime.NavKey
-import su.afk.kemonos.commonscreen.navigator.CommonScreenDest
+import su.afk.kemonos.commonscreen.navigator.CommonScreenDestination
 import su.afk.kemonos.commonscreen.navigator.IImageViewNavigator
 import su.afk.kemonos.commonscreen.navigator.ImageNavigationConst.KEY_CREATOR_NAME
 import su.afk.kemonos.commonscreen.navigator.ImageNavigationConst.KEY_IMAGE_URLS
@@ -49,6 +49,6 @@ class ImageViewNavigator @Inject constructor(
         postId?.let { navigationStorage.put(KEY_POST_ID, it) }
         postTitle?.let { navigationStorage.put(KEY_POST_TITLE, it) }
 
-        return CommonScreenDest.ImageViewDest(imageUrl)
+        return CommonScreenDestination.ImageViewDest(imageUrl)
     }
 }

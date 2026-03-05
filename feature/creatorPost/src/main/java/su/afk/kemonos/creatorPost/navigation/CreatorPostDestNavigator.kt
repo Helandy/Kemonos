@@ -7,7 +7,7 @@ import javax.inject.Inject
 class CreatorPostDestNavigator @Inject constructor() : ICreatorPostNavigator {
 
     override fun getCreatorPostDest(id: String, service: String, postId: String, showBarCreator: Boolean): NavKey {
-        return CreatorPostDest.CreatorPost(
+        return CreatorPostDestination.CreatorPost(
             id = id,
             service = service,
             postId = postId,

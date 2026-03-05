@@ -211,7 +211,6 @@ internal class FavoritePostsViewModel @Inject constructor(
                 creatorProfileNavigator.getCreatorProfileDest(
                     service = service,
                     id = creatorId,
-                    isFresh = false,
                 )
             )
         }

@@ -13,7 +13,7 @@ import su.afk.kemonos.creatorPost.domain.model.video.VideoThumbState
 import su.afk.kemonos.creatorPost.domain.useCase.GetCommentsUseCase
 import su.afk.kemonos.creatorPost.domain.useCase.GetMediaMetaUseCase
 import su.afk.kemonos.creatorPost.domain.useCase.GetPostUseCase
-import su.afk.kemonos.creatorPost.navigation.CreatorPostDest
+import su.afk.kemonos.creatorPost.navigation.CreatorPostDestination
 import su.afk.kemonos.creatorPost.presenter.CreatorPostState.*
 import su.afk.kemonos.creatorPost.presenter.CreatorPostState.Effect.OpenAudio
 import su.afk.kemonos.creatorPost.presenter.delegates.LikeDelegate
@@ -43,7 +43,7 @@ import su.afk.kemonos.ui.uiUtils.format.buildFileUrl
 import java.net.URLEncoder
 
 internal class CreatorPostViewModel @AssistedInject constructor(
-    @Assisted private val dest: CreatorPostDest.CreatorPost,
+    @Assisted private val dest: CreatorPostDestination.CreatorPost,
     private val getCommentsUseCase: GetCommentsUseCase,
     private val getPostUseCase: GetPostUseCase,
     private val getProfileUseCase: IGetProfileUseCase,
@@ -63,7 +63,7 @@ internal class CreatorPostViewModel @AssistedInject constructor(
 
     @AssistedFactory
     interface Factory {
-        fun create(dest: CreatorPostDest.CreatorPost): CreatorPostViewModel
+        fun create(dest: CreatorPostDestination.CreatorPost): CreatorPostViewModel
     }
 
     override fun createInitialState(): State = State.default()

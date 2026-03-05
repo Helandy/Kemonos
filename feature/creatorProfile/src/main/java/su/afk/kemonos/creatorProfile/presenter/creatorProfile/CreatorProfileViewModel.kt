@@ -13,7 +13,7 @@ import kotlinx.coroutines.flow.onEach
 import su.afk.kemonos.creatorProfile.api.IGetProfileUseCase
 import su.afk.kemonos.creatorProfile.api.domain.models.profileCommunity.CommunityChannel
 import su.afk.kemonos.creatorProfile.domain.paging.GetProfilePostsPagingUseCase
-import su.afk.kemonos.creatorProfile.navigation.CreatorDest
+import su.afk.kemonos.creatorProfile.navigation.CreatorDestination
 import su.afk.kemonos.creatorProfile.presenter.creatorProfile.delegates.LikeDelegate
 import su.afk.kemonos.creatorProfile.presenter.creatorProfile.delegates.LoadingTabsContent
 import su.afk.kemonos.creatorProfile.presenter.creatorProfile.delegates.NavigationDelegate
@@ -37,7 +37,7 @@ import su.afk.kemonos.ui.shared.ShareLinkBuilder
 import su.afk.kemonos.ui.shared.model.ShareTarget
 
 internal class CreatorProfileViewModel @AssistedInject constructor(
-    @Assisted private val dest: CreatorDest.CreatorProfile,
+    @Assisted private val dest: CreatorDestination.CreatorProfile,
     private val getProfileUseCase: IGetProfileUseCase,
     private val getKemonoRootUrlUseCase: GetKemonoRootUrlUseCase,
     private val getCurrentSiteRootUrlUseCase: IGetCurrentSiteRootUrlUseCase,
@@ -96,7 +96,7 @@ internal class CreatorProfileViewModel @AssistedInject constructor(
 
     @AssistedFactory
     interface Factory {
-        fun create(dest: CreatorDest.CreatorProfile): CreatorProfileViewModel
+        fun create(dest: CreatorDestination.CreatorProfile): CreatorProfileViewModel
     }
 
     override fun onRetry() {

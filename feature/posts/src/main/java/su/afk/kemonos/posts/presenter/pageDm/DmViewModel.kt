@@ -150,7 +150,6 @@ internal class DmViewModel @Inject constructor(
             creatorProfileNavigator.getCreatorProfileDest(
                 service = service,
                 id = id,
-                isFresh = false,
             )
         )
     }
