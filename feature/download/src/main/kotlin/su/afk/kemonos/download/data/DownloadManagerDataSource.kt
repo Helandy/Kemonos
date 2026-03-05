@@ -35,20 +35,31 @@ internal class DownloadManagerDataSourceImpl @Inject constructor(
                 val query = DownloadManager.Query().setFilterById(*batch.toLongArray())
                 val cursor = downloadManager.query(query)
                 cursor.use { c ->
+                    val idIndex = c.getColumnIndex(DownloadManager.COLUMN_ID)
+                    val titleIndex = c.getColumnIndex(DownloadManager.COLUMN_TITLE)
+                    val statusIndex = c.getColumnIndex(DownloadManager.COLUMN_STATUS)
+                    val reasonIndex = c.getColumnIndex(DownloadManager.COLUMN_REASON)
+                    val downloadedIndex = c.getColumnIndex(DownloadManager.COLUMN_BYTES_DOWNLOADED_SO_FAR)
+                    val totalIndex = c.getColumnIndex(DownloadManager.COLUMN_TOTAL_SIZE_BYTES)
+                    val mediaTypeIndex = c.getColumnIndex(DownloadManager.COLUMN_MEDIA_TYPE)
+                    val remoteUriIndex = c.getColumnIndex(DownloadManager.COLUMN_URI)
+                    val localUriIndex = c.getColumnIndex(DownloadManager.COLUMN_LOCAL_URI)
+                    val modifiedIndex = c.getColumnIndex(DownloadManager.COLUMN_LAST_MODIFIED_TIMESTAMP)
                     while (c.moveToNext()) {
-                        val id = c.getLongByName(DownloadManager.COLUMN_ID)
+                        val id = c.getLongOrDefault(idIndex, default = -1L)
+                        if (id < 0L) continue
                         put(
                             id,
                             DownloadManagerSnapshot(
-                                title = c.getStringByName(DownloadManager.COLUMN_TITLE),
-                                status = c.getIntByName(DownloadManager.COLUMN_STATUS),
-                                reason = c.getIntByName(DownloadManager.COLUMN_REASON),
-                                bytesDownloaded = c.getLongByName(DownloadManager.COLUMN_BYTES_DOWNLOADED_SO_FAR),
-                                totalBytes = c.getLongByName(DownloadManager.COLUMN_TOTAL_SIZE_BYTES),
-                                mediaType = c.getStringByName(DownloadManager.COLUMN_MEDIA_TYPE),
-                                remoteUri = c.getStringByName(DownloadManager.COLUMN_URI),
-                                localUri = c.getStringByName(DownloadManager.COLUMN_LOCAL_URI),
-                                lastModifiedMs = c.getLongByName(DownloadManager.COLUMN_LAST_MODIFIED_TIMESTAMP),
+                                title = c.getStringOrNull(titleIndex),
+                                status = c.getIntOrDefault(statusIndex, default = -1),
+                                reason = c.getIntOrDefault(reasonIndex, default = -1),
+                                bytesDownloaded = c.getLongOrDefault(downloadedIndex, default = -1L),
+                                totalBytes = c.getLongOrDefault(totalIndex, default = -1L),
+                                mediaType = c.getStringOrNull(mediaTypeIndex),
+                                remoteUri = c.getStringOrNull(remoteUriIndex),
+                                localUri = c.getStringOrNull(localUriIndex),
+                                lastModifiedMs = c.getLongOrNull(modifiedIndex),
                             )
                         )
                     }
@@ -60,21 +71,23 @@ internal class DownloadManagerDataSourceImpl @Inject constructor(
     override fun remove(id: Long): Int = downloadManager.remove(id)
 }
 
-private fun Cursor.getStringByName(name: String): String? {
-    val index = getColumnIndex(name)
+private fun Cursor.getStringOrNull(index: Int): String? {
     if (index < 0 || isNull(index)) return null
     return getString(index)
 }
 
-private fun Cursor.getLongByName(name: String): Long {
-    val index = getColumnIndex(name)
-    if (index < 0 || isNull(index)) return -1L
+private fun Cursor.getLongOrDefault(index: Int, default: Long): Long {
+    if (index < 0 || isNull(index)) return default
     return getLong(index)
 }
 
-private fun Cursor.getIntByName(name: String): Int {
-    val index = getColumnIndex(name)
-    if (index < 0 || isNull(index)) return -1
+private fun Cursor.getLongOrNull(index: Int): Long? {
+    if (index < 0 || isNull(index)) return null
+    return getLong(index)
+}
+
+private fun Cursor.getIntOrDefault(index: Int, default: Int): Int {
+    if (index < 0 || isNull(index)) return default
     return getInt(index)
 }
 

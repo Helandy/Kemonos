@@ -18,8 +18,6 @@ internal class DownloadsState {
     sealed interface Event : UiEvent {
         data object BackClick : Event
         data class SelectFilter(val filter: DownloadStatusFilter) : Event
-        data class PauseDownload(val downloadId: Long) : Event
-        data class StartDownload(val downloadId: Long) : Event
         data class StopDownload(val downloadId: Long) : Event
         data class RestartDownload(val downloadId: Long) : Event
         data class DeleteDownload(val downloadId: Long) : Event

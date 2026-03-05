@@ -1,6 +1,7 @@
 package su.afk.kemonos.main.presenter
 
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import su.afk.kemonos.app.update.api.model.AppUpdateInfo
@@ -42,6 +43,7 @@ internal class MainViewModel @Inject constructor(
     /** Чтобы не запустить стартовую инициализацию дважды */
     private var apiInitStarted = false
     private var startupFlowStarted = false
+    private var apiCheckJob: Job? = null
 
     init {
         viewModelScope.launch {
@@ -150,7 +152,9 @@ internal class MainViewModel @Inject constructor(
     }
 
     private fun runApiCheck() {
-        viewModelScope.launch {
+        if (apiCheckJob?.isActive == true) return
+
+        apiCheckJob = viewModelScope.launch {
             setState { copy(isLoading = true, kemonoError = null, coomerError = null) }
 
             // 1) если есть cookie — дернем избранное, а если 4xx — cookie очистится
@@ -175,6 +179,8 @@ internal class MainViewModel @Inject constructor(
                     }
                 }
             }
+        }.also { job ->
+            job.invokeOnCompletion { if (apiCheckJob === job) apiCheckJob = null }
         }
     }
 
