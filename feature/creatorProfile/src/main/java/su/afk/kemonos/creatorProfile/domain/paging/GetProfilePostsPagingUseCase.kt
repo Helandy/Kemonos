@@ -4,12 +4,12 @@ import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import kotlinx.coroutines.flow.Flow
-import su.afk.kemonos.creatorProfile.data.CreatorsRepository
+import su.afk.kemonos.creatorProfile.domain.repository.ICreatorsRepository
 import su.afk.kemonos.domain.models.PostDomain
 import javax.inject.Inject
 
 internal class GetProfilePostsPagingUseCase @Inject constructor(
-    private val repository: CreatorsRepository
+    private val repository: ICreatorsRepository
 ) {
     operator fun invoke(
         service: String,

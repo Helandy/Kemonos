@@ -1,0 +1,19 @@
+package su.afk.kemonos.storage.entity.communityCache
+
+import androidx.room.Entity
+import androidx.room.Index
+
+@Entity(
+    tableName = "community_cache_channels",
+    primaryKeys = ["service", "id"],
+    indices = [
+        Index(value = ["cachedAt"]),
+        Index(value = ["service", "cachedAt"])
+    ]
+)
+data class CommunityChannelsCacheEntity(
+    val service: String,
+    val id: String,
+    val json: String,
+    val cachedAt: Long = System.currentTimeMillis(),
+)

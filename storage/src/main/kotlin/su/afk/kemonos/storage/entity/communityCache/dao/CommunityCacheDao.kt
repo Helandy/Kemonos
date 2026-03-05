@@ -1,36 +1,91 @@
 package su.afk.kemonos.storage.entity.communityCache.dao
 
 import androidx.room.Dao
-import androidx.room.Insert
-import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import androidx.room.Transaction
 import su.afk.kemonos.storage.api.repository.community.CommunityCacheType
-import su.afk.kemonos.storage.entity.communityCache.CommunityCacheEntity
 
 @Dao
 interface CommunityCacheDao {
 
-    @Query(
-        """
-        SELECT * FROM community_cache
-        WHERE service = :service AND id = :id AND type = :type
-          AND cachedAt >= :minCachedAt
-        LIMIT 1
-    """
-    )
     suspend fun getFresh(
         service: String,
         id: String,
         type: CommunityCacheType,
         minCachedAt: Long
-    ): CommunityCacheEntity?
+    ): String? = when (type) {
+        CommunityCacheType.CHANNELS -> getFreshChannels(service, id, minCachedAt)
+        CommunityCacheType.MESSAGES_PAGE0 -> getFreshMessagesPage0(service, id, minCachedAt)
+    }
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun upsert(entity: CommunityCacheEntity)
+    suspend fun upsert(
+        service: String,
+        id: String,
+        type: CommunityCacheType,
+        json: String,
+        cachedAt: Long
+    ) = when (type) {
+        CommunityCacheType.CHANNELS -> upsertChannels(service, id, json, cachedAt)
+        CommunityCacheType.MESSAGES_PAGE0 -> upsertMessagesPage0(service, id, json, cachedAt)
+    }
 
-    @Query("DELETE FROM community_cache WHERE cachedAt < :minCachedAt")
-    suspend fun deleteOlderThan(minCachedAt: Long)
+    @Transaction
+    suspend fun deleteOlderThan(minCachedAt: Long) {
+        deleteOlderThanChannels(minCachedAt)
+        deleteOlderThanMessagesPage0(minCachedAt)
+    }
 
-    @Query("DELETE FROM community_cache")
-    suspend fun clearAll()
+    @Transaction
+    suspend fun clearAll() {
+        clearAllChannels()
+        clearAllMessagesPage0()
+    }
+
+    @Query(
+        """
+        SELECT json FROM community_cache_channels
+        WHERE service = :service AND id = :id
+          AND cachedAt >= :minCachedAt
+        LIMIT 1
+        """
+    )
+    suspend fun getFreshChannels(service: String, id: String, minCachedAt: Long): String?
+
+    @Query(
+        """
+        SELECT json FROM community_cache_messages_page0
+        WHERE service = :service AND id = :id
+          AND cachedAt >= :minCachedAt
+        LIMIT 1
+        """
+    )
+    suspend fun getFreshMessagesPage0(service: String, id: String, minCachedAt: Long): String?
+
+    @Query(
+        """
+        INSERT OR REPLACE INTO community_cache_channels(service, id, json, cachedAt)
+        VALUES (:service, :id, :json, :cachedAt)
+        """
+    )
+    suspend fun upsertChannels(service: String, id: String, json: String, cachedAt: Long)
+
+    @Query(
+        """
+        INSERT OR REPLACE INTO community_cache_messages_page0(service, id, json, cachedAt)
+        VALUES (:service, :id, :json, :cachedAt)
+        """
+    )
+    suspend fun upsertMessagesPage0(service: String, id: String, json: String, cachedAt: Long)
+
+    @Query("DELETE FROM community_cache_channels WHERE cachedAt < :minCachedAt")
+    suspend fun deleteOlderThanChannels(minCachedAt: Long)
+
+    @Query("DELETE FROM community_cache_messages_page0 WHERE cachedAt < :minCachedAt")
+    suspend fun deleteOlderThanMessagesPage0(minCachedAt: Long)
+
+    @Query("DELETE FROM community_cache_channels")
+    suspend fun clearAllChannels()
+
+    @Query("DELETE FROM community_cache_messages_page0")
+    suspend fun clearAllMessagesPage0()
 }

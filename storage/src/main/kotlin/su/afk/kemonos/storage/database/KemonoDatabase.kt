@@ -9,7 +9,7 @@ import su.afk.kemonos.storage.entity.blacklist.dao.BlacklistedAuthorsDao
 import su.afk.kemonos.storage.entity.comments.dao.CommentsDao
 import su.afk.kemonos.storage.entity.comments.entity.CommentEntity
 import su.afk.kemonos.storage.entity.comments.entity.CommentRevisionEntity
-import su.afk.kemonos.storage.entity.creatorProfileCache.CreatorProfileCacheEntity
+import su.afk.kemonos.storage.entity.creatorProfileCache.*
 import su.afk.kemonos.storage.entity.creatorProfileCache.dao.CreatorProfileCacheDao
 import su.afk.kemonos.storage.entity.creators.CreatorsEntity
 import su.afk.kemonos.storage.entity.creators.dao.KemonoCreatorsDao
@@ -49,7 +49,12 @@ import su.afk.kemonos.storage.entity.video.dao.VideoInfoDao
         FreshFavoriteArtistUpdateEntity::class,
 
         ProfileEntity::class,
-        CreatorProfileCacheEntity::class,
+        CreatorProfileDmsCacheEntity::class,
+        CreatorProfileTagsCacheEntity::class,
+        CreatorProfileAnnouncementsCacheEntity::class,
+        CreatorProfileFancardsCacheEntity::class,
+        CreatorProfileLinksCacheEntity::class,
+        CreatorProfileSimilarCacheEntity::class,
 
         CommentEntity::class,
         CommentRevisionEntity::class,
@@ -71,7 +76,7 @@ import su.afk.kemonos.storage.entity.video.dao.VideoInfoDao
         DownloadTaskEntity::class,
         BlacklistedAuthorEntity::class,
     ],
-    version = 16,
+    version = 17,
     exportSchema = false
 )
 @TypeConverters(SelectedSiteConverters::class)

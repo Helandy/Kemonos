@@ -2,20 +2,18 @@ package su.afk.kemonos.storage.entity.communityCache
 
 import androidx.room.Entity
 import androidx.room.Index
-import su.afk.kemonos.storage.api.repository.community.CommunityCacheType
 
 @Entity(
-    tableName = "community_cache",
-    primaryKeys = ["service", "id", "type"],
+    tableName = "community_cache_messages_page0",
+    primaryKeys = ["service", "id"],
     indices = [
-        Index(value = ["service", "id"]),
         Index(value = ["cachedAt"]),
+        Index(value = ["service", "cachedAt"])
     ]
 )
-data class CommunityCacheEntity(
+data class CommunityMessagesPage0CacheEntity(
     val service: String,
     val id: String,
-    val type: CommunityCacheType,
     val json: String,
     val cachedAt: Long = System.currentTimeMillis(),
 )

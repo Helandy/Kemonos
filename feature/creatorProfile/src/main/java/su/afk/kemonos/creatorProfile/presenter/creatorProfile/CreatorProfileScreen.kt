@@ -48,9 +48,14 @@ internal fun CreatorScreen(
 ) {
     val profile = state.profile
     val context = LocalContext.current
-    val posts = state.profilePosts.collectAsLazyPagingItems()
+    val posts = if (state.selectedTab == ProfileTab.POSTS) {
+        state.profilePosts.collectAsLazyPagingItems()
+    } else {
+        null
+    }
 
-    val postsRefreshing = posts.loadState.refresh is LoadState.Loading
+    val postsRefreshing =
+        state.selectedTab == ProfileTab.POSTS && posts?.loadState?.refresh is LoadState.Loading
 
     LaunchedEffect(effect) {
         effect.collect { effect ->
@@ -59,7 +64,7 @@ internal fun CreatorScreen(
                 is CreatorProfileState.Effect.ShowToast -> context.toast(effect.message)
                 is CreatorProfileState.Effect.CopyPostLink -> ShareActions.copyToClipboard(
                     context,
-                    "Profile link",
+                    context.getString(R.string.copy_link),
                     effect.message
                 )
 
@@ -177,32 +182,42 @@ internal fun CreatorScreen(
 private fun SelectedTab(
     state: State,
     onEvent: (Event) -> Unit,
-    posts: LazyPagingItems<PostDomain>,
+    posts: LazyPagingItems<PostDomain>?,
 ) {
     when (state.selectedTab) {
-        ProfileTab.POSTS -> PostsContentPaging(
-            postsViewMode = state.uiSettingModel.profilePostsViewMode,
-            uiSettingModel = state.uiSettingModel,
-            gridPostsSize = state.uiSettingModel.profilePostsGridSize,
-            posts = posts,
-            currentTag = state.currentTag,
-            onPostClick = {
-                onEvent(Event.OpenPost(it))
-            },
-            onRetry = { posts.retry() },
-        )
+        ProfileTab.POSTS -> {
+            val postsItems = posts ?: state.profilePosts.collectAsLazyPagingItems()
 
-        ProfileTab.DMS -> DmListScreen(
-            dateMode = state.uiSettingModel.dateFormatMode,
-            dms = state.dmList.map { dm ->
-                DmUiItem(
-                    hash = dm.hash,
-                    content = dm.content,
-                    published = dm.published,
-                )
-            },
-            sortByPublishedDesc = true,
-        )
+            PostsContentPaging(
+                postsViewMode = state.uiSettingModel.profilePostsViewMode,
+                uiSettingModel = state.uiSettingModel,
+                gridPostsSize = state.uiSettingModel.profilePostsGridSize,
+                posts = postsItems,
+                currentTag = state.currentTag,
+                onPostClick = {
+                    onEvent(Event.OpenPost(it))
+                },
+                onRetry = { postsItems.retry() },
+            )
+        }
+
+        ProfileTab.DMS -> {
+            val dmsItems = remember(state.dmList) {
+                state.dmList.map { dm ->
+                    DmUiItem(
+                        hash = dm.hash,
+                        content = dm.content,
+                        published = dm.published,
+                    )
+                }
+            }
+
+            DmListScreen(
+                dateMode = state.uiSettingModel.dateFormatMode,
+                dms = dmsItems,
+                sortByPublishedDesc = true,
+            )
+        }
 
         ProfileTab.ANNOUNCEMENTS -> AnnouncementsScreen(
             dateMode = state.uiSettingModel.dateFormatMode,
