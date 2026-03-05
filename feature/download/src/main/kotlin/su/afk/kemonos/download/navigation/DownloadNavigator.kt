@@ -5,5 +5,5 @@ import su.afk.kemonos.download.api.IDownloadNavigator
 import javax.inject.Inject
 
 class DownloadNavigator @Inject constructor() : IDownloadNavigator {
-    override fun getDownloadsDest(): NavKey = DownloadDest.Downloads
+    override fun getDownloadsDest(): NavKey = DownloadDestination.Downloads
 }

@@ -44,7 +44,7 @@ internal fun CreatorsScreen(
     val sortOptions = creatorsSortOptions()
 
     val pagingItems = state.creatorsPaged.collectAsLazyPagingItems()
-    val showEmpty = state.searchQuery.trim().length >= 2 &&
+    val isEmptyResult = state.searchQuery.trim().length >= 2 &&
             pagingItems.loadState.refresh is LoadState.NotLoading &&
             pagingItems.itemCount == 0
 
@@ -57,6 +57,7 @@ internal fun CreatorsScreen(
 
     val showRandomInSearch = state.uiSettingModel.randomButtonPlacement == RandomButtonPlacement.SEARCH_BAR
     val showRandomFab = state.uiSettingModel.randomButtonPlacement == RandomButtonPlacement.SCREEN
+    val topBarScrollMode = if (isEmptyResult) TopBarScroll.Pinned else TopBarScroll.EnterAlways
 
 
     val listState = rememberLazyListState()
@@ -75,7 +76,7 @@ internal fun CreatorsScreen(
     BaseScreen(
         isScroll = false,
         contentModifier = Modifier.padding(horizontal = 8.dp),
-        topBarScroll = TopBarScroll.EnterAlways,
+        topBarScroll = topBarScrollMode,
         topBar = {
                 SearchBarNew(
                     query = state.searchQuery,
@@ -108,7 +109,7 @@ internal fun CreatorsScreen(
             }
         },
         isLoading = isScreenLoading,
-        isEmpty = showEmpty
+        isEmpty = isEmptyResult
     ) {
         CreatorsContentPaging(
             dateMode = state.uiSettingModel.dateFormatMode,

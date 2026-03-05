@@ -37,6 +37,7 @@ internal class DownloadsViewModel @Inject constructor(
     private val speedMap = mutableMapOf<Long, SpeedPoint>()
     private val lastSnapshots = mutableMapOf<Long, DownloadSnapshot>()
     private var tracked: List<TrackedDownload> = emptyList()
+    private val trackedById = mutableMapOf<Long, TrackedDownload>()
 
     override fun createInitialState(): DownloadsState.State = DownloadsState.State()
 
@@ -44,8 +45,6 @@ internal class DownloadsViewModel @Inject constructor(
         when (event) {
             DownloadsState.Event.BackClick -> navigationManager.back()
             is DownloadsState.Event.SelectFilter -> setState { copy(selectedFilter = event.filter) }
-            is DownloadsState.Event.PauseDownload -> pauseDownload(event.downloadId)
-            is DownloadsState.Event.StartDownload -> startDownload(event.downloadId)
             is DownloadsState.Event.StopDownload -> stopDownload(event.downloadId)
             is DownloadsState.Event.RestartDownload -> restartDownload(event.downloadId)
             is DownloadsState.Event.DeleteDownload -> deleteDownload(event.downloadId)
@@ -53,7 +52,9 @@ internal class DownloadsViewModel @Inject constructor(
     }
 
     override fun onRetry() {
-        refreshAllNow()
+        viewModelScope.launch {
+            refreshAllNow()
+        }
     }
 
     init {
@@ -61,8 +62,12 @@ internal class DownloadsViewModel @Inject constructor(
 
         viewModelScope.launch {
             trackedDownloadsRepository.observeAll().collect { items ->
-                tracked = items
-                refreshAllNow()
+                refreshMutex.withLock {
+                    tracked = items
+                    trackedById.clear()
+                    items.forEach { trackedById[it.downloadId] = it }
+                    refreshInternal(onlyActive = false)
+                }
             }
         }
 
@@ -83,38 +88,14 @@ internal class DownloadsViewModel @Inject constructor(
             .launchIn(viewModelScope)
     }
 
-    private fun refreshAllNow() {
-        viewModelScope.launch {
-            refreshMutex.withLock {
-                refreshInternal(onlyActive = false)
-            }
+    private suspend fun refreshAllNow() {
+        refreshMutex.withLock {
+            refreshInternal(onlyActive = false)
         }
-    }
-
-    private fun pauseDownload(downloadId: Long) {
-        viewModelScope.launch {
-            refreshMutex.withLock {
-                downloadManagerDataSource.remove(downloadId)
-                speedMap.remove(downloadId)
-                lastSnapshots.remove(downloadId)
-                trackedDownloadsRepository.updateRuntimeState(
-                    downloadId = downloadId,
-                    lastStatus = DownloadManager.STATUS_PAUSED,
-                    lastReason = DownloadManager.PAUSED_UNKNOWN,
-                    lastErrorLabel = "Paused by user",
-                    lastSeenAtMs = System.currentTimeMillis(),
-                )
-                refreshInternal(onlyActive = false)
-            }
-        }
-    }
-
-    private fun startDownload(downloadId: Long) {
-        reEnqueueDownload(downloadId = downloadId, force = false)
     }
 
     private fun restartDownload(downloadId: Long) {
-        reEnqueueDownload(downloadId = downloadId, force = true)
+        reEnqueueDownload(downloadId = downloadId)
     }
 
     private fun stopDownload(downloadId: Long) {
@@ -127,7 +108,7 @@ internal class DownloadsViewModel @Inject constructor(
                     downloadId = downloadId,
                     lastStatus = DownloadManager.STATUS_PAUSED,
                     lastReason = DownloadManager.PAUSED_UNKNOWN,
-                    lastErrorLabel = "Stopped by user",
+                    lastErrorLabel = USER_STOPPED_LABEL,
                     lastSeenAtMs = System.currentTimeMillis(),
                 )
                 refreshInternal(onlyActive = false)
@@ -135,13 +116,10 @@ internal class DownloadsViewModel @Inject constructor(
         }
     }
 
-    private fun reEnqueueDownload(downloadId: Long, force: Boolean) {
+    private fun reEnqueueDownload(downloadId: Long) {
         viewModelScope.launch {
             refreshMutex.withLock {
                 val trackedItem = tracked.firstOrNull { it.downloadId == downloadId } ?: return@withLock
-                val status = lastSnapshots[downloadId]?.status
-                val isActive = status == DownloadManager.STATUS_PENDING || status == DownloadManager.STATUS_RUNNING
-                if (!force && isActive) return@withLock
 
                 downloadManagerDataSource.remove(downloadId)
                 val newId = downloadUtil.enqueueSystemDownload(
@@ -174,11 +152,9 @@ internal class DownloadsViewModel @Inject constructor(
         }
     }
 
-    private fun refreshActiveNow() {
-        viewModelScope.launch {
-            refreshMutex.withLock {
-                refreshInternal(onlyActive = true)
-            }
+    private suspend fun refreshActiveNow() {
+        refreshMutex.withLock {
+            refreshInternal(onlyActive = true)
         }
     }
 
@@ -196,14 +172,14 @@ internal class DownloadsViewModel @Inject constructor(
             return
         }
 
-        val trackedIds = tracked.map { it.downloadId }
-        speedMap.keys.retainAll(trackedIds.toSet())
-        lastSnapshots.keys.retainAll(trackedIds.toSet())
+        speedMap.keys.retainAll(trackedById.keys)
+        lastSnapshots.keys.retainAll(trackedById.keys)
 
-        val idsForQuery = if (onlyActive) {
-            trackedIds.filter { id -> lastSnapshots[id]?.status.isActiveStatus() }
-        } else {
-            trackedIds
+        val idsForQuery = ArrayList<Long>(tracked.size)
+        tracked.forEach { item ->
+            if (!onlyActive || lastSnapshots[item.downloadId]?.status.isActiveStatus()) {
+                idsForQuery += item.downloadId
+            }
         }
 
         val snapshots = if (idsForQuery.isNotEmpty()) {
@@ -242,21 +218,19 @@ internal class DownloadsViewModel @Inject constructor(
         uiItems: List<DownloadUiItem>,
         seenAtMs: Long,
     ) {
-        val trackedById = tracked.associateBy { it.downloadId }
         uiItems.asSequence()
             .filter { it.status == DownloadManager.STATUS_FAILED }
             .forEach { item ->
                 val current = trackedById[item.downloadId]
                 val statusChanged = current?.lastStatus != item.status
                 val reasonChanged = current?.lastReason != item.reasonCode
-                val labelChanged = current?.lastErrorLabel != item.reasonLabel
 
-                if (statusChanged || reasonChanged || labelChanged) {
+                if (statusChanged || reasonChanged) {
                     trackedDownloadsRepository.updateRuntimeState(
                         downloadId = item.downloadId,
                         lastStatus = item.status,
                         lastReason = item.reasonCode,
-                        lastErrorLabel = item.reasonLabel,
+                        lastErrorLabel = item.reasonCode?.toString(),
                         lastSeenAtMs = seenAtMs,
                     )
                 }
@@ -285,6 +259,7 @@ private data class SpeedPoint(
 )
 
 private const val POLL_INTERVAL_MS = 1000L
+private const val USER_STOPPED_LABEL = "USER_STOPPED"
 
 private fun Int?.isActiveStatus(): Boolean =
     this == DownloadManager.STATUS_PENDING ||

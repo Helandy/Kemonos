@@ -5,5 +5,5 @@ import su.afk.kemonos.main.api.IMainNavigator
 import javax.inject.Inject
 
 class MainNavigator @Inject constructor() : IMainNavigator {
-    override fun getMainDest(): NavKey = MainDest
+    override fun getMainDest(): NavKey = MainDestination
 }

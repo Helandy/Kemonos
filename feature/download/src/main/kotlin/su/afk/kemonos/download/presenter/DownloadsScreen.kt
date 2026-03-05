@@ -163,11 +163,12 @@ private fun DownloadItemCard(
             AssistChip(
                 onClick = {},
                 enabled = true,
-                label = { Text(text = item.statusLabel) },
+                label = { Text(text = item.status.toStatusLabel()) },
             )
 
-            if (item.reasonLabel != null) {
-                Text(text = "${stringResource(R.string.downloads_error)}: ${item.reasonLabel}")
+            val reasonLabel = item.status.toReasonLabel(item.reasonCode)
+            if (reasonLabel != null) {
+                Text(text = "${stringResource(R.string.downloads_error)}: $reasonLabel")
             }
 
             val isCompleted = item.status == DownloadManager.STATUS_SUCCESSFUL
@@ -421,6 +422,46 @@ private fun String.withWrapHints(): String =
 private const val EXTERNAL_STORAGE_DOCUMENTS_AUTHORITY = "com.android.externalstorage.documents"
 private const val EXTERNAL_STORAGE_PREFIX = "/storage/emulated/0/"
 private const val EXTERNAL_DOWNLOADS_PATH = "/storage/emulated/0/Download"
+
+@Composable
+private fun Int.toStatusLabel(): String = when (this) {
+    DownloadManager.STATUS_PENDING -> stringResource(R.string.downloads_status_pending)
+    DownloadManager.STATUS_RUNNING -> stringResource(R.string.downloads_status_running)
+    DownloadManager.STATUS_PAUSED -> stringResource(R.string.downloads_status_paused)
+    DownloadManager.STATUS_SUCCESSFUL -> stringResource(R.string.downloads_status_completed)
+    DownloadManager.STATUS_FAILED -> stringResource(R.string.downloads_status_failed)
+    DownloadUiItem.STATUS_REMOVED -> stringResource(R.string.downloads_status_removed)
+    else -> stringResource(R.string.downloads_status_unknown)
+}
+
+@Composable
+private fun Int.toReasonLabel(reason: Int?): String? {
+    if (reason == null) return null
+    return when (this) {
+        DownloadManager.STATUS_FAILED -> when (reason) {
+            DownloadManager.ERROR_CANNOT_RESUME -> stringResource(R.string.downloads_reason_cannot_resume)
+            DownloadManager.ERROR_DEVICE_NOT_FOUND -> stringResource(R.string.downloads_reason_device_not_found)
+            DownloadManager.ERROR_FILE_ALREADY_EXISTS -> stringResource(R.string.downloads_reason_file_already_exists)
+            DownloadManager.ERROR_FILE_ERROR -> stringResource(R.string.downloads_reason_file_error)
+            DownloadManager.ERROR_HTTP_DATA_ERROR -> stringResource(R.string.downloads_reason_http_data_error)
+            DownloadManager.ERROR_INSUFFICIENT_SPACE -> stringResource(R.string.downloads_reason_insufficient_space)
+            DownloadManager.ERROR_TOO_MANY_REDIRECTS -> stringResource(R.string.downloads_reason_too_many_redirects)
+            DownloadManager.ERROR_UNHANDLED_HTTP_CODE -> stringResource(R.string.downloads_reason_unhandled_http_code)
+            DownloadManager.ERROR_UNKNOWN -> stringResource(R.string.downloads_reason_unknown_error)
+            else -> stringResource(R.string.downloads_reason_error_code, reason)
+        }
+
+        DownloadManager.STATUS_PAUSED -> when (reason) {
+            DownloadManager.PAUSED_QUEUED_FOR_WIFI -> stringResource(R.string.downloads_reason_queued_for_wifi)
+            DownloadManager.PAUSED_WAITING_FOR_NETWORK -> stringResource(R.string.downloads_reason_waiting_for_network)
+            DownloadManager.PAUSED_WAITING_TO_RETRY -> stringResource(R.string.downloads_reason_waiting_to_retry)
+            DownloadManager.PAUSED_UNKNOWN -> stringResource(R.string.downloads_reason_paused)
+            else -> stringResource(R.string.downloads_reason_paused_code, reason)
+        }
+
+        else -> null
+    }
+}
 
 private fun formatSpeed(bytesPerSec: Long): String =
     if (bytesPerSec <= 0L) "0 B/s" else "${formatBytes(bytesPerSec)}/s"
