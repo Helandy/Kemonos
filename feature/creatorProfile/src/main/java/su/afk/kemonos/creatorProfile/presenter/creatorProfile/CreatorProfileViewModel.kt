@@ -74,7 +74,9 @@ internal class CreatorProfileViewModel @AssistedInject constructor(
 
             is CreatorProfileState.Event.OpenImage -> navigationDelegate.navigateToOpenImage(event.url)
             is CreatorProfileState.Event.OpenLinkProfile -> navigationDelegate.navigateToLinkProfile(event.link)
-            is CreatorProfileState.Event.OpenPost -> navigationDelegate.navigateToPost(event.post)
+            is CreatorProfileState.Event.OpenPost -> viewModelScope.launch {
+                navigationDelegate.navigateToPost(event.post)
+            }
 
             is CreatorProfileState.Event.TabChanged -> setState { copy(selectedTab = event.tab) }
             is CreatorProfileState.Event.OpenCommunityChannel -> openCommunityChannel(event.channel)

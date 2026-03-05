@@ -4,6 +4,7 @@ import androidx.paging.cachedIn
 import androidx.paging.filter
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.launch
 import su.afk.kemonos.domain.SelectedSite
 import su.afk.kemonos.domain.models.PostDomain
 import su.afk.kemonos.error.error.IErrorHandlerUseCase
@@ -190,6 +191,8 @@ internal class PopularPostsViewModel @Inject constructor(
     }
 
     private fun navigateToPost(post: PostDomain) {
-        navigateToPostDelegate.navigateToPost(post)
+        viewModelScope.launch {
+            navigateToPostDelegate.navigateToPost(post)
+        }
     }
 }
