@@ -5,5 +5,5 @@ import su.afk.kemonos.posts.api.IPostsNavigator
 import javax.inject.Inject
 
 class PostsNavigator @Inject constructor() : IPostsNavigator {
-    override fun getPostsDest(): NavKey = PostsDest.PostsPager
+    override fun getPostsDest(): NavKey = PostsDestination.PostsPager
 }

@@ -1,6 +1,6 @@
-package su.afk.kemonos.posts.domain.model.dms
+package su.afk.kemonos.posts.api.dms
 
-internal data class DmDomain(
+data class DmDomain(
     val added: String,
     val content: String,
     val hash: String,

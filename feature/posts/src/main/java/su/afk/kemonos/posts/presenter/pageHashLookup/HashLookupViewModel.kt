@@ -4,17 +4,15 @@ import androidx.paging.LoadState
 import androidx.paging.LoadStates
 import androidx.paging.PagingData
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flowOf
-import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import su.afk.kemonos.domain.SelectedSite
 import su.afk.kemonos.domain.models.PostDomain
 import su.afk.kemonos.error.error.IErrorHandlerUseCase
 import su.afk.kemonos.error.error.storage.RetryStorage
 import su.afk.kemonos.posts.domain.usecase.GetHashLookupUseCase
-import su.afk.kemonos.posts.presenter.common.NavigateToPostDelegate
+import su.afk.kemonos.posts.presenter.common.observeDistinct
+import su.afk.kemonos.posts.presenter.delegates.NavigateToPostDelegate
 import su.afk.kemonos.posts.presenter.pageHashLookup.HashLookupState.*
 import su.afk.kemonos.preferences.site.ISelectedSiteUseCase
 import su.afk.kemonos.preferences.ui.IUiSettingUseCase
@@ -47,17 +45,16 @@ internal class HashLookupViewModel @Inject constructor(
             is Event.HashChanged -> onHashChanged(event.value)
             is Event.FileHashDetected -> onFileHashDetected(event.fileName, event.hash)
             Event.Submit -> submit()
+            Event.PullRefresh -> onPullRefresh()
             is Event.NavigateToPost -> navigateToPost(event.post)
             Event.SwitchSite -> switchSite()
         }
     }
 
     private fun observeUiSetting() {
-        uiSetting.prefs.distinctUntilChanged()
-            .onEach { model ->
-                setState { copy(uiSettingModel = model) }
-            }
-            .launchIn(viewModelScope)
+        uiSetting.observeDistinct(viewModelScope) { model ->
+            setState { copy(uiSettingModel = model) }
+        }
     }
 
     private fun onHashChanged(value: String) {
@@ -122,6 +119,11 @@ internal class HashLookupViewModel @Inject constructor(
                 }
             }
         }
+    }
+
+    private fun onPullRefresh() {
+        if (currentState.hashInput.isBlank()) return
+        submit()
     }
 
     private fun navigateToPost(post: PostDomain) {

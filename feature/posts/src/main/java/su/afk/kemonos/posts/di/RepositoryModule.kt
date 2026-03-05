@@ -5,9 +5,9 @@ import dagger.Module
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import su.afk.kemonos.posts.data.CheckApiRepository
-import su.afk.kemonos.posts.data.ICheckApiRepository
-import su.afk.kemonos.posts.data.IPostsRepository
 import su.afk.kemonos.posts.data.PostsRepository
+import su.afk.kemonos.posts.domain.repository.ICheckApiRepository
+import su.afk.kemonos.posts.domain.repository.IPostsRepository
 import javax.inject.Singleton
 
 @Module

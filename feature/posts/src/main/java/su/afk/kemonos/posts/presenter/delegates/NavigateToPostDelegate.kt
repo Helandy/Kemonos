@@ -1,11 +1,13 @@
-package su.afk.kemonos.posts.presenter.common
+package su.afk.kemonos.posts.presenter.delegates
 
 import su.afk.kemonos.creatorPost.api.ICreatorPostNavigator
 import su.afk.kemonos.domain.models.PostDomain
 import su.afk.kemonos.navigation.NavigationManager
+import su.afk.kemonos.posts.domain.usecase.GetRandomPost
 import javax.inject.Inject
 
 internal class NavigateToPostDelegate @Inject constructor(
+    private val getRandomPost: GetRandomPost,
     private val creatorPostNavigator: ICreatorPostNavigator,
     private val navManager: NavigationManager,
 ) {
@@ -22,12 +24,14 @@ internal class NavigateToPostDelegate @Inject constructor(
         )
     }
 
-    fun navigateToPostId(service: String, userId: String, postId: String) {
+    suspend fun navigateToRandomPost() {
+        val randomPost = getRandomPost()
+
         navManager.navigate(
             creatorPostNavigator.getCreatorPostDest(
-                service = service,
-                id = userId,
-                postId = postId,
+                id = randomPost.artistId,
+                service = randomPost.service,
+                postId = randomPost.postId,
                 showBarCreator = true
             )
         )

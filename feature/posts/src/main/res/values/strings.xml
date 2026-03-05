@@ -1,7 +1,7 @@
 <resources>
     <string name="posts_tab_dm">DM</string>
     <string name="posts_tab_popular">Popular</string>
-    <string name="posts_tab_hash_lookup">Hash Lookup</string>
+    <string name="posts_tab_hash_lookup">Hash</string>
 
     <string name="hash_lookup_title">Hash Lookup</string>
     <string name="hash_lookup_search_files">Search Files</string>
@@ -15,11 +15,28 @@
     <string name="hash_lookup_result_posts_count">Posts: %1$s</string>
     <string name="hash_lookup_post_meta">Service: %1$s User: %2$s Post ID: %3$s</string>
 
+    <string name="hash_lookup_sha256_placeholder">Paste SHA256 here or choose a file above</string>
+    <string name="hash_lookup_error_title">Lookup failed</string>
+    <string name="hash_lookup_error_empty_response">Server returned an empty response. Try again later.</string>
+    <string name="hash_lookup_result_title">Lookup result</string>
+    <string name="hash_lookup_result_id_label">File ID</string>
+    <string name="hash_lookup_result_hash_label">SHA256</string>
+    <string name="hash_lookup_result_mime_label">MIME</string>
+    <string name="hash_lookup_result_ext_label">Extension</string>
+    <string name="hash_lookup_result_size_label">Size</string>
+    <string name="hash_lookup_result_posts_label">Posts found</string>
+    <string name="hash_lookup_no_posts_for_hash">Hash found, but no related posts yet.</string>
+    <string name="hash_lookup_subtitle">Find file metadata and linked posts by SHA256</string>
+    <string name="hash_lookup_hash_length">Length: %1$s / 64</string>
+    <string name="hash_lookup_try_again">Try again</string>
+    <string name="hash_lookup_empty_title">No related posts</string>
+    <string name="hash_lookup_posts_section_title">Related posts</string>
+
     <string name="popular_period_day">Day</string>
     <string name="popular_period_week">Week</string>
     <string name="popular_period_month">Month</string>
 
     <!-- Popular posts date range -->
-    <string name="popular_range_single">Popular posts for %1$s</string>
-    <string name="popular_range_range">Popular posts from %1$s to %2$s</string>
+    <string name="popular_range_single">Popular for %1$s</string>
+    <string name="popular_range_range">Popular from %1$s to %2$s</string>
 </resources>

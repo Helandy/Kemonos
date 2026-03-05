@@ -15,6 +15,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import su.afk.kemonos.posts.R
 import su.afk.kemonos.posts.domain.model.popular.Period
@@ -34,35 +35,39 @@ internal fun PopularPeriodsPanel(
     val propsToday = state.popularProps?.today
 
     val context = LocalContext.current
-    val rangeText = remember(info?.minDate, info?.maxDate) {
+    val dateMode = state.uiSettingModel.dateFormatMode
+    val rangeText = remember(info?.minDate, info?.maxDate, dateMode) {
         formatRangeDesc(
             context = context,
             min = info?.minDate,
-            max = info?.maxDate
+            max = info?.maxDate,
+            dateMode = dateMode,
         )
     }
 
-    Surface(
-        modifier = Modifier.fillMaxWidth().padding(bottom = 6.dp, top = 6.dp),
-        shape = RoundedCornerShape(16.dp),
-        tonalElevation = 2.dp,
+    ElevatedCard(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 4.dp),
+        shape = RoundedCornerShape(20.dp),
+        elevation = CardDefaults.elevatedCardElevation(defaultElevation = 2.dp),
     ) {
         Column(
-            modifier = Modifier.fillMaxWidth().padding(horizontal = 8.dp, vertical = 6.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp)
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 10.dp, vertical = 6.dp),
+            verticalArrangement = Arrangement.spacedBy(6.dp)
         ) {
             if (rangeText.isNotEmpty()) {
-                Box(
-                    modifier = Modifier.fillMaxWidth(),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Text(
-                        text = rangeText,
-                        fontSize = MaterialTheme.typography.labelLarge.fontSize,
-                        style = MaterialTheme.typography.labelMedium,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-                }
+                Text(
+                    text = rangeText,
+                    textAlign = TextAlign.Center,
+                    style = MaterialTheme.typography.labelLarge,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 10.dp, vertical = 4.dp),
+                )
             }
 
             PeriodRowButtons(
@@ -137,32 +142,44 @@ internal fun PopularPeriodRow(
     onCenter: () -> Unit,
     onNext: () -> Unit,
 ) {
-    Row(
+    Surface(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 4.dp),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(6.dp)
+            .padding(horizontal = 2.dp),
+        shape = RoundedCornerShape(14.dp),
+        color = if (selected) {
+            MaterialTheme.colorScheme.secondaryContainer.copy(alpha = 0.55f)
+        } else {
+            MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.25f)
+        },
     ) {
-        PeriodArrowButton(
-            enabled = hasPrev,
-            onClick = onPrev,
-            icon = Icons.AutoMirrored.Rounded.ArrowBack
-        )
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 4.dp, vertical = 4.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(4.dp)
+        ) {
+            PeriodArrowButton(
+                enabled = hasPrev,
+                onClick = onPrev,
+                icon = Icons.AutoMirrored.Rounded.ArrowBack
+            )
 
-        PeriodCenterButton(
-            text = label.uppercase(),
-            selected = selected,
-            onClick = onCenter,
-            clickable = true,
-            modifier = Modifier.weight(1f)
-        )
+            PeriodCenterButton(
+                text = label,
+                selected = selected,
+                onClick = onCenter,
+                clickable = true,
+                modifier = Modifier.weight(1f)
+            )
 
-        PeriodArrowButton(
-            enabled = hasNext,
-            onClick = onNext,
-            icon = Icons.AutoMirrored.Rounded.ArrowForward
-        )
+            PeriodArrowButton(
+                enabled = hasNext,
+                onClick = onNext,
+                icon = Icons.AutoMirrored.Rounded.ArrowForward
+            )
+        }
     }
 }
 
@@ -177,9 +194,9 @@ internal fun PeriodArrowButton(
         onClick = onClick,
         enabled = enabled,
         modifier = modifier
-            .height(40.dp)
-            .width(64.dp),
-        shape = RoundedCornerShape(999.dp)
+            .height(36.dp)
+            .width(52.dp),
+        shape = RoundedCornerShape(10.dp)
     ) {
         Icon(
             imageVector = icon,
@@ -210,7 +227,7 @@ internal fun PeriodCenterButton(
             else MaterialTheme.colorScheme.outlineVariant
         ),
         modifier = modifier
-            .height(40.dp)
+            .height(36.dp)
             .then(clickMod)
     ) {
         Box(contentAlignment = Alignment.Center) {

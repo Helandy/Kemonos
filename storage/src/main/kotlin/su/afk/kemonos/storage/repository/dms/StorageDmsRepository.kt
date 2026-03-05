@@ -1,9 +1,9 @@
 package su.afk.kemonos.storage.repository.dms
 
 import su.afk.kemonos.domain.SelectedSite
+import su.afk.kemonos.posts.api.dms.DmDomain
 import su.afk.kemonos.preferences.useCase.CacheTimes.TTL_3_DAYS
 import su.afk.kemonos.storage.api.repository.dms.IStorageDmsRepository
-import su.afk.kemonos.storage.api.repository.dms.StorageDmItem
 import su.afk.kemonos.storage.entity.dms.dao.CoomerDmsCacheDao
 import su.afk.kemonos.storage.entity.dms.dao.KemonoDmsCacheDao
 import su.afk.kemonos.storage.entity.dms.entity.DmsCacheEntity
@@ -18,7 +18,7 @@ internal class StorageDmsRepository @Inject constructor(
         site: SelectedSite,
         queryKey: String,
         offset: Int,
-    ): List<StorageDmItem>? {
+    ): List<DmDomain>? {
         val minTs = System.currentTimeMillis() - TTL_3_DAYS
 
         val rows = when (site) {
@@ -26,14 +26,27 @@ internal class StorageDmsRepository @Inject constructor(
             SelectedSite.C -> coomerDao.getFreshPage(queryKey, offset, minTs)
         }
 
-        return rows.takeIf { it.isNotEmpty() }?.map(::toStorageItem)
+        return rows.takeIf { it.isNotEmpty() }?.map(::toDomain)
+    }
+
+    override suspend fun getStalePageOrEmpty(
+        site: SelectedSite,
+        queryKey: String,
+        offset: Int,
+    ): List<DmDomain> {
+        val rows = when (site) {
+            SelectedSite.K -> kemonoDao.getPage(queryKey, offset)
+            SelectedSite.C -> coomerDao.getPage(queryKey, offset)
+        }
+
+        return rows.map(::toDomain)
     }
 
     override suspend fun putPage(
         site: SelectedSite,
         queryKey: String,
         offset: Int,
-        items: List<StorageDmItem>,
+        items: List<DmDomain>,
     ) {
         val now = System.currentTimeMillis()
         val entities = items.mapIndexed { index, item ->
@@ -75,7 +88,7 @@ internal class StorageDmsRepository @Inject constructor(
     }
 
     private fun toEntity(
-        item: StorageDmItem,
+        item: DmDomain,
         queryKey: String,
         offset: Int,
         indexInPage: Int,
@@ -96,7 +109,7 @@ internal class StorageDmsRepository @Inject constructor(
         updatedAt = updatedAt,
     )
 
-    private fun toStorageItem(entity: DmsCacheEntity): StorageDmItem = StorageDmItem(
+    private fun toDomain(entity: DmsCacheEntity): DmDomain = DmDomain(
         hash = entity.hash,
         service = entity.service,
         user = entity.user,

@@ -6,6 +6,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.key
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -56,103 +57,105 @@ fun BaseScreen(
 
     content: @Composable ColumnScope.() -> Unit,
 ) {
-    val topAppBarState = rememberTopAppBarState()
+    key(topBarScroll) {
+        val topAppBarState = rememberTopAppBarState()
 
-    val scrollBehavior = when (topBarScroll) {
-        TopBarScroll.None -> null
-        TopBarScroll.EnterAlways ->
-            TopAppBarDefaults.enterAlwaysScrollBehavior(topAppBarState)
+        val scrollBehavior = when (topBarScroll) {
+            TopBarScroll.None -> null
+            TopBarScroll.EnterAlways ->
+                TopAppBarDefaults.enterAlwaysScrollBehavior(topAppBarState)
 
-        TopBarScroll.ExitUntilCollapsed ->
-            TopAppBarDefaults.exitUntilCollapsedScrollBehavior(topAppBarState)
+            TopBarScroll.ExitUntilCollapsed ->
+                TopAppBarDefaults.exitUntilCollapsedScrollBehavior(topAppBarState)
 
-        TopBarScroll.Pinned ->
-            TopAppBarDefaults.pinnedScrollBehavior(topAppBarState)
-    }
+            TopBarScroll.Pinned ->
+                TopAppBarDefaults.pinnedScrollBehavior(topAppBarState)
+        }
 
-    Scaffold(
-        contentWindowInsets = WindowInsets.safeDrawing.only(
-            WindowInsetsSides.Top + WindowInsetsSides.Horizontal
-        ),
-        modifier = Modifier
-            .fillMaxSize()
-            .let {
-                if (scrollBehavior != null)
-                    it.nestedScroll(scrollBehavior.nestedScrollConnection)
-                else it
+        Scaffold(
+            contentWindowInsets = WindowInsets.safeDrawing.only(
+                WindowInsetsSides.Top + WindowInsetsSides.Horizontal
+            ),
+            modifier = Modifier
+                .fillMaxSize()
+                .let {
+                    if (scrollBehavior != null)
+                        it.nestedScroll(scrollBehavior.nestedScrollConnection)
+                    else it
+                },
+            topBar = {
+                if (customTopBar != null) {
+                    customTopBar(scrollBehavior)
+                } else {
+                    topBar?.let { slot ->
+                        StandardTopBar(
+                            content = { slot() },
+                            scrollBehavior = scrollBehavior,
+                            topBarWindowInsets = topBarWindowInsets
+                        )
+                    }
+                }
             },
-        topBar = {
-            if (customTopBar != null) {
-                customTopBar(scrollBehavior)
-            } else {
-                topBar?.let { slot ->
-                    StandardTopBar(
-                        content = { slot() },
-                        scrollBehavior = scrollBehavior,
-                        topBarWindowInsets = topBarWindowInsets
-                    )
+
+            floatingActionButton = {
+                if (floatingActionButtonStart != null || floatingActionButtonEnd != null) {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(
+                                start = 4.dp,
+                                end = 4.dp,
+                                bottom = floatingActionButtonBottomPadding
+                            ),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.Bottom
+                    ) {
+                        Box { floatingActionButtonStart?.invoke() }
+                        Box { floatingActionButtonEnd?.invoke() }
+                    }
                 }
-            }
-        },
+            },
+            floatingActionButtonPosition = FabPosition.Center,
+        ) { innerPadding ->
+            val base = contentModifier
+                .fillMaxSize()
+                .padding(innerPadding)
+                .padding(contentPadding)
 
-        floatingActionButton = {
-            if (floatingActionButtonStart != null || floatingActionButtonEnd != null) {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(
-                            start = 4.dp,
-                            end = 4.dp,
-                            bottom = floatingActionButtonBottomPadding
-                        ),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.Bottom
-                ) {
-                    Box { floatingActionButtonStart?.invoke() }
-                    Box { floatingActionButtonEnd?.invoke() }
+            val bodyModifier = if (isScroll) base.verticalScroll(rememberScrollState()) else base
+
+            when {
+                error != null -> Box(modifier = base) {
+                    (errorContent ?: { e, retry ->
+                        DefaultErrorContent(
+                            errorItem = e,
+                            onRetry = retry,
+                            onBack = onBack,
+                        )
+                    })(error, onRetry)
                 }
-            }
-        },
-        floatingActionButtonPosition = FabPosition.Center,
-    ) { innerPadding ->
-        val base = contentModifier
-            .fillMaxSize()
-            .padding(innerPadding)
-            .padding(contentPadding)
 
-        val bodyModifier = if (isScroll) base.verticalScroll(rememberScrollState()) else base
+                isLoading -> Box(modifier = base) {
+                    (loadingContent ?: { DefaultLoadingContent() })()
+                }
 
-        when {
-            error != null -> Box(modifier = base) {
-                (errorContent ?: { e, retry ->
-                    DefaultErrorContent(
-                        errorItem = e,
-                        onRetry = retry,
-                        onBack = onBack,
-                    )
-                })(error, onRetry)
-            }
-
-            isLoading -> Box(modifier = base) {
-                (loadingContent ?: { DefaultLoadingContent() })()
-            }
-
-            isEmpty -> Box(
-                modifier = base,
-                contentAlignment = Alignment.Center
-            ) {
-                (emptyContent ?: { DefaultEmptyContent() })()
-            }
-
-            else -> {
-                Box(
-                    modifier = bodyModifier,
-                    contentAlignment = contentAlignment
+                isEmpty -> Box(
+                    modifier = base,
+                    contentAlignment = Alignment.Center
                 ) {
-                    Column(
-                        modifier = Modifier.fillMaxSize(),
-                        content = content
-                    )
+                    (emptyContent ?: { DefaultEmptyContent() })()
+                }
+
+                else -> {
+                    Box(
+                        modifier = bodyModifier,
+                        contentAlignment = contentAlignment
+                    ) {
+                        Column(
+                            modifier = Modifier.fillMaxSize(),
+                            content = content
+                        )
+                    }
                 }
             }
         }
@@ -212,7 +215,7 @@ fun EmptyContentCenter() {
         ) {
             Text(
                 text = stringResource(R.string.empty_screen),
-                modifier = Modifier.fillMaxWidth().padding(bottom = 32.dp),
+                modifier = Modifier.fillMaxWidth().padding(bottom = 24.dp),
                 textAlign = TextAlign.Center,
                 style = MaterialTheme.typography.headlineSmall,
                 color = MaterialTheme.colorScheme.onBackground

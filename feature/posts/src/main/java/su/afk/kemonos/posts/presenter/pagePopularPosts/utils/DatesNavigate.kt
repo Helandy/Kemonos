@@ -4,19 +4,10 @@ import android.content.Context
 import su.afk.kemonos.posts.R
 import su.afk.kemonos.posts.api.popular.PopularNavigationDates
 import su.afk.kemonos.posts.domain.model.popular.Period
+import su.afk.kemonos.preferences.ui.DateFormatMode
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.util.*
-
-
-internal fun PopularNavigationDates?.datesFor(period: Period): List<String> =
-    when (period) {
-        Period.RECENT -> this?.recent
-        Period.DAY -> this?.day
-        Period.WEEK -> this?.week
-        Period.MONTH -> this?.month
-    }.orEmpty()
-
 
 /**
  * Берём из navigation_dates нужный список и превращаем в Triple(prev, current, next)
@@ -49,15 +40,19 @@ fun isNextAllowed(nextDate: String?, date: String?): Boolean {
 }
 
 /** Берём только yyyy-MM-dd из строки вида 2025-12-05T23:59:59.999999 */
-private fun parseIsoDateOnly(iso: String): LocalDate {
+private fun parseIsoDateOnlyOrNull(iso: String): LocalDate? {
     /** первые 10 символов: "2025-12-05" */
     val datePart = iso.take(10)
 
-    return LocalDate.parse(datePart)
+    return runCatching { LocalDate.parse(datePart) }.getOrNull()
 }
 
-private fun formatDateLocalized(date: LocalDate, locale: Locale): String {
-    val formatter = DateTimeFormatter.ofPattern("d MMMM yyyy", locale)
+private fun formatDateLocalized(
+    date: LocalDate,
+    locale: Locale,
+    dateMode: DateFormatMode,
+): String {
+    val formatter = DateTimeFormatter.ofPattern(dateMode.pattern, locale)
     return date.format(formatter)
 }
 
@@ -69,24 +64,37 @@ private fun formatDateLocalized(date: LocalDate, locale: Locale): String {
 fun formatRangeDesc(
     context: Context,
     min: String?,
-    max: String?
+    max: String?,
+    dateMode: DateFormatMode,
 ): String {
     if (min.isNullOrBlank() || max.isNullOrBlank()) return ""
 
     /** локаль системы */
     val locale = context.resources.configuration.locales[0] ?: Locale.getDefault()
 
-    val minDate = parseIsoDateOnly(min)
-    val maxDate = parseIsoDateOnly(max)
+    val minDate = parseIsoDateOnlyOrNull(min) ?: return ""
+    val maxDate = parseIsoDateOnlyOrNull(max) ?: return ""
 
     return if (minDate == maxDate) {
         /** одна дата */
-        val formatted = formatDateLocalized(minDate, locale)
+        val formatted = formatDateLocalized(
+            date = minDate,
+            locale = locale,
+            dateMode = dateMode,
+        )
         context.getString(R.string.popular_range_single, formatted)
     } else {
         /** диапазон */
-        val formattedMin = formatDateLocalized(minDate, locale)
-        val formattedMax = formatDateLocalized(maxDate, locale)
+        val formattedMin = formatDateLocalized(
+            date = minDate,
+            locale = locale,
+            dateMode = dateMode,
+        )
+        val formattedMax = formatDateLocalized(
+            date = maxDate,
+            locale = locale,
+            dateMode = dateMode,
+        )
         context.getString(R.string.popular_range_range, formattedMin, formattedMax)
     }
 }

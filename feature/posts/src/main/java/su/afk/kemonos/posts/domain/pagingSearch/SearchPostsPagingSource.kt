@@ -2,16 +2,18 @@ package su.afk.kemonos.posts.domain.pagingSearch
 
 import androidx.paging.PagingSource
 import androidx.paging.PagingState
+import kotlinx.coroutines.CancellationException
 import su.afk.kemonos.domain.SelectedSite
 import su.afk.kemonos.domain.models.PostDomain
-import su.afk.kemonos.posts.data.PostsRepository
+import su.afk.kemonos.posts.domain.repository.IPostsRepository
 
 internal class SearchPostsPagingSource(
-    private val repository: PostsRepository,
+    private val repository: IPostsRepository,
     private val site: SelectedSite,
     private val tag: String?,
     private val search: String?,
     private val pageSize: Int,
+    private val forceRefresh: Boolean,
 ) : PagingSource<Int, PostDomain>() {
 
     override fun getRefreshKey(state: PagingState<Int, PostDomain>): Int? {
@@ -31,7 +33,8 @@ internal class SearchPostsPagingSource(
                 site = site,
                 offset = offset,
                 tag = tag,
-                query = if (search.isNullOrEmpty()) null else search,
+                query = search,
+                forceRefresh = forceRefresh,
             )
 
             val nextKey = if (items.size < limit) {
@@ -46,6 +49,7 @@ internal class SearchPostsPagingSource(
                 nextKey = nextKey
             )
         } catch (e: Exception) {
+            if (e is CancellationException) throw e
             LoadResult.Error(e)
         }
     }

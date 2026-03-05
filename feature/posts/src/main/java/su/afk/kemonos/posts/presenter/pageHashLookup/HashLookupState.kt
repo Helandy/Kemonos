@@ -26,6 +26,7 @@ internal class HashLookupState {
         data class HashChanged(val value: String) : Event
         data class FileHashDetected(val fileName: String?, val hash: String) : Event
         data object Submit : Event
+        data object PullRefresh : Event
         data class NavigateToPost(val post: PostDomain) : Event
         data object SwitchSite : Event
     }

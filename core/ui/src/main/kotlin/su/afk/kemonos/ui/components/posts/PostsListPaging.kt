@@ -9,6 +9,7 @@ import androidx.paging.LoadState
 import androidx.paging.compose.LazyPagingItems
 import su.afk.kemonos.domain.models.ErrorItem
 import su.afk.kemonos.domain.models.PostDomain
+import su.afk.kemonos.domain.models.PostDomain.Companion.stableKey
 import su.afk.kemonos.preferences.ui.UiSettingModel
 import su.afk.kemonos.ui.components.posts.postCard.PostCard
 import su.afk.kemonos.ui.paging.PagingAppendStateItem
@@ -21,15 +22,22 @@ internal fun PostsListPaging(
     showFavCount: Boolean,
     appendLoadState: LoadState,
     onRetryAppend: () -> Unit,
+    header: (@Composable () -> Unit)? = null,
     parseError: (Throwable) -> ErrorItem,
 ) {
     LazyColumn(
-        contentPadding = PaddingValues(vertical = 8.dp),
+        contentPadding = PaddingValues(bottom = 72.dp),
         verticalArrangement = Arrangement.spacedBy(8.dp),
     ) {
+        if (header != null) {
+            item {
+                header()
+            }
+        }
+
         items(
             count = posts.itemCount,
-            key = { index -> posts.peek(index)?.id ?: "placeholder_$index" }
+            key = { index -> posts.peek(index)?.stableKey() ?: "placeholder_$index" }
         ) { index ->
             val post = posts[index] ?: return@items
             PostCard(

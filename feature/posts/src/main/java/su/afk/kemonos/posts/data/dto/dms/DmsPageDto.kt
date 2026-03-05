@@ -1,7 +1,7 @@
 package su.afk.kemonos.posts.data.dto.dms
 
 import com.google.gson.annotations.SerializedName
-import su.afk.kemonos.posts.domain.model.dms.DmDomain
+import su.afk.kemonos.posts.api.dms.DmDomain
 import su.afk.kemonos.posts.domain.model.dms.DmsPageDomain
 
 internal data class DmsPageDto(

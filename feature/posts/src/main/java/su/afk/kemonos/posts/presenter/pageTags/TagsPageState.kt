@@ -12,16 +12,15 @@ internal class TagsPageState {
         /** Все тэги */
         val allTags: List<Tags> = emptyList(),
         val filteredTags: List<Tags> = emptyList(),
-        val selectTag: String? = null,
 
         val searchQuery: String = "",
     ) : UiState
 
     sealed interface Event : UiEvent {
         data class SearchQueryChanged(val value: String) : Event
+        data object PullRefresh : Event
         data class SelectTag(val tag: String?) : Event
         data object SwitchSite : Event
-        data object Retry : Event
     }
 
     sealed interface Effect : UiEffect

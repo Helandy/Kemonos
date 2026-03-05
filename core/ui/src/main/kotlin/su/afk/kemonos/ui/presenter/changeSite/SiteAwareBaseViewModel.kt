@@ -47,8 +47,8 @@ abstract class SiteAwareBaseViewModelNew<S : UiState, E : UiEvent, F : UiEffect>
         }
     }
 
-    protected open suspend fun onSiteLoaded(site: SelectedSite) = reloadSite(site)
-    protected open suspend fun onSiteChanged(site: SelectedSite) = reloadSite(site)
+    private suspend fun onSiteLoaded(site: SelectedSite) = reloadSite(site)
+    private suspend fun onSiteChanged(site: SelectedSite) = reloadSite(site)
 
     protected abstract suspend fun reloadSite(site: SelectedSite)
 

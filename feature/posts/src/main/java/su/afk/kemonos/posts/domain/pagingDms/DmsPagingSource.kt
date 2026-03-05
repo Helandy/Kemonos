@@ -3,14 +3,16 @@ package su.afk.kemonos.posts.domain.pagingDms
 import androidx.paging.PagingSource
 import androidx.paging.PagingState
 import su.afk.kemonos.domain.SelectedSite
-import su.afk.kemonos.posts.data.PostsRepository
-import su.afk.kemonos.posts.domain.model.dms.DmDomain
+import su.afk.kemonos.posts.api.dms.DmDomain
+import su.afk.kemonos.posts.domain.model.dms.DmsPageDomain
+import su.afk.kemonos.posts.domain.repository.IPostsRepository
 
 internal class DmsPagingSource(
-    private val repository: PostsRepository,
+    private val repository: IPostsRepository,
     private val site: SelectedSite,
     private val query: String?,
     private val pageSize: Int,
+    private val forceRefresh: Boolean,
 ) : PagingSource<Int, DmDomain>() {
 
     override fun getRefreshKey(state: PagingState<Int, DmDomain>): Int? {
@@ -29,11 +31,12 @@ internal class DmsPagingSource(
             offset = offset,
             limit = pageSize,
             query = query,
+            forceRefresh = forceRefresh,
         )
 
         val items = page.dms
         val total = page.count
-        val reachedEndByTotal = offset + items.size >= total
+        val reachedEndByTotal = total != DmsPageDomain.UNKNOWN_COUNT && offset + items.size >= total
         val reachedEndByBatch = items.size < pageSize
         val nextKey = if (reachedEndByTotal || reachedEndByBatch) null else pageIndex + 1
 

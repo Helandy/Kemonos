@@ -7,11 +7,13 @@ import android.text.method.LinkMovementMethod
 import android.text.style.URLSpan
 import android.util.TypedValue
 import android.widget.TextView
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.toArgb
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.text.HtmlCompat
 
@@ -46,7 +48,7 @@ fun HtmlTextBlock(
     }
 
     AndroidView(
-        modifier = modifier,
+        modifier = modifier.padding(start = 6.dp),
         factory = { ctx ->
             TextView(ctx).apply {
                 setTextIsSelectable(true)

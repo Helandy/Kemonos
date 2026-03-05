@@ -24,6 +24,7 @@ internal class SearchPostsState {
     sealed interface Event : UiEvent {
         data class SearchQueryChanged(val value: String) : Event
         data object SearchSubmitted : Event
+        data object PullRefresh : Event
         data class RecentSearchSelected(val value: String) : Event
         data class RemoveRecentSearch(val value: String) : Event
         data class NavigateToPost(val post: PostDomain) : Event
