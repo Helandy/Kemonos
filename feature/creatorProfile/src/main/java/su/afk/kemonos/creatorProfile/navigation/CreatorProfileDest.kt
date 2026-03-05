@@ -4,7 +4,7 @@ import androidx.navigation3.runtime.NavKey
 import kotlinx.serialization.Serializable
 import su.afk.kemonos.domain.models.Tag
 
-object CreatorDest {
+object CreatorDestination {
 
     @Serializable
     data class CreatorProfile(

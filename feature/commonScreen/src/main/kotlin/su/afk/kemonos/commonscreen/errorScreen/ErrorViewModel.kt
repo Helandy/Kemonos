@@ -3,14 +3,14 @@ package su.afk.kemonos.commonscreen.errorScreen
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
-import su.afk.kemonos.commonscreen.navigator.CommonScreenDest
+import su.afk.kemonos.commonscreen.navigator.CommonScreenDestination
 import su.afk.kemonos.error.error.IErrorHandlerUseCase
 import su.afk.kemonos.error.error.storage.RetryStorage
 import su.afk.kemonos.navigation.NavigationManager
 import su.afk.kemonos.ui.presenter.baseViewModel.BaseViewModelNew
 
 internal class ErrorViewModel @AssistedInject constructor(
-    @Assisted private val dest: CommonScreenDest.ErrorNavigatorDest,
+    @Assisted private val dest: CommonScreenDestination.ErrorNavigatorDest,
     override val errorHandler: IErrorHandlerUseCase,
     override val retryStorage: RetryStorage,
     private val navManager: NavigationManager,
@@ -20,7 +20,7 @@ internal class ErrorViewModel @AssistedInject constructor(
 
     @AssistedFactory
     interface Factory {
-        fun create(dest: CommonScreenDest.ErrorNavigatorDest): ErrorViewModel
+        fun create(dest: CommonScreenDestination.ErrorNavigatorDest): ErrorViewModel
     }
 
     init {

@@ -2,32 +2,27 @@ package su.afk.kemonos.creatorProfile.navigation
 
 import androidx.navigation3.runtime.NavKey
 import su.afk.kemonos.creatorProfile.api.ICreatorProfileNavigator
-import su.afk.kemonos.creatorProfile.util.Utils.queryKey
 import su.afk.kemonos.domain.models.Tag
-import su.afk.kemonos.storage.api.repository.profilePosts.IStorageCreatorPostsRepository
+import su.afk.kemonos.preferences.domainResolver.IDomainResolver
+import su.afk.kemonos.preferences.domainResolver.selectedSiteByService
+import su.afk.kemonos.preferences.site.ISelectedSiteUseCase
+import su.afk.kemonos.preferences.site.setSiteAndAwait
 import javax.inject.Inject
 
 class CreatorProfileNavigator @Inject constructor(
-    private val postsCache: IStorageCreatorPostsRepository,
+    private val domainResolver: IDomainResolver,
+    private val selectedSiteUseCase: ISelectedSiteUseCase,
 ) : ICreatorProfileNavigator {
 
     override suspend fun getCreatorProfileDest(
         service: String,
         id: String,
-        isFresh: Boolean,
         tag: Tag?,
     ): NavKey {
-        if (isFresh) {
-            val qk = queryKey(
-                service = service,
-                id = id,
-                search = "",
-                tag = null,
-            )
-            postsCache.clearQuery(qk)
-        }
+        val targetSite = domainResolver.selectedSiteByService(service)
+        selectedSiteUseCase.setSiteAndAwait(targetSite)
 
-        return CreatorDest.CreatorProfile(
+        return CreatorDestination.CreatorProfile(
             service = service,
             id = id,
             tag = tag,

@@ -13,12 +13,13 @@ import kotlinx.coroutines.flow.onEach
 import su.afk.kemonos.creatorProfile.api.IGetProfileUseCase
 import su.afk.kemonos.creatorProfile.api.domain.models.profileCommunity.CommunityChannel
 import su.afk.kemonos.creatorProfile.domain.paging.GetProfilePostsPagingUseCase
-import su.afk.kemonos.creatorProfile.navigation.CreatorDest
+import su.afk.kemonos.creatorProfile.navigation.CreatorDestination
 import su.afk.kemonos.creatorProfile.presenter.creatorProfile.delegates.LikeDelegate
 import su.afk.kemonos.creatorProfile.presenter.creatorProfile.delegates.LoadingTabsContent
 import su.afk.kemonos.creatorProfile.presenter.creatorProfile.delegates.NavigationDelegate
 import su.afk.kemonos.creatorProfile.presenter.creatorProfile.model.ProfileTab
 import su.afk.kemonos.creatorProfile.util.Utils.queryKey
+import su.afk.kemonos.domain.models.Profile
 import su.afk.kemonos.domain.models.Tag
 import su.afk.kemonos.error.error.IErrorHandlerUseCase
 import su.afk.kemonos.error.error.storage.RetryStorage
@@ -37,7 +38,7 @@ import su.afk.kemonos.ui.shared.ShareLinkBuilder
 import su.afk.kemonos.ui.shared.model.ShareTarget
 
 internal class CreatorProfileViewModel @AssistedInject constructor(
-    @Assisted private val dest: CreatorDest.CreatorProfile,
+    @Assisted private val dest: CreatorDestination.CreatorProfile,
     private val getProfileUseCase: IGetProfileUseCase,
     private val getKemonoRootUrlUseCase: GetKemonoRootUrlUseCase,
     private val getCurrentSiteRootUrlUseCase: IGetCurrentSiteRootUrlUseCase,
@@ -74,7 +75,9 @@ internal class CreatorProfileViewModel @AssistedInject constructor(
 
             is CreatorProfileState.Event.OpenImage -> navigationDelegate.navigateToOpenImage(event.url)
             is CreatorProfileState.Event.OpenLinkProfile -> navigationDelegate.navigateToLinkProfile(event.link)
-            is CreatorProfileState.Event.OpenPost -> navigationDelegate.navigateToPost(event.post)
+            is CreatorProfileState.Event.OpenPost -> viewModelScope.launch {
+                navigationDelegate.navigateToPost(event.post)
+            }
 
             is CreatorProfileState.Event.TabChanged -> setState { copy(selectedTab = event.tab) }
             is CreatorProfileState.Event.OpenCommunityChannel -> openCommunityChannel(event.channel)
@@ -96,7 +99,7 @@ internal class CreatorProfileViewModel @AssistedInject constructor(
 
     @AssistedFactory
     interface Factory {
-        fun create(dest: CreatorDest.CreatorProfile): CreatorProfileViewModel
+        fun create(dest: CreatorDestination.CreatorProfile): CreatorProfileViewModel
     }
 
     override fun onRetry() {
@@ -138,14 +141,17 @@ internal class CreatorProfileViewModel @AssistedInject constructor(
     private suspend fun loadAllInternal() = coroutineScope {
         setState { copy(loading = true) }
         try {
-            val profileAndTabs = async {
-                getProfileInfo()
-                setTabsToProfile()
+            val profileDeferred = async {
+                getProfileUseCase(currentState.service, currentState.id)
             }
+            val tabsDeferred = async { setTabsToProfile(profileDeferred) }
             val favorite = async { isCreatorFavorite() }
-            val posts = async { loadProfileAndPosts() }
+            loadProfileAndPosts()
 
-            awaitAll(profileAndTabs, favorite, posts)
+            val profile = profileDeferred.await()
+            applyProfileInfo(profile)
+
+            awaitAll(tabsDeferred, favorite)
         } finally {
             setState { copy(loading = false) }
         }
@@ -167,9 +173,7 @@ internal class CreatorProfileViewModel @AssistedInject constructor(
     }
 
     /** Получение информации о Профиле */
-    private suspend fun getProfileInfo() {
-        val profile = getProfileUseCase(currentState.service, currentState.id)
-
+    private fun applyProfileInfo(profile: Profile?) {
         setState {
             copy(
                 profile = profile,
@@ -203,16 +207,12 @@ internal class CreatorProfileViewModel @AssistedInject constructor(
     }
 
     /** Какие вкладки отображать */
-    private suspend fun setTabsToProfile() = coroutineScope {
+    private suspend fun setTabsToProfile(profileDeferred: Deferred<Profile?>) = coroutineScope {
         val hiddenTabs = currentState.uiSettingModel.creatorProfileHiddenTabs
         fun isTabEnabled(tab: CreatorProfileTabKey): Boolean = tab !in hiddenTabs
 
         /** базовый набор табов */
         val tabs = mutableListOf(ProfileTab.POSTS)
-        /** Лс */
-        if (isTabEnabled(CreatorProfileTabKey.DMS)) {
-            currentState.countDm?.let { if (it > 0) tabs.add(ProfileTab.DMS) }
-        }
 
         setState {
             val nextSelectedTab = if (selectedTab.toCreatorProfileTabKey() in hiddenTabs) {
@@ -232,7 +232,7 @@ internal class CreatorProfileViewModel @AssistedInject constructor(
         val checks = listOf(
             TabCheckSpec(CreatorProfileTabKey.DMS) {
                 loadingTabsContent.checkDms(
-                    countDm = currentState.countDm,
+                    countDm = profileDeferred.await()?.dmCount,
                     setState = ::setState,
                     service = service,
                     id = id

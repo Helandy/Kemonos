@@ -81,7 +81,7 @@ internal class FavoriteProfilesViewModel @Inject constructor(
             Event.Refresh -> load(refresh = true)
             Event.Retry -> load(refresh = true)
 
-            is Event.CreatorClicked -> onCreatorClick(event.creator, event.isFresh)
+            is Event.CreatorClicked -> onCreatorClick(event.creator)
         }
     }
 
@@ -207,12 +207,11 @@ internal class FavoriteProfilesViewModel @Inject constructor(
         onEvent(Event.Retry)
     }
 
-    private fun onCreatorClick(creator: FavoriteArtist, isFresh: Boolean) = viewModelScope.launch {
+    private fun onCreatorClick(creator: FavoriteArtist) = viewModelScope.launch {
         navManager.navigate(
             creatorProfileNavigator.getCreatorProfileDest(
                 service = creator.service,
                 id = creator.id,
-                isFresh = isFresh
             )
         )
     }

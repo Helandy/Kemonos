@@ -47,7 +47,6 @@ internal class KemonosDeepLinkResolver @Inject constructor(
             creatorProfileNavigator.getCreatorProfileDest(
                 service = service,
                 id = id,
-                isFresh = false,
             )
         }
     }

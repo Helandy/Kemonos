@@ -3,7 +3,7 @@ package su.afk.kemonos.creatorPost.navigation
 import androidx.navigation3.runtime.NavKey
 import kotlinx.serialization.Serializable
 
-object CreatorPostDest {
+object CreatorPostDestination {
     @Serializable
     data class CreatorPost(
         val id: String,

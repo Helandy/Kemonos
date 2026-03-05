@@ -10,21 +10,21 @@ import androidx.navigation3.runtime.NavKey
 import dagger.hilt.android.EntryPointAccessors
 import jakarta.inject.Inject
 import su.afk.kemonos.creatorPost.di.CreatorPostVmFactoryEntryPoint
-import su.afk.kemonos.creatorPost.navigation.CreatorPostDest
+import su.afk.kemonos.creatorPost.navigation.CreatorPostDestination
 import su.afk.kemonos.navigation.NavRegistrar
 import su.afk.kemonos.navigation.NavigationManager
 import su.afk.kemonos.ui.presenter.baseViewModel.ScreenNavigator
 
 class CreatorPostNavigatorRegister @Inject constructor() : NavRegistrar {
     override fun register(builder: EntryProviderScope<NavKey>, nav: NavigationManager) = with(builder) {
-        entry<CreatorPostDest.CreatorPost> { dest ->
+        entry<CreatorPostDestination.CreatorPost> { dest ->
             CreatorPostEntry(dest)
         }
     }
 }
 
 @Composable
-private fun CreatorPostEntry(dest: CreatorPostDest.CreatorPost) {
+private fun CreatorPostEntry(dest: CreatorPostDestination.CreatorPost) {
     val appContext = LocalContext.current.applicationContext
 
     val entryPoint = EntryPointAccessors.fromApplication(

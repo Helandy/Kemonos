@@ -1,5 +1,6 @@
 package su.afk.kemonos.commonscreen.imageViewScreen
 
+import android.content.Context
 import android.content.Intent
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectTapGestures
@@ -33,6 +34,7 @@ import coil3.network.httpHeaders
 import coil3.request.CachePolicy
 import coil3.request.ImageRequest
 import coil3.size.Precision
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
 import su.afk.kemonos.commonscreen.imageViewScreen.ImageViewState.Effect
@@ -48,6 +50,11 @@ import su.afk.kemonos.ui.toast.toast
 import su.afk.kemonos.ui.uiUtils.size.formatBytes
 import kotlin.math.roundToInt
 
+private const val MIN_SCALE = 1f
+private const val MAX_SCALE = 4f
+private const val DOUBLE_TAP_SCALE = 3f
+private const val MAX_REQUEST_SIDE = 4096
+
 @Composable
 internal fun ImageViewScreen(
     state: ImageViewState.State,
@@ -55,169 +62,39 @@ internal fun ImageViewScreen(
     effect: Flow<Effect>,
     imageLoader: ImageLoader,
 ) {
-    val minScale: Float = 1f
-    val maxScale: Float = 4f
-    val doubleTapScale: Float = 3f
     var showActionsMenu by remember { mutableStateOf(false) }
-    var shareInProgress by remember { mutableStateOf(false) }
-    var shareBytesRead by remember { mutableLongStateOf(0L) }
-    var shareTotalBytes by remember { mutableLongStateOf(0L) }
 
-    var container by remember { mutableStateOf(IntSize.Zero) }
+    val context = LocalContext.current
+    val scope = rememberCoroutineScope()
 
-    /** «живые» значения под пальцами */
-    var scale by remember { mutableFloatStateOf(minScale) }
-    var offsetX by remember { mutableFloatStateOf(0f) }
-    var offsetY by remember { mutableFloatStateOf(0f) }
+    val shareState = rememberShareUiState()
+    val gestureState = rememberImageGestureState(resetKey = state.imageUrl to state.selectedIndex)
+    val transformState = rememberTransformableState { zoom, pan, _ ->
+        gestureState.onTransform(zoom = zoom, pan = pan)
+    }
 
     val hasGallery = state.imageUrls.size > 1
     val canGoPrev = state.selectedIndex > 0
     val canGoNext = state.selectedIndex < state.imageUrls.lastIndex
 
-    LaunchedEffect(state.imageUrl, state.selectedIndex) {
-        // При смене картинки начинаем с дефолтного состояния (без зума/панорамы)
-        scale = minScale
-        offsetX = 0f
-        offsetY = 0f
-    }
+    collectImageViewEffects(effect = effect, context = context)
 
-    fun clampOffset(x: Float, y: Float, s: Float): Pair<Float, Float> {
-        if (container.width == 0 || container.height == 0) return x to y
-        val maxX = (container.width * (s - 1f)) / 2f
-        val maxY = (container.height * (s - 1f)) / 2f
-        return x.coerceIn(-maxX, maxX) to y.coerceIn(-maxY, maxY)
-    }
-
-    /** Pinch/пан/вращение — обновляем «живые» значения, а таргеты подгоняем под них (без анимации) */
-    val transformState = rememberTransformableState { zoom, pan, _ ->
-        val newScale = (scale * zoom).coerceIn(minScale, maxScale)
-        val nx = offsetX + pan.x
-        val ny = offsetY + pan.y
-        val (clampedX, clampedY) = clampOffset(nx, ny, newScale)
-
-        scale = newScale
-        offsetX = clampedX
-        offsetY = clampedY
-    }
-
-    /** Двойной тап — считаем таргеты и анимации «к ним» */
-    fun onDoubleTap(tap: Offset) {
-        val willZoomIn = scale < (minScale + 0.01f)
-        val targetS = if (willZoomIn)
-            doubleTapScale.coerceIn(minScale, maxScale)
-        else
-            minScale
-
-        val cx = container.width / 2f
-        val cy = container.height / 2f
-        val k = (targetS / scale) - 1f
-        val tx = offsetX + (cx - tap.x) * k
-        val ty = offsetY + (cy - tap.y) * k
-        val (clampedX, clampedY) = clampOffset(tx, ty, targetS)
-
-        scale = targetS
-        offsetX = clampedX
-        offsetY = clampedY
-    }
-
-    /** Coil ImageLoader */
-    val context = LocalContext.current
-    val scope = rememberCoroutineScope()
-
-    fun launchShare(url: String, fileName: String?, mime: String) {
-        if (shareInProgress) return
-        scope.launch {
-            shareBytesRead = 0L
-            shareTotalBytes = 0L
-            shareInProgress = true
-            val shared = try {
-                shareRemoteMedia(
-                    context = context,
-                    url = url,
-                    fileName = fileName,
-                    mime = mime,
-                    onProgress = { bytesRead, totalBytes ->
-                        shareBytesRead = bytesRead
-                        shareTotalBytes = totalBytes
-                    }
-                )
-            } finally {
-                shareInProgress = false
-            }
-            if (!shared) context.toast(context.getString(R.string.share_failed))
-        }
-    }
-
-    LaunchedEffect(effect) {
-        effect.collect { item ->
-            when (item) {
-                is Effect.OpenUrl -> {
-                    val intent = Intent(Intent.ACTION_VIEW, item.url.toUri())
-                    context.startActivity(intent)
-                }
-
-                is Effect.ShowToast -> {
-                    context.toast(item.message)
-                }
-
-                is Effect.DownloadToast -> {
-                    val safeName = item.fileName.trim().takeIf { it.isNotBlank() }
-
-                    val message = if (safeName != null) {
-                        context.getString(R.string.download_started_named, safeName)
-                    } else {
-                        context.getString(R.string.download_started)
-                    }
-                    context.toast(message)
-                }
-
-                is Effect.CopyUrl -> {
-                    ShareActions.copyToClipboard(
-                        context = context,
-                        label = context.getString(R.string.copy),
-                        text = item.url,
-                    )
-                    context.toast(context.getString(R.string.copy_link))
-                }
-            }
-        }
-    }
-
-    val headers = remember(state.requestId, state.reloadKey) {
-        NetworkHeaders.Builder()
-            .set(IMAGE_PROGRESS_REQUEST_ID_HEADER, state.requestId)
-            .set("X-Kemonos-Retry-Key", state.reloadKey.toString())
-            .build()
-    }
-
-    /** пересоздаём запрос при Retry из ViewModel */
-    val request = remember(state.imageUrl, state.reloadKey, container) {
-        val w = (container.width * maxScale).roundToInt().coerceAtLeast(1)
-        val h = (container.height * maxScale).roundToInt().coerceAtLeast(1)
-
-        val maxSide = 4096
-        val scaleDown = maxOf(w.toFloat() / maxSide, h.toFloat() / maxSide, 1f)
-        val rw = (w / scaleDown).roundToInt()
-        val rh = (h / scaleDown).roundToInt()
-
-        ImageRequest.Builder(context)
-            .data(state.imageUrl)
-            .size(rw, rh)
-            .precision(Precision.EXACT)
-            .memoryCachePolicy(CachePolicy.ENABLED)
-            .diskCachePolicy(CachePolicy.ENABLED)
-            .httpHeaders(headers)
-            .build()
-    }
+    val request = rememberImageRequest(
+        context = context,
+        imageUrl = state.imageUrl,
+        requestId = state.requestId,
+        reloadKey = state.reloadKey,
+        container = gestureState.container,
+    )
 
     Box(
         Modifier
             .fillMaxSize()
             .background(MaterialTheme.colorScheme.background)
-            .onSizeChanged { container = it }
+            .onSizeChanged(gestureState::onContainerChanged)
             .pointerInput(Unit) {
                 detectTapGestures(
-                    onDoubleTap = { tap -> onDoubleTap(tap) }
+                    onDoubleTap = { tap -> gestureState.onDoubleTap(tap) }
                 )
             }
             .transformable(transformState)
@@ -237,71 +114,19 @@ internal fun ImageViewScreen(
                 modifier = Modifier
                     .fillMaxSize()
                     .graphicsLayer(
-                        scaleX = scale,
-                        scaleY = scale,
-                        translationX = offsetX,
-                        translationY = offsetY,
+                        scaleX = gestureState.scale,
+                        scaleY = gestureState.scale,
+                        translationX = gestureState.offsetX,
+                        translationY = gestureState.offsetY,
                         rotationZ = 0f
                     ),
                 success = { SubcomposeAsyncImageContent() },
                 loading = {
-                    Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                        Column(horizontalAlignment = Alignment.CenterHorizontally) {
-
-                            val isDeterminate =
-                                state.contentLength > 0L && state.bytesRead > 0L && state.progress > 0f
-
-                            if (isDeterminate) {
-                                CircularProgressIndicator(
-                                    progress = { state.progress },
-                                    modifier = Modifier.size(72.dp),
-                                    color = MaterialTheme.colorScheme.primary,
-                                    strokeWidth = 6.dp,
-                                    strokeCap = ProgressIndicatorDefaults.CircularDeterminateStrokeCap,
-                                )
-                            } else {
-                                CircularProgressIndicator(
-                                    modifier = Modifier.size(72.dp),
-                                    color = MaterialTheme.colorScheme.primary,
-                                    strokeWidth = 6.dp,
-                                    trackColor = ProgressIndicatorDefaults.circularIndeterminateTrackColor,
-                                    strokeCap = ProgressIndicatorDefaults.CircularIndeterminateStrokeCap,
-                                )
-                            }
-
-                            Spacer(Modifier.height(12.dp))
-
-                            val shouldShowBytes =
-                                state.bytesRead > 0L || state.contentLength > 0L
-
-                            if (shouldShowBytes) {
-                                val text = buildString {
-                                    if (state.bytesRead > 0L) {
-                                        append(formatBytes(state.bytesRead))
-                                    }
-                                    if (state.contentLength > 0L) {
-                                        if (state.bytesRead > 0L) append(" / ")
-                                        append(formatBytes(state.contentLength))
-                                    }
-                                }
-
-                                if (text.isNotBlank()) {
-                                    Text(text = text, style = MaterialTheme.typography.bodyMedium)
-                                }
-                            } else {
-                                Text(
-                                    text = stringResource(R.string.loading),
-                                    style = MaterialTheme.typography.bodyMedium
-                                )
-                            }
-                        }
-                    }
+                    ImageLoadingContent(state = state)
                 },
                 error = {
                     DefaultErrorContent(
-                        onBack = {
-                            onEvent(Event.Back)
-                        },
+                        onBack = { onEvent(Event.Back) },
                         errorItem = state.errorItem ?: ErrorItem(
                             title = stringResource(R.string.err_title_generic),
                             message = stringResource(R.string.err_msg_generic),
@@ -353,11 +178,14 @@ internal fun ImageViewScreen(
                 )
                 DropdownMenuItem(
                     text = { Text(text = stringResource(R.string.share)) },
-                    enabled = !shareInProgress,
+                    enabled = !shareState.inProgress,
                     onClick = {
                         showActionsMenu = false
                         val imageUrl = state.imageUrl ?: return@DropdownMenuItem
                         launchShare(
+                            scope = scope,
+                            context = context,
+                            shareState = shareState,
                             url = imageUrl,
                             fileName = imageUrl.toUri().lastPathSegment,
                             mime = "image/*"
@@ -423,9 +251,333 @@ internal fun ImageViewScreen(
         }
 
         ShareLoadingOverlay(
-            visible = shareInProgress,
-            bytesRead = shareBytesRead,
-            totalBytes = shareTotalBytes
+            visible = shareState.inProgress,
+            bytesRead = shareState.bytesRead,
+            totalBytes = shareState.totalBytes
         )
+    }
+}
+
+@Composable
+private fun ImageLoadingContent(state: ImageViewState.State) {
+    Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+            val isDeterminate =
+                state.contentLength > 0L && state.bytesRead > 0L && state.progress > 0f
+
+            if (isDeterminate) {
+                CircularProgressIndicator(
+                    progress = { state.progress },
+                    modifier = Modifier.size(72.dp),
+                    color = MaterialTheme.colorScheme.primary,
+                    strokeWidth = 6.dp,
+                    strokeCap = ProgressIndicatorDefaults.CircularDeterminateStrokeCap,
+                )
+            } else {
+                CircularProgressIndicator(
+                    modifier = Modifier.size(72.dp),
+                    color = MaterialTheme.colorScheme.primary,
+                    strokeWidth = 6.dp,
+                    trackColor = ProgressIndicatorDefaults.circularIndeterminateTrackColor,
+                    strokeCap = ProgressIndicatorDefaults.CircularIndeterminateStrokeCap,
+                )
+            }
+
+            Spacer(Modifier.height(12.dp))
+
+            val transferText = buildTransferText(
+                bytesRead = state.bytesRead,
+                contentLength = state.contentLength,
+            )
+
+            if (transferText != null) {
+                Text(text = transferText, style = MaterialTheme.typography.bodyMedium)
+            } else {
+                Text(
+                    text = stringResource(R.string.loading),
+                    style = MaterialTheme.typography.bodyMedium
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun collectImageViewEffects(
+    effect: Flow<Effect>,
+    context: Context,
+) {
+    LaunchedEffect(effect, context) {
+        effect.collect { item ->
+            when (item) {
+                is Effect.OpenUrl -> {
+                    val intent = Intent(Intent.ACTION_VIEW, item.url.toUri())
+                    context.startActivity(intent)
+                }
+
+                is Effect.ShowToast -> {
+                    context.toast(item.message)
+                }
+
+                is Effect.DownloadToast -> {
+                    val safeName = item.fileName.trim().takeIf { it.isNotBlank() }
+                    val message = if (safeName != null) {
+                        context.getString(R.string.download_started_named, safeName)
+                    } else {
+                        context.getString(R.string.download_started)
+                    }
+                    context.toast(message)
+                }
+
+                is Effect.CopyUrl -> {
+                    ShareActions.copyToClipboard(
+                        context = context,
+                        label = context.getString(R.string.copy),
+                        text = item.url,
+                    )
+                    context.toast(context.getString(R.string.copy_link))
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun rememberImageRequest(
+    context: Context,
+    imageUrl: String?,
+    requestId: String,
+    reloadKey: Int,
+    container: IntSize,
+): ImageRequest {
+    val headers = remember(requestId, reloadKey) {
+        NetworkHeaders.Builder()
+            .set(IMAGE_PROGRESS_REQUEST_ID_HEADER, requestId)
+            .set("X-Kemonos-Retry-Key", reloadKey.toString())
+            .build()
+    }
+
+    return remember(imageUrl, reloadKey, container, headers, context) {
+        val requestSize = calculateRequestSize(container)
+        ImageRequest.Builder(context)
+            .data(imageUrl)
+            .size(requestSize.width, requestSize.height)
+            .precision(Precision.EXACT)
+            .memoryCachePolicy(CachePolicy.ENABLED)
+            .diskCachePolicy(CachePolicy.ENABLED)
+            .httpHeaders(headers)
+            .build()
+    }
+}
+
+private fun calculateRequestSize(container: IntSize): IntSize {
+    val w = (container.width * MAX_SCALE).roundToInt().coerceAtLeast(1)
+    val h = (container.height * MAX_SCALE).roundToInt().coerceAtLeast(1)
+
+    val scaleDown = maxOf(w.toFloat() / MAX_REQUEST_SIDE, h.toFloat() / MAX_REQUEST_SIDE, 1f)
+    val rw = (w / scaleDown).roundToInt()
+    val rh = (h / scaleDown).roundToInt()
+
+    return IntSize(rw, rh)
+}
+
+private fun buildTransferText(bytesRead: Long, contentLength: Long): String? {
+    if (bytesRead <= 0L && contentLength <= 0L) return null
+
+    val text = buildString {
+        if (bytesRead > 0L) {
+            append(formatBytes(bytesRead))
+        }
+        if (contentLength > 0L) {
+            if (bytesRead > 0L) append(" / ")
+            append(formatBytes(contentLength))
+        }
+    }
+
+    return text.takeIf { it.isNotBlank() }
+}
+
+@Composable
+private fun rememberImageGestureState(resetKey: Any): ImageGestureState {
+    val state = remember {
+        ImageGestureState(
+            minScale = MIN_SCALE,
+            maxScale = MAX_SCALE,
+            doubleTapScale = DOUBLE_TAP_SCALE,
+        )
+    }
+
+    LaunchedEffect(resetKey) {
+        state.reset()
+    }
+
+    return state
+}
+
+@Stable
+private class ImageGestureState(
+    private val minScale: Float,
+    private val maxScale: Float,
+    private val doubleTapScale: Float,
+) {
+    var container by mutableStateOf(IntSize.Zero)
+        private set
+
+    var scale by mutableFloatStateOf(minScale)
+        private set
+    var offsetX by mutableFloatStateOf(0f)
+        private set
+    var offsetY by mutableFloatStateOf(0f)
+        private set
+
+    fun reset() {
+        scale = minScale
+        offsetX = 0f
+        offsetY = 0f
+    }
+
+    fun onContainerChanged(size: IntSize) {
+        container = size
+        val (clampedX, clampedY) = clampOffset(
+            x = offsetX,
+            y = offsetY,
+            scale = scale,
+            container = container,
+        )
+        offsetX = clampedX
+        offsetY = clampedY
+    }
+
+    fun onTransform(zoom: Float, pan: Offset) {
+        val newScale = (scale * zoom).coerceIn(minScale, maxScale)
+        val nx = offsetX + pan.x
+        val ny = offsetY + pan.y
+        val (clampedX, clampedY) = clampOffset(
+            x = nx,
+            y = ny,
+            scale = newScale,
+            container = container,
+        )
+
+        scale = newScale
+        offsetX = clampedX
+        offsetY = clampedY
+    }
+
+    fun onDoubleTap(tap: Offset) {
+        val willZoomIn = scale < (minScale + 0.01f)
+        val targetScale = if (willZoomIn) {
+            doubleTapScale.coerceIn(minScale, maxScale)
+        } else {
+            minScale
+        }
+
+        val (targetOffsetX, targetOffsetY) = calculateDoubleTapOffset(
+            tap = tap,
+            container = container,
+            currentScale = scale,
+            targetScale = targetScale,
+            currentOffsetX = offsetX,
+            currentOffsetY = offsetY,
+        )
+
+        scale = targetScale
+        offsetX = targetOffsetX
+        offsetY = targetOffsetY
+    }
+}
+
+private fun calculateDoubleTapOffset(
+    tap: Offset,
+    container: IntSize,
+    currentScale: Float,
+    targetScale: Float,
+    currentOffsetX: Float,
+    currentOffsetY: Float,
+): Pair<Float, Float> {
+    val cx = container.width / 2f
+    val cy = container.height / 2f
+    val k = (targetScale / currentScale) - 1f
+
+    val tx = currentOffsetX + (cx - tap.x) * k
+    val ty = currentOffsetY + (cy - tap.y) * k
+
+    return clampOffset(
+        x = tx,
+        y = ty,
+        scale = targetScale,
+        container = container,
+    )
+}
+
+private fun clampOffset(
+    x: Float,
+    y: Float,
+    scale: Float,
+    container: IntSize,
+): Pair<Float, Float> {
+    if (container.width == 0 || container.height == 0) return x to y
+
+    val maxX = (container.width * (scale - 1f)) / 2f
+    val maxY = (container.height * (scale - 1f)) / 2f
+
+    return x.coerceIn(-maxX, maxX) to y.coerceIn(-maxY, maxY)
+}
+
+@Composable
+private fun rememberShareUiState(): ShareUiState = remember { ShareUiState() }
+
+@Stable
+private class ShareUiState {
+    var inProgress by mutableStateOf(false)
+        private set
+    var bytesRead by mutableLongStateOf(0L)
+        private set
+    var totalBytes by mutableLongStateOf(0L)
+        private set
+
+    fun start() {
+        bytesRead = 0L
+        totalBytes = 0L
+        inProgress = true
+    }
+
+    fun finish() {
+        inProgress = false
+    }
+
+    fun onProgress(bytesRead: Long, totalBytes: Long) {
+        this.bytesRead = bytesRead
+        this.totalBytes = totalBytes
+    }
+}
+
+private fun launchShare(
+    scope: CoroutineScope,
+    context: Context,
+    shareState: ShareUiState,
+    url: String,
+    fileName: String?,
+    mime: String,
+) {
+    if (shareState.inProgress) return
+
+    scope.launch {
+        shareState.start()
+        val shared = try {
+            shareRemoteMedia(
+                context = context,
+                url = url,
+                fileName = fileName,
+                mime = mime,
+                onProgress = shareState::onProgress,
+            )
+        } finally {
+            shareState.finish()
+        }
+
+        if (!shared) {
+            context.toast(context.getString(R.string.share_failed))
+        }
     }
 }

@@ -228,6 +228,8 @@ internal class SearchPostsViewModel @Inject constructor(
     }
 
     private fun navigateToPost(post: PostDomain) {
-        navigateToPostDelegate.navigateToPost(post)
+        viewModelScope.launch {
+            navigateToPostDelegate.navigateToPost(post)
+        }
     }
 }

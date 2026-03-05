@@ -86,7 +86,6 @@ internal class AuthorsBlacklistViewModel @Inject constructor(
             creatorProfileNavigator.getCreatorProfileDest(
                 service = service,
                 id = creatorId,
-                isFresh = false
             )
         )
     }

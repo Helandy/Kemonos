@@ -9,7 +9,7 @@ import androidx.navigation3.runtime.EntryProviderScope
 import androidx.navigation3.runtime.NavKey
 import dagger.hilt.android.EntryPointAccessors
 import su.afk.kemonos.commonscreen.di.ErrorNavigatorEntryPoint
-import su.afk.kemonos.commonscreen.navigator.CommonScreenDest
+import su.afk.kemonos.commonscreen.navigator.CommonScreenDestination
 import su.afk.kemonos.commonscreen.navigator.IErrorNavigator
 import su.afk.kemonos.domain.models.ErrorItem
 import su.afk.kemonos.navigation.NavRegistrar
@@ -18,19 +18,19 @@ import su.afk.kemonos.ui.presenter.baseViewModel.ScreenNavigator
 import javax.inject.Inject
 
 class ErrorNavigator @Inject constructor() : IErrorNavigator {
-    override operator fun invoke(error: ErrorItem): NavKey = CommonScreenDest.ErrorNavigatorDest(error = error)
+    override operator fun invoke(error: ErrorItem): NavKey = CommonScreenDestination.ErrorNavigatorDest(error = error)
 }
 
 class ErrorNavigatorRegister @Inject constructor() : NavRegistrar {
     override fun register(builder: EntryProviderScope<NavKey>, nav: NavigationManager) = with(builder) {
-        entry<CommonScreenDest.ErrorNavigatorDest> { dest ->
+        entry<CommonScreenDestination.ErrorNavigatorDest> { dest ->
             ErrorNavigatorEntry(dest)
         }
     }
 }
 
 @Composable
-private fun ErrorNavigatorEntry(dest: CommonScreenDest.ErrorNavigatorDest) {
+private fun ErrorNavigatorEntry(dest: CommonScreenDestination.ErrorNavigatorDest) {
     val appContext = LocalContext.current.applicationContext
 
     val entryPoint = EntryPointAccessors.fromApplication(

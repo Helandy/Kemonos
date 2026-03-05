@@ -45,7 +45,7 @@ internal class FavoriteProfilesState {
         data object Refresh : Event
         data object Retry : Event
 
-        data class CreatorClicked(val creator: FavoriteArtist, val isFresh: Boolean) : Event
+        data class CreatorClicked(val creator: FavoriteArtist) : Event
     }
 
     sealed interface Effect : UiEffect

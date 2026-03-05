@@ -1,4 +1,4 @@
-package su.afk.kemonos.creatorPost.presenter.view
+package su.afk.kemonos.creatorPost.presenter.view.tags
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.FlowRow

@@ -4,7 +4,7 @@ import androidx.navigation3.runtime.NavKey
 import kotlinx.serialization.Serializable
 import su.afk.kemonos.domain.models.ErrorItem
 
-object CommonScreenDest {
+object CommonScreenDestination {
 
     @Serializable
     data class ImageViewDest(

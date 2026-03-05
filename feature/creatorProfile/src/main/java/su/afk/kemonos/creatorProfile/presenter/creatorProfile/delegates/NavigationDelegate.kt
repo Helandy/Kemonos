@@ -4,7 +4,7 @@ import su.afk.kemonos.commonscreen.navigator.IImageViewNavigator
 import su.afk.kemonos.creatorPost.api.ICreatorPostNavigator
 import su.afk.kemonos.creatorProfile.api.domain.models.profileCommunity.CommunityChannel
 import su.afk.kemonos.creatorProfile.api.domain.models.profileLinks.ProfileLink
-import su.afk.kemonos.creatorProfile.navigation.CreatorDest
+import su.afk.kemonos.creatorProfile.navigation.CreatorDestination
 import su.afk.kemonos.domain.models.PostDomain
 import su.afk.kemonos.navigation.NavigationManager
 import javax.inject.Inject
@@ -26,7 +26,7 @@ internal class NavigationDelegate @Inject constructor(
     /** navigate to Link Profile */
     fun navigateToLinkProfile(creator: ProfileLink) {
         navManager.navigate(
-            CreatorDest.CreatorProfile(
+            CreatorDestination.CreatorProfile(
                 service = creator.service,
                 id = creator.id,
             )
@@ -34,7 +34,7 @@ internal class NavigationDelegate @Inject constructor(
     }
 
     /** Открытие поста */
-    fun navigateToPost(post: PostDomain) {
+    suspend fun navigateToPost(post: PostDomain) {
         navManager.navigate(
             creatorPostNavigator.getCreatorPostDest(
                 id = post.userId,
@@ -47,7 +47,7 @@ internal class NavigationDelegate @Inject constructor(
 
     fun navigateToCommunityChat(service: String, creatorId: String, channel: CommunityChannel) {
         navManager.navigate(
-            CreatorDest.CommunityChat(
+            CreatorDestination.CommunityChat(
                 service = service,
                 creatorId = creatorId,
                 channelId = channel.channelId,

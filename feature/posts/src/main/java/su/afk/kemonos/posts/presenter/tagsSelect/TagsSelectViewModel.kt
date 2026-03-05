@@ -4,6 +4,7 @@ import androidx.paging.cachedIn
 import androidx.paging.filter
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.launch
 import su.afk.kemonos.domain.models.PostDomain
 import su.afk.kemonos.error.error.IErrorHandlerUseCase
 import su.afk.kemonos.error.error.storage.RetryStorage
@@ -187,7 +188,9 @@ internal class TagsSelectViewModel @Inject constructor(
     }
 
     private fun navigateToPost(post: PostDomain) {
-        navigateToPostDelegate.navigateToPost(post = post)
+        viewModelScope.launch {
+            navigateToPostDelegate.navigateToPost(post = post)
+        }
     }
 
     private fun onPullRefresh() {

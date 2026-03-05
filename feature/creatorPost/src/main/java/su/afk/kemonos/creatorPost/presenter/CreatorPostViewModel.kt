@@ -3,24 +3,23 @@ package su.afk.kemonos.creatorPost.presenter
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
-import kotlinx.coroutines.*
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
-import su.afk.kemonos.creatorPost.api.domain.model.PostContentDomain
+import kotlinx.coroutines.launch
 import su.afk.kemonos.creatorPost.domain.model.media.MediaInfoState
 import su.afk.kemonos.creatorPost.domain.model.video.VideoThumbState
-import su.afk.kemonos.creatorPost.domain.useCase.GetCommentsUseCase
 import su.afk.kemonos.creatorPost.domain.useCase.GetMediaMetaUseCase
-import su.afk.kemonos.creatorPost.domain.useCase.GetPostUseCase
-import su.afk.kemonos.creatorPost.navigation.CreatorPostDest
+import su.afk.kemonos.creatorPost.navigation.CreatorPostDestination
 import su.afk.kemonos.creatorPost.presenter.CreatorPostState.*
 import su.afk.kemonos.creatorPost.presenter.CreatorPostState.Effect.OpenAudio
 import su.afk.kemonos.creatorPost.presenter.delegates.LikeDelegate
 import su.afk.kemonos.creatorPost.presenter.delegates.MediaMetaDelegate
 import su.afk.kemonos.creatorPost.presenter.delegates.NavigateDelegates
+import su.afk.kemonos.creatorPost.presenter.delegates.PostLoadDelegate
 import su.afk.kemonos.creatorPost.presenter.helper.collectDownloadAllItems
-import su.afk.kemonos.creatorProfile.api.IGetProfileUseCase
+import su.afk.kemonos.creatorPost.presenter.model.LoadRequest
 import su.afk.kemonos.domain.models.PreviewDomain
 import su.afk.kemonos.download.api.IDownloadUtil
 import su.afk.kemonos.error.error.IErrorHandlerUseCase
@@ -30,9 +29,6 @@ import su.afk.kemonos.preferences.IGetCurrentSiteRootUrlUseCase
 import su.afk.kemonos.preferences.domainResolver.IDomainResolver
 import su.afk.kemonos.preferences.ui.IUiSettingUseCase
 import su.afk.kemonos.preferences.ui.TranslateTarget
-import su.afk.kemonos.ui.presenter.androidView.cleanDuplicatedMediaFromContent
-import su.afk.kemonos.ui.presenter.androidView.clearHtml
-import su.afk.kemonos.ui.presenter.androidView.htmlToBlocks
 import su.afk.kemonos.ui.presenter.androidView.model.PostBlock
 import su.afk.kemonos.ui.presenter.baseViewModel.BaseViewModelNew
 import su.afk.kemonos.ui.shared.ShareLinkBuilder
@@ -43,10 +39,8 @@ import su.afk.kemonos.ui.uiUtils.format.buildFileUrl
 import java.net.URLEncoder
 
 internal class CreatorPostViewModel @AssistedInject constructor(
-    @Assisted private val dest: CreatorPostDest.CreatorPost,
-    private val getCommentsUseCase: GetCommentsUseCase,
-    private val getPostUseCase: GetPostUseCase,
-    private val getProfileUseCase: IGetProfileUseCase,
+    @Assisted private val dest: CreatorPostDestination.CreatorPost,
+    private val postLoadDelegate: PostLoadDelegate,
     private val getCurrentSiteRootUrlUseCase: IGetCurrentSiteRootUrlUseCase,
     private val domainResolver: IDomainResolver,
     private val getMediaMetaUseCase: GetMediaMetaUseCase,
@@ -63,7 +57,7 @@ internal class CreatorPostViewModel @AssistedInject constructor(
 
     @AssistedFactory
     interface Factory {
-        fun create(dest: CreatorPostDest.CreatorPost): CreatorPostViewModel
+        fun create(dest: CreatorPostDestination.CreatorPost): CreatorPostViewModel
     }
 
     override fun createInitialState(): State = State.default()
@@ -125,6 +119,9 @@ internal class CreatorPostViewModel @AssistedInject constructor(
             }
 
             is Event.SelectRevision -> onSelectRevision(event.revisionId)
+            Event.ShareStarted -> onShareStarted()
+            is Event.ShareProgress -> onShareProgress(event.bytesRead, event.totalBytes)
+            Event.ShareFinished -> onShareFinished()
 
             Event.OpenNextPost -> {
                 val next = currentState.post?.post?.nextId ?: return
@@ -144,62 +141,25 @@ internal class CreatorPostViewModel @AssistedInject constructor(
 
     fun loadingPost() {
         loadingJob?.cancel()
-        val requestId = ++loadingRequestId
-        val requestService = currentState.service
-        val requestCreatorId = currentState.id
-        val requestPostId = currentState.postId
+        val request = createLoadRequest()
 
         loadingJob = viewModelScope.launch {
             setState { copy(loading = true) }
+            val loaded = postLoadDelegate.load(request)
 
-            val postDeferred = async { getPostUseCase(requestService, requestCreatorId, requestPostId) }
-            val commentsDeferred = async {
-                if (currentState.uiSettingModel.showCommentsInPost) {
-                    getCommentsUseCase(requestService, requestCreatorId, requestPostId)
-                } else {
-                    emptyList()
-                }
-            }
-
-            /** шапка профиля не всегда нужна */
-            val profileDeferred = async { getProfileUseCase(service = requestService, id = requestCreatorId) }
-
-            val post = postDeferred.await()
-            val comments = commentsDeferred.await()
-            val profile = profileDeferred.await()
-
-            val selectedRevisionId: Int? = null
-            val resolvedPost = post?.toResolvedPost(selectedRevisionId)
-
-            val showButtonTranslate = resolvedPost?.post?.content?.clearHtml()?.isNotBlank() ?: false
-            val mediaRefs = resolvedPost?.collectMediaRefsForDedup()
-            val siteBaseUrl = getCurrentSiteRootUrlUseCase()
-
-            val cleanContent = withContext(Dispatchers.Default) {
-                cleanDuplicatedMediaFromContent(
-                    html = resolvedPost?.post?.content.orEmpty().take(MAX_HTML_CHARS),
-                    attachmentPaths = mediaRefs.orEmpty(),
-                )
-            }
-
-            val blocks = withContext(Dispatchers.Default) {
-                htmlToBlocks(cleanContent, siteBaseUrl)
-            }
-
-            if (requestId != loadingRequestId) return@launch
+            if (!isLatestRequest(request)) return@launch
 
             setState {
                 copy(
                     loading = false,
-                    sourcePost = post,
-                    post = resolvedPost,
-                    revisionIds = post?.buildRevisionSelectorIds().orEmpty(),
-                    selectedRevisionId = selectedRevisionId,
-                    showButtonTranslate = showButtonTranslate,
-                    contentBlocks = blocks,
-
-                    commentDomains = comments,
-                    profile = profile,
+                    sourcePost = loaded.sourcePost,
+                    post = loaded.resolvedPost,
+                    revisionIds = loaded.revisionIds,
+                    selectedRevisionId = loaded.selectedRevisionId,
+                    showButtonTranslate = loaded.showButtonTranslate,
+                    contentBlocks = loaded.contentBlocks,
+                    commentDomains = loaded.comments,
+                    profile = loaded.profile,
 
                     translateExpanded = false,
                     translateLoading = false,
@@ -208,21 +168,7 @@ internal class CreatorPostViewModel @AssistedInject constructor(
                 )
             }
 
-            val isShowAvailable = likeDelegate.postIsAvailableLike()
-            if (requestId != loadingRequestId) return@launch
-
-            if (isShowAvailable) {
-                val favorite = likeDelegate.isPostFavorite(
-                    service = requestService,
-                    creatorId = requestCreatorId,
-                    postId = requestPostId,
-                )
-                if (requestId != loadingRequestId) return@launch
-                setState { copy(isFavorite = favorite) }
-            }
-
-            if (requestId != loadingRequestId) return@launch
-            setState { copy(isFavoriteShowButton = isShowAvailable) }
+            applyFavoriteState(request)
         }
     }
 
@@ -231,27 +177,14 @@ internal class CreatorPostViewModel @AssistedInject constructor(
         if (currentState.selectedRevisionId == revisionId) return
 
         viewModelScope.launch {
-            val resolvedPost = sourcePost.toResolvedPost(revisionId)
-            val mediaRefs = resolvedPost.collectMediaRefsForDedup()
-            val siteBaseUrl = getCurrentSiteRootUrlUseCase()
-
-            val cleanContent = withContext(Dispatchers.Default) {
-                cleanDuplicatedMediaFromContent(
-                    html = resolvedPost.post.content.orEmpty().take(MAX_HTML_CHARS),
-                    attachmentPaths = mediaRefs,
-                )
-            }
-
-            val blocks = withContext(Dispatchers.Default) {
-                htmlToBlocks(cleanContent, siteBaseUrl)
-            }
+            val loadedRevision = postLoadDelegate.loadRevision(sourcePost, revisionId)
 
             setState {
                 copy(
-                    post = resolvedPost,
+                    post = loadedRevision.resolvedPost,
                     selectedRevisionId = revisionId,
-                    showButtonTranslate = resolvedPost.post.content?.clearHtml()?.isNotBlank() ?: false,
-                    contentBlocks = blocks,
+                    showButtonTranslate = loadedRevision.showButtonTranslate,
+                    contentBlocks = loadedRevision.contentBlocks,
                     translateExpanded = false,
                     translateLoading = false,
                     translateText = null,
@@ -261,6 +194,43 @@ internal class CreatorPostViewModel @AssistedInject constructor(
                     audioInfo = emptyMap(),
                 )
             }
+        }
+    }
+
+    private fun createLoadRequest(): LoadRequest {
+        return LoadRequest(
+            requestId = ++loadingRequestId,
+            service = currentState.service,
+            creatorId = currentState.id,
+            postId = currentState.postId,
+            showComments = currentState.uiSettingModel.showCommentsInPost,
+        )
+    }
+
+    private fun isLatestRequest(request: LoadRequest): Boolean {
+        return request.requestId == loadingRequestId
+    }
+
+    private suspend fun applyFavoriteState(request: LoadRequest) {
+        val isShowAvailable = likeDelegate.postIsAvailableLike()
+        if (!isLatestRequest(request)) return
+
+        val favorite = if (isShowAvailable) {
+            likeDelegate.isPostFavorite(
+                service = request.service,
+                creatorId = request.creatorId,
+                postId = request.postId,
+            )
+        } else {
+            null
+        }
+        if (!isLatestRequest(request)) return
+
+        setState {
+            copy(
+                isFavoriteShowButton = isShowAvailable,
+                isFavorite = favorite ?: isFavorite
+            )
         }
     }
 
@@ -504,44 +474,6 @@ internal class CreatorPostViewModel @AssistedInject constructor(
         return "$server/data$path?f=$encodedName"
     }
 
-    fun PostContentDomain.collectMediaRefsForDedup(): List<String> = buildList {
-        // attachments в корне ответа
-        addAll(attachments.map { it.path })
-        // previews (чаще всего thumbnail/path)
-        addAll(previews.mapNotNull { it.path })
-        // если у PreviewDomain есть url
-        addAll(previews.mapNotNull { it.url })
-
-        // вложенные attachments/file внутри post
-        post.file?.path?.let(::add)
-        addAll(post.attachments.map { it.path })
-    }.filter { it.isNotBlank() }
-
-    companion object {
-        const val MAX_HTML_CHARS = 100_000
-    }
-
-    private fun PostContentDomain.buildRevisionSelectorIds(): List<Int?> {
-        if (revisions.size <= 1) return emptyList()
-
-        val ids = revisions
-            .filter { it.backendRevisionId != null }
-            .map { it.revisionId }
-            .distinct()
-        if (ids.isEmpty()) return emptyList()
-        return listOf(null) + ids
-    }
-
-    private fun PostContentDomain.toResolvedPost(selectedRevisionId: Int?): PostContentDomain {
-        if (selectedRevisionId == null) return this
-        val selected = revisions.firstOrNull { it.revisionId == selectedRevisionId } ?: return this
-        val selectedAttachments = selected.post.attachments.ifEmpty { attachments }
-        return copy(
-            post = selected.post,
-            attachments = selectedAttachments,
-        )
-    }
-
     private fun resetForNewPost(nextPostId: String) = setState {
         copy(
             postId = nextPostId,
@@ -563,7 +495,33 @@ internal class CreatorPostViewModel @AssistedInject constructor(
             videoThumbs = emptyMap(),
             videoInfo = emptyMap(),
             audioInfo = emptyMap(),
+
+            shareInProgress = false,
+            shareBytesRead = 0L,
+            shareTotalBytes = 0L,
         )
+    }
+
+    private fun onShareStarted() = setState {
+        if (shareInProgress) return@setState this
+        copy(
+            shareInProgress = true,
+            shareBytesRead = 0L,
+            shareTotalBytes = 0L,
+        )
+    }
+
+    private fun onShareProgress(bytesRead: Long, totalBytes: Long) = setState {
+        if (!shareInProgress) return@setState this
+        copy(
+            shareBytesRead = bytesRead,
+            shareTotalBytes = totalBytes,
+        )
+    }
+
+    private fun onShareFinished() = setState {
+        if (!shareInProgress) return@setState this
+        copy(shareInProgress = false)
     }
 
 }

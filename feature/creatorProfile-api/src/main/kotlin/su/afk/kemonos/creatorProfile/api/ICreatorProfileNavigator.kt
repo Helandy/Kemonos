@@ -8,7 +8,6 @@ interface ICreatorProfileNavigator {
     suspend fun getCreatorProfileDest(
         service: String,
         id: String,
-        isFresh: Boolean = false,
         tag: Tag? = null,
     ): NavKey
 }

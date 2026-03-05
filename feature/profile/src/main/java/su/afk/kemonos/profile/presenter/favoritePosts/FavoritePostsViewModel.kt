@@ -195,14 +195,16 @@ internal class FavoritePostsViewModel @Inject constructor(
 
     /** Открытие поста */
     private fun navigateToPost(post: PostDomain) {
-        navManager.navigate(
-            creatorPostNavigator.getCreatorPostDest(
-                id = post.userId,
-                service = post.service,
-                postId = post.id,
-                showBarCreator = true
+        viewModelScope.launch {
+            navManager.navigate(
+                creatorPostNavigator.getCreatorPostDest(
+                    id = post.userId,
+                    service = post.service,
+                    postId = post.id,
+                    showBarCreator = true
+                )
             )
-        )
+        }
     }
 
     private fun navigateToProfile(service: String, creatorId: String) {
@@ -211,7 +213,6 @@ internal class FavoritePostsViewModel @Inject constructor(
                 creatorProfileNavigator.getCreatorProfileDest(
                     service = service,
                     id = creatorId,
-                    isFresh = false,
                 )
             )
         }

@@ -3,7 +3,7 @@ package su.afk.kemonos.creatorPost.api
 import androidx.navigation3.runtime.NavKey
 
 interface ICreatorPostNavigator {
-    fun getCreatorPostDest(
+    suspend fun getCreatorPostDest(
         id: String,
         service: String,
         postId: String,

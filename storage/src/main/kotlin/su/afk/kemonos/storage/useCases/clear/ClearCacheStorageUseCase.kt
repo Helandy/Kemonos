@@ -1,5 +1,8 @@
 package su.afk.kemonos.storage.useCases.clear
 
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.coroutineScope
 import su.afk.kemonos.domain.SelectedSite
 import su.afk.kemonos.storage.api.clear.IClearCacheStorageUseCase
 import su.afk.kemonos.storage.api.repository.comments.IStoreCommentsRepository
@@ -33,36 +36,47 @@ internal class ClearCacheStorageUseCase @Inject constructor(
     private val freshFavoriteArtistsUpdatesRepository: IFreshFavoriteArtistsUpdatesRepository,
 ) : IClearCacheStorageUseCase {
 
-    override suspend fun clear() {
-        /** Чистка коментариев */
-        storeCommentsRepository.clearCacheOver7Days()
-        /** Чистка информации о профиле */
-        storeCreatorProfileCacheRepository.clearCacheOver7Days()
-        /** Чистка community (channels + messages) */
-        storeCommunityRepository.clearCacheOver7Days()
-        /** Чистка популярных постов */
-        popularPostsCacheRepository.clearCache(SelectedSite.K)
-        popularPostsCacheRepository.clearCache(SelectedSite.C)
-        /** Чистка сохраненного поста */
-        postStorageRepository.clearCache()
-        /** Чистка поиска */
-        postsSearchCacheRepository.clearCache(SelectedSite.K)
-        postsSearchCacheRepository.clearCache(SelectedSite.C)
-        /** Чистка dms */
-        dmsCacheRepository.clearCache(SelectedSite.K)
-        dmsCacheRepository.clearCache(SelectedSite.C)
-        /** Чистка истории загрузок старше 60 дней */
-        trackedDownloadsRepository.clearCache()
-        /** Чистка профилей креаторов */
-        storeProfileRepository.clearCacheOver24Hours()
-        /** Чистка постов в профиле */
-        creatorPostsCacheRepository.clearCache()
-        /** Чистка сохраненных тэгов */
-        storeTagsRepository.clearIfExpired(SelectedSite.K)
-        storeTagsRepository.clearIfExpired(SelectedSite.C)
-        /** Чистка кэша информации о видео */
-        storeVideoInfoRepository.clearCache()
-        /** Чистка кэша свежих авторов */
-        freshFavoriteArtistsUpdatesRepository.clearExpired()
+    override suspend fun clear() = coroutineScope {
+        awaitAll(
+            /** Чистка комментариев */
+            async { storeCommentsRepository.clearCacheOver7Days() },
+            /** Чистка информации о профиле */
+            async { storeCreatorProfileCacheRepository.clearCacheOver7Days() },
+            /** Чистка community (channels + messages) */
+            async { storeCommunityRepository.clearCacheOver7Days() },
+            /** Чистка популярных постов */
+            async {
+                popularPostsCacheRepository.clearCache(SelectedSite.K)
+                popularPostsCacheRepository.clearCache(SelectedSite.C)
+            },
+            /** Чистка сохраненного поста */
+            async { postStorageRepository.clearCache() },
+            /** Чистка поиска */
+            async {
+                postsSearchCacheRepository.clearCache(SelectedSite.K)
+                postsSearchCacheRepository.clearCache(SelectedSite.C)
+            },
+            /** Чистка dms */
+            async {
+                dmsCacheRepository.clearCache(SelectedSite.K)
+                dmsCacheRepository.clearCache(SelectedSite.C)
+            },
+            /** Чистка истории загрузок старше 60 дней */
+            async { trackedDownloadsRepository.clearCache() },
+            /** Чистка профилей креаторов */
+            async { storeProfileRepository.clearCacheOver24Hours() },
+            /** Чистка постов в профиле */
+            async { creatorPostsCacheRepository.clearCache() },
+            /** Чистка сохраненных тэгов */
+            async {
+                storeTagsRepository.clearIfExpired(SelectedSite.K)
+                storeTagsRepository.clearIfExpired(SelectedSite.C)
+            },
+            /** Чистка кэша информации о видео */
+            async { storeVideoInfoRepository.clearCache() },
+            /** Чистка кэша свежих авторов */
+            async { freshFavoriteArtistsUpdatesRepository.clearExpired() }
+        )
+        Unit
     }
 }

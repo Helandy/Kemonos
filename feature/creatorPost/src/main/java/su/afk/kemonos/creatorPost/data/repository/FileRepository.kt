@@ -5,13 +5,9 @@ import su.afk.kemonos.creatorPost.data.dto.file.FileByHashResponseDto.Companion.
 import su.afk.kemonos.creatorPost.data.dto.file.FileByPathResponseDto.Companion.toDomain
 import su.afk.kemonos.creatorPost.domain.model.file.FileByHashDomain
 import su.afk.kemonos.creatorPost.domain.model.file.FileByPathDomain
+import su.afk.kemonos.creatorPost.domain.repository.IFileRepository
 import su.afk.kemonos.network.util.call
 import javax.inject.Inject
-
-internal interface IFileRepository {
-    suspend fun getFileByHash(fileHash: String): FileByHashDomain
-    suspend fun getFileByPath(path: String): FileByPathDomain
-}
 
 internal class FileRepository @Inject constructor(
     private val api: FileApi,

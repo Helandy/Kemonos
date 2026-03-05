@@ -1,4 +1,4 @@
-package su.afk.kemonos.creatorPost.presenter.view
+package su.afk.kemonos.creatorPost.presenter.view.header
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons

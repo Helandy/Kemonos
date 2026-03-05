@@ -8,7 +8,7 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import su.afk.kemonos.creatorProfile.domain.useCase.GetProfileCommunityMessagesUseCase
-import su.afk.kemonos.creatorProfile.navigation.CreatorDest
+import su.afk.kemonos.creatorProfile.navigation.CreatorDestination
 import su.afk.kemonos.creatorProfile.presenter.communityChat.CommunityChatState.*
 import su.afk.kemonos.creatorProfile.presenter.creatorProfile.delegates.NavigationDelegate
 import su.afk.kemonos.error.error.IErrorHandlerUseCase
@@ -21,7 +21,7 @@ import su.afk.kemonos.ui.translate.TextTranslator
 import su.afk.kemonos.ui.translate.preprocessForTranslation
 
 internal class CommunityChatViewModel @AssistedInject constructor(
-    @Assisted private val dest: CreatorDest.CommunityChat?,
+    @Assisted private val dest: CreatorDestination.CommunityChat?,
     private val navManager: NavigationManager,
     private val navigationDelegate: NavigationDelegate,
     private val getProfileCommunityMessagesUseCase: GetProfileCommunityMessagesUseCase,
@@ -37,7 +37,7 @@ internal class CommunityChatViewModel @AssistedInject constructor(
 
     @AssistedFactory
     interface Factory {
-        fun create(dest: CreatorDest.CommunityChat): CommunityChatViewModel
+        fun create(dest: CreatorDestination.CommunityChat): CommunityChatViewModel
     }
 
     override fun createInitialState(): State = State()

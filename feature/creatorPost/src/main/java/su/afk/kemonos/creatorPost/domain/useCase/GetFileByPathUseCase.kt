@@ -1,7 +1,7 @@
 package su.afk.kemonos.creatorPost.domain.useCase
 
-import su.afk.kemonos.creatorPost.data.repository.IFileRepository
 import su.afk.kemonos.creatorPost.domain.model.file.FileByPathDomain
+import su.afk.kemonos.creatorPost.domain.repository.IFileRepository
 import javax.inject.Inject
 
 internal class GetFileByPathUseCase @Inject constructor(

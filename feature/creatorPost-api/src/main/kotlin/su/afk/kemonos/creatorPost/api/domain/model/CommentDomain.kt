@@ -18,6 +18,23 @@ data class CommentDomain(
                 published = "",
                 revisions = emptyList()
             )
+
+        fun List<CommentDomain>.toCachePayload(): List<CommentDomain> {
+            return if (isEmpty()) listOf(emptyComment()) else this
+        }
+
+        fun List<CommentDomain>.toExternalComments(): List<CommentDomain> {
+            return filterNot { it.isCacheEmptyMarker() }
+        }
+
+        fun CommentDomain.isCacheEmptyMarker(): Boolean {
+            return id.isBlank() &&
+                    commenter.isBlank() &&
+                    commenter_name.isNullOrBlank() &&
+                    content.isBlank() &&
+                    published.isBlank() &&
+                    revisions.isEmpty()
+        }
     }
 }
 

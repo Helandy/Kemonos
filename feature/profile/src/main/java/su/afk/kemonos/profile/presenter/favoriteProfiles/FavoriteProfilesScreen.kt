@@ -88,7 +88,7 @@ internal fun FavoriteProfilesScreen(state: State, onEvent: (Event) -> Unit) {
                 pagingItems = pagingItems,
                 randomItems = emptyList(),
                 onCreatorClick = { creator ->
-                    onEvent(Event.CreatorClicked(creator = creator, isFresh = false))
+                    onEvent(Event.CreatorClicked(creator = creator))
                 },
                 updatedProvider = { artist ->
                     artist.uiDateBySort(state.sortedType)

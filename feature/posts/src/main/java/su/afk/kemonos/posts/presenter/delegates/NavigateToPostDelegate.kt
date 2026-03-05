@@ -13,7 +13,7 @@ internal class NavigateToPostDelegate @Inject constructor(
 ) {
 
     /** Открытие поста */
-    fun navigateToPost(post: PostDomain) {
+    suspend fun navigateToPost(post: PostDomain) {
         navManager.navigate(
             creatorPostNavigator.getCreatorPostDest(
                 id = post.userId,

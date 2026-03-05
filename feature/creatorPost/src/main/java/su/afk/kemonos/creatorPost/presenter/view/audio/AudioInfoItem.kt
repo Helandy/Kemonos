@@ -17,7 +17,8 @@ import androidx.compose.ui.unit.dp
 import su.afk.kemonos.creatorPost.domain.model.media.MediaInfoState
 import su.afk.kemonos.domain.models.AttachmentDomain
 import su.afk.kemonos.ui.R
-import kotlin.math.roundToInt
+import su.afk.kemonos.ui.uiUtils.format.formatDurationMinutesSeconds
+import su.afk.kemonos.ui.uiUtils.format.formatSizeMegabytesRounded
 
 @Composable
 internal fun AudioInfoItem(
@@ -82,20 +83,8 @@ internal fun AudioInfoItem(
                     is MediaInfoState.Success -> {
                         val data = state.data
 
-                        val duration = if (data.durationMs > 0) {
-                            "%d:%02d".format(
-                                data.durationMs / 60000,
-                                (data.durationMs / 1000) % 60
-                            )
-                        } else "?"
-
-                        val sizeMb =
-                            if (data.sizeBytes >= 0) data.sizeBytes / 1024f / 1024f
-                            else -1f
-
-                        val sizeStr =
-                            if (sizeMb >= 0) "${sizeMb.roundToInt()} MB"
-                            else "?"
+                        val duration = formatDurationMinutesSeconds(data.durationMs) ?: "?"
+                        val sizeStr = formatSizeMegabytesRounded(data.sizeBytes) ?: "?"
 
                         Text(
                             text = "⏱ $duration   📦 $sizeStr",
