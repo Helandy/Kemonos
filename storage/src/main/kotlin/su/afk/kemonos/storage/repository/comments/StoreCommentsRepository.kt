@@ -14,6 +14,16 @@ internal class StoreCommentsRepository @Inject constructor(
     private val dao: CommentsDao
 ) : IStoreCommentsRepository {
 
+    override suspend fun getCommentsOrNull(
+        service: String,
+        userId: String,
+        postId: String
+    ): List<CommentDomain>? {
+        val cached = dao.getThread(service, userId, postId)
+            .map { it.toDomain() }
+        return cached.takeIf { it.isNotEmpty() }
+    }
+
     override suspend fun getCommentsFreshOrNull(
         service: String,
         userId: String,

@@ -1,7 +1,7 @@
 package su.afk.kemonos.creatorPost.domain.useCase
 
 import su.afk.kemonos.creatorPost.api.domain.model.PostContentDomain
-import su.afk.kemonos.creatorPost.data.repository.IPostRepository
+import su.afk.kemonos.creatorPost.domain.repository.IPostRepository
 import javax.inject.Inject
 
 internal class GetPostUseCase @Inject constructor(

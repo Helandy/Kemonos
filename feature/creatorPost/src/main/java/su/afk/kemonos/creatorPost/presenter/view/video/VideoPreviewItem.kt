@@ -27,8 +27,9 @@ import su.afk.kemonos.creatorPost.domain.model.video.VideoThumbState
 import su.afk.kemonos.domain.models.VideoDomain
 import su.afk.kemonos.ui.R
 import su.afk.kemonos.ui.imageLoader.AsyncImageWithStatus
+import su.afk.kemonos.ui.uiUtils.format.formatDurationMinutesSeconds
+import su.afk.kemonos.ui.uiUtils.format.formatSizeMegabytesRounded
 import su.afk.kemonos.ui.video.openVideoExternally
-import kotlin.math.roundToInt
 
 /**
  * Один видеоролик со статичным кадром-превью.
@@ -181,12 +182,8 @@ internal fun VideoPreviewItem(
             )
             if (infoState is MediaInfoState.Success) {
                 val data = infoState.data
-                val dur = "%d:%02d".format(
-                    data.durationMs / 60000,
-                    (data.durationMs / 1000) % 60
-                )
-                val sizeMb = if (data.sizeBytes >= 0) (data.sizeBytes / 1024f / 1024f) else -1f
-                val sizeStr = if (sizeMb >= 0) "${sizeMb.roundToInt()} MB" else "?"
+                val dur = formatDurationMinutesSeconds(data.durationMs) ?: "?"
+                val sizeStr = formatSizeMegabytesRounded(data.sizeBytes) ?: "?"
 
                 Text(
                     text = "⏱ $dur   📦 $sizeStr",

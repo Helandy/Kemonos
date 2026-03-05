@@ -14,7 +14,7 @@ import su.afk.kemonos.ui.uiUtils.format.isAudioFile
 import su.afk.kemonos.utils.url.buildContentUrlToDataSite
 
 internal fun LazyListScope.postAudioSection(
-    attachments: List<AttachmentDomain>,
+    audios: List<AttachmentDomain>,
     fallbackBaseUrl: String?,
     audioInfo: Map<String, MediaInfoState>,
     onInfoRequested: (String) -> Unit,
@@ -23,11 +23,6 @@ internal fun LazyListScope.postAudioSection(
     onShare: (AttachmentDomain) -> Unit,
     showHeader: Boolean = true,
 ) {
-    val audios = attachments.asSequence()
-        .filter { isAudioFile(it.path) }
-        .distinctBy { "${it.server.orEmpty()}|${it.path}" }
-        .toList()
-
     if (audios.isEmpty()) return
 
     if (showHeader) {
@@ -60,4 +55,11 @@ internal fun LazyListScope.postAudioSection(
             onShare = onShare,
         )
     }
+}
+
+internal fun List<AttachmentDomain>.distinctAudioAttachments(): List<AttachmentDomain> {
+    return asSequence()
+        .filter { isAudioFile(it.path) }
+        .distinctBy { "${it.server.orEmpty()}|${it.path}" }
+        .toList()
 }

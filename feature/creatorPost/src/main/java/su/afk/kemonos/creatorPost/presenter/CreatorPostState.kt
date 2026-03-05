@@ -45,6 +45,10 @@ internal class CreatorPostState {
         val videoThumbs: Map<String, VideoThumbState>,
         val videoInfo: Map<String, MediaInfoState>,
         val audioInfo: Map<String, MediaInfoState>,
+
+        val shareInProgress: Boolean,
+        val shareBytesRead: Long,
+        val shareTotalBytes: Long,
     ) : UiState {
         companion object {
             fun default() = State(
@@ -72,6 +76,9 @@ internal class CreatorPostState {
                 videoThumbs = emptyMap(),
                 videoInfo = emptyMap(),
                 audioInfo = emptyMap(),
+                shareInProgress = false,
+                shareBytesRead = 0L,
+                shareTotalBytes = 0L,
             )
         }
     }
@@ -101,6 +108,10 @@ internal class CreatorPostState {
         data class PlayAudio(val url: String, val name: String?, val mime: String) : Event
 
         data class SelectRevision(val revisionId: Int?) : Event
+
+        data object ShareStarted : Event
+        data class ShareProgress(val bytesRead: Long, val totalBytes: Long) : Event
+        data object ShareFinished : Event
 
         data object OpenNextPost : Event
         data object OpenPrevPost : Event
