@@ -30,6 +30,20 @@ internal fun ViewSettingsSection(
     )
 
     SwitchRow(
+        title = stringResource(R.string.settings_autoplay_community_video_title),
+        subtitle = stringResource(R.string.settings_autoplay_community_video_subtitle),
+        checked = ui.autoplayCommunityVideo,
+        onCheckedChange = { onEvent(Event.ChangeViewSetting.AutoplayCommunityVideo(it)) },
+    )
+
+    SwitchRow(
+        title = stringResource(R.string.settings_discord_reverse_default_title),
+        subtitle = stringResource(R.string.settings_discord_reverse_default_subtitle),
+        checked = ui.discordCommunityReverseOrderDefault,
+        onCheckedChange = { onEvent(Event.ChangeViewSetting.DiscordCommunityReverseOrderDefault(it)) },
+    )
+
+    SwitchRow(
         title = stringResource(R.string.settings_blur_images_title),
         subtitle = stringResource(R.string.settings_blur_images_substring),
         checked = ui.blurImages,

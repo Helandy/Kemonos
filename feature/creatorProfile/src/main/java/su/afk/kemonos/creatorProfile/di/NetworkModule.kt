@@ -6,6 +6,7 @@ import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import retrofit2.Retrofit
 import su.afk.kemonos.creatorProfile.data.api.CreatorProfileApi
+import su.afk.kemonos.creatorProfile.data.api.DiscordApi
 import su.afk.kemonos.creatorProfile.data.api.FavoritesCreatorApi
 import javax.inject.Singleton
 
@@ -22,4 +23,9 @@ internal object NetworkModule {
     @Singleton
     fun provideCreatorProfileApi(retrofit: Retrofit): CreatorProfileApi =
         retrofit.create(CreatorProfileApi::class.java)
+
+    @Provides
+    @Singleton
+    fun provideDiscordApi(retrofit: Retrofit): DiscordApi =
+        retrofit.create(DiscordApi::class.java)
 }

@@ -5,10 +5,12 @@ import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import su.afk.kemonos.creatorProfile.presenter.communityChat.CommunityChatViewModel
 import su.afk.kemonos.creatorProfile.presenter.creatorProfile.CreatorProfileViewModel
+import su.afk.kemonos.creatorProfile.presenter.discord.DiscordViewModel
 
 @EntryPoint
 @InstallIn(SingletonComponent::class)
 internal interface CreatorProfileVmFactoryEntryPoint {
     fun creatorProfileVmFactory(): CreatorProfileViewModel.Factory
     fun communityChatVmFactory(): CommunityChatViewModel.Factory
+    fun discordVmFactory(): DiscordViewModel.Factory
 }

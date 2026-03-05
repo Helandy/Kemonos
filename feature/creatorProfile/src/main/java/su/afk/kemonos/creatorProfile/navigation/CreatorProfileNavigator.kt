@@ -28,4 +28,21 @@ class CreatorProfileNavigator @Inject constructor(
             tag = tag,
         )
     }
+
+    override suspend fun getCommunityChatDest(
+        service: String,
+        creatorId: String,
+        channelId: String,
+        channelName: String,
+    ): NavKey {
+        val targetSite = domainResolver.selectedSiteByService(service)
+        selectedSiteUseCase.setSiteAndAwait(targetSite)
+
+        return CreatorDestination.CommunityChat(
+            service = service,
+            creatorId = creatorId,
+            channelId = channelId,
+            channelName = channelName,
+        )
+    }
 }

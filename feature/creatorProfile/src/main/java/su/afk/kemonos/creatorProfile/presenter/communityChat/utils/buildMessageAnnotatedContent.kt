@@ -86,7 +86,8 @@ internal fun buildMediaUrls(message: CommunityMessage, fallbackBaseUrl: String):
             return@mapNotNull CommunityMedia(
                 previewUrl = previewUrl,
                 openUrl = fullUrl,
-                pathOrUrl = path
+                pathOrUrl = path,
+                fileName = att.name
             )
         }
 
@@ -94,24 +95,41 @@ internal fun buildMediaUrls(message: CommunityMessage, fallbackBaseUrl: String):
         CommunityMedia(
             previewUrl = thumb,
             openUrl = thumb,
-            pathOrUrl = thumb
+            pathOrUrl = thumb,
+            fileName = att.name
         )
     }
 
     val fromEmbeds = message.embeds.mapNotNull { embed ->
-        val image = embed.imageUrl?.takeIf { it.isNotBlank() }
-            ?: embed.thumbUrl?.takeIf { it.isNotBlank() }
+        val primary = embed.imageUrl?.takeIf { it.isNotBlank() }
+        val thumb = embed.thumbUrl?.takeIf { it.isNotBlank() }
+        val link = embed.titleLink?.takeIf { it.isNotBlank() }
+
+        val mediaUrl = listOf(primary, link, thumb)
+            .firstOrNull { candidate ->
+                val normalized = candidate?.toMediaTypePath()
+                isImageFile(normalized) || isVideoFile(normalized)
+            }
             ?: return@mapNotNull null
-        if (!isImageFile(image) && !isVideoFile(image)) return@mapNotNull null
+
+        val mediaTypePath = mediaUrl.toMediaTypePath()
+        val isVideo = isVideoFile(mediaTypePath)
         CommunityMedia(
-            previewUrl = image,
-            openUrl = image,
-            pathOrUrl = image
+            previewUrl = if (isVideo) {
+                thumb ?: primary ?: mediaUrl
+            } else {
+                mediaUrl
+            },
+            openUrl = mediaUrl,
+            pathOrUrl = mediaTypePath,
+            fileName = null
         )
     }
 
     return fromAttachments + fromEmbeds
 }
+
+private fun String.toMediaTypePath(): String = substringBefore('#').substringBefore('?')
 
 internal fun buildThumbnailUrl(path: String, fallbackBaseUrl: String): String {
     val base = fallbackBaseUrl.trim().trimEnd('/')

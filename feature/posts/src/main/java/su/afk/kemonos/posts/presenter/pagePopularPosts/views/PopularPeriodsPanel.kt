@@ -195,7 +195,7 @@ internal fun PeriodArrowButton(
         enabled = enabled,
         modifier = modifier
             .height(36.dp)
-            .width(52.dp),
+            .width(64.dp),
         shape = RoundedCornerShape(10.dp)
     ) {
         Icon(

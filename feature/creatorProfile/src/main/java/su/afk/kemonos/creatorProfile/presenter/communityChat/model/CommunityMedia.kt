@@ -4,4 +4,5 @@ internal data class CommunityMedia(
     val previewUrl: String,
     val openUrl: String,
     val pathOrUrl: String,
+    val fileName: String? = null,
 )

@@ -92,6 +92,10 @@
     <string name="profile_faq_q4_body">Please open an issue and include an example link. This helps reproduce the
         mismatch and fix it faster.
     </string>
+    <string name="profile_faq_q5_title">I get a 500 error. Is it my fault?</string>
+    <string name="profile_faq_q5_body">No. HTTP 500 means an internal server error. Usually this is a temporary
+        server-side issue, so try again later.
+    </string>
 
     <!-- LogoutDialog -->
     <string name="logout_title">Log out of %1$s?</string>

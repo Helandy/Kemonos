@@ -11,6 +11,7 @@ data class CommunityMessage(
     val text: String?,
     val userName: String?,
     val userRole: String?,
+    val userAvatarUrl: String? = null,
     val attachments: List<CommunityAttachment> = emptyList(),
     val embeds: List<CommunityEmbed> = emptyList(),
     val replies: List<CommunityMessage> = emptyList()

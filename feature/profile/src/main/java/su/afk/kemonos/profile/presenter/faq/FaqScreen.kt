@@ -5,10 +5,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.HelpOutline
-import androidx.compose.material.icons.outlined.BugReport
-import androidx.compose.material.icons.outlined.Download
-import androidx.compose.material.icons.outlined.Headset
-import androidx.compose.material.icons.outlined.PlayCircleOutline
+import androidx.compose.material.icons.outlined.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -101,6 +98,11 @@ internal fun FaqScreen(
                 icon = Icons.Outlined.BugReport,
                 title = stringResource(R.string.profile_faq_q4_title),
                 body = stringResource(R.string.profile_faq_q4_body),
+            )
+            FaqItemCard(
+                icon = Icons.Outlined.ErrorOutline,
+                title = stringResource(R.string.profile_faq_q5_title),
+                body = stringResource(R.string.profile_faq_q5_body),
             )
             Spacer(modifier = Modifier.height(8.dp))
         }

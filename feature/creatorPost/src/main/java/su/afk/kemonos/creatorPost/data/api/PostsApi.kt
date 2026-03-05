@@ -4,6 +4,8 @@ import retrofit2.Response
 import retrofit2.http.GET
 import retrofit2.http.Path
 import su.afk.kemonos.creatorPost.data.dto.comments.ProfilePostCommentsDto
+import su.afk.kemonos.creatorPost.data.dto.discord.DiscordChannelMessageDto
+import su.afk.kemonos.creatorPost.data.dto.discord.DiscordServerResponseDto
 import su.afk.kemonos.creatorPost.data.dto.profilePost.PostResponseDto
 import su.afk.kemonos.network.textInterceptor.HeaderText
 
@@ -26,4 +28,16 @@ internal interface PostsApi {
         @Path("id") id: String,
         @Path("postId") postId: String,
     ): Response<PostResponseDto>
+
+    @HeaderText
+    @GET("v1/discord/server/{serverId}")
+    suspend fun getDiscordServer(
+        @Path("serverId") serverId: String,
+    ): Response<DiscordServerResponseDto>
+
+    @HeaderText
+    @GET("v1/discord/channel/{channelId}")
+    suspend fun getDiscordChannelMessages(
+        @Path("channelId") channelId: String,
+    ): Response<List<DiscordChannelMessageDto>>
 }

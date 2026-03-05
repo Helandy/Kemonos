@@ -207,7 +207,7 @@ fun DefaultEmptyContent() {
 fun EmptyContentCenter() {
     Box(
         modifier = Modifier
-            .fillMaxSize().padding(bottom = 16.dp),
+            .fillMaxSize().padding(bottom = 12.dp),
         contentAlignment = Alignment.Center
     ) {
         Column(

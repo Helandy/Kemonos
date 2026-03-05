@@ -102,6 +102,21 @@ internal fun SettingDatabaseScreen(
             )
 
             CacheRow(
+                title = stringResource(R.string.settings_cache_community),
+                time = state.communityCache,
+                dateFormatMode = state.uiSettingModel.dateFormatMode,
+                onClear = { onEvent(Event.CacheClearAction.Community) },
+                busy = state.clearInProgress
+            )
+            CacheRow(
+                title = stringResource(R.string.settings_cache_discord),
+                time = state.discordCache,
+                dateFormatMode = state.uiSettingModel.dateFormatMode,
+                onClear = { onEvent(Event.CacheClearAction.Discord) },
+                busy = state.clearInProgress
+            )
+
+            CacheRow(
                 title = stringResource(R.string.settings_cache_profiles),
                 time = state.creatorProfilesCache,
                 dateFormatMode = state.uiSettingModel.dateFormatMode,

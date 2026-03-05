@@ -13,5 +13,6 @@ data class CommunityChannel(
     val emoji: String?,
     val addedAt: String?,
     val messagesRefreshedAt: String?,
-    val messagesFullRefreshedAt: String?
+    val messagesFullRefreshedAt: String?,
+    val postCount: Int? = null,
 )
