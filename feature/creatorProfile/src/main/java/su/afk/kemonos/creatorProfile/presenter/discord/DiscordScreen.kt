@@ -119,9 +119,7 @@ internal fun DiscordScreen(
                 onOpenChannel = { channel ->
                     onEvent(Event.OpenChannel(channel.channelId))
                 },
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(bottom = 12.dp)
+                modifier = Modifier.fillMaxSize()
             )
         }
     }

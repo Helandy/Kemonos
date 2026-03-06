@@ -1,9 +1,6 @@
 package su.afk.kemonos.creatorProfile.presenter.creatorProfile.view
 
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Card
@@ -39,7 +36,7 @@ internal fun CommunityScreen(
                     text = channel.name,
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.SemiBold,
-                    modifier = Modifier.padding(start = 12.dp, top = 12.dp)
+                    modifier = Modifier.padding(12.dp)
                 )
 
                 channel.messagesRefreshedAt
@@ -56,6 +53,10 @@ internal fun CommunityScreen(
                         )
                     }
             }
+        }
+
+        item {
+            Spacer(Modifier.height(16.dp))
         }
     }
 }
