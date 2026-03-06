@@ -231,7 +231,7 @@ data class UiSettingModel(
         const val DEFAULT_COIL_CACHE_SIZE = 300
         const val DEFAULT_VIDEO_PREVIEW_SIZE = 150
         const val DEFAULT_SHOW_VIDEO_PREVIEW = true
-        const val DEFAULT_AUTOPLAY_COMMUNITY_VIDEO = false
+        const val DEFAULT_AUTOPLAY_COMMUNITY_VIDEO = true
         const val DEFAULT_DISCORD_COMMUNITY_REVERSE_ORDER_DEFAULT = true
         const val DEFAULT_BLUR_PICTURE = false
         const val DEFAULT_SHOW_IMAGE_PREVIEW_DOWNLOAD_ACTION = true
