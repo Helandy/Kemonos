@@ -4,7 +4,7 @@ import androidx.paging.PagingSource
 import androidx.paging.PagingState
 import su.afk.kemonos.domain.SelectedSite
 import su.afk.kemonos.domain.models.PostDomain
-import su.afk.kemonos.profile.data.IFavoritesRepository
+import su.afk.kemonos.profile.domain.favorites.IFavoritesRepository
 
 internal class FavoritePostsPagingSource(
     private val repository: IFavoritesRepository,

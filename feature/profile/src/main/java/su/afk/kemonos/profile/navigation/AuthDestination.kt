@@ -16,4 +16,6 @@ internal object AuthDestination {
     object AuthorsBlacklist : NavKey
 
     object Faq : NavKey
+
+    object ImportResult : NavKey
 }

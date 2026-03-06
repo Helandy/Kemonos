@@ -187,7 +187,7 @@ fun DefaultEmptyContent() {
         ) {
             Text(
                 text = stringResource(R.string.empty_screen),
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp),
                 textAlign = TextAlign.Center,
                 style = MaterialTheme.typography.headlineSmall,
                 color = MaterialTheme.colorScheme.onBackground
@@ -215,7 +215,7 @@ fun EmptyContentCenter() {
         ) {
             Text(
                 text = stringResource(R.string.empty_screen),
-                modifier = Modifier.fillMaxWidth().padding(bottom = 24.dp),
+                modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp),
                 textAlign = TextAlign.Center,
                 style = MaterialTheme.typography.headlineSmall,
                 color = MaterialTheme.colorScheme.onBackground

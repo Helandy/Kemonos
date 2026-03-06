@@ -7,7 +7,7 @@ import kotlinx.coroutines.flow.Flow
 import su.afk.kemonos.domain.SelectedSite
 import su.afk.kemonos.domain.models.creator.FavoriteArtist
 import su.afk.kemonos.profile.api.domain.favoriteProfiles.FavoriteSortedType
-import su.afk.kemonos.profile.data.IFavoritesRepository
+import su.afk.kemonos.profile.domain.favorites.IFavoritesRepository
 import javax.inject.Inject
 
 internal class GetFavoriteArtistsPagingUseCase @Inject constructor(

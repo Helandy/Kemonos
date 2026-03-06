@@ -23,10 +23,7 @@ internal fun favoriteProfilesSortOptions(): List<SortOption<FavoriteSortedType>>
     ),
 )
 
-internal fun FavoriteArtist.uiDateBySort(sortedType: FavoriteSortedType): String? {
-    return when (sortedType) {
-        FavoriteSortedType.NewPostsDate -> updated
-        FavoriteSortedType.ReimportDate -> lastImported
-        FavoriteSortedType.FavedDate -> null
-    }
+@Suppress("UNUSED_PARAMETER")
+internal fun FavoriteArtist.uiDateBySort(sortedType: FavoriteSortedType): String {
+    return updated
 }

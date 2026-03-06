@@ -12,6 +12,7 @@ import su.afk.kemonos.profile.presenter.blacklist.AuthorsBlacklistNavigatorRegis
 import su.afk.kemonos.profile.presenter.faq.FaqNavigatorRegister
 import su.afk.kemonos.profile.presenter.favoritePosts.FavoritePostsNavigatorRegister
 import su.afk.kemonos.profile.presenter.favoriteProfiles.FavoriteProfilesRegister
+import su.afk.kemonos.profile.presenter.importResult.ImportResultNavigatorRegister
 import su.afk.kemonos.profile.presenter.login.LoginNavigatorRegister
 import su.afk.kemonos.profile.presenter.profile.ProfileNavigatorRegister
 import su.afk.kemonos.profile.presenter.register.RegisterNavigatorRegister
@@ -48,6 +49,10 @@ interface NavigationModule {
     @Binds
     @IntoSet
     fun bindFaqNavigator(impl: FaqNavigatorRegister): NavRegistrar
+
+    @Binds
+    @IntoSet
+    fun bindImportResultNavigator(impl: ImportResultNavigatorRegister): NavRegistrar
 
     @Binds
     @Singleton

@@ -18,6 +18,7 @@ fun CenterBackTopBar(
         title = {
             Text(
                 text = title,
+                maxLines = 2,
                 style = MaterialTheme.typography.titleLarge
             )
         },

@@ -9,40 +9,10 @@ import su.afk.kemonos.profile.api.domain.favoriteProfiles.FavoriteSortedType
 import su.afk.kemonos.profile.data.FavoritesRepository.Companion.MIN_POST_SEARCH_QUERY_LENGTH
 import su.afk.kemonos.profile.data.api.FavoritesApi
 import su.afk.kemonos.profile.data.dto.favorites.artist.FavoriteArtistDto.Companion.toDomain
+import su.afk.kemonos.profile.domain.favorites.IFavoritesRepository
 import su.afk.kemonos.storage.api.repository.favorites.artist.IStoreFavoriteArtistsRepository
 import su.afk.kemonos.storage.api.repository.favorites.post.IStoreFavoritePostsRepository
 import javax.inject.Inject
-
-internal interface IFavoritesRepository {
-    suspend fun pageFavoriteArtists(
-        site: SelectedSite,
-        service: String,
-        query: String,
-        sort: FavoriteSortedType,
-        ascending: Boolean,
-        limit: Int,
-        offset: Int,
-    ): List<FavoriteArtist>
-
-    suspend fun getDistinctServices(site: SelectedSite): List<String>
-
-    suspend fun pageFavoritePosts(
-        site: SelectedSite,
-        query: String?,
-        groupByAuthor: Boolean,
-        limit: Int,
-        offset: Int,
-    ): List<PostDomain>
-
-    suspend fun getFavoriteArtists(
-        site: SelectedSite,
-        getOldCache: Boolean,
-        forceRefresh: Boolean = false,
-    ): List<FavoriteArtist>
-
-    suspend fun getFavoritePosts(site: SelectedSite, refresh: Boolean): List<PostDomain>
-    suspend fun refreshFavoriteArtists(site: SelectedSite): List<FavoriteArtist>
-}
 
 internal class FavoritesRepository @Inject constructor(
     private val api: FavoritesApi,

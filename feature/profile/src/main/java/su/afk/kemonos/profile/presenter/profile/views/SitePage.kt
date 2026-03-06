@@ -21,8 +21,30 @@ internal fun SitePage(
     onLogoutClick: () -> Unit,
     onFavoriteProfiles: () -> Unit,
     onFavoritePosts: () -> Unit,
+    isExportInProgress: Boolean,
+    isImportInProgress: Boolean,
+    onExportFavoriteArtists: () -> Unit,
+    onExportFavoritePosts: () -> Unit,
+    onImportFavoriteArtists: () -> Unit,
+    onImportFavoritePosts: () -> Unit,
 ) {
     Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+        ExportFavoritesCard(
+            enabled = isLoggedIn,
+            blocked = isExportInProgress || isImportInProgress,
+            inProgress = isExportInProgress,
+            onExportArtists = onExportFavoriteArtists,
+            onExportPosts = onExportFavoritePosts,
+        )
+
+        ImportFavoritesCard(
+            enabled = isLoggedIn,
+            blocked = isExportInProgress || isImportInProgress,
+            inProgress = isImportInProgress,
+            onImportArtists = onImportFavoriteArtists,
+            onImportPosts = onImportFavoritePosts,
+        )
+
         SiteAccountCard(
             dateMode = dateMode,
             title = title,

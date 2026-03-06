@@ -46,6 +46,30 @@
     <string name="profile_menu_keys">Keys</string>
     <string name="profile_menu_review_dms">Review DMs</string>
     <string name="profile_menu_export_favorites">Export favorites</string>
+    <string name="profile_menu_import_favorites">Import favorites</string>
+    <string name="profile_export_authors">Authors</string>
+    <string name="profile_export_posts">Posts</string>
+    <string name="profile_export_close">Close</string>
+    <string name="profile_export_prepare_failed">Failed to prepare export.</string>
+    <string name="profile_export_no_pending_data">No export data prepared.</string>
+    <string name="profile_export_cancelled">Folder selection cancelled.</string>
+    <string name="profile_export_save_failed">Failed to save export file.</string>
+    <string name="profile_export_saved">Saved: %1$s</string>
+    <string name="profile_import_no_pending_request">No import request prepared.</string>
+    <string name="profile_import_cancelled">File selection cancelled.</string>
+    <string name="profile_import_failed">Failed to import favorites file.</string>
+    <string name="profile_import_result_summary">Import result: %1$d/%2$d added, failed %3$d, skipped %4$d.</string>
+    <string name="profile_import_result_default_title">Import result</string>
+    <string name="profile_import_result_title_with_context">Import result: %1$s / %2$s</string>
+    <string name="profile_import_result_empty">No import rows to display.</string>
+    <string name="profile_import_result_unknown_target">Unknown target</string>
+    <string name="profile_import_result_status_success">Success</string>
+    <string name="profile_import_result_status_failed">Failed</string>
+    <string name="profile_import_result_status_skipped">Skipped</string>
+    <string name="profile_import_reason_none">Added successfully</string>
+    <string name="profile_import_reason_invalid_item">Invalid row format</string>
+    <string name="profile_import_reason_duplicate">Duplicate row in file</string>
+    <string name="profile_import_reason_request_failed">Request failed</string>
     <string name="profile_menu_change_username">Change username</string>
     <string name="profile_menu_change_password">Change password</string>
     <string name="profile_downloads">Downloads</string>
@@ -56,6 +80,16 @@
     <string name="profile_authors_blacklist_remove_title">Remove author?</string>
     <string name="profile_authors_blacklist_remove_message">Remove %1$s from blacklist?</string>
     <string name="profile_authors_blacklist_remove_confirm">Remove</string>
+    <string name="profile_blacklist_export_action">Export</string>
+    <string name="profile_blacklist_import_action">Import</string>
+    <string name="profile_blacklist_export_cancelled">Folder selection cancelled.</string>
+    <string name="profile_blacklist_export_failed">Failed to export blacklist file.</string>
+    <string name="profile_blacklist_export_saved">Saved: %1$s</string>
+    <string name="profile_blacklist_import_cancelled">File selection cancelled.</string>
+    <string name="profile_blacklist_import_failed">Failed to import blacklist file.</string>
+    <string name="profile_blacklist_import_title">Blacklist import result</string>
+    <string name="profile_blacklist_import_result_summary">Import result: %1$d/%2$d added, failed %3$d, skipped %4$d.
+    </string>
 
     <string name="profile_error_not_authorized">You are not authorized</string>
     <string name="profile_not_logged_in_message">
