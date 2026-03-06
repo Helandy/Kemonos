@@ -140,6 +140,10 @@
     <!-- Main screen / API check -->
     <string name="main_checking_api">Checking API availability…</string>
     <string name="main_checking_api_success">Success! Navigating…</string>
+    <string name="main_rate_banner_title">Like Kemonos?</string>
+    <string name="main_rate_banner_subtitle">If you enjoy the app, please rate it on GitHub.</string>
+    <string name="main_rate_banner_rate">Rate</string>
+    <string name="main_rate_banner_never_show">Don\'t show again</string>
 
     <string name="main_api_unavailable_title">API is unavailable</string>
     <string name="main_api_error_code">Code: %1$d</string>

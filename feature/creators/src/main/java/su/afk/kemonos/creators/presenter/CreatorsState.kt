@@ -38,6 +38,7 @@ internal class CreatorsState {
 
         /** Скрыть рандомных авторов */
         val randomExpanded: Boolean = true,
+        val showGithubRateBanner: Boolean = false,
 
         val selectedSite: SelectedSite = SelectedSite.K,
         val uiSettingModel: UiSettingModel = UiSettingModel(),
@@ -54,9 +55,12 @@ internal class CreatorsState {
         data object SwitchSiteClicked : Event
 
         data object HeaderRandomExpanded : Event
+        data object GithubRateClick : Event
+        data object HideGithubRateBanner : Event
     }
 
     sealed interface Effect : UiEffect {
         data object ScrollToTop : Effect
+        data class OpenUrl(val url: String) : Effect
     }
 }

@@ -23,6 +23,7 @@ import su.afk.kemonos.error.error.storage.RetryStorage
 import su.afk.kemonos.navigation.NavigationManager
 import su.afk.kemonos.preferences.site.ISelectedSiteUseCase
 import su.afk.kemonos.preferences.ui.IUiSettingUseCase
+import su.afk.kemonos.preferences.ui.UiSettingModel
 import su.afk.kemonos.ui.presenter.changeSite.SiteAwareBaseViewModelNew
 import javax.inject.Inject
 
@@ -108,7 +109,26 @@ internal class CreatorsViewModel @Inject constructor(
     /** UI настройки */
     private fun observeUiSetting() {
         uiSetting.prefs.distinctUntilChanged().onEach { model ->
-            setState { copy(uiSettingModel = model) }
+            if (model.creatorsGithubRateBannerInstallTsMs == 0L) {
+                val now = System.currentTimeMillis()
+                uiSetting.setCreatorsGithubRateBannerInstallTsMs(now)
+
+                val modelWithInstallTs = model.copy(creatorsGithubRateBannerInstallTsMs = now)
+                setState {
+                    copy(
+                        uiSettingModel = modelWithInstallTs,
+                        showGithubRateBanner = shouldShowGithubRateBanner(modelWithInstallTs),
+                    )
+                }
+                return@onEach
+            }
+
+            setState {
+                copy(
+                    uiSettingModel = model,
+                    showGithubRateBanner = shouldShowGithubRateBanner(model),
+                )
+            }
         }.launchIn(viewModelScope)
     }
 
@@ -190,6 +210,8 @@ internal class CreatorsViewModel @Inject constructor(
             Event.RandomClicked -> randomCreator()
             Event.SwitchSiteClicked -> switchSite()
             Event.HeaderRandomExpanded -> setState { copy(randomExpanded = !randomExpanded) }
+            Event.GithubRateClick -> onGithubRateClick()
+            Event.HideGithubRateBanner -> onHideGithubRateBanner()
         }
     }
 
@@ -231,5 +253,26 @@ internal class CreatorsViewModel @Inject constructor(
         } finally {
             setState { copy(randomExpanded = false) }
         }
+    }
+
+    private fun onGithubRateClick() {
+        setEffect(Effect.OpenUrl(GITHUB_PROJECT_URL))
+    }
+
+    private fun onHideGithubRateBanner() = viewModelScope.launch {
+        uiSetting.setCreatorsGithubRateBannerDisabled(true)
+        setState { copy(showGithubRateBanner = false) }
+    }
+
+    private fun shouldShowGithubRateBanner(model: UiSettingModel): Boolean {
+        if (model.creatorsGithubRateBannerDisabled) return false
+
+        val now = System.currentTimeMillis()
+        return (now - model.creatorsGithubRateBannerInstallTsMs) >= GITHUB_RATE_BANNER_DELAY_MS
+    }
+
+    private companion object {
+        const val GITHUB_RATE_BANNER_DELAY_MS = 7L * 24L * 60L * 60L * 1000L
+        const val GITHUB_PROJECT_URL = "https://github.com/Helandy/Kemonos"
     }
 }

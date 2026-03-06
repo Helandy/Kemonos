@@ -77,6 +77,7 @@ internal class AuthorsBlacklistViewModel @Inject constructor(
         }
     }
 
+    /** Наблюдает за локальным blacklist в Room и обновляет список на экране. */
     private fun observeBlacklist() {
         blacklistedAuthorsRepository.observeAll()
             .onEach { items ->
@@ -89,6 +90,7 @@ internal class AuthorsBlacklistViewModel @Inject constructor(
             .launchIn(viewModelScope)
     }
 
+    /** Синхронизирует UI-настройки между экраном и хранилищем prefs. */
     private fun observeUiSetting() {
         uiSetting.prefs.distinctUntilChanged()
             .onEach { model ->
@@ -97,16 +99,19 @@ internal class AuthorsBlacklistViewModel @Inject constructor(
             .launchIn(viewModelScope)
     }
 
+    /** Удаляет автора из локального blacklist по service/id. */
     private fun removeAuthor(service: String, creatorId: String) = viewModelScope.launch {
         blacklistedAuthorsRepository.remove(service = service, creatorId = creatorId)
     }
 
+    /** Подтверждает удаление автора из диалога и очищает pending-состояние. */
     private fun confirmRemoveAuthor() = viewModelScope.launch {
         val pending = currentState.pendingRemoveAuthor ?: return@launch
         removeAuthor(service = pending.service, creatorId = pending.creatorId)
         setState { copy(pendingRemoveAuthor = null) }
     }
 
+    /** Перед открытием профиля переключает активный сайт в соответствии с service автора. */
     private fun openProfile(service: String, creatorId: String) = viewModelScope.launch {
         val targetSite = domainResolver.selectedSiteByService(service)
         selectedSiteUseCase.setSiteAndAwait(targetSite)
@@ -119,11 +124,13 @@ internal class AuthorsBlacklistViewModel @Inject constructor(
         )
     }
 
+    /** Стартует workflow экспорта: открывает системный выбор папки. */
     private fun onExportBlacklist() {
         if (currentState.isImportExportInProgress) return
         setEffect(Effect.OpenExportFolderPicker)
     }
 
+    /** Экспортирует текущий blacklist в JSON-файл в выбранную папку. */
     private fun onSaveExportToFolder(folderUri: Uri?) = viewModelScope.launch {
         if (folderUri == null) {
             setEffect(Effect.ShowMessage(appContext.getString(R.string.profile_blacklist_export_cancelled)))
@@ -162,11 +169,13 @@ internal class AuthorsBlacklistViewModel @Inject constructor(
         }
     }
 
+    /** Стартует workflow импорта: открывает системный выбор JSON-файла. */
     private fun onImportBlacklist() {
         if (currentState.isImportExportInProgress) return
         setEffect(Effect.OpenImportFilePicker)
     }
 
+    /** Импортирует blacklist из JSON и навигирует на экран детального результата. */
     private fun onImportBlacklistFromFile(fileUri: Uri?) = viewModelScope.launch {
         if (fileUri == null) {
             setEffect(Effect.ShowMessage(appContext.getString(R.string.profile_blacklist_import_cancelled)))
@@ -238,11 +247,13 @@ internal class AuthorsBlacklistViewModel @Inject constructor(
         }
     }
 
+    /** Открывает экран результата импорта с сохраненным payload в navigation storage. */
     private fun navigateToImportResult(payload: ImportResultPayload) {
         navigationStorage.put(KEY_IMPORT_RESULT_PAYLOAD, payload)
         navManager.navigate(AuthDestination.ImportResult)
     }
 
+    /** Синхронизирует выбранный сайт приложения с service из импортируемых/экспортируемых данных. */
     private suspend fun syncSelectedSiteByService(service: String) {
         val targetSite = domainResolver.selectedSiteByService(service)
         selectedSiteUseCase.setSiteAndAwait(targetSite)

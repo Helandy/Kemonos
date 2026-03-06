@@ -138,6 +138,10 @@
     <!-- Главный экран / проверка API -->
     <string name="main_checking_api">Проверяем доступность API…</string>
     <string name="main_checking_api_success">Успешно! Переходим…</string>
+    <string name="main_rate_banner_title">Нравится Kemonos?</string>
+    <string name="main_rate_banner_subtitle">Если приложение вам понравилось, оцените его на GitHub.</string>
+    <string name="main_rate_banner_rate">Оценить</string>
+    <string name="main_rate_banner_never_show">Больше не показывать</string>
 
     <string name="main_api_unavailable_title">API недоступно</string>
     <string name="main_api_error_code">Код: %1$d</string>
