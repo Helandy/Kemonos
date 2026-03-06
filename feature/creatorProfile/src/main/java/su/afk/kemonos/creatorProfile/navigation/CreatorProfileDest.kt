@@ -18,6 +18,7 @@ object CreatorDestination {
         val service: String,
         val creatorId: String,
         val channelId: String,
-        val channelName: String
+        val channelName: String,
+        val channelPostCount: Int? = null,
     ) : NavKey
 }

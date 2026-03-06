@@ -37,6 +37,8 @@
     <string name="settings_cache_fav_posts_kemono">Favorite posts</string>
     <string name="settings_cache_fav_authors_kemono">Favorite creators</string>
 
+    <string name="settings_cache_community">Community</string>
+    <string name="settings_cache_discord">Discord</string>
     <string name="settings_cache_profiles">Creator profiles</string>
     <string name="settings_github_ideas">Bugs/Ideas/Suggestions — please leave them on GitHub</string>
 
@@ -126,16 +128,20 @@
     <string name="settings_posts_appearance_title">Posts</string>
 
     <string name="settings_posts_size_title">Grid post size</string>
-    <string name="settings_posts_size_profile_title">Grid size: profile posts</string>
-    <string name="settings_posts_size_favorite_title">Grid size: favorite posts</string>
-    <string name="settings_posts_size_popular_title">Grid size: popular posts</string>
-    <string name="settings_posts_size_tags_title">Grid size: tags posts</string>
-    <string name="settings_posts_size_search_title">Grid size: search posts</string>
+    <string name="settings_posts_size_profile_title">Profile posts: grid size</string>
+    <string name="settings_posts_size_favorite_title">Favorite posts: grid size</string>
+    <string name="settings_posts_size_popular_title">Popular posts: grid size</string>
+    <string name="settings_posts_size_tags_title">Tags posts: grid size</string>
+    <string name="settings_posts_size_search_title">Search posts: grid size</string>
     <string name="settings_posts_size_small">S</string>
     <string name="settings_posts_size_medium">M</string>
     <string name="settings_posts_size_large">L</string>
 
     <string name="settings_show_preview_video_title">Show video previews</string>
+    <string name="settings_autoplay_community_video_title">Autoplay videos in Community/Discord</string>
+    <string name="settings_autoplay_community_video_subtitle">Load and play videos inline without tap</string>
+    <string name="settings_discord_reverse_default_title">Discord: reverse order by default</string>
+    <string name="settings_discord_reverse_default_subtitle">Enable to open chats with newest messages first</string>
     <string name="settings_blur_images_title">Blur images</string>
     <string name="settings_blur_images_substring" translatable="false">Android >12</string>
     <string name="settings_show_image_preview_download_action_title">Show download on image previews</string>

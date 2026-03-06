@@ -37,6 +37,8 @@
     <string name="settings_cache_fav_posts_kemono">Избранные посты</string>
     <string name="settings_cache_fav_authors_kemono">Избранные авторы</string>
 
+    <string name="settings_cache_community">Комьюнити</string>
+    <string name="settings_cache_discord">Discord</string>
     <string name="settings_cache_profiles">Профили авторов</string>
     <string name="settings_github_ideas">Ошибки/Идеи/Предложения — оставляйте на GitHub</string>
 
@@ -126,16 +128,22 @@
     <string name="settings_posts_appearance_title">Посты</string>
 
     <string name="settings_posts_size_title">Размер постов в сетке</string>
-    <string name="settings_posts_size_profile_title">Размер сетки: посты профиля</string>
-    <string name="settings_posts_size_favorite_title">Размер сетки: избранные посты</string>
-    <string name="settings_posts_size_popular_title">Размер сетки: популярные посты</string>
-    <string name="settings_posts_size_tags_title">Размер сетки: посты тегов</string>
-    <string name="settings_posts_size_search_title">Размер сетки: посты поиска</string>
+    <string name="settings_posts_size_profile_title">Посты профиля: размер сетки</string>
+    <string name="settings_posts_size_favorite_title">Избранные посты: размер сетки</string>
+    <string name="settings_posts_size_popular_title">Популярные посты: размер сетки</string>
+    <string name="settings_posts_size_tags_title">Посты тегов: размер сетки</string>
+    <string name="settings_posts_size_search_title">Посты поиска: размер сетки</string>
     <string name="settings_posts_size_small">S</string>
     <string name="settings_posts_size_medium">M</string>
     <string name="settings_posts_size_large">L</string>
 
     <string name="settings_show_preview_video_title">Показывать превью видео</string>
+    <string name="settings_autoplay_community_video_title">Автовоспроизведение видео в Комьюнити/Discord</string>
+    <string name="settings_autoplay_community_video_subtitle">Загружать и воспроизводить видео в ленте без нажатия
+    </string>
+    <string name="settings_discord_reverse_default_title">Discord: обратный порядок по умолчанию</string>
+    <string name="settings_discord_reverse_default_subtitle">При включении чат открывается с новыми сообщениями сверху
+    </string>
     <string name="settings_blur_images_title">Размывать изображения</string>
     <string name="settings_show_image_preview_download_action_title">Показывать скачивание на превью изображений
     </string>

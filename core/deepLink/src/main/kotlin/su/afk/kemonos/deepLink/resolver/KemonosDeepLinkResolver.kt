@@ -21,6 +21,29 @@ internal class KemonosDeepLinkResolver @Inject constructor(
         val s = uri.pathSegments
         if (s.isEmpty()) return null
 
+        // Discord:
+        // 1) /discord/server/{serverId}
+        // 2) /discord/server/{serverId}/{channelId}
+        if (s.getOrNull(0) == "discord" && s.getOrNull(1) == "server") {
+            val serverId = s.getOrNull(2)
+            val channelId = s.getOrNull(3)
+            if (serverId.isNullOrBlank()) return null
+
+            if (!channelId.isNullOrBlank()) {
+                return creatorProfileNavigator.getCommunityChatDest(
+                    service = "discord",
+                    creatorId = serverId,
+                    channelId = channelId,
+                    channelName = channelId,
+                )
+            }
+
+            return creatorProfileNavigator.getCreatorProfileDest(
+                service = "discord",
+                id = serverId,
+            )
+        }
+
         // Форматы:
         // 1) /{service}/user/{id}
         // 2) /{service}/user/{id}/post/{postId}

@@ -60,7 +60,11 @@ internal data class CommunityMessageDto(
         @SerializedName("name")
         val name: String? = null,
         @SerializedName("role")
-        val role: String? = null
+        val role: String? = null,
+        @SerializedName("avatar_url")
+        val avatarUrl: String? = null,
+        @SerializedName("avatar")
+        val avatar: String? = null,
     )
 
     companion object {
@@ -72,6 +76,7 @@ internal data class CommunityMessageDto(
             text = originalJson?.text,
             userName = originalJson?.user?.name,
             userRole = originalJson?.user?.role,
+            userAvatarUrl = originalJson?.user?.avatarUrl ?: originalJson?.user?.avatar,
             attachments = attachments.orEmpty().filterNotNull().map {
                 CommunityAttachment(
                     name = it.name,

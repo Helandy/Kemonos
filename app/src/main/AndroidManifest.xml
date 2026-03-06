@@ -53,6 +53,7 @@
                 <data android:pathPrefix="/onlyfans/user/"/>
                 <data android:pathPrefix="/fansly/user/"/>
                 <data android:pathPrefix="/candfans/user/"/>
+                <data android:pathPrefix="/discord/server/"/>
             </intent-filter>
         </activity>
 

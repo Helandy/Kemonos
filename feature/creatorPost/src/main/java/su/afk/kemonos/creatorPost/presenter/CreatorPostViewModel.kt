@@ -60,8 +60,10 @@ internal class CreatorPostViewModel @AssistedInject constructor(
         fun create(dest: CreatorPostDestination.CreatorPost): CreatorPostViewModel
     }
 
+    /** Начальное состояние экрана поста */
     override fun createInitialState(): State = State.default()
 
+    /** Повторная загрузка после ошибки */
     override fun onRetry() {
         loadingPost()
     }
@@ -90,6 +92,7 @@ internal class CreatorPostViewModel @AssistedInject constructor(
         loadingPost()
     }
 
+    /** Обработка пользовательских событий экрана */
     override fun onEvent(event: Event) {
         when (event) {
             Event.Retry -> loadingPost()
@@ -139,6 +142,7 @@ internal class CreatorPostViewModel @AssistedInject constructor(
         }
     }
 
+    /** Полная загрузка поста/комментариев/профиля и применение в state */
     fun loadingPost() {
         loadingJob?.cancel()
         val request = createLoadRequest()
@@ -172,6 +176,7 @@ internal class CreatorPostViewModel @AssistedInject constructor(
         }
     }
 
+    /** Переключение версии поста (revision) без полной перезагрузки */
     private fun onSelectRevision(revisionId: Int?) {
         val sourcePost = currentState.sourcePost ?: return
         if (currentState.selectedRevisionId == revisionId) return
@@ -197,6 +202,7 @@ internal class CreatorPostViewModel @AssistedInject constructor(
         }
     }
 
+    /** Снимок параметров текущего запроса загрузки */
     private fun createLoadRequest(): LoadRequest {
         return LoadRequest(
             requestId = ++loadingRequestId,
@@ -207,10 +213,12 @@ internal class CreatorPostViewModel @AssistedInject constructor(
         )
     }
 
+    /** Проверка, что ответ относится к последнему активному запросу */
     private fun isLatestRequest(request: LoadRequest): Boolean {
         return request.requestId == loadingRequestId
     }
 
+    /** Обновляет состояние избранного и видимость кнопки лайка */
     private suspend fun applyFavoriteState(request: LoadRequest) {
         val isShowAvailable = likeDelegate.postIsAvailableLike()
         if (!isLatestRequest(request)) return
@@ -240,6 +248,7 @@ internal class CreatorPostViewModel @AssistedInject constructor(
         timeoutMs = 15_000L
     )
 
+    /** Запрашивает мета-информацию видео и превью-кадр */
     private fun requestVideoMeta(server: String, path: String) {
         val url = buildFileUrl(server, path)
         val needInfo = currentState.videoInfo[url] !is MediaInfoState.Success
@@ -277,6 +286,7 @@ internal class CreatorPostViewModel @AssistedInject constructor(
         )
     }
 
+    /** Запрашивает мета-информацию аудио */
     private fun requestAudioMeta(url: String) {
         val needInfo = currentState.audioInfo[url] !is MediaInfoState.Success
         if (!needInfo) return
@@ -327,6 +337,7 @@ internal class CreatorPostViewModel @AssistedInject constructor(
         }
     }
 
+    /** Навигация на профиль автора с учетом выбранного тега */
     private fun navigateToCreatorProfileByTag(tag: String) {
         if (tag.isBlank()) return
 
@@ -339,6 +350,7 @@ internal class CreatorPostViewModel @AssistedInject constructor(
         }
     }
 
+    /** Открывает экран изображения и собирает галерею для свайпа */
     fun navigateOpenImage(originalUrl: String) {
         val imageUrls = collectImageGalleryUrls(selectedUrl = originalUrl)
         val selectedIndex = imageUrls.indexOf(originalUrl).takeIf { it >= 0 }
@@ -367,12 +379,14 @@ internal class CreatorPostViewModel @AssistedInject constructor(
         setEffect(Effect.CopyPostLink(url))
     }
 
+    /** Постановка одной загрузки в системный DownloadManager */
     fun download(url: String, fileName: String?) {
         viewModelScope.launch {
             enqueueDownload(url = url, fileName = fileName)
         }
     }
 
+    /** Массовая загрузка всех доступных вложений/медиа поста */
     private fun downloadAll() {
         val post = currentState.post ?: return
         val fallbackBaseUrl = domainResolver.baseUrlByService(currentState.service)
@@ -386,6 +400,7 @@ internal class CreatorPostViewModel @AssistedInject constructor(
         }
     }
 
+    /** Единая точка добавления файла в загрузку + тост-эффект */
     private suspend fun enqueueDownload(url: String, fileName: String?) {
         downloadUtil.enqueueSystemDownload(
             url = url,
@@ -398,6 +413,7 @@ internal class CreatorPostViewModel @AssistedInject constructor(
         setEffect(Effect.DownloadToast(fileName.orEmpty()))
     }
 
+    /** Переключение блока перевода и запуск перевода в выбранном режиме */
     fun onToggleTranslate() {
         val plainText = currentState.post?.post?.content?.preprocessForTranslation()
         if (plainText.isNullOrEmpty()) return
@@ -447,6 +463,7 @@ internal class CreatorPostViewModel @AssistedInject constructor(
         }
     }
 
+    /** Формирует список URL картинок для image-view галереи */
     private fun collectImageGalleryUrls(selectedUrl: String): List<String> {
         val contentImages = currentState.contentBlocks
             .orEmpty()
@@ -465,6 +482,7 @@ internal class CreatorPostViewModel @AssistedInject constructor(
         return if (selectedUrl in merged) merged else (listOf(selectedUrl) + merged).distinct()
     }
 
+    /** Строит полный URL для thumbnail-превью */
     private fun buildPreviewFullUrl(preview: PreviewDomain): String? {
         val server = preview.server ?: return null
         val path = preview.path ?: return null
@@ -474,6 +492,7 @@ internal class CreatorPostViewModel @AssistedInject constructor(
         return "$server/data$path?f=$encodedName"
     }
 
+    /** Сбрасывает state при переходе на соседний пост */
     private fun resetForNewPost(nextPostId: String) = setState {
         copy(
             postId = nextPostId,
@@ -502,6 +521,7 @@ internal class CreatorPostViewModel @AssistedInject constructor(
         )
     }
 
+    /** Начало шеринга: включаем прогресс-оверлей */
     private fun onShareStarted() = setState {
         if (shareInProgress) return@setState this
         copy(
@@ -511,6 +531,7 @@ internal class CreatorPostViewModel @AssistedInject constructor(
         )
     }
 
+    /** Обновление прогресса шеринга */
     private fun onShareProgress(bytesRead: Long, totalBytes: Long) = setState {
         if (!shareInProgress) return@setState this
         copy(
@@ -519,6 +540,7 @@ internal class CreatorPostViewModel @AssistedInject constructor(
         )
     }
 
+    /** Завершение шеринга: скрываем прогресс-оверлей */
     private fun onShareFinished() = setState {
         if (!shareInProgress) return@setState this
         copy(shareInProgress = false)

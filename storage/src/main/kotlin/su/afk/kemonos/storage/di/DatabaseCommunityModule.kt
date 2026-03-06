@@ -9,7 +9,9 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import su.afk.kemonos.storage.database.CommunityDatabase
 import su.afk.kemonos.storage.database.migrations.community.CommunityFrom1To2
+import su.afk.kemonos.storage.database.migrations.community.CommunityFrom2To3
 import su.afk.kemonos.storage.entity.communityCache.dao.CommunityCacheDao
+import su.afk.kemonos.storage.entity.communityCache.dao.DiscordCacheDao
 import javax.inject.Singleton
 
 @Module
@@ -20,9 +22,12 @@ internal object DatabaseCommunityModule {
     @Singleton
     fun provideCommunityDatabase(@ApplicationContext context: Context): CommunityDatabase =
         Room.databaseBuilder(context, CommunityDatabase::class.java, "community_db")
-            .addMigrations(CommunityFrom1To2)
+            .addMigrations(CommunityFrom1To2, CommunityFrom2To3)
             .build()
 
     @Provides
     fun provideCommunityCacheDao(db: CommunityDatabase): CommunityCacheDao = db.communityCacheDao()
+
+    @Provides
+    fun provideDiscordCacheDao(db: CommunityDatabase): DiscordCacheDao = db.discordCacheDao()
 }

@@ -51,7 +51,8 @@ internal class NavigationDelegate @Inject constructor(
                 service = service,
                 creatorId = creatorId,
                 channelId = channel.channelId,
-                channelName = channel.name
+                channelName = channel.name,
+                channelPostCount = channel.postCount,
             )
         )
     }

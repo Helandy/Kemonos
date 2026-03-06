@@ -1,5 +1,6 @@
 package su.afk.kemonos.creatorProfile.data.cache
 
+import kotlinx.serialization.Serializable
 import kotlinx.serialization.builtins.ListSerializer
 import kotlinx.serialization.json.Json
 import su.afk.kemonos.creatorProfile.api.domain.models.profileAnnouncements.ProfileAnnouncement
@@ -9,12 +10,20 @@ import su.afk.kemonos.creatorProfile.api.domain.models.profileDms.Dm
 import su.afk.kemonos.creatorProfile.api.domain.models.profileFanCards.ProfileFanCard
 import su.afk.kemonos.creatorProfile.api.domain.models.profileLinks.ProfileLink
 import su.afk.kemonos.creatorProfile.api.domain.models.profileSimilar.SimilarCreator
+import su.afk.kemonos.creatorProfile.domain.repository.DiscordCommunityChannels
 import su.afk.kemonos.domain.models.Tag
 import javax.inject.Inject
 
 class CreatorProfileCacheJson @Inject constructor(
     private val json: Json,
 ) {
+    @Serializable
+    private data class DiscordChannelsCachePayload(
+        val serverName: String? = null,
+        val updated: String? = null,
+        val channels: List<CommunityChannel> = emptyList()
+    )
+
     fun dmsToJson(items: List<Dm>): String =
         json.encodeToString(ListSerializer(Dm.serializer()), items)
 
@@ -62,4 +71,32 @@ class CreatorProfileCacheJson @Inject constructor(
 
     fun communityMessagesFromJson(raw: String): List<CommunityMessage> =
         json.decodeFromString(ListSerializer(CommunityMessage.serializer()), raw)
+
+    internal fun discordChannelsToJson(channels: DiscordCommunityChannels): String =
+        json.encodeToString(
+            DiscordChannelsCachePayload.serializer(),
+            DiscordChannelsCachePayload(
+                serverName = channels.serverName,
+                updated = channels.updated,
+                channels = channels.channels
+            )
+        )
+
+    internal fun discordChannelsFromJson(raw: String): DiscordCommunityChannels {
+        return runCatching {
+            json.decodeFromString(DiscordChannelsCachePayload.serializer(), raw)
+        }.map { payload ->
+            DiscordCommunityChannels(
+                serverName = payload.serverName,
+                updated = payload.updated,
+                channels = payload.channels
+            )
+        }.getOrElse {
+            DiscordCommunityChannels(
+                serverName = null,
+                updated = null,
+                channels = communityChannelsFromJson(raw)
+            )
+        }
+    }
 }

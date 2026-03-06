@@ -8,6 +8,7 @@ import su.afk.kemonos.storage.api.clear.IClearCacheStorageUseCase
 import su.afk.kemonos.storage.api.repository.comments.IStoreCommentsRepository
 import su.afk.kemonos.storage.api.repository.community.IStoreCommunityRepository
 import su.afk.kemonos.storage.api.repository.creatorProfile.IStoreCreatorProfileRepository
+import su.afk.kemonos.storage.api.repository.discord.IStoreDiscordRepository
 import su.afk.kemonos.storage.api.repository.dms.IStorageDmsRepository
 import su.afk.kemonos.storage.api.repository.download.ITrackedDownloadsRepository
 import su.afk.kemonos.storage.api.repository.favorites.updates.IFreshFavoriteArtistsUpdatesRepository
@@ -23,6 +24,7 @@ import javax.inject.Inject
 internal class ClearCacheStorageUseCase @Inject constructor(
     private val storeCommentsRepository: IStoreCommentsRepository,
     private val storeCommunityRepository: IStoreCommunityRepository,
+    private val storeDiscordRepository: IStoreDiscordRepository,
     private val storeCreatorProfileCacheRepository: IStoreCreatorProfileRepository,
     private val popularPostsCacheRepository: IStoragePopularPostsRepository,
     private val postStorageRepository: IStoragePostStorageRepository,
@@ -44,6 +46,8 @@ internal class ClearCacheStorageUseCase @Inject constructor(
             async { storeCreatorProfileCacheRepository.clearCacheOver7Days() },
             /** Чистка community (channels + messages) */
             async { storeCommunityRepository.clearCacheOver7Days() },
+            /** Чистка discord community (channels + messages) */
+            async { storeDiscordRepository.clearCacheOver7Days() },
             /** Чистка популярных постов */
             async {
                 popularPostsCacheRepository.clearCache(SelectedSite.K)

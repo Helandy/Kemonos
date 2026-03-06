@@ -95,6 +95,16 @@ internal fun previewSettingState(
             nextMs = PREVIEW_NOW_MS + 2 * DAY_IN_MS,
             isFresh = false,
         ),
+        communityCache = CacheTimeUi(
+            lastMs = PREVIEW_NOW_MS - 2 * DAY_IN_MS,
+            nextMs = PREVIEW_NOW_MS + 5 * DAY_IN_MS,
+            isFresh = true,
+        ),
+        discordCache = CacheTimeUi(
+            lastMs = PREVIEW_NOW_MS - 4 * DAY_IN_MS,
+            nextMs = PREVIEW_NOW_MS + 3 * DAY_IN_MS,
+            isFresh = true,
+        ),
         postContentsCache = CacheTimeUi(
             lastMs = PREVIEW_NOW_MS - 3 * DAY_IN_MS,
             nextMs = PREVIEW_NOW_MS + 4 * DAY_IN_MS,

@@ -92,6 +92,10 @@
     <string name="profile_faq_q4_body">Создайте issue и приложите пример ссылки. Так мы быстрее воспроизведем
         расхождение и исправим проблему.
     </string>
+    <string name="profile_faq_q5_title">Появляется ошибка 500. Это проблема у меня?</string>
+    <string name="profile_faq_q5_body">Нет. HTTP 500 означает внутреннюю ошибку сервера. Обычно это временная проблема
+        на стороне сервера, попробуйте позже.
+    </string>
 
     <!--  LogoutDialog  -->
     <string name="logout_title">Выйти из аккаунта %1$s?</string>

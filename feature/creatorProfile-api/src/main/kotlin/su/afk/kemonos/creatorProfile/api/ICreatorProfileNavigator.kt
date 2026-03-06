@@ -10,4 +10,11 @@ interface ICreatorProfileNavigator {
         id: String,
         tag: Tag? = null,
     ): NavKey
+
+    suspend fun getCommunityChatDest(
+        service: String,
+        creatorId: String,
+        channelId: String,
+        channelName: String = channelId,
+    ): NavKey
 }

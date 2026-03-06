@@ -108,6 +108,14 @@ class SettingUiPreferencesDelegate @Inject constructor(
             is SettingState.Event.ChangeViewSetting.ShowPreviewVideo ->
                 scope.launch { uiSetting.setShowPreviewVideo(event.value) }
 
+            /** Автовоспроизведение видео в Community/Discord */
+            is SettingState.Event.ChangeViewSetting.AutoplayCommunityVideo ->
+                scope.launch { uiSetting.setAutoplayCommunityVideo(event.value) }
+
+            /** Начальное состояние Reverse в Discord Community */
+            is SettingState.Event.ChangeViewSetting.DiscordCommunityReverseOrderDefault ->
+                scope.launch { uiSetting.setDiscordCommunityReverseOrderDefault(event.value) }
+
             /** Блюрить все картинки */
             is SettingState.Event.ChangeViewSetting.BlurImages ->
                 scope.launch { uiSetting.setBlurImages(event.value) }

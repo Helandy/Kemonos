@@ -5,8 +5,10 @@ import kotlinx.coroutines.launch
 import su.afk.kemonos.domain.SelectedSite
 import su.afk.kemonos.error.error.IErrorHandlerUseCase
 import su.afk.kemonos.setting.presenter.SettingState
+import su.afk.kemonos.storage.api.repository.community.IStoreCommunityRepository
 import su.afk.kemonos.storage.api.repository.creatorProfile.IStoreCreatorProfileRepository
 import su.afk.kemonos.storage.api.repository.creators.IStoreCreatorsRepository
+import su.afk.kemonos.storage.api.repository.discord.IStoreDiscordRepository
 import su.afk.kemonos.storage.api.repository.favorites.artist.IStoreFavoriteArtistsRepository
 import su.afk.kemonos.storage.api.repository.favorites.post.IStoreFavoritePostsRepository
 import su.afk.kemonos.storage.api.repository.popular.IStoragePopularPostsRepository
@@ -19,6 +21,8 @@ class SettingCacheDelegate @Inject constructor(
     private val errorHandler: IErrorHandlerUseCase,
     private val storeTagsUseCase: IStoreTagsRepository,
     private val storeCreatorsUseCase: IStoreCreatorsRepository,
+    private val storeCommunityRepository: IStoreCommunityRepository,
+    private val storeDiscordRepository: IStoreDiscordRepository,
     private val storeCreatorProfileCacheUseCase: IStoreCreatorProfileRepository,
     private val creatorPostsCacheUseCase: IStorageCreatorPostsRepository,
     private val storagePostUseCase: IStoragePostStorageRepository,
@@ -51,6 +55,8 @@ class SettingCacheDelegate @Inject constructor(
         when (action) {
             is SettingState.Event.CacheClearAction.Tags -> clearTags(action.site)
             is SettingState.Event.CacheClearAction.Creators -> clearCreators(action.site)
+            SettingState.Event.CacheClearAction.Community -> clearCommunity()
+            SettingState.Event.CacheClearAction.Discord -> clearDiscord()
 
             SettingState.Event.CacheClearAction.CreatorProfiles -> clearCreatorProfiles()
 
@@ -74,6 +80,14 @@ class SettingCacheDelegate @Inject constructor(
 
     private suspend fun clearCreatorProfiles() {
         storeCreatorProfileCacheUseCase.clearAll()
+    }
+
+    private suspend fun clearCommunity() {
+        storeCommunityRepository.clearAll()
+    }
+
+    private suspend fun clearDiscord() {
+        storeDiscordRepository.clearAll()
     }
 
     private suspend fun clearCreatorPostsPages() {

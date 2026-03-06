@@ -9,6 +9,7 @@ import su.afk.kemonos.storage.api.repository.comments.IStoreCommentsRepository
 import su.afk.kemonos.storage.api.repository.community.IStoreCommunityRepository
 import su.afk.kemonos.storage.api.repository.creatorProfile.IStoreCreatorProfileRepository
 import su.afk.kemonos.storage.api.repository.creators.IStoreCreatorsRepository
+import su.afk.kemonos.storage.api.repository.discord.IStoreDiscordRepository
 import su.afk.kemonos.storage.api.repository.dms.IStorageDmsRepository
 import su.afk.kemonos.storage.api.repository.download.ITrackedDownloadsRepository
 import su.afk.kemonos.storage.api.repository.favorites.artist.IStoreFavoriteArtistsRepository
@@ -26,6 +27,7 @@ import su.afk.kemonos.storage.repository.comments.StoreCommentsRepository
 import su.afk.kemonos.storage.repository.community.StoreCommunityRepository
 import su.afk.kemonos.storage.repository.creatorProfileCache.StoreCreatorProfileRepository
 import su.afk.kemonos.storage.repository.creators.StoreCreatorsRepository
+import su.afk.kemonos.storage.repository.discord.StoreDiscordRepository
 import su.afk.kemonos.storage.repository.dms.StorageDmsRepository
 import su.afk.kemonos.storage.repository.download.TrackedDownloadsRepository
 import su.afk.kemonos.storage.repository.favorites.artist.StoreFavoriteArtistsRepository
@@ -117,4 +119,8 @@ internal interface RepositoryModule {
     @Singleton
     @Binds
     fun bindStoreCommunityRepository(impl: StoreCommunityRepository): IStoreCommunityRepository
+
+    @Singleton
+    @Binds
+    fun bindStoreDiscordRepository(impl: StoreDiscordRepository): IStoreDiscordRepository
 }

@@ -27,6 +27,8 @@ class SettingState {
         /** cache */
         val tagsKemonoCache: CacheTimeUi = CacheTimeUi(null, null, false),
         val tagsCoomerCache: CacheTimeUi = CacheTimeUi(null, null, false),
+        val communityCache: CacheTimeUi = CacheTimeUi(null, null, false),
+        val discordCache: CacheTimeUi = CacheTimeUi(null, null, false),
 
         val creatorsKemonoCache: CacheTimeUi = CacheTimeUi(null, null, false),
         val creatorsCoomerCache: CacheTimeUi = CacheTimeUi(null, null, false),
@@ -84,6 +86,8 @@ class SettingState {
 
             data class EditPostsSize(val value: PostsSize) : ChangeViewSetting
             data class ShowPreviewVideo(val value: Boolean) : ChangeViewSetting
+            data class AutoplayCommunityVideo(val value: Boolean) : ChangeViewSetting
+            data class DiscordCommunityReverseOrderDefault(val value: Boolean) : ChangeViewSetting
             data class BlurImages(val value: Boolean) : ChangeViewSetting
             data class ShowImagePreviewDownloadAction(val value: Boolean) : ChangeViewSetting
             data class ShowImagePreviewShareAction(val value: Boolean) : ChangeViewSetting
@@ -103,6 +107,8 @@ class SettingState {
         }
 
         sealed interface CacheClearAction : Event {
+            object Community : CacheClearAction
+            object Discord : CacheClearAction
             object CreatorProfiles : CacheClearAction
             object CreatorPostsPages : CacheClearAction
             object PostContents : CacheClearAction

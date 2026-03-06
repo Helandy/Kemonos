@@ -11,6 +11,8 @@ import dagger.hilt.android.EntryPointAccessors
 import jakarta.inject.Inject
 import su.afk.kemonos.creatorProfile.di.CreatorProfileVmFactoryEntryPoint
 import su.afk.kemonos.creatorProfile.navigation.CreatorDestination
+import su.afk.kemonos.creatorProfile.presenter.discord.DiscordScreen
+import su.afk.kemonos.creatorProfile.presenter.discord.DiscordViewModel
 import su.afk.kemonos.navigation.NavRegistrar
 import su.afk.kemonos.navigation.NavigationManager
 import su.afk.kemonos.ui.presenter.baseViewModel.ScreenNavigator
@@ -31,23 +33,45 @@ private fun CreatorProfileEntry(dest: CreatorDestination.CreatorProfile) {
         appContext,
         CreatorProfileVmFactoryEntryPoint::class.java
     )
-    val assistedFactory = entryPoint.creatorProfileVmFactory()
+    if (dest.service.equals("discord", ignoreCase = true)) {
+        val assistedFactory = entryPoint.discordVmFactory()
 
-    val viewModel: CreatorProfileViewModel = viewModel(
-        key = "CreatorProfile:$dest",
-        factory = object : ViewModelProvider.Factory {
-            @Suppress("UNCHECKED_CAST")
-            override fun <T : ViewModel> create(modelClass: Class<T>): T {
-                return assistedFactory.create(dest) as T
+        val viewModel: DiscordViewModel = viewModel(
+            key = "CreatorDiscord:$dest",
+            factory = object : ViewModelProvider.Factory {
+                @Suppress("UNCHECKED_CAST")
+                override fun <T : ViewModel> create(modelClass: Class<T>): T {
+                    return assistedFactory.create(dest) as T
+                }
             }
-        }
-    )
-
-    ScreenNavigator(viewModel) { state, effect, event ->
-        CreatorScreen(
-            state = state,
-            onEvent = event,
-            effect = effect,
         )
+
+        ScreenNavigator(viewModel) { state, effect, event ->
+            DiscordScreen(
+                state = state,
+                onEvent = event,
+                effect = effect,
+            )
+        }
+    } else {
+        val assistedFactory = entryPoint.creatorProfileVmFactory()
+
+        val viewModel: CreatorProfileViewModel = viewModel(
+            key = "CreatorProfile:$dest",
+            factory = object : ViewModelProvider.Factory {
+                @Suppress("UNCHECKED_CAST")
+                override fun <T : ViewModel> create(modelClass: Class<T>): T {
+                    return assistedFactory.create(dest) as T
+                }
+            }
+        )
+
+        ScreenNavigator(viewModel) { state, effect, event ->
+            CreatorScreen(
+                state = state,
+                onEvent = event,
+                effect = effect,
+            )
+        }
     }
 }

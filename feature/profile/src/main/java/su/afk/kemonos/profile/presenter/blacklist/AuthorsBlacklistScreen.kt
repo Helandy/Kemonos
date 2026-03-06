@@ -50,7 +50,7 @@ internal fun AuthorsBlacklistScreen(
         topBarScroll = TopBarScroll.EnterAlways,
         customTopBar = { scrollBehavior ->
             CenterBackTopBar(
-                title = stringResource(R.string.profile_authors_blacklist),
+                title = "${stringResource(R.string.profile_authors_blacklist)} (${state.items.size})",
                 onBack = { onEvent(Event.Back) },
                 scrollBehavior = scrollBehavior,
             )

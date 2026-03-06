@@ -68,6 +68,12 @@ interface IUiSettingUseCase {
     /** Показывать превью видео */
     suspend fun setShowPreviewVideo(value: Boolean)
 
+    /** Автовоспроизведение видео в Community/Discord */
+    suspend fun setAutoplayCommunityVideo(value: Boolean)
+
+    /** Начальное состояние Reverse в Discord Community */
+    suspend fun setDiscordCommunityReverseOrderDefault(value: Boolean)
+
     /** Блюрить все картинки */
     suspend fun setBlurImages(value: Boolean)
 

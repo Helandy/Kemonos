@@ -6,6 +6,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import su.afk.kemonos.preferences.ui.UiSettingKey.ADD_SERVICE_NAME
 import su.afk.kemonos.preferences.ui.UiSettingKey.APP_THEME_MODE
+import su.afk.kemonos.preferences.ui.UiSettingKey.AUTOPLAY_COMMUNITY_VIDEO
 import su.afk.kemonos.preferences.ui.UiSettingKey.BLUR_IMAGES
 import su.afk.kemonos.preferences.ui.UiSettingKey.COIL_CACHE_SIZE_MB
 import su.afk.kemonos.preferences.ui.UiSettingKey.CREATORS_FAVORITE_VIEW_MODE
@@ -13,6 +14,7 @@ import su.afk.kemonos.preferences.ui.UiSettingKey.CREATORS_VIEW_MODE
 import su.afk.kemonos.preferences.ui.UiSettingKey.CREATOR_PROFILE_HIDDEN_TABS
 import su.afk.kemonos.preferences.ui.UiSettingKey.CREATOR_PROFILE_TABS_ORDER
 import su.afk.kemonos.preferences.ui.UiSettingKey.DATE_FORMAT_MODE
+import su.afk.kemonos.preferences.ui.UiSettingKey.DISCORD_COMMUNITY_REVERSE_ORDER_DEFAULT
 import su.afk.kemonos.preferences.ui.UiSettingKey.DOWNLOAD_FOLDER_MODE
 import su.afk.kemonos.preferences.ui.UiSettingKey.EXPERIMENTAL_CALENDAR
 import su.afk.kemonos.preferences.ui.UiSettingKey.FAVORITE_POSTS_GRID_SIZE
@@ -82,6 +84,9 @@ internal class UiSettingUseCase @Inject constructor(
             previewVideoSizeMb = p[PREVIEW_VIDEO_SIZE_MB] ?: UiSettingModel.DEFAULT_VIDEO_PREVIEW_SIZE,
 
             showPreviewVideo = p[SHOW_PREVIEW_VIDEO] ?: UiSettingModel.DEFAULT_SHOW_VIDEO_PREVIEW,
+            autoplayCommunityVideo = p[AUTOPLAY_COMMUNITY_VIDEO] ?: UiSettingModel.DEFAULT_AUTOPLAY_COMMUNITY_VIDEO,
+            discordCommunityReverseOrderDefault = p[DISCORD_COMMUNITY_REVERSE_ORDER_DEFAULT]
+                ?: UiSettingModel.DEFAULT_DISCORD_COMMUNITY_REVERSE_ORDER_DEFAULT,
             blurImages = p[BLUR_IMAGES] ?: UiSettingModel.DEFAULT_BLUR_PICTURE,
             showImagePreviewDownloadAction = p[SHOW_IMAGE_PREVIEW_DOWNLOAD_ACTION]
                 ?: p[SHOW_IMAGE_PREVIEW_ACTION]
@@ -224,6 +229,16 @@ internal class UiSettingUseCase @Inject constructor(
         dataStore.edit { it[SHOW_PREVIEW_VIDEO] = value }
     }
 
+    /** Автовоспроизведение видео в Community/Discord */
+    override suspend fun setAutoplayCommunityVideo(value: Boolean) {
+        dataStore.edit { it[AUTOPLAY_COMMUNITY_VIDEO] = value }
+    }
+
+    /** Начальное состояние Reverse в Discord Community */
+    override suspend fun setDiscordCommunityReverseOrderDefault(value: Boolean) {
+        dataStore.edit { it[DISCORD_COMMUNITY_REVERSE_ORDER_DEFAULT] = value }
+    }
+
     /** Блюрить все картинки */
     override suspend fun setBlurImages(value: Boolean) {
         dataStore.edit { it[BLUR_IMAGES] = value }
@@ -296,6 +311,9 @@ object UiSettingKey {
     val PREVIEW_VIDEO_SIZE_MB = intPreferencesKey("PREVIEW_VIDEO_SIZE_MB")
 
     val SHOW_PREVIEW_VIDEO = booleanPreferencesKey("SHOW_PREVIEW_VIDEO")
+    val AUTOPLAY_COMMUNITY_VIDEO = booleanPreferencesKey("AUTOPLAY_COMMUNITY_VIDEO")
+    val DISCORD_COMMUNITY_REVERSE_ORDER_DEFAULT =
+        booleanPreferencesKey("DISCORD_COMMUNITY_REVERSE_ORDER_DEFAULT")
     val BLUR_IMAGES = booleanPreferencesKey("BLUR_IMAGES")
     val SHOW_IMAGE_PREVIEW_ACTION = booleanPreferencesKey("SHOW_IMAGE_PREVIEW_ACTIONS")
     val SHOW_IMAGE_PREVIEW_DOWNLOAD_ACTION = booleanPreferencesKey("SHOW_IMAGE_PREVIEW_DOWNLOAD_ACTION")

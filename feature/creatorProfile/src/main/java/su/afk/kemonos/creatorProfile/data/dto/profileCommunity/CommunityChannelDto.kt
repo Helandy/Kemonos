@@ -23,7 +23,9 @@ internal data class CommunityChannelDto(
     @SerializedName("messages_refreshed_at")
     val messagesRefreshedAt: String?,
     @SerializedName("messages_full_refreshed_at")
-    val messagesFullRefreshedAt: String?
+    val messagesFullRefreshedAt: String?,
+    @SerializedName("post_count")
+    val postCount: Int? = null
 ) {
     companion object {
         fun CommunityChannelDto.toDomain(): CommunityChannel = CommunityChannel(
@@ -36,7 +38,8 @@ internal data class CommunityChannelDto(
             emoji = emoji,
             addedAt = addedAt,
             messagesRefreshedAt = messagesRefreshedAt,
-            messagesFullRefreshedAt = messagesFullRefreshedAt
+            messagesFullRefreshedAt = messagesFullRefreshedAt,
+            postCount = postCount,
         )
 
         fun List<CommunityChannelDto>.toDomain(): List<CommunityChannel> = map { it.toDomain() }
