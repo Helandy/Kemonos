@@ -1,9 +1,7 @@
 package su.afk.kemonos.profile.presenter.profile
 
 import android.content.Context
-import android.content.Intent
 import android.net.Uri
-import android.provider.DocumentsContract
 import androidx.navigation3.runtime.NavKey
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -30,6 +28,8 @@ import su.afk.kemonos.preferences.ui.IUiSettingUseCase
 import su.afk.kemonos.profile.R
 import su.afk.kemonos.profile.domain.favorites.*
 import su.afk.kemonos.profile.domain.favorites.fresh.IFreshFavoriteArtistsUpdatesUseCase
+import su.afk.kemonos.profile.domain.file.ReadJsonFromUriUseCase
+import su.afk.kemonos.profile.domain.file.SaveJsonToFolderUseCase
 import su.afk.kemonos.profile.navigation.AuthDestination
 import su.afk.kemonos.profile.presenter.importResult.ImportResultItem
 import su.afk.kemonos.profile.presenter.importResult.ImportResultPayload
@@ -56,6 +56,8 @@ internal class ProfileViewModel @Inject constructor(
     private val uiSetting: IUiSettingUseCase,
     private val prepareFavoritesExportUseCase: PrepareFavoritesExportUseCase,
     private val importFavoritesFromJsonUseCase: ImportFavoritesFromJsonUseCase,
+    private val readJsonFromUriUseCase: ReadJsonFromUriUseCase,
+    private val saveJsonToFolderUseCase: SaveJsonToFolderUseCase,
     private val freshUpdatesUseCase: IFreshFavoriteArtistsUpdatesUseCase,
     @param:ApplicationContext private val appContext: Context,
     override val errorHandler: IErrorHandlerUseCase,
@@ -65,7 +67,7 @@ internal class ProfileViewModel @Inject constructor(
     override fun createInitialState(): State = State()
     private var authObserveJob: Job? = null
     private var pendingExport: FavoritesExportPayload? = null
-    private var pendingImport: PendingImportRequest? = null
+    private var pendingImport: FavoritesImportRequest? = null
 
     override fun onRetry() {
         refreshFavoritesCounters()
@@ -213,7 +215,7 @@ internal class ProfileViewModel @Inject constructor(
         setState { copy(isExportInProgress = true) }
         val saveResult = runCatching {
             withContext(Dispatchers.IO) {
-                saveExportToFolder(
+                saveJsonToFolderUseCase(
                     folderUri = folderUri,
                     fileName = export.fileName,
                     json = export.json,
@@ -232,7 +234,7 @@ internal class ProfileViewModel @Inject constructor(
     private fun onImportFavorites(site: SelectedSite, type: ExportType) {
         if (currentState.isExportInProgress || currentState.isImportInProgress) return
 
-        pendingImport = PendingImportRequest(
+        pendingImport = FavoritesImportRequest(
             site = site,
             type = when (type) {
                 ExportType.ARTISTS -> FavoritesImportType.ARTISTS
@@ -263,7 +265,7 @@ internal class ProfileViewModel @Inject constructor(
         setState { copy(isImportInProgress = true) }
         val importResult = runCatching {
             withContext(Dispatchers.IO) {
-                val rawJson = readJsonFromUri(fileUri)
+                val rawJson = readJsonFromUriUseCase(fileUri)
                 importFavoritesFromJsonUseCase(
                     site = import.site,
                     type = import.type,
@@ -342,41 +344,6 @@ internal class ProfileViewModel @Inject constructor(
         }
     }
 
-    private fun saveExportToFolder(
-        folderUri: Uri,
-        fileName: String,
-        json: String,
-    ) {
-        val resolver = appContext.contentResolver
-        val rwFlags = Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_WRITE_URI_PERMISSION
-        runCatching { resolver.takePersistableUriPermission(folderUri, rwFlags) }
-
-        val treeId = DocumentsContract.getTreeDocumentId(folderUri)
-        val treeDocumentUri = DocumentsContract.buildDocumentUriUsingTree(folderUri, treeId)
-
-        val createdFileUri = DocumentsContract.createDocument(
-            resolver,
-            treeDocumentUri,
-            "application/json",
-            fileName,
-        ) ?: error("Failed to create export file")
-
-        resolver.openOutputStream(createdFileUri)?.use { stream ->
-            stream.write(json.toByteArray(Charsets.UTF_8))
-        } ?: error("Failed to open export file stream")
-    }
-
-    private fun readJsonFromUri(fileUri: Uri): String {
-        val resolver = appContext.contentResolver
-        runCatching {
-            resolver.takePersistableUriPermission(fileUri, Intent.FLAG_GRANT_READ_URI_PERMISSION)
-        }
-
-        return resolver.openInputStream(fileUri)?.bufferedReader(Charsets.UTF_8)?.use { reader ->
-            reader.readText()
-        } ?: error("Failed to open import file stream")
-    }
-
     private fun navigateWithSelectedSite(site: SelectedSite, destination: NavKey) {
         navigationStorage.put(KEY_SELECT_SITE, site)
         navigationManager.navigate(destination)
@@ -414,11 +381,6 @@ internal class ProfileViewModel @Inject constructor(
             )
         }
     }
-
-    private data class PendingImportRequest(
-        val site: SelectedSite,
-        val type: FavoritesImportType,
-    )
 
     private companion object {
         const val KEMONO_REFERENCE_SERVICE = "patreon"
