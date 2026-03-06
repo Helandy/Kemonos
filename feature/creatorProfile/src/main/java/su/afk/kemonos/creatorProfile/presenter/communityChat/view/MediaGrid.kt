@@ -67,7 +67,7 @@ internal fun MediaGrid(
                             remember(media.openUrl) {
                                 ImageRequest.Builder(context)
                                     .data(media.openUrl)
-                                    .videoFrameMillis(0)
+                                    .videoFrameMillis(PREVIEW_VIDEO_FRAME_MILLIS)
                                     .crossfade(true)
                                     .build()
                             }
@@ -192,6 +192,8 @@ private val KEMONO_COOMER_VIDEO_PATH_REGEX = Regex(
     pattern = "^/[0-9a-f]{2}/[0-9a-f]{2}/[0-9a-f]{16,}\\.[a-z0-9]{2,8}$",
     option = RegexOption.IGNORE_CASE
 )
+
+private const val PREVIEW_VIDEO_FRAME_MILLIS = 300L
 
 private fun resolveVideoLabel(media: CommunityMedia): String? {
     val explicitName = media.fileName?.trim().orEmpty()
