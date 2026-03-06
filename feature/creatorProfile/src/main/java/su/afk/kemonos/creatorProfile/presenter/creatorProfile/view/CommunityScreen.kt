@@ -39,7 +39,7 @@ internal fun CommunityScreen(
                     text = channel.name,
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.SemiBold,
-                    modifier = Modifier.padding(12.dp)
+                    modifier = Modifier.padding(start = 12.dp, top = 12.dp)
                 )
 
                 channel.messagesRefreshedAt
@@ -52,7 +52,7 @@ internal fun CommunityScreen(
                             ),
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
-                            modifier = Modifier.padding(horizontal = 12.dp, vertical = 2.dp)
+                            modifier = Modifier.padding(start = 12.dp, top = 6.dp, bottom = 12.dp)
                         )
                     }
             }

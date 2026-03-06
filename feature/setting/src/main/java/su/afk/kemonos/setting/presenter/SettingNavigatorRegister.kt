@@ -73,6 +73,16 @@ class SettingNavigatorRegister @Inject constructor() : NavRegistrar {
             }
         }
 
+        entry<SettingDestination.HelpImport> {
+            val viewModel = hiltViewModel<SettingViewModel>()
+            ScreenNavigator(viewModel) { state, _, event ->
+                SettingHelpImportScreen(
+                    state = state,
+                    onEvent = event,
+                )
+            }
+        }
+
         entry<SettingDestination.DebugStorage> {
             val viewModel = hiltViewModel<SettingViewModel>()
             ScreenNavigator(viewModel) { state, _, event ->

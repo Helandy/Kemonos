@@ -9,6 +9,13 @@
     <string name="settings_hub_database_title">Database &amp; cache</string>
     <string name="settings_hub_database_subtitle">Cache size limits and cached data cleanup.</string>
     <string name="settings_hub_downloads_subtitle">How downloaded files are named and organized.</string>
+    <string name="settings_hub_help_import_title">Help Import</string>
+    <string name="settings_hub_help_import_subtitle">Links to contribute content imports for Kemono/Coomer.</string>
+    <string name="settings_help_import_title">Help Import</string>
+    <string name="settings_help_import_subtitle">Choose a service and open the importer page.</string>
+    <string name="settings_help_import_kemono_text">You can help import content for Kemono</string>
+    <string name="settings_help_import_coomer_text">You can help import content for Coomer</string>
+    <string name="settings_help_import_open_button">Open link</string>
     <string name="settings_hub_version">GitHub Version: %1$s</string>
 
     <!-- Cache -->

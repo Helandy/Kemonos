@@ -9,6 +9,14 @@
     <string name="settings_hub_database_title">База данных и кэш</string>
     <string name="settings_hub_database_subtitle">Лимиты кэша и очистка сохраненных данных.</string>
     <string name="settings_hub_downloads_subtitle">Как именуются и структурируются скачанные файлы.</string>
+    <string name="settings_hub_help_import_title">Help Import</string>
+    <string name="settings_hub_help_import_subtitle">Ссылки, чтобы помочь с импортом контента для Kemono/Coomer.
+    </string>
+    <string name="settings_help_import_title">Help Import</string>
+    <string name="settings_help_import_subtitle">Выберите сервис и откройте страницу импортера.</string>
+    <string name="settings_help_import_kemono_text">Вы можете помочь с импортом контента для Kemono</string>
+    <string name="settings_help_import_coomer_text">Вы можете помочь с импортом контента для Coomer</string>
+    <string name="settings_help_import_open_button">Открыть ссылку</string>
     <string name="settings_hub_version">GitHub Версия: %1$s</string>
 
     <!-- Cache -->

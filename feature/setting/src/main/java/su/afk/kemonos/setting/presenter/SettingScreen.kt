@@ -76,6 +76,12 @@ internal fun SettingScreen(
                 onClick = { onEvent(Event.OpenDownloadSettings) },
             ),
             SettingHubEntry(
+                icon = Icons.Outlined.HelpOutline,
+                title = stringResource(R.string.settings_hub_help_import_title),
+                subtitle = stringResource(R.string.settings_hub_help_import_subtitle),
+                onClick = { onEvent(Event.OpenHelpImportSettings) },
+            ),
+            SettingHubEntry(
                 icon = Icons.Outlined.Language,
                 title = stringResource(R.string.settings_ui_app_language_title),
                 subtitle = stringResource(R.string.settings_ui_app_language_subtitle),
