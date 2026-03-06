@@ -130,8 +130,14 @@ internal class AuthorsBlacklistViewModel @Inject constructor(
 
         setState { copy(isImportExportInProgress = true) }
         val exportResult = runCatching {
+            val items = withContext(Dispatchers.IO) {
+                blacklistedAuthorsRepository.observeAll().first()
+            }
+            items.firstOrNull()?.let { firstAuthor ->
+                syncSelectedSiteByService(firstAuthor.service)
+            }
+
             withContext(Dispatchers.IO) {
-                val items = blacklistedAuthorsRepository.observeAll().first()
                 val fileName = buildExportFileName(items.size)
                 val json = buildExportJson(items)
                 saveExportToFolder(folderUri = folderUri, fileName = fileName, json = json)
@@ -164,10 +170,8 @@ internal class AuthorsBlacklistViewModel @Inject constructor(
 
         setState { copy(isImportExportInProgress = true) }
         val importResult = runCatching {
-            withContext(Dispatchers.IO) {
-                val rawJson = readJsonFromUri(fileUri)
-                importFromJson(rawJson)
-            }
+            val rawJson = withContext(Dispatchers.IO) { readJsonFromUri(fileUri) }
+            importFromJson(rawJson)
         }
         setState { copy(isImportExportInProgress = false) }
 
@@ -257,6 +261,8 @@ internal class AuthorsBlacklistViewModel @Inject constructor(
         }
 
         for ((key, indexedAuthor) in unique.entries) {
+            syncSelectedSiteByService(indexedAuthor.author.service)
+
             runCatching { blacklistedAuthorsRepository.upsert(indexedAuthor.author) }
                 .onSuccess {
                     entries += ImportResultItem(
@@ -372,6 +378,11 @@ internal class AuthorsBlacklistViewModel @Inject constructor(
     private fun navigateToImportResult(payload: ImportResultPayload) {
         navigationStorage.put(KEY_IMPORT_RESULT_PAYLOAD, payload)
         navManager.navigate(AuthDestination.ImportResult)
+    }
+
+    private suspend fun syncSelectedSiteByService(service: String) {
+        val targetSite = domainResolver.selectedSiteByService(service)
+        selectedSiteUseCase.setSiteAndAwait(targetSite)
     }
 
     private data class ImportResult(

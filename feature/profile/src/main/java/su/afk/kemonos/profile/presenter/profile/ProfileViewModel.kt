@@ -22,6 +22,10 @@ import su.afk.kemonos.error.error.IErrorHandlerUseCase
 import su.afk.kemonos.error.error.storage.RetryStorage
 import su.afk.kemonos.navigation.NavigationManager
 import su.afk.kemonos.navigation.storage.NavigationStorage
+import su.afk.kemonos.preferences.domainResolver.IDomainResolver
+import su.afk.kemonos.preferences.domainResolver.selectedSiteByService
+import su.afk.kemonos.preferences.site.ISelectedSiteUseCase
+import su.afk.kemonos.preferences.site.setSiteAndAwait
 import su.afk.kemonos.preferences.ui.IUiSettingUseCase
 import su.afk.kemonos.profile.R
 import su.afk.kemonos.profile.domain.favorites.*
@@ -44,6 +48,8 @@ internal class ProfileViewModel @Inject constructor(
     private val observeAuthStateUseCase: ObserveAuthStateUseCase,
     private val navigationManager: NavigationManager,
     private val navigationStorage: NavigationStorage,
+    private val domainResolver: IDomainResolver,
+    private val selectedSiteUseCase: ISelectedSiteUseCase,
     private val downloadNavigator: IDownloadNavigator,
     private val getSettingDestinationUseCase: IGetSettingDestinationUseCase,
     private val logoutDelegate: LogoutDelegate,
@@ -166,6 +172,8 @@ internal class ProfileViewModel @Inject constructor(
     private fun onExportFavorites(site: SelectedSite, type: ExportType) = viewModelScope.launch {
         if (currentState.isExportInProgress || currentState.isImportInProgress) return@launch
 
+        syncSelectedSite(site)
+
         setState { copy(isExportInProgress = true) }
         val prepared = runCatching {
             prepareFavoritesExportUseCase(
@@ -249,6 +257,8 @@ internal class ProfileViewModel @Inject constructor(
             setEffect(Effect.ShowMessage(appContext.getString(R.string.profile_import_cancelled)))
             return@launch
         }
+
+        syncSelectedSite(import.site)
 
         setState { copy(isImportInProgress = true) }
         val importResult = runCatching {
@@ -372,6 +382,15 @@ internal class ProfileViewModel @Inject constructor(
         navigationManager.navigate(destination)
     }
 
+    private suspend fun syncSelectedSite(site: SelectedSite) {
+        val service = when (site) {
+            SelectedSite.K -> KEMONO_REFERENCE_SERVICE
+            SelectedSite.C -> COOMER_REFERENCE_SERVICE
+        }
+        val targetSite = domainResolver.selectedSiteByService(service)
+        selectedSiteUseCase.setSiteAndAwait(targetSite)
+    }
+
     /** Настройки */
     private fun navigateToSettings() = navigationManager.navigate(getSettingDestinationUseCase())
 
@@ -400,4 +419,9 @@ internal class ProfileViewModel @Inject constructor(
         val site: SelectedSite,
         val type: FavoritesImportType,
     )
+
+    private companion object {
+        const val KEMONO_REFERENCE_SERVICE = "patreon"
+        const val COOMER_REFERENCE_SERVICE = "onlyfans"
+    }
 }
