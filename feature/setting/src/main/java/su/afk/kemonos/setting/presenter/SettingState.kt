@@ -52,6 +52,7 @@ class SettingState {
         data object OpenNetworkSettings : Event
         data object OpenDatabaseSettings : Event
         data object OpenDownloadSettings : Event
+        data object OpenHelpImportSettings : Event
         data object OpenDebugStorageSettings : Event
 
         sealed interface ChangeViewSetting : Event {

@@ -9,6 +9,7 @@ internal object SettingDestination {
     object Network : NavKey
     object Database : NavKey
     object Downloads : NavKey
+    object HelpImport : NavKey
     object DebugStorage : NavKey
     object CreatorTabsOrder : NavKey
 }

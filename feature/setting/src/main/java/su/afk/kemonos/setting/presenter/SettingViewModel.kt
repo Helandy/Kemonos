@@ -47,6 +47,7 @@ class SettingViewModel @Inject constructor(
             SettingState.Event.OpenNetworkSettings -> navManager.navigate(SettingDestination.Network)
             SettingState.Event.OpenDatabaseSettings -> navManager.navigate(SettingDestination.Database)
             SettingState.Event.OpenDownloadSettings -> navManager.navigate(SettingDestination.Downloads)
+            SettingState.Event.OpenHelpImportSettings -> navManager.navigate(SettingDestination.HelpImport)
             SettingState.Event.OpenDebugStorageSettings -> navManager.navigate(SettingDestination.DebugStorage)
 
             is SettingState.Event.ChangeViewSetting ->
