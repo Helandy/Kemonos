@@ -1,5 +1,6 @@
 package su.afk.kemonos.creatorProfile.presenter.communityChat.view
 
+import android.net.Uri
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -7,12 +8,17 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import coil3.request.ImageRequest
+import coil3.request.crossfade
+import coil3.video.videoFrameMillis
 import su.afk.kemonos.creatorProfile.presenter.communityChat.model.CommunityMedia
 import su.afk.kemonos.ui.imageLoader.AsyncImageWithStatus
 import su.afk.kemonos.ui.uiUtils.format.isImageFile
@@ -26,6 +32,7 @@ internal fun MediaGrid(
     autoplayVideoInline: Boolean,
     onOpenMedia: (CommunityMedia) -> Unit
 ) {
+    val context = LocalContext.current
     val singleVisualItem = items.singleOrNull()?.let { media ->
         isImageFile(media.pathOrUrl) || isVideoFile(media.pathOrUrl)
     } == true
@@ -54,6 +61,19 @@ internal fun MediaGrid(
                         val videoLabel = if (isVideo) resolveVideoLabel(media) else null
                         val previewTypePath = media.previewUrl.substringBefore('#').substringBefore('?')
                         val hasImagePreview = isImageFile(previewTypePath)
+                        val hasKemonoVideoFramePreview = isVideo && isKemonoCoomerDataVideoPath(media.pathOrUrl)
+                        val shouldAutoplayInline = isVideo && autoplayVideoInline && !hasKemonoVideoFramePreview
+                        val firstFrameRequest = if (hasKemonoVideoFramePreview) {
+                            remember(media.openUrl) {
+                                ImageRequest.Builder(context)
+                                    .data(media.openUrl)
+                                    .videoFrameMillis(0)
+                                    .crossfade(true)
+                                    .build()
+                            }
+                        } else {
+                            null
+                        }
 
                         if (isImage) {
                             AsyncImageWithStatus(
@@ -66,7 +86,7 @@ internal fun MediaGrid(
                                     .clickable { onOpenMedia(media) },
                                 contentScale = ContentScale.Crop
                             )
-                        } else if (isVideo && autoplayVideoInline) {
+                        } else if (shouldAutoplayInline) {
                             Box(
                                 modifier = Modifier
                                     .fillMaxWidth()
@@ -95,7 +115,7 @@ internal fun MediaGrid(
                                     )
                                 }
                             }
-                        } else if (isVideo && hasImagePreview) {
+                        } else if (isVideo && (hasImagePreview || firstFrameRequest != null)) {
                             Box(
                                 modifier = Modifier
                                     .fillMaxWidth()
@@ -105,7 +125,7 @@ internal fun MediaGrid(
                                 contentAlignment = Alignment.BottomEnd
                             ) {
                                 AsyncImageWithStatus(
-                                    model = media.previewUrl,
+                                    model = if (hasImagePreview) media.previewUrl else firstFrameRequest,
                                     contentDescription = null,
                                     modifier = Modifier.fillMaxSize(),
                                     contentScale = ContentScale.Crop
@@ -152,6 +172,26 @@ internal fun MediaGrid(
         }
     }
 }
+
+private fun isKemonoCoomerDataVideoPath(pathOrUrl: String): Boolean {
+    val cleanPath = pathOrUrl.substringBefore('#').substringBefore('?')
+    if (KEMONO_COOMER_VIDEO_PATH_REGEX.matches(cleanPath)) return true
+
+    val urlPath = runCatching { Uri.parse(pathOrUrl).path.orEmpty() }
+        .getOrDefault("")
+    if (urlPath.isBlank()) return false
+
+    val cleanUrlPath = urlPath.substringBefore('#').substringBefore('?')
+    val dataPath = cleanUrlPath.substringAfter("/data", missingDelimiterValue = "")
+    if (dataPath.isBlank()) return false
+
+    return KEMONO_COOMER_VIDEO_PATH_REGEX.matches(dataPath)
+}
+
+private val KEMONO_COOMER_VIDEO_PATH_REGEX = Regex(
+    pattern = "^/[0-9a-f]{2}/[0-9a-f]{2}/[0-9a-f]{16,}\\.[a-z0-9]{2,8}$",
+    option = RegexOption.IGNORE_CASE
+)
 
 private fun resolveVideoLabel(media: CommunityMedia): String? {
     val explicitName = media.fileName?.trim().orEmpty()
