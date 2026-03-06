@@ -66,14 +66,18 @@ internal class CreatorsViewModel @Inject constructor(
     /** Получить paging flow */
     @OptIn(ExperimentalCoroutinesApi::class)
     private fun bindCreatorsPaging() {
-        val creatorsPagedFlow = creatorsFilters.flatMapLatest { filters ->
-            listDelegate.creatorsPagedFlow(
-                service = filters.service,
-                searchQuery = filters.query,
-                sortedType = filters.sort,
-                sortAscending = filters.ascending,
-            )
-        }
+        val creatorsPagedFlow = combine(
+            creatorsFilters,
+            site,
+        ) { filters, _ -> filters }
+            .flatMapLatest { filters ->
+                listDelegate.creatorsPagedFlow(
+                    service = filters.service,
+                    searchQuery = filters.query,
+                    sortedType = filters.sort,
+                    sortAscending = filters.ascending,
+                )
+            }
             .cachedIn(viewModelScope)
 
         setState { copy(creatorsPaged = creatorsPagedFlow) }
