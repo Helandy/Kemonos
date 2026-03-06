@@ -45,6 +45,30 @@
     <string name="profile_menu_keys">Ключи</string>
     <string name="profile_menu_review_dms">Проверить личные сообщения</string>
     <string name="profile_menu_export_favorites">Экспорт избранного</string>
+    <string name="profile_menu_import_favorites">Импорт избранного</string>
+    <string name="profile_export_authors">Авторов</string>
+    <string name="profile_export_posts">Постов</string>
+    <string name="profile_export_close">Закрыть</string>
+    <string name="profile_export_prepare_failed">Не удалось подготовить экспорт.</string>
+    <string name="profile_export_no_pending_data">Нет подготовленных данных для экспорта.</string>
+    <string name="profile_export_cancelled">Выбор папки отменен.</string>
+    <string name="profile_export_save_failed">Не удалось сохранить файл экспорта.</string>
+    <string name="profile_export_saved">Сохранено: %1$s</string>
+    <string name="profile_import_no_pending_request">Нет подготовленного запроса на импорт.</string>
+    <string name="profile_import_cancelled">Выбор файла отменен.</string>
+    <string name="profile_import_failed">Не удалось импортировать файл избранного.</string>
+    <string name="profile_import_result_summary">Импорт: добавлено %1$d из %2$d, ошибок %3$d, пропущено %4$d.</string>
+    <string name="profile_import_result_default_title">Результат импорта</string>
+    <string name="profile_import_result_title_with_context">Результат импорта: %1$s / %2$s</string>
+    <string name="profile_import_result_empty">Нет строк импорта для отображения.</string>
+    <string name="profile_import_result_unknown_target">Неизвестная цель</string>
+    <string name="profile_import_result_status_success">Успешно</string>
+    <string name="profile_import_result_status_failed">Ошибка</string>
+    <string name="profile_import_result_status_skipped">Пропущено</string>
+    <string name="profile_import_reason_none">Добавлено успешно</string>
+    <string name="profile_import_reason_invalid_item">Некорректный формат строки</string>
+    <string name="profile_import_reason_duplicate">Дубликат строки в файле</string>
+    <string name="profile_import_reason_request_failed">Ошибка запроса</string>
     <string name="profile_menu_change_username">Сменить имя пользователя</string>
     <string name="profile_menu_change_password">Сменить пароль</string>
     <string name="profile_downloads">Загрузки</string>
@@ -55,6 +79,17 @@
     <string name="profile_authors_blacklist_remove_title">Удалить автора?</string>
     <string name="profile_authors_blacklist_remove_message">Удалить %1$s из черного списка?</string>
     <string name="profile_authors_blacklist_remove_confirm">Удалить</string>
+    <string name="profile_blacklist_export_action">Экспорт</string>
+    <string name="profile_blacklist_import_action">Импорт</string>
+    <string name="profile_blacklist_export_cancelled">Выбор папки отменен.</string>
+    <string name="profile_blacklist_export_failed">Не удалось экспортировать файл черного списка.</string>
+    <string name="profile_blacklist_export_saved">Сохранено: %1$s</string>
+    <string name="profile_blacklist_import_cancelled">Выбор файла отменен.</string>
+    <string name="profile_blacklist_import_failed">Не удалось импортировать файл черного списка.</string>
+    <string name="profile_blacklist_import_title">Результат импорта черного списка</string>
+    <string name="profile_blacklist_import_result_summary">Импорт: добавлено %1$d из %2$d, ошибок %3$d, пропущено
+        %4$d.
+    </string>
 
     <string name="profile_error_not_authorized">Вы не авторизованы</string>
 

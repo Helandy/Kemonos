@@ -1,18 +1,25 @@
 package su.afk.kemonos.profile.presenter.profile
 
+import android.widget.Toast
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.launch
 import su.afk.kemonos.domain.SelectedSite
 import su.afk.kemonos.profile.R
@@ -29,10 +36,36 @@ import su.afk.kemonos.ui.preview.KemonosPreviewScreen
 internal fun ProfileScreen(
     state: State,
     onEvent: (Event) -> Unit,
+    effect: Flow<ProfileState.Effect>,
 ) {
+    val context = LocalContext.current
     val pagerState = rememberPagerState(pageCount = { 2 })
     val scope = rememberCoroutineScope()
-    val selectedSite = if (pagerState.currentPage == 0) SelectedSite.C else SelectedSite.K
+    if (pagerState.currentPage == 0) SelectedSite.C else SelectedSite.K
+
+    val folderPickerLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.OpenDocumentTree()
+    ) { uri ->
+        onEvent(Event.SaveExportToFolder(uri))
+    }
+
+    val importFilePickerLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.OpenDocument()
+    ) { uri ->
+        onEvent(Event.ImportFavoritesFromFile(uri))
+    }
+
+    LaunchedEffect(effect) {
+        effect.collect { incoming ->
+            when (incoming) {
+                ProfileState.Effect.OpenExportFolderPicker -> folderPickerLauncher.launch(null)
+                ProfileState.Effect.OpenImportFilePicker ->
+                    importFilePickerLauncher.launch(arrayOf("application/json", "text/plain", "*/*"))
+                is ProfileState.Effect.ShowMessage ->
+                    Toast.makeText(context, incoming.message, Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
 
     BaseScreen(
         isScroll = true,
@@ -40,11 +73,6 @@ internal fun ProfileScreen(
         contentModifier = Modifier.padding(horizontal = 12.dp),
     ) {
         Column(verticalArrangement = Arrangement.spacedBy(14.dp)) {
-            ProfileSummaryCard(
-                state = state,
-                selectedSite = selectedSite,
-            )
-
             Surface(
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(24.dp),
@@ -94,7 +122,21 @@ internal fun ProfileScreen(
                                 },
                                 onFavoritePosts = {
                                     onEvent(Event.FavoritePostNavigate(SelectedSite.C))
-                                }
+                                },
+                                isExportInProgress = state.isExportInProgress,
+                                isImportInProgress = state.isImportInProgress,
+                                onExportFavoriteArtists = {
+                                    onEvent(Event.ExportFavorites(SelectedSite.C, ProfileState.ExportType.ARTISTS))
+                                },
+                                onExportFavoritePosts = {
+                                    onEvent(Event.ExportFavorites(SelectedSite.C, ProfileState.ExportType.POSTS))
+                                },
+                                onImportFavoriteArtists = {
+                                    onEvent(Event.ImportFavorites(SelectedSite.C, ProfileState.ExportType.ARTISTS))
+                                },
+                                onImportFavoritePosts = {
+                                    onEvent(Event.ImportFavorites(SelectedSite.C, ProfileState.ExportType.POSTS))
+                                },
                             )
 
                             1 -> SitePage(
@@ -111,7 +153,21 @@ internal fun ProfileScreen(
                                 },
                                 onFavoritePosts = {
                                     onEvent(Event.FavoritePostNavigate(SelectedSite.K))
-                                }
+                                },
+                                isExportInProgress = state.isExportInProgress,
+                                isImportInProgress = state.isImportInProgress,
+                                onExportFavoriteArtists = {
+                                    onEvent(Event.ExportFavorites(SelectedSite.K, ProfileState.ExportType.ARTISTS))
+                                },
+                                onExportFavoritePosts = {
+                                    onEvent(Event.ExportFavorites(SelectedSite.K, ProfileState.ExportType.POSTS))
+                                },
+                                onImportFavoriteArtists = {
+                                    onEvent(Event.ImportFavorites(SelectedSite.K, ProfileState.ExportType.ARTISTS))
+                                },
+                                onImportFavoritePosts = {
+                                    onEvent(Event.ImportFavorites(SelectedSite.K, ProfileState.ExportType.POSTS))
+                                },
                             )
                         }
                     }
@@ -235,6 +291,7 @@ private fun PreviewProfileScreen() {
                 coomerUpdatedFavoritesCount = 3,
             ),
             onEvent = {},
+            effect = emptyFlow(),
         )
     }
 }
