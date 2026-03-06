@@ -24,6 +24,7 @@ fun CreatorsContentPaging(
     viewMode: CreatorViewMode,
     pagingItems: LazyPagingItems<FavoriteArtist>,
     randomItems: List<FavoriteArtist>,
+    topContent: (@Composable () -> Unit)? = null,
     onCreatorClick: (FavoriteArtist) -> Unit,
     updatedProvider: ((FavoriteArtist) -> String?)? = null,
     isFreshProvider: ((FavoriteArtist) -> Boolean)? = null,
@@ -42,6 +43,10 @@ fun CreatorsContentPaging(
                 state = listState,
                 contentPadding = PaddingValues(bottom = 8.dp),
             ) {
+                item(key = "top_content") {
+                    topContent?.invoke()
+                }
+
                 randomCreatorsSection(
                     items = randomItems,
                     onCreatorClick = onCreatorClick,
@@ -87,6 +92,13 @@ fun CreatorsContentPaging(
                 horizontalArrangement = Arrangement.spacedBy(6.dp),
                 contentPadding = PaddingValues(bottom = 8.dp),
             ) {
+                item(
+                    key = "top_content",
+                    span = { GridItemSpan(maxLineSpan) }
+                ) {
+                    topContent?.invoke()
+                }
+
                 randomCreatorsSection(
                     items = randomItems,
                     onCreatorClick = onCreatorClick,

@@ -1,15 +1,19 @@
 package su.afk.kemonos.creators.presenter
 
-import androidx.compose.foundation.layout.padding
+import android.content.Intent
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalInspectionMode
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.core.net.toUri
 import androidx.paging.LoadState
 import androidx.paging.PagingData
 import androidx.paging.compose.collectAsLazyPagingItems
@@ -30,6 +34,7 @@ import su.afk.kemonos.ui.components.searchBar.SearchBarNew
 import su.afk.kemonos.ui.presenter.baseScreen.BaseScreen
 import su.afk.kemonos.ui.presenter.baseScreen.TopBarScroll
 import su.afk.kemonos.ui.preview.KemonosPreviewScreen
+import su.afk.kemonos.ui.R as UiR
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -41,6 +46,7 @@ internal fun CreatorsScreen(
     siteSwitching: Boolean,
 ) {
     val isPreview = LocalInspectionMode.current
+    val context = LocalContext.current
     val sortOptions = creatorsSortOptions()
 
     val pagingItems = state.creatorsPaged.collectAsLazyPagingItems()
@@ -69,6 +75,11 @@ internal fun CreatorsScreen(
                     CreatorViewMode.LIST -> listState.scrollToItem(0)
                     CreatorViewMode.GRID -> gridState.scrollToItem(0)
                 }
+
+                is Effect.OpenUrl -> {
+                    val intent = Intent(Intent.ACTION_VIEW, item.url.toUri())
+                    context.startActivity(intent)
+                }
             }
         }
     }
@@ -78,20 +89,20 @@ internal fun CreatorsScreen(
         contentModifier = Modifier.padding(horizontal = 8.dp),
         topBarScroll = topBarScrollMode,
         topBar = {
-                SearchBarNew(
-                    query = state.searchQuery,
-                    onQueryChange = { onEvent(Event.QueryChanged(it)) },
-                    services = state.services,
-                    selectedService = state.selectedService,
-                    onServiceSelect = { onEvent(Event.ServiceSelected(it)) },
-                    selectedSort = state.sortedType,
-                    sortOptions = sortOptions,
-                    onSortMethodSelect = { onEvent(Event.SortSelected(it)) },
-                    isAscending = state.sortAscending,
-                    onToggleAscending = { onEvent(Event.ToggleSortOrder) },
-                    showRandom = showRandomInSearch && !isScreenLoading,
-                    onRandomClick = { onEvent(Event.RandomClicked) },
-                )
+            SearchBarNew(
+                query = state.searchQuery,
+                onQueryChange = { onEvent(Event.QueryChanged(it)) },
+                services = state.services,
+                selectedService = state.selectedService,
+                onServiceSelect = { onEvent(Event.ServiceSelected(it)) },
+                selectedSort = state.sortedType,
+                sortOptions = sortOptions,
+                onSortMethodSelect = { onEvent(Event.SortSelected(it)) },
+                isAscending = state.sortAscending,
+                onToggleAscending = { onEvent(Event.ToggleSortOrder) },
+                showRandom = showRandomInSearch && !isScreenLoading,
+                onRandomClick = { onEvent(Event.RandomClicked) },
+            )
         },
         floatingActionButtonStart = {
             SiteToggleFab(
@@ -116,12 +127,53 @@ internal fun CreatorsScreen(
             viewMode = state.uiSettingModel.creatorsViewMode,
             pagingItems = pagingItems,
             randomItems = visibleRandomItems,
+            topContent = if (state.showGithubRateBanner) {
+                {
+                    CreatorsGithubRateBanner(
+                        onRateClick = { onEvent(Event.GithubRateClick) },
+                        onNeverShowClick = { onEvent(Event.HideGithubRateBanner) },
+                    )
+                }
+            } else {
+                null
+            },
             onCreatorClick = { onEvent(Event.CreatorClicked(it)) },
             expanded = state.randomExpanded,
             onClickRandomHeader = { onEvent(Event.HeaderRandomExpanded) },
             listState = listState,
             gridState = gridState,
         )
+    }
+}
+
+@Composable
+private fun CreatorsGithubRateBanner(
+    onRateClick: () -> Unit,
+    onNeverShowClick: () -> Unit,
+) {
+    ElevatedCard(modifier = Modifier.padding(top = 8.dp)) {
+        Column(
+            modifier = Modifier.padding(12.dp),
+            verticalArrangement = Arrangement.spacedBy(10.dp),
+        ) {
+            Text(
+                text = stringResource(UiR.string.main_rate_banner_title),
+                style = MaterialTheme.typography.titleMedium,
+            )
+            Text(
+                text = stringResource(UiR.string.main_rate_banner_subtitle),
+                style = MaterialTheme.typography.bodyMedium,
+            )
+            Row {
+                TextButton(onClick = onNeverShowClick) {
+                    Text(stringResource(UiR.string.main_rate_banner_never_show))
+                }
+                Spacer(Modifier.weight(1f))
+                Button(onClick = onRateClick) {
+                    Text(stringResource(UiR.string.main_rate_banner_rate))
+                }
+            }
+        }
     }
 }
 

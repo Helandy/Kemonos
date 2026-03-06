@@ -1,9 +1,7 @@
 package su.afk.kemonos.profile.presenter.profile
 
 import android.content.Context
-import android.content.Intent
 import android.net.Uri
-import android.provider.DocumentsContract
 import androidx.navigation3.runtime.NavKey
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -22,10 +20,16 @@ import su.afk.kemonos.error.error.IErrorHandlerUseCase
 import su.afk.kemonos.error.error.storage.RetryStorage
 import su.afk.kemonos.navigation.NavigationManager
 import su.afk.kemonos.navigation.storage.NavigationStorage
+import su.afk.kemonos.preferences.domainResolver.IDomainResolver
+import su.afk.kemonos.preferences.domainResolver.selectedSiteByService
+import su.afk.kemonos.preferences.site.ISelectedSiteUseCase
+import su.afk.kemonos.preferences.site.setSiteAndAwait
 import su.afk.kemonos.preferences.ui.IUiSettingUseCase
 import su.afk.kemonos.profile.R
 import su.afk.kemonos.profile.domain.favorites.*
 import su.afk.kemonos.profile.domain.favorites.fresh.IFreshFavoriteArtistsUpdatesUseCase
+import su.afk.kemonos.profile.domain.file.ReadJsonFromUriUseCase
+import su.afk.kemonos.profile.domain.file.SaveJsonToFolderUseCase
 import su.afk.kemonos.profile.navigation.AuthDestination
 import su.afk.kemonos.profile.presenter.importResult.ImportResultItem
 import su.afk.kemonos.profile.presenter.importResult.ImportResultPayload
@@ -44,12 +48,16 @@ internal class ProfileViewModel @Inject constructor(
     private val observeAuthStateUseCase: ObserveAuthStateUseCase,
     private val navigationManager: NavigationManager,
     private val navigationStorage: NavigationStorage,
+    private val domainResolver: IDomainResolver,
+    private val selectedSiteUseCase: ISelectedSiteUseCase,
     private val downloadNavigator: IDownloadNavigator,
     private val getSettingDestinationUseCase: IGetSettingDestinationUseCase,
     private val logoutDelegate: LogoutDelegate,
     private val uiSetting: IUiSettingUseCase,
     private val prepareFavoritesExportUseCase: PrepareFavoritesExportUseCase,
     private val importFavoritesFromJsonUseCase: ImportFavoritesFromJsonUseCase,
+    private val readJsonFromUriUseCase: ReadJsonFromUriUseCase,
+    private val saveJsonToFolderUseCase: SaveJsonToFolderUseCase,
     private val freshUpdatesUseCase: IFreshFavoriteArtistsUpdatesUseCase,
     @param:ApplicationContext private val appContext: Context,
     override val errorHandler: IErrorHandlerUseCase,
@@ -59,7 +67,7 @@ internal class ProfileViewModel @Inject constructor(
     override fun createInitialState(): State = State()
     private var authObserveJob: Job? = null
     private var pendingExport: FavoritesExportPayload? = null
-    private var pendingImport: PendingImportRequest? = null
+    private var pendingImport: FavoritesImportRequest? = null
 
     override fun onRetry() {
         refreshFavoritesCounters()
@@ -166,6 +174,8 @@ internal class ProfileViewModel @Inject constructor(
     private fun onExportFavorites(site: SelectedSite, type: ExportType) = viewModelScope.launch {
         if (currentState.isExportInProgress || currentState.isImportInProgress) return@launch
 
+        syncSelectedSite(site)
+
         setState { copy(isExportInProgress = true) }
         val prepared = runCatching {
             prepareFavoritesExportUseCase(
@@ -186,6 +196,7 @@ internal class ProfileViewModel @Inject constructor(
         }
     }
 
+    /** Сохраняет подготовленный JSON экспорта в выбранную пользователем папку. */
     private fun onSaveExportToFolder(folderUri: Uri?) = viewModelScope.launch {
         val export = pendingExport
         if (export == null) {
@@ -205,7 +216,7 @@ internal class ProfileViewModel @Inject constructor(
         setState { copy(isExportInProgress = true) }
         val saveResult = runCatching {
             withContext(Dispatchers.IO) {
-                saveExportToFolder(
+                saveJsonToFolderUseCase(
                     folderUri = folderUri,
                     fileName = export.fileName,
                     json = export.json,
@@ -221,10 +232,11 @@ internal class ProfileViewModel @Inject constructor(
         }
     }
 
+    /** Stores selected site/type until user picks import file in SAF. */
     private fun onImportFavorites(site: SelectedSite, type: ExportType) {
         if (currentState.isExportInProgress || currentState.isImportInProgress) return
 
-        pendingImport = PendingImportRequest(
+        pendingImport = FavoritesImportRequest(
             site = site,
             type = when (type) {
                 ExportType.ARTISTS -> FavoritesImportType.ARTISTS
@@ -234,6 +246,7 @@ internal class ProfileViewModel @Inject constructor(
         setEffect(Effect.OpenImportFilePicker)
     }
 
+    /** Reads file json, imports favorites and navigates to detailed import result screen. */
     private fun onImportFavoritesFromFile(fileUri: Uri?) = viewModelScope.launch {
         val import = pendingImport
         if (import == null) {
@@ -250,10 +263,12 @@ internal class ProfileViewModel @Inject constructor(
             return@launch
         }
 
+        syncSelectedSite(import.site)
+
         setState { copy(isImportInProgress = true) }
         val importResult = runCatching {
             withContext(Dispatchers.IO) {
-                val rawJson = readJsonFromUri(fileUri)
+                val rawJson = readJsonFromUriUseCase(fileUri)
                 importFavoritesFromJsonUseCase(
                     site = import.site,
                     type = import.type,
@@ -332,60 +347,41 @@ internal class ProfileViewModel @Inject constructor(
         }
     }
 
-    private fun saveExportToFolder(
-        folderUri: Uri,
-        fileName: String,
-        json: String,
-    ) {
-        val resolver = appContext.contentResolver
-        val rwFlags = Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_WRITE_URI_PERMISSION
-        runCatching { resolver.takePersistableUriPermission(folderUri, rwFlags) }
-
-        val treeId = DocumentsContract.getTreeDocumentId(folderUri)
-        val treeDocumentUri = DocumentsContract.buildDocumentUriUsingTree(folderUri, treeId)
-
-        val createdFileUri = DocumentsContract.createDocument(
-            resolver,
-            treeDocumentUri,
-            "application/json",
-            fileName,
-        ) ?: error("Failed to create export file")
-
-        resolver.openOutputStream(createdFileUri)?.use { stream ->
-            stream.write(json.toByteArray(Charsets.UTF_8))
-        } ?: error("Failed to open export file stream")
-    }
-
-    private fun readJsonFromUri(fileUri: Uri): String {
-        val resolver = appContext.contentResolver
-        runCatching {
-            resolver.takePersistableUriPermission(fileUri, Intent.FLAG_GRANT_READ_URI_PERMISSION)
-        }
-
-        return resolver.openInputStream(fileUri)?.bufferedReader(Charsets.UTF_8)?.use { reader ->
-            reader.readText()
-        } ?: error("Failed to open import file stream")
-    }
-
+    /** Навигация с предварительным сохранением выбранного сайта в storage. */
     private fun navigateWithSelectedSite(site: SelectedSite, destination: NavKey) {
         navigationStorage.put(KEY_SELECT_SITE, site)
         navigationManager.navigate(destination)
     }
 
+    /** Keeps selected site aligned with operation target site before API/local work. */
+    private suspend fun syncSelectedSite(site: SelectedSite) {
+        val service = when (site) {
+            SelectedSite.K -> KEMONO_REFERENCE_SERVICE
+            SelectedSite.C -> COOMER_REFERENCE_SERVICE
+        }
+        val targetSite = domainResolver.selectedSiteByService(service)
+        selectedSiteUseCase.setSiteAndAwait(targetSite)
+    }
+
     /** Настройки */
     private fun navigateToSettings() = navigationManager.navigate(getSettingDestinationUseCase())
 
+    /** Экран загрузок. */
     private fun navigateToDownloads() = navigationManager.navigate(downloadNavigator.getDownloadsDest())
 
+    /** Экран blacklist авторов. */
     private fun navigateToAuthorsBlacklist() = navigationManager.navigate(AuthDestination.AuthorsBlacklist)
 
+    /** Экран FAQ. */
     private fun navigateToFaq() = navigationManager.navigate(AuthDestination.Faq)
 
+    /** Навигация на экран результата импорта с payload через navigation storage. */
     private fun navigateToImportResult(payload: ImportResultPayload) {
         navigationStorage.put(KEY_IMPORT_RESULT_PAYLOAD, payload)
         navigationManager.navigate(AuthDestination.ImportResult)
     }
 
+    /** Обновляет счетчики свежих обновлений по избранным авторам для двух сайтов. */
     private fun refreshFavoritesCounters() {
         setState {
             copy(
@@ -396,8 +392,8 @@ internal class ProfileViewModel @Inject constructor(
         }
     }
 
-    private data class PendingImportRequest(
-        val site: SelectedSite,
-        val type: FavoritesImportType,
-    )
+    private companion object {
+        const val KEMONO_REFERENCE_SERVICE = "patreon"
+        const val COOMER_REFERENCE_SERVICE = "onlyfans"
+    }
 }

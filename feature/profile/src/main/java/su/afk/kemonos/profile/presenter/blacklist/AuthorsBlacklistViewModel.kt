@@ -1,12 +1,7 @@
 package su.afk.kemonos.profile.presenter.blacklist
 
 import android.content.Context
-import android.content.Intent
 import android.net.Uri
-import android.provider.DocumentsContract
-import com.google.gson.JsonElement
-import com.google.gson.JsonObject
-import com.google.gson.JsonParser
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
@@ -27,17 +22,20 @@ import su.afk.kemonos.preferences.site.ISelectedSiteUseCase
 import su.afk.kemonos.preferences.site.setSiteAndAwait
 import su.afk.kemonos.preferences.ui.IUiSettingUseCase
 import su.afk.kemonos.profile.R
+import su.afk.kemonos.profile.domain.blacklist.BlacklistImportEntryReason
+import su.afk.kemonos.profile.domain.blacklist.BlacklistImportEntryStatus
+import su.afk.kemonos.profile.domain.blacklist.ImportBlacklistFromJsonUseCase
+import su.afk.kemonos.profile.domain.blacklist.PrepareBlacklistExportUseCase
+import su.afk.kemonos.profile.domain.file.ReadJsonFromUriUseCase
+import su.afk.kemonos.profile.domain.file.SaveJsonToFolderUseCase
 import su.afk.kemonos.profile.navigation.AuthDestination
 import su.afk.kemonos.profile.presenter.blacklist.AuthorsBlacklistState.*
 import su.afk.kemonos.profile.presenter.importResult.ImportResultItem
 import su.afk.kemonos.profile.presenter.importResult.ImportResultPayload
 import su.afk.kemonos.profile.presenter.importResult.ImportResultStatus
 import su.afk.kemonos.profile.utils.Const.KEY_IMPORT_RESULT_PAYLOAD
-import su.afk.kemonos.storage.api.repository.blacklist.BlacklistedAuthor
 import su.afk.kemonos.storage.api.repository.blacklist.IStoreBlacklistedAuthorsRepository
 import su.afk.kemonos.ui.presenter.baseViewModel.BaseViewModelNew
-import java.time.LocalDate
-import java.time.format.DateTimeFormatter
 import javax.inject.Inject
 
 @HiltViewModel
@@ -48,6 +46,10 @@ internal class AuthorsBlacklistViewModel @Inject constructor(
     private val blacklistedAuthorsRepository: IStoreBlacklistedAuthorsRepository,
     private val domainResolver: IDomainResolver,
     private val selectedSiteUseCase: ISelectedSiteUseCase,
+    private val prepareBlacklistExportUseCase: PrepareBlacklistExportUseCase,
+    private val importBlacklistFromJsonUseCase: ImportBlacklistFromJsonUseCase,
+    private val readJsonFromUriUseCase: ReadJsonFromUriUseCase,
+    private val saveJsonToFolderUseCase: SaveJsonToFolderUseCase,
     private val uiSetting: IUiSettingUseCase,
     @param:ApplicationContext private val appContext: Context,
     override val errorHandler: IErrorHandlerUseCase,
@@ -75,6 +77,7 @@ internal class AuthorsBlacklistViewModel @Inject constructor(
         }
     }
 
+    /** Наблюдает за локальным blacklist в Room и обновляет список на экране. */
     private fun observeBlacklist() {
         blacklistedAuthorsRepository.observeAll()
             .onEach { items ->
@@ -87,6 +90,7 @@ internal class AuthorsBlacklistViewModel @Inject constructor(
             .launchIn(viewModelScope)
     }
 
+    /** Синхронизирует UI-настройки между экраном и хранилищем prefs. */
     private fun observeUiSetting() {
         uiSetting.prefs.distinctUntilChanged()
             .onEach { model ->
@@ -95,16 +99,19 @@ internal class AuthorsBlacklistViewModel @Inject constructor(
             .launchIn(viewModelScope)
     }
 
+    /** Удаляет автора из локального blacklist по service/id. */
     private fun removeAuthor(service: String, creatorId: String) = viewModelScope.launch {
         blacklistedAuthorsRepository.remove(service = service, creatorId = creatorId)
     }
 
+    /** Подтверждает удаление автора из диалога и очищает pending-состояние. */
     private fun confirmRemoveAuthor() = viewModelScope.launch {
         val pending = currentState.pendingRemoveAuthor ?: return@launch
         removeAuthor(service = pending.service, creatorId = pending.creatorId)
         setState { copy(pendingRemoveAuthor = null) }
     }
 
+    /** Перед открытием профиля переключает активный сайт в соответствии с service автора. */
     private fun openProfile(service: String, creatorId: String) = viewModelScope.launch {
         val targetSite = domainResolver.selectedSiteByService(service)
         selectedSiteUseCase.setSiteAndAwait(targetSite)
@@ -117,11 +124,13 @@ internal class AuthorsBlacklistViewModel @Inject constructor(
         )
     }
 
+    /** Стартует workflow экспорта: открывает системный выбор папки. */
     private fun onExportBlacklist() {
         if (currentState.isImportExportInProgress) return
         setEffect(Effect.OpenExportFolderPicker)
     }
 
+    /** Экспортирует текущий blacklist в JSON-файл в выбранную папку. */
     private fun onSaveExportToFolder(folderUri: Uri?) = viewModelScope.launch {
         if (folderUri == null) {
             setEffect(Effect.ShowMessage(appContext.getString(R.string.profile_blacklist_export_cancelled)))
@@ -130,12 +139,21 @@ internal class AuthorsBlacklistViewModel @Inject constructor(
 
         setState { copy(isImportExportInProgress = true) }
         val exportResult = runCatching {
+            val items = withContext(Dispatchers.IO) {
+                blacklistedAuthorsRepository.observeAll().first()
+            }
+            items.firstOrNull()?.let { firstAuthor ->
+                syncSelectedSiteByService(firstAuthor.service)
+            }
+            val payload = prepareBlacklistExportUseCase(items)
+
             withContext(Dispatchers.IO) {
-                val items = blacklistedAuthorsRepository.observeAll().first()
-                val fileName = buildExportFileName(items.size)
-                val json = buildExportJson(items)
-                saveExportToFolder(folderUri = folderUri, fileName = fileName, json = json)
-                fileName
+                saveJsonToFolderUseCase(
+                    folderUri = folderUri,
+                    fileName = payload.fileName,
+                    json = payload.json,
+                )
+                payload.fileName
             }
         }
         setState { copy(isImportExportInProgress = false) }
@@ -151,11 +169,13 @@ internal class AuthorsBlacklistViewModel @Inject constructor(
         }
     }
 
+    /** Стартует workflow импорта: открывает системный выбор JSON-файла. */
     private fun onImportBlacklist() {
         if (currentState.isImportExportInProgress) return
         setEffect(Effect.OpenImportFilePicker)
     }
 
+    /** Импортирует blacklist из JSON и навигирует на экран детального результата. */
     private fun onImportBlacklistFromFile(fileUri: Uri?) = viewModelScope.launch {
         if (fileUri == null) {
             setEffect(Effect.ShowMessage(appContext.getString(R.string.profile_blacklist_import_cancelled)))
@@ -164,10 +184,8 @@ internal class AuthorsBlacklistViewModel @Inject constructor(
 
         setState { copy(isImportExportInProgress = true) }
         val importResult = runCatching {
-            withContext(Dispatchers.IO) {
-                val rawJson = readJsonFromUri(fileUri)
-                importFromJson(rawJson)
-            }
+            val rawJson = withContext(Dispatchers.IO) { readJsonFromUriUseCase(fileUri) }
+            importBlacklistFromJsonUseCase(rawJson)
         }
         setState { copy(isImportExportInProgress = false) }
 
@@ -182,7 +200,32 @@ internal class AuthorsBlacklistViewModel @Inject constructor(
                         result.failedCount,
                         result.skippedCount,
                     ),
-                    items = result.entries,
+                    items = result.entries.map { entry ->
+                        ImportResultItem(
+                            rowNumber = entry.rowNumber,
+                            target = entry.target.ifBlank {
+                                appContext.getString(R.string.profile_import_result_unknown_target)
+                            },
+                            status = when (entry.status) {
+                                BlacklistImportEntryStatus.SUCCESS -> ImportResultStatus.SUCCESS
+                                BlacklistImportEntryStatus.FAILED -> ImportResultStatus.FAILED
+                                BlacklistImportEntryStatus.SKIPPED -> ImportResultStatus.SKIPPED
+                            },
+                            reason = when (entry.reason) {
+                                BlacklistImportEntryReason.NONE ->
+                                    appContext.getString(R.string.profile_import_reason_none)
+
+                                BlacklistImportEntryReason.INVALID_ITEM ->
+                                    appContext.getString(R.string.profile_import_reason_invalid_item)
+
+                                BlacklistImportEntryReason.DUPLICATE_IN_FILE ->
+                                    appContext.getString(R.string.profile_import_reason_duplicate)
+
+                                BlacklistImportEntryReason.REQUEST_FAILED ->
+                                    appContext.getString(R.string.profile_import_reason_request_failed)
+                            },
+                        )
+                    },
                 )
             )
         }.onFailure { throwable ->
@@ -204,187 +247,16 @@ internal class AuthorsBlacklistViewModel @Inject constructor(
         }
     }
 
-    private fun buildExportJson(items: List<BlacklistedAuthor>): String {
-        return buildString(items.size * 64 + 2) {
-            append("[")
-            items.forEachIndexed { index, item ->
-                if (index > 0) append(",")
-                append(
-                    """
-                    {"service":${item.service.toJsonString()},"creatorId":${item.creatorId.toJsonString()},"creatorName":${item.creatorName.toJsonString()},"createdAt":${item.createdAt}}
-                    """.trimIndent()
-                )
-            }
-            append("]")
-        }
-    }
-
-    private suspend fun importFromJson(rawJson: String): ImportResult {
-        val root = JsonParser.parseString(rawJson)
-        if (!root.isJsonArray) error("Invalid blacklist import format")
-
-        val unique = LinkedHashMap<String, IndexedBlacklistAuthor>()
-        val entries = ArrayList<ImportResultItem>(root.asJsonArray.size())
-
-        for ((index, element) in root.asJsonArray.withIndex()) {
-            val rowNumber = index + 1
-            val parsed = parseBlacklistItem(element)
-            if (parsed == null) {
-                entries += ImportResultItem(
-                    rowNumber = rowNumber,
-                    target = appContext.getString(R.string.profile_import_result_unknown_target),
-                    status = ImportResultStatus.SKIPPED,
-                    reason = appContext.getString(R.string.profile_import_reason_invalid_item),
-                )
-                continue
-            }
-
-            val key = "${parsed.service}:${parsed.creatorId}"
-            if (unique.containsKey(key)) {
-                entries += ImportResultItem(
-                    rowNumber = rowNumber,
-                    target = key,
-                    status = ImportResultStatus.SKIPPED,
-                    reason = appContext.getString(R.string.profile_import_reason_duplicate),
-                )
-                continue
-            }
-
-            unique[key] = IndexedBlacklistAuthor(
-                rowNumber = rowNumber,
-                author = parsed,
-            )
-        }
-
-        for ((key, indexedAuthor) in unique.entries) {
-            runCatching { blacklistedAuthorsRepository.upsert(indexedAuthor.author) }
-                .onSuccess {
-                    entries += ImportResultItem(
-                        rowNumber = indexedAuthor.rowNumber,
-                        target = key,
-                        status = ImportResultStatus.SUCCESS,
-                        reason = appContext.getString(R.string.profile_import_reason_none),
-                    )
-                }
-                .onFailure {
-                    entries += ImportResultItem(
-                        rowNumber = indexedAuthor.rowNumber,
-                        target = key,
-                        status = ImportResultStatus.FAILED,
-                        reason = appContext.getString(R.string.profile_import_reason_request_failed),
-                    )
-                }
-        }
-
-        return ImportResult(
-            entries = entries.sortedBy { it.rowNumber },
-        )
-    }
-
-    private fun parseBlacklistItem(element: JsonElement): BlacklistedAuthor? {
-        if (!element.isJsonObject) return null
-        val obj = element.asJsonObject
-
-        val service = obj.stringField("service") ?: return null
-        val creatorId = obj.stringField("creatorId") ?: obj.stringField("id") ?: return null
-        val creatorName = obj.stringField("creatorName")
-            ?: obj.stringField("name")
-            ?: creatorId
-        val createdAt = obj.longField("createdAt") ?: System.currentTimeMillis()
-
-        return BlacklistedAuthor(
-            service = service,
-            creatorId = creatorId,
-            creatorName = creatorName,
-            createdAt = createdAt,
-        )
-    }
-
-    private fun JsonObject.stringField(name: String): String? =
-        runCatching { get(name) }
-            .getOrNull()
-            ?.takeIf { !it.isJsonNull }
-            ?.let { runCatching { it.asString }.getOrNull() }
-            ?.trim()
-            ?.takeIf { it.isNotEmpty() }
-
-    private fun JsonObject.longField(name: String): Long? =
-        runCatching { get(name) }
-            .getOrNull()
-            ?.takeIf { !it.isJsonNull }
-            ?.let { runCatching { it.asLong }.getOrNull() }
-
-    private fun String.toJsonString(): String = buildString(length + 2) {
-        append('"')
-        for (ch in this@toJsonString) {
-            when (ch) {
-                '\\' -> append("\\\\")
-                '"' -> append("\\\"")
-                '\n' -> append("\\n")
-                '\r' -> append("\\r")
-                '\t' -> append("\\t")
-                else -> append(ch)
-            }
-        }
-        append('"')
-    }
-
-    private fun buildExportFileName(count: Int): String {
-        val datePart = LocalDate.now().format(DateTimeFormatter.ofPattern("dd_MM_yyyy"))
-        return "Blacklist_Authors_(${count})_${datePart}.json"
-    }
-
-    private fun saveExportToFolder(
-        folderUri: Uri,
-        fileName: String,
-        json: String,
-    ) {
-        val resolver = appContext.contentResolver
-        val rwFlags = Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_WRITE_URI_PERMISSION
-        runCatching { resolver.takePersistableUriPermission(folderUri, rwFlags) }
-
-        val treeId = DocumentsContract.getTreeDocumentId(folderUri)
-        val treeDocumentUri = DocumentsContract.buildDocumentUriUsingTree(folderUri, treeId)
-
-        val createdFileUri = DocumentsContract.createDocument(
-            resolver,
-            treeDocumentUri,
-            "application/json",
-            fileName,
-        ) ?: error("Failed to create export file")
-
-        resolver.openOutputStream(createdFileUri)?.use { stream ->
-            stream.write(json.toByteArray(Charsets.UTF_8))
-        } ?: error("Failed to open export file stream")
-    }
-
-    private fun readJsonFromUri(fileUri: Uri): String {
-        val resolver = appContext.contentResolver
-        runCatching {
-            resolver.takePersistableUriPermission(fileUri, Intent.FLAG_GRANT_READ_URI_PERMISSION)
-        }
-
-        return resolver.openInputStream(fileUri)?.bufferedReader(Charsets.UTF_8)?.use { reader ->
-            reader.readText()
-        } ?: error("Failed to open import file stream")
-    }
-
+    /** Открывает экран результата импорта с сохраненным payload в navigation storage. */
     private fun navigateToImportResult(payload: ImportResultPayload) {
         navigationStorage.put(KEY_IMPORT_RESULT_PAYLOAD, payload)
         navManager.navigate(AuthDestination.ImportResult)
     }
 
-    private data class ImportResult(
-        val entries: List<ImportResultItem>,
-    ) {
-        val processedCount: Int get() = entries.size
-        val importedCount: Int get() = entries.count { it.status == ImportResultStatus.SUCCESS }
-        val failedCount: Int get() = entries.count { it.status == ImportResultStatus.FAILED }
-        val skippedCount: Int get() = entries.count { it.status == ImportResultStatus.SKIPPED }
+    /** Синхронизирует выбранный сайт приложения с service из импортируемых/экспортируемых данных. */
+    private suspend fun syncSelectedSiteByService(service: String) {
+        val targetSite = domainResolver.selectedSiteByService(service)
+        selectedSiteUseCase.setSiteAndAwait(targetSite)
     }
 
-    private data class IndexedBlacklistAuthor(
-        val rowNumber: Int,
-        val author: BlacklistedAuthor,
-    )
 }

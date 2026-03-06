@@ -97,4 +97,10 @@ interface IUiSettingUseCase {
 
     /** Использовать внешнее хранилище метадатнных */
     suspend fun setUseExternalMetaData(value: Boolean)
+
+    /** Сохранить timestamp первой инициализации баннера оценки в Creators (ms). */
+    suspend fun setCreatorsGithubRateBannerInstallTsMs(value: Long)
+
+    /** Отключить/включить показ баннера оценки приложения на GitHub в Creators. */
+    suspend fun setCreatorsGithubRateBannerDisabled(value: Boolean)
 }

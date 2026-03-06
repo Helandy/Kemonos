@@ -200,6 +200,12 @@ data class UiSettingModel(
 
     /** Использовать внешнее хранилище метадатнных */
     val useExternalMetaData: Boolean = USE_EXTERNAL_METADATA,
+
+    /** Timestamp первой инициализации баннера оценки в Creators (0 = еще не установлен). */
+    val creatorsGithubRateBannerInstallTsMs: Long = 0L,
+
+    /** Не показывать баннер "оцените приложение на GitHub" в Creators. */
+    val creatorsGithubRateBannerDisabled: Boolean = false,
 ) {
     companion object {
         val DEFAULT_CREATORS_VIEW_MODE = CreatorViewMode.LIST

@@ -10,6 +10,8 @@ import su.afk.kemonos.preferences.ui.UiSettingKey.AUTOPLAY_COMMUNITY_VIDEO
 import su.afk.kemonos.preferences.ui.UiSettingKey.BLUR_IMAGES
 import su.afk.kemonos.preferences.ui.UiSettingKey.COIL_CACHE_SIZE_MB
 import su.afk.kemonos.preferences.ui.UiSettingKey.CREATORS_FAVORITE_VIEW_MODE
+import su.afk.kemonos.preferences.ui.UiSettingKey.CREATORS_GITHUB_RATE_BANNER_DISABLED
+import su.afk.kemonos.preferences.ui.UiSettingKey.CREATORS_GITHUB_RATE_BANNER_INSTALL_TS_MS
 import su.afk.kemonos.preferences.ui.UiSettingKey.CREATORS_VIEW_MODE
 import su.afk.kemonos.preferences.ui.UiSettingKey.CREATOR_PROFILE_HIDDEN_TABS
 import su.afk.kemonos.preferences.ui.UiSettingKey.CREATOR_PROFILE_TABS_ORDER
@@ -99,7 +101,9 @@ internal class UiSettingUseCase @Inject constructor(
 
             downloadFolderMode = p.readEnum(DOWNLOAD_FOLDER_MODE, UiSettingModel.DEFAULT_DOWNLOAD_FOLDER_MODE),
             addServiceName = p[ADD_SERVICE_NAME] ?: UiSettingModel.DEFAULT_ADD_SERVICE_NAME,
-            useExternalMetaData = p[USE_EXTERNAL_METADATA] ?: UiSettingModel.USE_EXTERNAL_METADATA
+            useExternalMetaData = p[USE_EXTERNAL_METADATA] ?: UiSettingModel.USE_EXTERNAL_METADATA,
+            creatorsGithubRateBannerInstallTsMs = p[CREATORS_GITHUB_RATE_BANNER_INSTALL_TS_MS] ?: 0L,
+            creatorsGithubRateBannerDisabled = p[CREATORS_GITHUB_RATE_BANNER_DISABLED] ?: false,
         )
     }
 
@@ -278,6 +282,16 @@ internal class UiSettingUseCase @Inject constructor(
     override suspend fun setUseExternalMetaData(value: Boolean) {
         dataStore.edit { it[USE_EXTERNAL_METADATA] = value }
     }
+
+    /** Сохранить timestamp первой инициализации баннера оценки в Creators (ms). */
+    override suspend fun setCreatorsGithubRateBannerInstallTsMs(value: Long) {
+        dataStore.edit { it[CREATORS_GITHUB_RATE_BANNER_INSTALL_TS_MS] = value }
+    }
+
+    /** Отключить/включить показ баннера оценки приложения на GitHub в Creators. */
+    override suspend fun setCreatorsGithubRateBannerDisabled(value: Boolean) {
+        dataStore.edit { it[CREATORS_GITHUB_RATE_BANNER_DISABLED] = value }
+    }
 }
 
 object UiSettingKey {
@@ -324,6 +338,10 @@ object UiSettingKey {
     val DOWNLOAD_FOLDER_MODE = stringPreferencesKey("DOWNLOAD_FOLDER_MODE")
     val ADD_SERVICE_NAME = booleanPreferencesKey("ADD_SERVICE_NAME")
     val USE_EXTERNAL_METADATA = booleanPreferencesKey("USE_EXTERNAL_METADATA")
+    val CREATORS_GITHUB_RATE_BANNER_INSTALL_TS_MS =
+        longPreferencesKey("CREATORS_GITHUB_RATE_BANNER_INSTALL_TS_MS")
+    val CREATORS_GITHUB_RATE_BANNER_DISABLED =
+        booleanPreferencesKey("CREATORS_GITHUB_RATE_BANNER_DISABLED")
 
     val COIL_CACHE_SIZE_MB = intPreferencesKey("COIL_CACHE_SIZE_MB")
 }

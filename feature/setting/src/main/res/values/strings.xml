@@ -147,8 +147,9 @@
     <string name="settings_show_preview_video_title">Show video previews</string>
     <string name="settings_autoplay_community_video_title">Autoplay videos in Community/Discord</string>
     <string name="settings_autoplay_community_video_subtitle">Load and play videos inline without tap</string>
-    <string name="settings_discord_reverse_default_title">Discord: reverse order by default</string>
-    <string name="settings_discord_reverse_default_subtitle">Enable to open chats with newest messages first</string>
+    <string name="settings_discord_reverse_default_title">Discord: newest first</string>
+    <string name="settings_discord_reverse_default_subtitle">When enabled, chats open with newest messages first
+    </string>
     <string name="settings_blur_images_title">Blur images</string>
     <string name="settings_blur_images_substring" translatable="false">Android >12</string>
     <string name="settings_show_image_preview_download_action_title">Show download on image previews</string>
