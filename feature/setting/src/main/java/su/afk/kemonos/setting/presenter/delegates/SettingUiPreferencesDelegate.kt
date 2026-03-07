@@ -96,10 +96,6 @@ class SettingUiPreferencesDelegate @Inject constructor(
             is SettingState.Event.ChangeViewSetting.CoilCacheSizeMb ->
                 scope.launch { uiSetting.setCoilCacheSizeMb(event.value) }
 
-            /** Размер кэша превьюшек (MB) */
-            is SettingState.Event.ChangeViewSetting.PreviewVideoSizeMb ->
-                scope.launch { uiSetting.setPreviewVideoSizeMb(event.value) }
-
             /** Размер постов в сетке */
             is SettingState.Event.ChangeViewSetting.EditPostsSize ->
                 scope.launch { uiSetting.setPostsSize(event.value) }
@@ -107,6 +103,10 @@ class SettingUiPreferencesDelegate @Inject constructor(
             /** Показывать превью видео */
             is SettingState.Event.ChangeViewSetting.ShowPreviewVideo ->
                 scope.launch { uiSetting.setShowPreviewVideo(event.value) }
+
+            /** Формат карточки превью видео */
+            is SettingState.Event.ChangeViewSetting.VideoPreviewAspectRatioChanged ->
+                scope.launch { uiSetting.setVideoPreviewAspectRatio(event.value) }
 
             /** Автовоспроизведение видео в Community/Discord */
             is SettingState.Event.ChangeViewSetting.AutoplayCommunityVideo ->

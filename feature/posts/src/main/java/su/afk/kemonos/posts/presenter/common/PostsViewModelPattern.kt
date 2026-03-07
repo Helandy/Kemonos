@@ -7,7 +7,7 @@ import su.afk.kemonos.preferences.ui.UiSettingModel
 import su.afk.kemonos.storage.api.repository.blacklist.IStoreBlacklistedAuthorsRepository
 import su.afk.kemonos.storage.api.repository.blacklist.blacklistKey
 
-internal const val POSTS_SEARCH_DEBOUNCE_MILLIS = 700L
+internal const val POSTS_SEARCH_DEBOUNCE_MILLIS = 1_500L
 
 internal fun IStoreBlacklistedAuthorsRepository.observeBlacklistedAuthorKeys(): Flow<Set<String>> =
     observeAll()

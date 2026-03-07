@@ -53,7 +53,7 @@ internal class PostLoadDelegate @Inject constructor(
     }
 
     suspend fun loadRevision(sourcePost: PostContentDomain, revisionId: Int?): LoadedRevisionData {
-        val resolvedPost = sourcePost.toResolvedPost(revisionId)
+        val resolvedPost = sourcePost.resolveRevisionPost(revisionId)
         return LoadedRevisionData(
             resolvedPost = resolvedPost,
             showButtonTranslate = shouldShowTranslate(resolvedPost),
@@ -97,6 +97,30 @@ internal class PostLoadDelegate @Inject constructor(
         return copy(
             post = selected.post,
             attachments = selectedAttachments,
+        )
+    }
+
+    private suspend fun PostContentDomain.resolveRevisionPost(selectedRevisionId: Int?): PostContentDomain {
+        if (selectedRevisionId == null) return this
+
+        val localResolved = toResolvedPost(selectedRevisionId)
+        val backendRevisionId = revisions
+            .firstOrNull { it.revisionId == selectedRevisionId }
+            ?.backendRevisionId
+            ?: return localResolved
+
+        val revisionFromApi = getPostUseCase.getRevision(
+            service = post.service,
+            id = post.userId,
+            postId = post.id,
+            revisionId = backendRevisionId,
+        ) ?: return localResolved
+
+        return revisionFromApi.copy(
+            // Backend revision endpoint can return current post timestamps.
+            // Keep textual/date fields from revision payload in props.revisions.
+            post = localResolved.post,
+            revisions = revisions,
         )
     }
 

@@ -4,14 +4,14 @@ import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
-import su.afk.kemonos.profile.data.AccountRepository
-import su.afk.kemonos.profile.data.AuthRepository
-import su.afk.kemonos.profile.data.FavoritesRepository
-import su.afk.kemonos.profile.data.ImportExportRepository
-import su.afk.kemonos.profile.domain.IAuthRepository
-import su.afk.kemonos.profile.domain.account.IAccountRepository
-import su.afk.kemonos.profile.domain.favorites.IFavoritesRepository
-import su.afk.kemonos.profile.domain.favorites.IImportExportRepository
+import su.afk.kemonos.profile.data.repository.AccountRepository
+import su.afk.kemonos.profile.data.repository.AuthRepository
+import su.afk.kemonos.profile.data.repository.FavoritesRepository
+import su.afk.kemonos.profile.data.repository.ImportExportRepository
+import su.afk.kemonos.profile.domain.repository.IAccountRepository
+import su.afk.kemonos.profile.domain.repository.IAuthRepository
+import su.afk.kemonos.profile.domain.repository.IFavoritesRepository
+import su.afk.kemonos.profile.domain.repository.IImportExportRepository
 import javax.inject.Singleton
 
 @Module

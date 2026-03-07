@@ -3,8 +3,10 @@
     <string name="setting">Setting</string>
     <string name="settings_hub_subtitle">Pick a section to configure app behavior.</string>
     <string name="settings_hub_ui_subtitle">Theme, language, view modes, and debug options.</string>
+    <string name="settings_hub_video_title">Video</string>
+    <string name="settings_hub_video_subtitle">Video previews, autoplay, and preview server settings.</string>
     <string name="settings_hub_translate_subtitle">Translation mode and target language.</string>
-    <string name="settings_hub_network_title">Network &amp; API</string>
+    <string name="settings_hub_network_title">Network</string>
     <string name="settings_hub_network_subtitle">API domains and connection-related options.</string>
     <string name="settings_hub_database_title">Database &amp; cache</string>
     <string name="settings_hub_database_subtitle">Cache size limits and cached data cleanup.</string>
@@ -33,20 +35,44 @@
     <!-- Cache categories -->
     <string name="settings_cache_tags_kemono">Tags (Kemono)</string>
     <string name="settings_cache_tags_coomer">Tags (Coomer)</string>
+    <string name="settings_cache_tags_kemono_description">Cached tag lists and tag pages for Kemono.</string>
+    <string name="settings_cache_tags_coomer_description">Cached tag lists and tag pages for Coomer.</string>
 
     <string name="settings_cache_creators_kemono">Creators (Kemono)</string>
     <string name="settings_cache_creators_coomer">Creators (Coomer)</string>
+    <string name="settings_cache_creators_kemono_description">Cached creator lists and creator cards from Kemono.
+    </string>
+    <string name="settings_cache_creators_coomer_description">Cached creator lists and creator cards from Coomer.
+    </string>
 
     <string name="settings_cache_creator_posts_pages">Creator profile posts</string>
     <string name="settings_cache_post_contents">Full posts (content)</string>
+    <string name="settings_cache_posts_search">Posts search</string>
+    <string name="settings_cache_dms">DMs</string>
+    <string name="settings_cache_video_info">Video info</string>
+    <string name="settings_cache_creator_posts_pages_description">Post lists loaded inside creator profiles.</string>
+    <string name="settings_cache_post_contents_description">Saved full post bodies, attachments, and metadata.</string>
+    <string name="settings_cache_posts_search_description">Search results pages for posts on Kemono and Coomer.</string>
+    <string name="settings_cache_dms_description">Cached direct messages and message pages.</string>
+    <string name="settings_cache_video_info_description">Video metadata used for previews and media details.</string>
 
     <string name="settings_cache_popular_kemono">Popular</string>
     <string name="settings_cache_fav_posts_kemono">Favorite posts</string>
     <string name="settings_cache_fav_authors_kemono">Favorite creators</string>
+    <string name="settings_cache_popular_kemono_description">Popular posts feed cache for both Kemono and Coomer.
+    </string>
+    <string name="settings_cache_fav_posts_kemono_description">Locally saved list of favorite posts.</string>
+    <string name="settings_cache_fav_authors_kemono_description">Locally saved list of favorite creators.</string>
 
     <string name="settings_cache_community">Community</string>
     <string name="settings_cache_discord">Discord</string>
     <string name="settings_cache_profiles">Creator profiles</string>
+    <string name="settings_cache_community_description">Community channels and cached pages of community messages.
+    </string>
+    <string name="settings_cache_discord_description">Discord channels and cached pages of Discord messages.</string>
+    <string name="settings_cache_profiles_description">Cached creator profile tabs: links, tags, DMs, announcements, and
+        similar.
+    </string>
     <string name="settings_github_ideas">Bugs/Ideas/Suggestions — please leave them on GitHub</string>
 
     <!--    setting ui -->
@@ -128,11 +154,10 @@
     <string name="settings_cache_sizes_title">Cache</string>
 
     <string name="settings_cache_images_size_title">Image cache size</string>
-    <string name="settings_cache_video_previews_size_title">Video previews cache size</string>
-
     <string name="settings_cache_size_value_mb">%1$d MB</string>
 
     <string name="settings_posts_appearance_title">Posts</string>
+    <string name="settings_video_playback_title">Playback &amp; previews</string>
 
     <string name="settings_posts_size_title">Grid post size</string>
     <string name="settings_posts_size_profile_title">Profile posts: grid size</string>
@@ -145,6 +170,14 @@
     <string name="settings_posts_size_large">L</string>
 
     <string name="settings_show_preview_video_title">Show video previews</string>
+    <string name="settings_video_preview_ratio_title">Video preview format</string>
+    <string name="settings_video_preview_ratio_subtitle">How the preview card looks in the post</string>
+    <string name="settings_video_preview_ratio_16_9">16/9</string>
+    <string name="settings_video_preview_ratio_2_1">2/1</string>
+    <string name="settings_video_preview_ratio_1_1">1/1</string>
+    <string name="settings_video_preview_ratio_1_2">1/2</string>
+    <string name="settings_video_preview_ratio_3f_2f">3/2</string>
+    <string name="settings_video_preview_ratio_2f_3f">2/3</string>
     <string name="settings_autoplay_community_video_title">Autoplay videos in Community/Discord</string>
     <string name="settings_autoplay_community_video_subtitle">Load and play videos inline without tap</string>
     <string name="settings_discord_reverse_default_title">Discord: newest first</string>
@@ -170,12 +203,13 @@
 
     <string name="settings_download_add_service_title">Add service prefix</string>
 
-    <string name="settings_use_external_metadata_title">
-        Use external video metadata
+    <string name="settings_network_video_preview_title">Video preview server</string>
+    <string name="settings_use_external_metadata_title">Use server for video previews</string>
+    <string name="settings_video_preview_server_title">Video preview server address</string>
+    <string name="settings_video_preview_server_hint">
+        You can host and configure your own server using https://github.com/Helandy/KemonosVideoMetaApi
     </string>
-    <string name="settings_use_external_metadata_subtitle">
-        Load pre-generated video frames and metadata instead of fetching them locally
-    </string>
+    <string name="settings_video_preview_server_current">Video preview server: %1$s</string>
 
     <string name="settings_experimental_calendar_title">New calendar for popular posts</string>
     <string name="settings_experimental_calendar_hint">Adds a calendar picker to browse popular posts by date.</string>

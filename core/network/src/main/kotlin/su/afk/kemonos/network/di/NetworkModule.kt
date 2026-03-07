@@ -5,17 +5,23 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.map
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import su.afk.kemonos.network.BuildConfig
 import su.afk.kemonos.network.api.BaseUrlProvider
+import su.afk.kemonos.network.api.FlowBaseUrlProvider
 import su.afk.kemonos.network.api.ReplaceBaseUrlInterceptor
 import su.afk.kemonos.network.api.SwitchingBaseUrlProvider
 import su.afk.kemonos.network.auth.AuthCookieInterceptor
 import su.afk.kemonos.network.textInterceptor.TextInterceptor
+import su.afk.kemonos.network.versionInterceptor.VersionInterceptor
 import su.afk.kemonos.preferences.UrlPrefs
+import su.afk.kemonos.preferences.ui.IUiSettingUseCase
+import su.afk.kemonos.preferences.ui.UiSettingModel
 import java.util.concurrent.TimeUnit
 import javax.inject.Named
 import javax.inject.Qualifier
@@ -35,6 +41,20 @@ internal object NetworkModule {
         @Named("AppScope") scope: CoroutineScope,
         prefs: UrlPrefs
     ): BaseUrlProvider = SwitchingBaseUrlProvider(scope, prefs)
+
+    @Provides
+    @Singleton
+    @Named("VideoPreviewServerBaseUrlProvider")
+    fun provideVideoPreviewServerBaseUrlProvider(
+        @Named("AppScope") scope: CoroutineScope,
+        uiSettingUseCase: IUiSettingUseCase,
+    ): BaseUrlProvider = FlowBaseUrlProvider(
+        scope = scope,
+        initialUrl = UiSettingModel.DEFAULT_VIDEO_PREVIEW_SERVER_URL,
+        urlFlow = uiSettingUseCase.prefs
+            .map { it.videoPreviewServerUrl }
+            .distinctUntilChanged(),
+    )
 
     @Provides
     @Singleton
@@ -76,13 +96,45 @@ internal object NetworkModule {
             }
         }
 
-
-    /** Для запроса инфы о видео */
+    /** Для Self запроса инфы о видео */
     @Provides
+    @Singleton
     @Named("VideoInfoClient")
     fun provideVideoInfoClient(
-        @ApiOkHttp client: OkHttpClient
-    ): OkHttpClient {
-        return client
-    }
+        logging: HttpLoggingInterceptor,
+    ): OkHttpClient = OkHttpClient.Builder()
+        .addInterceptor(logging)
+        .connectTimeout(30, TimeUnit.SECONDS)
+        .readTimeout(30, TimeUnit.SECONDS)
+        .writeTimeout(30, TimeUnit.SECONDS)
+        .build()
+
+    @Provides
+    @Singleton
+    @Named("VideoInfoClientRemote")
+    fun provideVideoInfoClientRemote(
+        @Named("VideoPreviewServerBaseUrlProvider") baseUrlProvider: BaseUrlProvider,
+        logging: HttpLoggingInterceptor,
+        versionInterceptor: VersionInterceptor,
+    ): OkHttpClient = OkHttpClient.Builder()
+        .addInterceptor(ReplaceBaseUrlInterceptor(baseUrlProvider))
+        .addInterceptor(versionInterceptor)
+        .addInterceptor(logging)
+        .callTimeout(60, TimeUnit.SECONDS)
+        .connectTimeout(60, TimeUnit.SECONDS)
+        .readTimeout(60, TimeUnit.SECONDS)
+        .writeTimeout(60, TimeUnit.SECONDS)
+        .build()
+
+    @Provides
+    @Singleton
+    @Named("VideoInfoRetrofitRemote")
+    fun provideVideoInfoRetrofitRemote(
+        @Named("VideoInfoClientRemote") client: OkHttpClient,
+    ): Retrofit = Retrofit.Builder()
+        .baseUrl("https://placeholder/")
+        .client(client)
+        .addConverterFactory(GsonConverterFactory.create())
+        .build()
+
 }

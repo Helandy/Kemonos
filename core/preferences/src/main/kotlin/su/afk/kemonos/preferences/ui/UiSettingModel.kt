@@ -106,6 +106,15 @@ enum class CreatorProfileTabKey {
     COMMUNITY,
 }
 
+enum class VideoPreviewAspectRatio(val ratio: Float) {
+    RATIO_16_9(16f / 9f),
+    RATIO_2_1(2f / 1f),
+    RATIO_1_1(1f / 1f),
+    RATIO_1_2(1f / 2f),
+    RATIO_3F_2F(3f / 2f),
+    RATIO_2F_3F(2f / 3f),
+}
+
 data class UiSettingModel(
 
     /** debug-only: пропустить проверку API при входе */
@@ -166,9 +175,6 @@ data class UiSettingModel(
     /** Размер кэша картинок */
     val coilCacheSizeMb: Int = DEFAULT_COIL_CACHE_SIZE,
 
-    /** Размер кэша превьюшек */
-    val previewVideoSizeMb: Int = DEFAULT_VIDEO_PREVIEW_SIZE,
-
     /** Показывать ли превью видео */
     val showPreviewVideo: Boolean = DEFAULT_SHOW_VIDEO_PREVIEW,
     /** Автовоспроизведение видео в Community/Discord */
@@ -201,6 +207,11 @@ data class UiSettingModel(
     /** Использовать внешнее хранилище метадатнных */
     val useExternalMetaData: Boolean = USE_EXTERNAL_METADATA,
 
+    /** Базовый адрес сервера превью видео */
+    val videoPreviewServerUrl: String = DEFAULT_VIDEO_PREVIEW_SERVER_URL,
+    /** Формат карточки превью видео */
+    val videoPreviewAspectRatio: VideoPreviewAspectRatio = DEFAULT_VIDEO_PREVIEW_ASPECT_RATIO,
+
     /** Timestamp первой инициализации баннера оценки в Creators (0 = еще не установлен). */
     val creatorsGithubRateBannerInstallTsMs: Long = 0L,
 
@@ -229,7 +240,6 @@ data class UiSettingModel(
         val DEFAULT_APP_THEME_MODE = AppThemeMode.SYSTEM
         val DEFAULT_DATE_FORMAT_MODE = DateFormatMode.DD_MM_YYYY
         const val DEFAULT_COIL_CACHE_SIZE = 300
-        const val DEFAULT_VIDEO_PREVIEW_SIZE = 150
         const val DEFAULT_SHOW_VIDEO_PREVIEW = true
         const val DEFAULT_AUTOPLAY_COMMUNITY_VIDEO = true
         const val DEFAULT_DISCORD_COMMUNITY_REVERSE_ORDER_DEFAULT = true
@@ -242,5 +252,7 @@ data class UiSettingModel(
         val DEFAULT_DOWNLOAD_FOLDER_MODE = DownloadFolderMode.CREATOR_POST_TITLE_ID
         const val DEFAULT_ADD_SERVICE_NAME = false
         const val USE_EXTERNAL_METADATA = true
+        const val DEFAULT_VIDEO_PREVIEW_SERVER_URL = "https://kemonos.win"
+        val DEFAULT_VIDEO_PREVIEW_ASPECT_RATIO = VideoPreviewAspectRatio.RATIO_3F_2F
     }
 }

@@ -22,7 +22,7 @@ private const val MAX_TITLE_DIR_LEN = 32
  * Скачивает файл через системный DownloadManager.
  */
 internal class DownloadUtil @Inject constructor(
-    @ApplicationContext private val context: Context,
+    @param:ApplicationContext private val context: Context,
     private val uiSetting: IUiSettingUseCase,
     private val trackedDownloadsRepository: ITrackedDownloadsRepository,
 ) : IDownloadUtil {

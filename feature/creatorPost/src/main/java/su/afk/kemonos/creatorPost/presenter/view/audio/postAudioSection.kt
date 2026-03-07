@@ -7,17 +7,16 @@ import androidx.compose.material3.Text
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import su.afk.kemonos.creatorPost.domain.model.media.MediaInfoState
+import su.afk.kemonos.creatorPost.domain.media.model.MediaInfoState
 import su.afk.kemonos.domain.models.AttachmentDomain
 import su.afk.kemonos.ui.R
 import su.afk.kemonos.ui.uiUtils.format.isAudioFile
-import su.afk.kemonos.utils.url.buildContentUrlToDataSite
 
 internal fun LazyListScope.postAudioSection(
     audios: List<AttachmentDomain>,
     fallbackBaseUrl: String?,
     audioInfo: Map<String, MediaInfoState>,
-    onInfoRequested: (String) -> Unit,
+    onInfoRequested: (String?, String) -> Unit,
     onPlay: (AttachmentDomain) -> Unit,
     onDownload: (AttachmentDomain) -> Unit,
     onShare: (AttachmentDomain) -> Unit,
@@ -43,12 +42,13 @@ internal fun LazyListScope.postAudioSection(
         }
     ) { idx ->
         val a = audios[idx]
-        val url = a.buildContentUrlToDataSite(fallbackBaseUrl = fallbackBaseUrl)
+        val server = a.server ?: fallbackBaseUrl
 
         AudioInfoItem(
             audio = a,
-            url = url,
-            infoState = audioInfo[url],
+            infoState = audioInfo[a.path],
+            server = server,
+            path = a.path,
             requestInfo = onInfoRequested,
             onPlay = onPlay,
             onDownload = onDownload,

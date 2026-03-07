@@ -50,5 +50,5 @@ internal fun CreatorsViewModeRow(
         }
     }
 
-    Divider()
+    HorizontalDivider()
 }

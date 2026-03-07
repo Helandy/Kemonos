@@ -2,10 +2,11 @@ package su.afk.kemonos.storage.database.migrations.kemono
 
 import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
+import su.afk.kemonos.storage.database.migrations.DestructiveMigrationPrefSync
 
-internal val KEMONO_DESTRUCTIVE_TO_17_MIGRATIONS: Array<Migration> =
-    (1..15).map { fromVersion ->
-        object : Migration(fromVersion, 17) {
+internal val KEMONO_DESTRUCTIVE_TO_18_MIGRATIONS: Array<Migration> =
+    (1..16).map { fromVersion ->
+        object : Migration(fromVersion, 18) {
             override fun migrate(db: SupportSQLiteDatabase) {
                 rebuildKemonoSchema(db)
             }
@@ -39,7 +40,6 @@ internal fun rebuildKemonoSchema(db: SupportSQLiteDatabase) {
         "DROP TABLE IF EXISTS `dms_cache`",
         "DROP TABLE IF EXISTS `posts_popular_cache`",
         "DROP TABLE IF EXISTS `tracked_downloads`",
-        "DROP TABLE IF EXISTS `blacklisted_authors`",
     )
     dropSql.forEach(db::execSQL)
 
@@ -91,7 +91,7 @@ internal fun rebuildKemonoSchema(db: SupportSQLiteDatabase) {
         "CREATE TABLE IF NOT EXISTS `comment_revisions` (`service` TEXT NOT NULL, `userId` TEXT NOT NULL, `postId` TEXT NOT NULL, `commentId` TEXT NOT NULL, `revisionId` INTEGER NOT NULL, `added` TEXT NOT NULL, `content` TEXT NOT NULL, PRIMARY KEY(`service`, `userId`, `postId`, `commentId`, `revisionId`), FOREIGN KEY(`service`, `userId`, `postId`, `commentId`) REFERENCES `comments`(`service`, `userId`, `postId`, `commentId`) ON UPDATE NO ACTION ON DELETE CASCADE)",
         "CREATE INDEX IF NOT EXISTS `index_comment_revisions_service_userId_postId_commentId` ON `comment_revisions` (`service`, `userId`, `postId`, `commentId`)",
         "CREATE TABLE IF NOT EXISTS `tags` (`tags` TEXT NOT NULL, `count` INTEGER, PRIMARY KEY(`tags`))",
-        "CREATE TABLE IF NOT EXISTS `video_info` (`name` TEXT NOT NULL, `durationMs` INTEGER NOT NULL, `sizeBytes` INTEGER NOT NULL, `createdAt` INTEGER NOT NULL, PRIMARY KEY(`name`))",
+        "CREATE TABLE IF NOT EXISTS `video_info` (`site` TEXT NOT NULL, `path` TEXT NOT NULL, `durationMs` INTEGER NOT NULL, `sizeBytes` INTEGER NOT NULL, `durationSeconds` INTEGER, `lastStatusCode` INTEGER, `createdAt` INTEGER NOT NULL, PRIMARY KEY(`site`, `path`))",
         "CREATE INDEX IF NOT EXISTS `index_video_info_createdAt` ON `video_info` (`createdAt`)",
         "CREATE TABLE IF NOT EXISTS `creator_posts_cache` (`queryKey` TEXT NOT NULL, `offset` INTEGER NOT NULL, `id` TEXT NOT NULL, `userId` TEXT NOT NULL, `service` TEXT NOT NULL, `title` TEXT, `published` TEXT, `substring` TEXT, `added` TEXT, `edited` TEXT, `incompleteRewardsJson` TEXT, `pollJson` TEXT, `fileName` TEXT, `filePath` TEXT, `attachmentsJson` TEXT, `tagsJson` TEXT, `nextId` TEXT, `prevId` TEXT, `indexInPage` INTEGER NOT NULL, `updatedAt` INTEGER NOT NULL, PRIMARY KEY(`queryKey`, `offset`, `id`))",
         "CREATE INDEX IF NOT EXISTS `index_creator_posts_cache_queryKey_offset` ON `creator_posts_cache` (`queryKey`, `offset`)",
@@ -115,5 +115,6 @@ internal fun rebuildKemonoSchema(db: SupportSQLiteDatabase) {
     )
     createSql.forEach(db::execSQL)
 
+    DestructiveMigrationPrefSync.markDestructiveRebuild(db, scope = "kemono")
     db.execSQL("PRAGMA foreign_keys=ON")
 }

@@ -11,6 +11,8 @@ android {
 
     defaultConfig {
         minSdk = libs.versions.minSdk.get().toInt()
+        val vName = libs.versions.appVersionName.get()
+        buildConfigField("String", "VERSION_NAME", "\"$vName\"")
     }
     buildFeatures {
         buildConfig = true

@@ -30,6 +30,15 @@ internal interface PostsApi {
     ): Response<PostResponseDto>
 
     @HeaderText
+    @GET("v1/{service}/user/{id}/post/{postId}/revision/{revisionId}")
+    suspend fun getProfilePostRevision(
+        @Path("service") service: String,
+        @Path("id") id: String,
+        @Path("postId") postId: String,
+        @Path("revisionId") revisionId: Long,
+    ): Response<PostResponseDto>
+
+    @HeaderText
     @GET("v1/discord/server/{serverId}")
     suspend fun getDiscordServer(
         @Path("serverId") serverId: String,

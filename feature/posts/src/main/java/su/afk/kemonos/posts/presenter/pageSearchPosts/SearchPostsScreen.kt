@@ -43,14 +43,15 @@ internal fun SearchPostsScreen(
 
     val isPageLoading = posts.loadState.refresh is LoadState.Loading
     val isBusy = isPageLoading || siteSwitching
-    val isEmptyResult = posts.itemCount == 0
 
     val focusManager = LocalFocusManager.current
 
     val placement = state.uiSettingModel.randomButtonPlacement
     val showRandomInSearchBar = placement == RandomButtonPlacement.SEARCH_BAR
     val showRandomFab = placement == RandomButtonPlacement.SCREEN
-    val topBarScrollMode = if (isEmptyResult) TopBarScroll.Pinned else TopBarScroll.EnterAlways
+    // Keep top bar scroll mode stable to avoid recreating top bar subtree and losing text-field focus
+    // during debounced search updates.
+    val topBarScrollMode = TopBarScroll.EnterAlways
     val pullState = rememberPullToRefreshState()
 
     BaseScreen(
@@ -68,8 +69,8 @@ internal fun SearchPostsScreen(
                     onToggleHasImages = { onEvent(Event.ToggleHasImages) },
                     label = stringResource(R.string.search),
                     showMediaFiltersInfoTooltip = true,
-                    trailingIcon = {
-                        if (showRandomInSearchBar) {
+                    trailingIcon = if (showRandomInSearchBar) {
+                        {
                             IconButton(
                                 onClick = { onEvent(Event.RandomPost) },
                                 enabled = !isBusy,
@@ -81,6 +82,8 @@ internal fun SearchPostsScreen(
                                 )
                             }
                         }
+                    } else {
+                        null
                     },
                     onSearch = {
                         focusManager.clearFocus()

@@ -21,7 +21,7 @@ internal fun rememberPostCardMeta(post: PostDomain): PostCardMeta {
             imagePath != null -> PreviewState.Image(imagePath)
 
             isVideoFile(post.file?.path) || post.attachments.any { isVideoFile(it.path) } ->
-                PreviewState.Video(url = findFirstVideoPath(post))
+                PreviewState.Video(path = findFirstVideoPath(post))
 
             isAudioFile(post.file?.path) || post.attachments.any { isAudioFile(it.path) } ->
                 PreviewState.Audio

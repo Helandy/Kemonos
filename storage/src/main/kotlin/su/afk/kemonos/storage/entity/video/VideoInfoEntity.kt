@@ -2,17 +2,21 @@ package su.afk.kemonos.storage.entity.video
 
 import androidx.room.Entity
 import androidx.room.Index
-import androidx.room.PrimaryKey
 import su.afk.kemonos.creatorPost.api.domain.model.media.MediaInfo
+import su.afk.kemonos.domain.SelectedSite
 
 @Entity(
     tableName = "video_info",
+    primaryKeys = ["site", "path"],
     indices = [Index("createdAt")]
 )
 data class VideoInfoEntity(
-    @PrimaryKey val name: String,
+    val site: SelectedSite,
+    val path: String,
     val durationMs: Long,
     val sizeBytes: Long,
+    val durationSeconds: Long?,
+    val lastStatusCode: Int?,
     val createdAt: Long,
 ) {
     companion object {
@@ -20,14 +24,19 @@ data class VideoInfoEntity(
         fun VideoInfoEntity.toDomain(): MediaInfo =
             MediaInfo(
                 durationMs = durationMs,
-                sizeBytes = sizeBytes
+                sizeBytes = sizeBytes,
+                durationSeconds = durationSeconds,
+                lastStatusCode = lastStatusCode,
             )
 
-        fun MediaInfo.toEntity(name: String): VideoInfoEntity =
+        fun MediaInfo.toEntity(site: SelectedSite, path: String): VideoInfoEntity =
             VideoInfoEntity(
-                name = name,
+                site = site,
+                path = path,
                 durationMs = durationMs,
                 sizeBytes = sizeBytes,
+                durationSeconds = durationSeconds,
+                lastStatusCode = lastStatusCode,
                 createdAt = System.currentTimeMillis()
             )
     }

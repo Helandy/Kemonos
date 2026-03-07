@@ -5,6 +5,7 @@ import androidx.navigation3.runtime.NavKey
 internal object SettingDestination {
     object Open : NavKey
     object Ui : NavKey
+    object Video : NavKey
     object Translate : NavKey
     object Network : NavKey
     object Database : NavKey

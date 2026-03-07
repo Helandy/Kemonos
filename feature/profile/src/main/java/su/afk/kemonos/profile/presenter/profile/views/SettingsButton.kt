@@ -11,7 +11,7 @@ internal fun SettingsButton(
     onClick: () -> Unit,
 ) {
     ProfileActionCard(
-        title = stringResource(R.string.setting),
+        title = stringResource(R.string.profile_settings_button),
         icon = Icons.Outlined.Settings,
         onClick = onClick,
     )

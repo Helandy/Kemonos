@@ -49,5 +49,5 @@ internal fun PostsViewModeRow(
             )
         }
     }
-    Divider()
+    HorizontalDivider()
 }

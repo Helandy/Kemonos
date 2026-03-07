@@ -2,7 +2,6 @@ package su.afk.kemonos.creatorPost.presenter.view.video
 
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -10,23 +9,17 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Download
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.blur
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import su.afk.kemonos.creatorPost.domain.model.media.MediaInfoState
-import su.afk.kemonos.creatorPost.domain.model.video.VideoThumbState
+import su.afk.kemonos.creatorPost.domain.media.model.MediaInfoState
 import su.afk.kemonos.domain.models.VideoDomain
 import su.afk.kemonos.ui.R
-import su.afk.kemonos.ui.imageLoader.AsyncImageWithStatus
 import su.afk.kemonos.ui.uiUtils.format.formatDurationMinutesSeconds
 import su.afk.kemonos.ui.uiUtils.format.formatSizeMegabytesRounded
 import su.afk.kemonos.ui.video.openVideoExternally
@@ -40,92 +33,79 @@ import su.afk.kemonos.ui.video.openVideoExternally
 internal fun VideoPreviewItem(
     showPreview: Boolean,
     blurImage: Boolean,
+    previewAspectRatio: Float,
+    previewServerUrl: String,
+    useExternalMetaData: Boolean,
     requestKey: Any? = null,
     video: VideoDomain,
-    infoState: MediaInfoState?,
     requestInfo: (server: String, path: String) -> Unit,
-    thumbState: VideoThumbState,
-    requestThumb: (server: String, path: String) -> Unit,
+    infoState: MediaInfoState?,
     onDownloadClick: (url: String, fileName: String) -> Unit,
 ) {
+    val context = LocalContext.current
     val url = remember(video) { "${video.server}/data${video.path}" }
-
-    if (showPreview) {
-        LaunchedEffect(requestKey, url) {
-            requestInfo(video.server, video.path)
-            requestThumb(video.server, video.path)
-        }
+    val remotePreviewReady = when (val state = infoState) {
+        is MediaInfoState.Success -> state.data.videoInfo != null
+        else -> false
+    }
+    val waitingRemoteInfo = useExternalMetaData &&
+            (infoState == null || infoState is MediaInfoState.Loading)
+    val useRemotePreview = useExternalMetaData && remotePreviewReady
+    val useSelfPreview = !useExternalMetaData || (!waitingRemoteInfo && !useRemotePreview)
+    val waitingMeta = !hasResolvedMeta(infoState)
+    val thumbLoading = waitingRemoteInfo || waitingMeta
+    var remotePreviewDelayPassed by remember(url, showPreview, useRemotePreview) {
+        mutableStateOf(false)
     }
 
-    val context = LocalContext.current
-    val thumbLoading = thumbState is VideoThumbState.Loading || thumbState is VideoThumbState.Idle
+    LaunchedEffect(showPreview, useRemotePreview, url) {
+        if (!showPreview || !useRemotePreview) {
+            remotePreviewDelayPassed = false
+            return@LaunchedEffect
+        }
+        remotePreviewDelayPassed = true
+    }
+
+    LaunchedEffect(requestKey, url) {
+        requestInfo(video.server, video.path)
+    }
 
     Column(Modifier.padding(vertical = 4.dp)) {
         Box(
             Modifier.fillMaxWidth()
-                .aspectRatio(16f / 9f)
+                .aspectRatio(previewAspectRatio)
         ) {
-            when (thumbState) {
-                is VideoThumbState.Success -> {
-                    AsyncImageWithStatus(
-                        model = thumbState.bitmap,
-                        contentDescription = video.name,
-                        modifier = Modifier.matchParentSize()
-                            .clip(RoundedCornerShape(8.dp))
-                            .then(if (blurImage) Modifier.blur(14.dp) else Modifier),
-                        contentScale = ContentScale.Crop,
-                    )
-                }
-
-                is VideoThumbState.Error -> {
-                    Box(
-                        Modifier.matchParentSize()
-                            .clip(RoundedCornerShape(8.dp))
-                            .background(MaterialTheme.colorScheme.surfaceVariant),
-                    )
-                }
-
-                VideoThumbState.Idle,
-                VideoThumbState.Loading -> {
-                    Box(
-                        Modifier.matchParentSize()
-                            .clip(RoundedCornerShape(8.dp))
-                            .background(MaterialTheme.colorScheme.surfaceVariant),
-                    )
-                }
+            if (useRemotePreview) {
+                RemotePreview(
+                    showPreview = showPreview && remotePreviewDelayPassed,
+                    previewServerUrl = previewServerUrl,
+                    videoPath = video.path,
+                    contentDescription = video.name,
+                    blurImage = blurImage,
+                )
+            } else if (useSelfPreview) {
+                SelfPreview(
+                    showPreview = showPreview,
+                    url = url,
+                    videoPath = video.path,
+                    contentDescription = video.name,
+                    blurImage = blurImage,
+                    context = context,
+                    onLoadingChanged = {},
+                )
+            } else {
+                SelfPreview(
+                    showPreview = false,
+                    url = url,
+                    videoPath = video.path,
+                    contentDescription = video.name,
+                    blurImage = blurImage,
+                    context = context,
+                    onLoadingChanged = {},
+                )
             }
 
-            if (showPreview) {
-                androidx.compose.animation.AnimatedVisibility(
-                    visible = thumbLoading,
-                    enter = fadeIn(),
-                    exit = fadeOut(),
-                    modifier = Modifier
-                        .align(Alignment.BottomStart)
-                        .padding(10.dp)
-                ) {
-                    Surface(
-                        shape = RoundedCornerShape(48.dp),
-                        tonalElevation = 2.dp,
-                        color = MaterialTheme.colorScheme.surface.copy(alpha = 0.85f),
-                    ) {
-                        Row(
-                            modifier = Modifier.padding(horizontal = 10.dp, vertical = 6.dp),
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            CircularProgressIndicator(
-                                strokeWidth = 2.dp,
-                                modifier = Modifier.size(16.dp)
-                            )
-                            Spacer(Modifier.width(8.dp))
-                            Text(
-                                text = stringResource(R.string.loading),
-                                style = MaterialTheme.typography.labelMedium
-                            )
-                        }
-                    }
-                }
-            }
+            VideoPreviewLoading(thumbLoading)
 
             /** Play Button */
             Button(
@@ -180,16 +160,77 @@ internal fun VideoPreviewItem(
                 overflow = TextOverflow.Ellipsis,
                 style = MaterialTheme.typography.bodyLarge
             )
-            if (infoState is MediaInfoState.Success) {
-                val data = infoState.data
-                val dur = formatDurationMinutesSeconds(data.durationMs) ?: "?"
-                val sizeStr = formatSizeMegabytesRounded(data.sizeBytes) ?: "?"
+            VideoPreviewMeta(infoState)
+        }
+    }
+}
 
+@Composable
+private fun BoxScope.VideoPreviewLoading(visible: Boolean) {
+    androidx.compose.animation.AnimatedVisibility(
+        visible = visible,
+        enter = fadeIn(),
+        exit = fadeOut(),
+        modifier = Modifier
+            .align(Alignment.BottomStart)
+            .padding(10.dp)
+    ) {
+        Surface(
+            shape = RoundedCornerShape(48.dp),
+            tonalElevation = 2.dp,
+            color = MaterialTheme.colorScheme.surface.copy(alpha = 0.85f),
+        ) {
+            Row(
+                modifier = Modifier.padding(horizontal = 10.dp, vertical = 6.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                CircularProgressIndicator(
+                    strokeWidth = 2.dp,
+                    modifier = Modifier.size(16.dp)
+                )
+                Spacer(Modifier.width(8.dp))
                 Text(
-                    text = "⏱ $dur   📦 $sizeStr",
-                    style = MaterialTheme.typography.bodyMedium,
+                    text = stringResource(R.string.loading),
+                    style = MaterialTheme.typography.labelMedium
                 )
             }
         }
     }
+}
+
+@Composable
+private fun VideoPreviewMeta(infoState: MediaInfoState?) {
+    if (infoState !is MediaInfoState.Success) return
+
+    val data = infoState.data
+    val durationMs = data.videoInfo?.durationSeconds?.takeIf { it > 0 }?.times(1000)
+        ?: data.mediaInfo?.durationMs
+        ?: -1L
+    val sizeBytes = data.videoInfo?.sizeBytes?.takeIf { it >= 0 }
+        ?: data.mediaInfo?.sizeBytes
+        ?: -1L
+
+    val dur = formatDurationMinutesSeconds(durationMs) ?: "?"
+    val sizeStr = formatSizeMegabytesRounded(sizeBytes) ?: "?"
+
+    Text(
+        text = "⏱ $dur   📦 $sizeStr",
+        style = MaterialTheme.typography.bodySmall,
+        fontWeight = FontWeight.Bold,
+        color = MaterialTheme.colorScheme.onSurfaceVariant,
+    )
+}
+
+private fun hasResolvedMeta(infoState: MediaInfoState?): Boolean {
+    if (infoState !is MediaInfoState.Success) return false
+
+    val data = infoState.data
+    val durationMs = data.videoInfo?.durationSeconds?.takeIf { it > 0 }?.times(1000)
+        ?: data.mediaInfo?.durationMs
+        ?: -1L
+    val sizeBytes = data.videoInfo?.sizeBytes?.takeIf { it >= 0 }
+        ?: data.mediaInfo?.sizeBytes
+        ?: -1L
+
+    return durationMs > 0L && sizeBytes >= 0L
 }

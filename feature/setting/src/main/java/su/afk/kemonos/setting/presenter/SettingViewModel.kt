@@ -43,6 +43,7 @@ class SettingViewModel @Inject constructor(
             SettingState.Event.Back -> navManager.back()
             SettingState.Event.OpenCreatorTabsOrderEditor -> navManager.navigate(SettingDestination.CreatorTabsOrder)
             SettingState.Event.OpenUiSettings -> navManager.navigate(SettingDestination.Ui)
+            SettingState.Event.OpenVideoSettings -> navManager.navigate(SettingDestination.Video)
             SettingState.Event.OpenTranslateSettings -> navManager.navigate(SettingDestination.Translate)
             SettingState.Event.OpenNetworkSettings -> navManager.navigate(SettingDestination.Network)
             SettingState.Event.OpenDatabaseSettings -> navManager.navigate(SettingDestination.Database)
@@ -97,6 +98,9 @@ class SettingViewModel @Inject constructor(
                 coomerUrl = coomer,
                 inputKemonoDomain = state.value.inputKemonoDomain.ifEmpty { normalizeDomain(kemono) },
                 inputCoomerDomain = state.value.inputCoomerDomain.ifEmpty { normalizeDomain(coomer) },
+                inputVideoPreviewServerDomain = state.value.inputVideoPreviewServerDomain.ifEmpty {
+                    normalizeDomain(state.value.uiSettingModel.videoPreviewServerUrl)
+                },
             )
         }
     }
@@ -118,7 +122,14 @@ class SettingViewModel @Inject constructor(
     private fun observeUiSetting() {
         uiSetting.prefs.distinctUntilChanged()
             .onEach { model ->
-                setState { copy(uiSettingModel = model) }
+                setState {
+                    copy(
+                        uiSettingModel = model,
+                        inputVideoPreviewServerDomain = inputVideoPreviewServerDomain.ifEmpty {
+                            normalizeDomain(model.videoPreviewServerUrl)
+                        },
+                    )
+                }
             }
             .launchIn(viewModelScope)
     }

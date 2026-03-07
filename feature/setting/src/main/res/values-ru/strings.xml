@@ -3,8 +3,10 @@
     <string name="setting">Настройки</string>
     <string name="settings_hub_subtitle">Выберите раздел для настройки поведения приложения.</string>
     <string name="settings_hub_ui_subtitle">Тема, язык, режимы отображения и debug-опции.</string>
+    <string name="settings_hub_video_title">Видео</string>
+    <string name="settings_hub_video_subtitle">Превью видео, автовоспроизведение и сервер превью.</string>
     <string name="settings_hub_translate_subtitle">Режим перевода и язык назначения.</string>
-    <string name="settings_hub_network_title">Сеть и API</string>
+    <string name="settings_hub_network_title">Сеть</string>
     <string name="settings_hub_network_subtitle">Домены API и сетевые параметры.</string>
     <string name="settings_hub_database_title">База данных и кэш</string>
     <string name="settings_hub_database_subtitle">Лимиты кэша и очистка сохраненных данных.</string>
@@ -34,20 +36,48 @@
     <!-- Cache categories -->
     <string name="settings_cache_tags_kemono">Теги (Kemono)</string>
     <string name="settings_cache_tags_coomer">Теги (Coomer)</string>
+    <string name="settings_cache_tags_kemono_description">Закэшированные списки тегов и страницы тегов Kemono.</string>
+    <string name="settings_cache_tags_coomer_description">Закэшированные списки тегов и страницы тегов Coomer.</string>
 
     <string name="settings_cache_creators_kemono">Авторы (Kemono)</string>
     <string name="settings_cache_creators_coomer">Авторы (Coomer)</string>
+    <string name="settings_cache_creators_kemono_description">Закэшированные списки авторов и карточки авторов Kemono.
+    </string>
+    <string name="settings_cache_creators_coomer_description">Закэшированные списки авторов и карточки авторов Coomer.
+    </string>
 
     <string name="settings_cache_creator_posts_pages">Посты в профилях авторов</string>
     <string name="settings_cache_post_contents">Полные посты (контент)</string>
+    <string name="settings_cache_posts_search">Поиск постов</string>
+    <string name="settings_cache_dms">ЛС</string>
+    <string name="settings_cache_video_info">Информация о видео</string>
+    <string name="settings_cache_creator_posts_pages_description">Списки постов, загруженные внутри профилей авторов.
+    </string>
+    <string name="settings_cache_post_contents_description">Сохраненные полные посты, вложения и метаданные.</string>
+    <string name="settings_cache_posts_search_description">Страницы результатов поиска постов в Kemono и Coomer.
+    </string>
+    <string name="settings_cache_dms_description">Закэшированные личные сообщения и страницы переписок.</string>
+    <string name="settings_cache_video_info_description">Метаданные видео для превью и дополнительной информации.
+    </string>
 
     <string name="settings_cache_popular_kemono">Популярное</string>
     <string name="settings_cache_fav_posts_kemono">Избранные посты</string>
     <string name="settings_cache_fav_authors_kemono">Избранные авторы</string>
+    <string name="settings_cache_popular_kemono_description">Кэш ленты популярных постов для Kemono и Coomer.</string>
+    <string name="settings_cache_fav_posts_kemono_description">Локально сохраненный список избранных постов.</string>
+    <string name="settings_cache_fav_authors_kemono_description">Локально сохраненный список избранных авторов.</string>
 
     <string name="settings_cache_community">Комьюнити</string>
     <string name="settings_cache_discord">Discord</string>
     <string name="settings_cache_profiles">Профили авторов</string>
+    <string name="settings_cache_community_description">Каналы community и закэшированные страницы сообщений
+        community.
+    </string>
+    <string name="settings_cache_discord_description">Каналы Discord и закэшированные страницы сообщений Discord.
+    </string>
+    <string name="settings_cache_profiles_description">Закэшированные вкладки профиля автора: ссылки, теги, ЛС, анонсы и
+        похожие.
+    </string>
     <string name="settings_github_ideas">Ошибки/Идеи/Предложения — оставляйте на GitHub</string>
 
     <!--    setting ui -->
@@ -129,11 +159,10 @@
     <string name="settings_cache_sizes_title">Кэш</string>
 
     <string name="settings_cache_images_size_title">Размер кэша картинок</string>
-    <string name="settings_cache_video_previews_size_title">Размер кэша превью видео</string>
-
     <string name="settings_cache_size_value_mb">%1$d МБ</string>
 
     <string name="settings_posts_appearance_title">Посты</string>
+    <string name="settings_video_playback_title">Воспроизведение и превью</string>
 
     <string name="settings_posts_size_title">Размер постов в сетке</string>
     <string name="settings_posts_size_profile_title">Посты профиля: размер сетки</string>
@@ -146,6 +175,14 @@
     <string name="settings_posts_size_large">L</string>
 
     <string name="settings_show_preview_video_title">Показывать превью видео</string>
+    <string name="settings_video_preview_ratio_title">Формат превью видео</string>
+    <string name="settings_video_preview_ratio_subtitle">Как будет выглядеть карточка в посте</string>
+    <string name="settings_video_preview_ratio_16_9">16/9</string>
+    <string name="settings_video_preview_ratio_2_1">2/1</string>
+    <string name="settings_video_preview_ratio_1_1">1/1</string>
+    <string name="settings_video_preview_ratio_1_2">1/2</string>
+    <string name="settings_video_preview_ratio_3f_2f">3/2</string>
+    <string name="settings_video_preview_ratio_2f_3f">2/3</string>
     <string name="settings_autoplay_community_video_title">Автовоспроизведение видео в Комьюнити/Discord</string>
     <string name="settings_autoplay_community_video_subtitle">Загружать и воспроизводить видео в ленте без нажатия
     </string>
@@ -172,10 +209,13 @@
 
     <string name="settings_download_add_service_title">Добавлять префикс сервиса</string>
 
-    <string name="settings_use_external_metadata_title">Использовать внешние метаданные видео</string>
-    <string name="settings_use_external_metadata_subtitle">
-        Получать готовые кадры и данные видео вместо самостоятельной загрузки
+    <string name="settings_network_video_preview_title">Сервер превью видео</string>
+    <string name="settings_use_external_metadata_title">Использовать сервер для превью видео</string>
+    <string name="settings_video_preview_server_title">Адрес сервера превью видео</string>
+    <string name="settings_video_preview_server_hint">
+        Можете поднять и указать свой сервер используя https://github.com/Helandy/KemonosVideoMetaApi
     </string>
+    <string name="settings_video_preview_server_current">Сервер превью видео: %1$s</string>
 
     <string name="settings_experimental_calendar_title">Новый календарь популярных постов</string>
     <string name="settings_experimental_calendar_hint">Добавляет выбор даты для просмотра популярных постов.</string>

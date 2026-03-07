@@ -40,6 +40,7 @@ internal class CreatorsRepository @Inject constructor(
 ) : ICreatorsRepository {
     companion object {
         private const val COMMUNITY_PAGE_SIZE = 150
+        private const val OFFSET_CACHE_DELIMITER = "#o="
     }
 
     /** Профиль посты и поиск */
@@ -231,20 +232,19 @@ internal class CreatorsRepository @Inject constructor(
         channelId: String,
         offset: Int
     ): List<CommunityMessage> {
-        if (offset == 0) {
-            communityCacheStore.getFreshJsonOrNull(service, channelId, CommunityCacheType.MESSAGES_PAGE0)
-                ?.let { return cacheJson.communityMessagesFromJson(it) }
-        }
+        val pageCacheId = channelOffsetCacheId(channelId = channelId, offset = offset)
+        communityCacheStore.getFreshJsonOrNull(service, pageCacheId, CommunityCacheType.MESSAGES_PAGE0)
+            ?.let { return cacheJson.communityMessagesFromJson(it) }
 
         val fromNet = safeCallOrNull(
             api = { api.getProfileCommunityMessages(service, channelId, if (offset == 0) null else offset) },
             mapper = { dto -> dto.toDomain() }
         )
 
-        if (offset == 0 && fromNet != null) {
+        if (fromNet != null) {
             communityCacheStore.putJson(
                 service = service,
-                id = channelId,
+                id = pageCacheId,
                 type = CommunityCacheType.MESSAGES_PAGE0,
                 json = cacheJson.communityMessagesToJson(fromNet),
             )
@@ -254,4 +254,9 @@ internal class CreatorsRepository @Inject constructor(
     }
 
     override fun nextCommunityOffset(currentOffset: Int): Int = currentOffset + COMMUNITY_PAGE_SIZE
+
+    private fun channelOffsetCacheId(channelId: String, offset: Int): String {
+        if (offset <= 0) return channelId
+        return "$channelId$OFFSET_CACHE_DELIMITER$offset"
+    }
 }

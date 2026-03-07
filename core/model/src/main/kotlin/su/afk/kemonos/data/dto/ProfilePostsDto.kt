@@ -34,7 +34,7 @@ data class PostUnifiedDto(
     val edited: String?,
 
     @SerializedName("tags")
-    val tags: List<String>?,
+    val tags: List<String?>?,
 
     @SerializedName("attachments")
     val attachments: List<AttachmentDto>?,
@@ -72,7 +72,7 @@ data class PostUnifiedDto(
             incompleteRewards = incompleteRewards?.toDomain(),
             poll = poll?.toDomain(),
             attachments = attachments.orEmpty().map { it.toDomain() },
-            tags = tags.orEmpty(),
+            tags = tags.orEmpty().filterNotNull(),
             nextId = next,
             prevId = prev,
             favedSeq = favedSeq,

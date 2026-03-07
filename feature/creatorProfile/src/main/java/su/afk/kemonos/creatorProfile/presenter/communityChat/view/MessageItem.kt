@@ -32,12 +32,12 @@ import androidx.compose.ui.unit.sp
 import coil3.compose.AsyncImagePainter
 import coil3.compose.rememberAsyncImagePainter
 import su.afk.kemonos.creatorProfile.api.domain.models.profileCommunity.CommunityMessage
-import su.afk.kemonos.creatorProfile.presenter.communityChat.model.CommunityMedia
+import su.afk.kemonos.creatorProfile.presenter.communityChat.model.MessageItemActions
+import su.afk.kemonos.creatorProfile.presenter.communityChat.model.MessageItemUi
 import su.afk.kemonos.creatorProfile.presenter.communityChat.utils.URL_TAG
 import su.afk.kemonos.creatorProfile.presenter.communityChat.utils.buildMediaUrls
 import su.afk.kemonos.creatorProfile.presenter.communityChat.utils.buildMessageAnnotatedContent
 import su.afk.kemonos.creatorProfile.presenter.communityChat.utils.toUiDateTimeWithTime
-import su.afk.kemonos.preferences.ui.DateFormatMode
 import su.afk.kemonos.ui.R
 import su.afk.kemonos.ui.imageLoader.AsyncImageWithStatus
 import su.afk.kemonos.ui.imageLoader.LocalAppImageLoader
@@ -45,26 +45,17 @@ import su.afk.kemonos.ui.imageLoader.LocalAppImageLoader
 @Composable
 internal fun MessageItem(
     message: CommunityMessage,
-    fallbackBaseUrl: String,
-    dateMode: DateFormatMode,
-    showAuthorAvatar: Boolean,
-    autoplayVideoInline: Boolean,
-    onOpenMedia: (CommunityMedia) -> Unit,
-    onOpenUrl: (String) -> Unit,
-    translateExpandedIds: Set<String>,
-    translateLoadingIds: Set<String>,
-    translatedTextById: Map<String, String>,
-    translateErrorById: Map<String, String>,
-    onToggleTranslate: (String, String) -> Unit,
+    ui: MessageItemUi,
+    actions: MessageItemActions,
 ) {
     val creatorMessage = message.userRole.equals("campaign", ignoreCase = true)
     val bubbleColor = MaterialTheme.colorScheme.surfaceContainerLow
     val contentColor = MaterialTheme.colorScheme.onSurface
     val messageId = message.messageId
-    val isTranslateExpanded = messageId in translateExpandedIds
-    val isTranslateLoading = messageId in translateLoadingIds
-    val translatedText = translatedTextById[messageId]
-    val translateError = translateErrorById[messageId]
+    val isTranslateExpanded = ui.translation.isExpanded(messageId)
+    val isTranslateLoading = ui.translation.isLoading(messageId)
+    val translatedText = ui.translation.translatedText(messageId)
+    val translateError = ui.translation.error(messageId)
     val userNameColor = if (creatorMessage) {
         MaterialTheme.colorScheme.primary
     } else {
@@ -90,7 +81,7 @@ internal fun MessageItem(
                     verticalAlignment = Alignment.Top,
                     horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
-                    if (showAuthorAvatar) {
+                    if (ui.showAuthorAvatar) {
                         MessageAuthorAvatar(
                             avatarUrl = message.userAvatarUrl,
                             userLabel = userLabel
@@ -120,7 +111,7 @@ internal fun MessageItem(
                     }
                 }
                 Text(
-                    text = message.createdAt.toUiDateTimeWithTime(mode = dateMode),
+                    text = message.createdAt.toUiDateTimeWithTime(mode = ui.dateMode),
                     color = contentColor.copy(alpha = 0.75f),
                     style = MaterialTheme.typography.labelSmall,
                     textAlign = TextAlign.End,
@@ -144,16 +135,16 @@ internal fun MessageItem(
                         text = text,
                         textColor = contentColor,
                         modifier = Modifier.padding(top = 4.dp),
-                        onOpenUrl = onOpenUrl
+                        onOpenUrl = actions.onOpenUrl
                     )
                 }
 
-                val mediaUrls = buildMediaUrls(message, fallbackBaseUrl)
+                val mediaUrls = buildMediaUrls(message, ui.fallbackBaseUrl)
                 if (mediaUrls.isNotEmpty()) {
                     MediaGrid(
                         items = mediaUrls,
-                        autoplayVideoInline = autoplayVideoInline,
-                        onOpenMedia = onOpenMedia,
+                        autoplayVideoInline = ui.autoplayVideoInline,
+                        onOpenMedia = actions.onOpenMedia,
                     )
                 }
 
@@ -164,7 +155,7 @@ internal fun MessageItem(
                         horizontalArrangement = Arrangement.End
                     ) {
                         TextButton(
-                            onClick = { onToggleTranslate(messageId, text) },
+                            onClick = { actions.onToggleTranslate(messageId, text) },
                             contentPadding = PaddingValues(horizontal = 8.dp, vertical = 2.dp)
                         ) {
                             Text(
@@ -216,17 +207,8 @@ internal fun MessageItem(
                         replies.forEach { reply ->
                             MessageItem(
                                 message = reply,
-                                fallbackBaseUrl = fallbackBaseUrl,
-                                dateMode = dateMode,
-                                showAuthorAvatar = showAuthorAvatar,
-                                autoplayVideoInline = autoplayVideoInline,
-                                onOpenMedia = onOpenMedia,
-                                onOpenUrl = onOpenUrl,
-                                translateExpandedIds = translateExpandedIds,
-                                translateLoadingIds = translateLoadingIds,
-                                translatedTextById = translatedTextById,
-                                translateErrorById = translateErrorById,
-                                onToggleTranslate = onToggleTranslate,
+                                ui = ui,
+                                actions = actions,
                             )
                         }
                     }

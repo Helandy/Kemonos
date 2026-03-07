@@ -42,13 +42,13 @@ internal class AuthLocalDataSource @Inject constructor(
      * DataStore (НЕ шифрованный): храним тут "не-секретное" — например user (Login) в JSON.
      * DataStore хорош тем, что реактивный (Flow) и удобен для state.
      */
-    @AuthDataStore private val dataStore: DataStore<Preferences>,
+    @param:AuthDataStore private val dataStore: DataStore<Preferences>,
 
     /**
      * EncryptedSharedPreferences (ШИФРОВАННЫЙ): храним тут секрет — session/token/cookie.
      * Это важно, потому что обычный DataStore<Preferences> не шифрует значения.
      */
-    @AuthEncryptedPrefs private val securePrefs: SharedPreferences,
+    @param:AuthEncryptedPrefs private val securePrefs: SharedPreferences,
 
     /**
      * Json для сериализации/десериализации Login.

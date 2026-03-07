@@ -13,7 +13,7 @@ internal class StoragePostsSearchHistoryRepository @Inject constructor(
     private val coomerDao: CoomerPostsSearchHistoryDao,
 ) : IStoragePostsSearchHistoryRepository {
     private companion object {
-        const val MAX_HISTORY_LIMIT = 10
+        const val MAX_HISTORY_LIMIT = 25
     }
 
     override fun observeRecent(site: SelectedSite, limit: Int): Flow<List<String>> =

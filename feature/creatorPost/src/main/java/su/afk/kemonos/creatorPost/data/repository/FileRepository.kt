@@ -1,23 +1,33 @@
 package su.afk.kemonos.creatorPost.data.repository
 
-import su.afk.kemonos.creatorPost.data.api.FileApi
-import su.afk.kemonos.creatorPost.data.dto.file.FileByHashResponseDto.Companion.toDomain
-import su.afk.kemonos.creatorPost.data.dto.file.FileByPathResponseDto.Companion.toDomain
-import su.afk.kemonos.creatorPost.domain.model.file.FileByHashDomain
-import su.afk.kemonos.creatorPost.domain.model.file.FileByPathDomain
+import su.afk.kemonos.creatorPost.api.domain.model.media.MediaInfo
+import su.afk.kemonos.creatorPost.data.api.FileInfoApi
+import su.afk.kemonos.creatorPost.data.dto.file.FileInfoRequestDto
+import su.afk.kemonos.creatorPost.data.dto.file.FileInfoResponseDto.Companion.toMediaInfo
+import su.afk.kemonos.creatorPost.domain.file.model.FileByHashDomain
+import su.afk.kemonos.creatorPost.domain.file.model.FileByPathDomain
 import su.afk.kemonos.creatorPost.domain.repository.IFileRepository
-import su.afk.kemonos.network.util.call
 import javax.inject.Inject
 
 internal class FileRepository @Inject constructor(
-    private val api: FileApi,
+    private val fileInfoApi: FileInfoApi,
 ) : IFileRepository {
 
-    override suspend fun getFileByHash(fileHash: String): FileByHashDomain {
-        return api.getFileByHash(fileHash).call { dto -> dto.toDomain() }
+    override suspend fun getFileByHash(fileHash: String): FileByHashDomain? {
+        return null
     }
 
-    override suspend fun getFileByPath(path: String): FileByPathDomain {
-        return api.getFileByPath(path).call { dto -> dto.toDomain() }
+    override suspend fun getFileByPath(path: String): FileByPathDomain? {
+        return null
+    }
+
+    override suspend fun getRemoteFileInfo(site: String, server: String?, path: String): MediaInfo {
+        return fileInfoApi.getFileInfo(
+            data = FileInfoRequestDto(
+                site = site,
+                server = server,
+                path = path,
+            )
+        ).toMediaInfo()
     }
 }

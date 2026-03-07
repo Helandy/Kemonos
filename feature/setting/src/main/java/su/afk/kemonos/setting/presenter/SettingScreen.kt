@@ -2,6 +2,7 @@ package su.afk.kemonos.setting.presenter
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.outlined.HelpOutline
 import androidx.compose.material.icons.automirrored.outlined.OpenInNew
 import androidx.compose.material.icons.outlined.*
 import androidx.compose.material3.*
@@ -52,6 +53,12 @@ internal fun SettingScreen(
                 onClick = { onEvent(Event.OpenUiSettings) },
             ),
             SettingHubEntry(
+                icon = Icons.Outlined.SmartDisplay,
+                title = stringResource(R.string.settings_hub_video_title),
+                subtitle = stringResource(R.string.settings_hub_video_subtitle),
+                onClick = { onEvent(Event.OpenVideoSettings) },
+            ),
+            SettingHubEntry(
                 icon = Icons.Outlined.Info,
                 title = stringResource(R.string.settings_translate_title),
                 subtitle = stringResource(R.string.settings_hub_translate_subtitle),
@@ -76,7 +83,7 @@ internal fun SettingScreen(
                 onClick = { onEvent(Event.OpenDownloadSettings) },
             ),
             SettingHubEntry(
-                icon = Icons.Outlined.HelpOutline,
+                icon = Icons.AutoMirrored.Outlined.HelpOutline,
                 title = stringResource(R.string.settings_hub_help_import_title),
                 subtitle = stringResource(R.string.settings_hub_help_import_subtitle),
                 onClick = { onEvent(Event.OpenHelpImportSettings) },

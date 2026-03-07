@@ -1,7 +1,7 @@
 package su.afk.kemonos.creatorPost.data.dto.file
 
 import com.google.gson.annotations.SerializedName
-import su.afk.kemonos.creatorPost.domain.model.file.*
+import su.afk.kemonos.creatorPost.domain.file.model.*
 
 internal data class FileByHashResponseDto(
     @SerializedName("type")

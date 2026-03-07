@@ -14,6 +14,7 @@ interface IFreshFavoriteArtistsUpdatesUseCase {
     fun clearAll()
 }
 
+// todo refactor
 @Singleton
 internal class FreshFavoriteArtistsUpdatesUseCase @Inject constructor() : IFreshFavoriteArtistsUpdatesUseCase {
 

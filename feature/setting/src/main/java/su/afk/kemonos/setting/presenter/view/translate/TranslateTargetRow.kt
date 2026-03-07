@@ -49,5 +49,5 @@ internal fun TranslateTargetRow(
             )
         }
     }
-    Divider()
+    HorizontalDivider()
 }

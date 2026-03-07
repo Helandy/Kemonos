@@ -2,8 +2,7 @@ package su.afk.kemonos.creatorPost.presenter
 
 import su.afk.kemonos.creatorPost.api.domain.model.CommentDomain
 import su.afk.kemonos.creatorPost.api.domain.model.PostContentDomain
-import su.afk.kemonos.creatorPost.domain.model.media.MediaInfoState
-import su.afk.kemonos.creatorPost.domain.model.video.VideoThumbState
+import su.afk.kemonos.creatorPost.domain.media.model.MediaInfoState
 import su.afk.kemonos.domain.models.Profile
 import su.afk.kemonos.preferences.ui.UiSettingModel
 import su.afk.kemonos.ui.presenter.androidView.model.PostBlock
@@ -42,7 +41,6 @@ internal class CreatorPostState {
 
         val uiSettingModel: UiSettingModel,
 
-        val videoThumbs: Map<String, VideoThumbState>,
         val videoInfo: Map<String, MediaInfoState>,
         val audioInfo: Map<String, MediaInfoState>,
 
@@ -73,7 +71,6 @@ internal class CreatorPostState {
                 translateText = null,
                 translateError = null,
                 uiSettingModel = UiSettingModel(),
-                videoThumbs = emptyMap(),
                 videoInfo = emptyMap(),
                 audioInfo = emptyMap(),
                 shareInProgress = false,
@@ -101,9 +98,8 @@ internal class CreatorPostState {
         data class Download(val url: String, val fileName: String?) : Event
         data object DownloadAllClicked : Event
 
-        data class VideoThumbRequested(val server: String, val path: String) : Event
         data class VideoInfoRequested(val server: String, val path: String) : Event
-        data class AudioInfoRequested(val url: String) : Event
+        data class AudioInfoRequested(val server: String?, val path: String) : Event
 
         data class PlayAudio(val url: String, val name: String?, val mime: String) : Event
 

@@ -5,7 +5,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.FileUpload
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -37,7 +36,7 @@ internal fun ImportFavoritesCard(
             title = stringResource(R.string.profile_menu_import_favorites),
             icon = Icons.Filled.FileUpload,
             enabled = actionEnabled,
-            onClick = { expanded = true },
+            onClick = { expanded = !expanded },
         )
 
         if (expanded) {
@@ -65,14 +64,6 @@ internal fun ImportFavoritesCard(
                     modifier = Modifier.weight(1f),
                 ) {
                     Text(text = stringResource(R.string.profile_export_posts))
-                }
-
-                OutlinedButton(
-                    onClick = { expanded = false },
-                    enabled = !inProgress,
-                    modifier = Modifier.weight(1f),
-                ) {
-                    Text(text = stringResource(R.string.profile_export_close))
                 }
             }
         }

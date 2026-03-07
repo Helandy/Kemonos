@@ -75,7 +75,16 @@ interface FavoritePostsDao {
     )
     suspend fun exists(site: SelectedSite, service: String, creatorId: String, postId: String): Boolean
 
-    @Query("SELECT * FROM favorite_posts WHERE site = :site")
+    @Query(
+        """
+    SELECT * FROM favorite_posts
+    WHERE site = :site
+    ORDER BY 
+        CASE WHEN favedSeq IS NULL THEN 0 ELSE 1 END,
+        favedSeq DESC,
+        id DESC
+    """
+    )
     suspend fun getAll(site: SelectedSite): List<FavoritePostEntity>
 
     @Query(

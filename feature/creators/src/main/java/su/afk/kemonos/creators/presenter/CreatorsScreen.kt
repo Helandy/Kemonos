@@ -1,16 +1,15 @@
 package su.afk.kemonos.creators.presenter
 
 import android.content.Intent
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.material3.*
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalInspectionMode
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.core.net.toUri
@@ -22,6 +21,8 @@ import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.flowOf
 import su.afk.kemonos.creators.presenter.CreatorsState.*
 import su.afk.kemonos.creators.presenter.model.creatorsSortOptions
+import su.afk.kemonos.creators.presenter.view.CreatorsGithubRateBanner
+import su.afk.kemonos.creators.presenter.view.CreatorsVideoInfoDomainBanner
 import su.afk.kemonos.domain.SelectedSite
 import su.afk.kemonos.domain.models.creator.FavoriteArtist
 import su.afk.kemonos.preferences.ui.CreatorViewMode
@@ -34,7 +35,6 @@ import su.afk.kemonos.ui.components.searchBar.SearchBarNew
 import su.afk.kemonos.ui.presenter.baseScreen.BaseScreen
 import su.afk.kemonos.ui.presenter.baseScreen.TopBarScroll
 import su.afk.kemonos.ui.preview.KemonosPreviewScreen
-import su.afk.kemonos.ui.R as UiR
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -100,7 +100,8 @@ internal fun CreatorsScreen(
                 onSortMethodSelect = { onEvent(Event.SortSelected(it)) },
                 isAscending = state.sortAscending,
                 onToggleAscending = { onEvent(Event.ToggleSortOrder) },
-                showRandom = showRandomInSearch && !isScreenLoading,
+                showRandom = showRandomInSearch,
+                randomEnabled = !isScreenLoading,
                 onRandomClick = { onEvent(Event.RandomClicked) },
             )
         },
@@ -127,9 +128,16 @@ internal fun CreatorsScreen(
             viewMode = state.uiSettingModel.creatorsViewMode,
             pagingItems = pagingItems,
             randomItems = visibleRandomItems,
-            topContent = if (state.showGithubRateBanner) {
+            topContent = if (state.showGithubRateBanner || (state.showVideoInfoDomainBanner && state.isVideoInfoDomainAvailable == false)) {
                 {
+                    if (state.showVideoInfoDomainBanner && state.isVideoInfoDomainAvailable == false) {
+                        CreatorsVideoInfoDomainBanner(
+                            onClose = { onEvent(Event.HideVideoInfoDomainBanner) },
+                        )
+                    }
+
                     CreatorsGithubRateBanner(
+                        visible = state.showGithubRateBanner,
                         onRateClick = { onEvent(Event.GithubRateClick) },
                         onNeverShowClick = { onEvent(Event.HideGithubRateBanner) },
                     )
@@ -143,37 +151,6 @@ internal fun CreatorsScreen(
             listState = listState,
             gridState = gridState,
         )
-    }
-}
-
-@Composable
-private fun CreatorsGithubRateBanner(
-    onRateClick: () -> Unit,
-    onNeverShowClick: () -> Unit,
-) {
-    ElevatedCard(modifier = Modifier.padding(top = 8.dp)) {
-        Column(
-            modifier = Modifier.padding(12.dp),
-            verticalArrangement = Arrangement.spacedBy(10.dp),
-        ) {
-            Text(
-                text = stringResource(UiR.string.main_rate_banner_title),
-                style = MaterialTheme.typography.titleMedium,
-            )
-            Text(
-                text = stringResource(UiR.string.main_rate_banner_subtitle),
-                style = MaterialTheme.typography.bodyMedium,
-            )
-            Row {
-                TextButton(onClick = onNeverShowClick) {
-                    Text(stringResource(UiR.string.main_rate_banner_never_show))
-                }
-                Spacer(Modifier.weight(1f))
-                Button(onClick = onRateClick) {
-                    Text(stringResource(UiR.string.main_rate_banner_rate))
-                }
-            }
-        }
     }
 }
 

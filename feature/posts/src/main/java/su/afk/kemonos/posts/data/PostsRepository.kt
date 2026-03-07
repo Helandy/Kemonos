@@ -63,11 +63,7 @@ internal class PostsRepository @Inject constructor(
                 dto.posts.orEmpty().map { it.toDomain() }
             }
 
-            if (net.isNotEmpty()) {
-                postsSearchCache.putPage(site, qk, offset, net)
-            } else {
-                postsSearchCache.clearPage(site, qk, offset)
-            }
+            postsSearchCache.putPage(site, qk, offset, net)
 
             net
         } catch (e: Exception) {

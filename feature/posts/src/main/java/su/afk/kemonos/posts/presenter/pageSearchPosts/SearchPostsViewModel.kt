@@ -47,7 +47,7 @@ internal class SearchPostsViewModel @Inject constructor(
     private val loadSiteFlow = MutableStateFlow<SelectedSite?>(null)
     private val manualRefreshCounterFlow = MutableStateFlow(0L)
 
-    private val recentSearchLimit = 10
+    private val recentSearchLimit = 25
 
     init {
         observeUiSetting()

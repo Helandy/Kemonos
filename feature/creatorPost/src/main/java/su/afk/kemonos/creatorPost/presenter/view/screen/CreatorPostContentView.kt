@@ -229,10 +229,6 @@ internal fun CreatorPostContentView(
                         uiSettingModel = state.uiSettingModel,
                         requestKey = state.selectedRevisionId,
                         videos = uniqueVideos,
-                        videoThumbs = state.videoThumbs,
-                        requestThumb = { server, path ->
-                            onEvent(Event.VideoThumbRequested(server = server, path = path))
-                        },
                         videoInfo = state.videoInfo,
                         onVideoInfoRequested = { server, path ->
                             onEvent(Event.VideoInfoRequested(server = server, path = path))
@@ -258,7 +254,9 @@ internal fun CreatorPostContentView(
                         audios = uniqueAudios,
                         fallbackBaseUrl = fallbackBaseUrl,
                         audioInfo = state.audioInfo,
-                        onInfoRequested = { url -> onEvent(Event.AudioInfoRequested(url)) },
+                        onInfoRequested = { server, path ->
+                            onEvent(Event.AudioInfoRequested(server = server, path = path))
+                        },
                         onPlay = { att ->
                             val url = att.buildContentUrlToDataSite(fallbackBaseUrl)
                             onEvent(

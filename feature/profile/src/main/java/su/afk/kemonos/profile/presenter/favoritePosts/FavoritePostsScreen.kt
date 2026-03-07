@@ -112,7 +112,7 @@ internal fun FavoritePostsScreen(
                 FavoritePostsGroupedList(
                     uiSettingModel = state.uiSettingModel,
                     postsViewMode = state.uiSettingModel.favoritePostsViewMode,
-                    posts = posts,
+                    posts = state.groupedPosts,
                     authorNamesByKey = state.authorNamesByKey,
                     onPostClick = { onEvent(Event.NavigateToPost(it)) },
                     onProfileClick = { service, creatorId ->
@@ -140,12 +140,12 @@ internal fun FavoritePostsScreen(
 private fun FavoritePostsGroupedList(
     uiSettingModel: UiSettingModel,
     postsViewMode: PostsViewMode,
-    posts: LazyPagingItems<PostDomain>,
+    posts: List<PostDomain>,
     authorNamesByKey: Map<String, String>,
     onPostClick: (PostDomain) -> Unit,
     onProfileClick: (service: String, creatorId: String) -> Unit,
 ) {
-    val groups = buildAuthorGroups(posts.itemSnapshotList.items, authorNamesByKey)
+    val groups = buildAuthorGroups(posts, authorNamesByKey)
 
     when (postsViewMode) {
         PostsViewMode.LIST -> {
@@ -176,8 +176,6 @@ private fun FavoritePostsGroupedList(
                         )
                     }
                 }
-
-                appendStateItem(posts)
             }
         }
 
@@ -217,10 +215,6 @@ private fun FavoritePostsGroupedList(
                         )
                     }
                 }
-
-                item(span = { GridItemSpan(maxLineSpan) }) {
-                    AppendStateContent(posts = posts)
-                }
             }
         }
     }
@@ -245,14 +239,6 @@ private fun buildAuthorGroups(
         group.posts += post
     }
     return groups.values.toList()
-}
-
-private fun androidx.compose.foundation.lazy.LazyListScope.appendStateItem(
-    posts: LazyPagingItems<PostDomain>,
-) {
-    item {
-        AppendStateContent(posts = posts)
-    }
 }
 
 @Composable

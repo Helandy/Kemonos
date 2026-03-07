@@ -83,6 +83,7 @@ internal class CommunityChatViewModel @AssistedInject constructor(
             Event.Back -> navManager.back()
             Event.CopyChatLink -> copyChatLink()
             is Event.ListScrollChanged -> onListScrollChanged(event)
+            is Event.SearchQueryChanged -> onSearchQueryChanged(event)
             Event.LoadMore -> load(reset = false)
             Event.ToggleReverseOrder -> toggleReverseOrder()
             is Event.OpenMedia -> onOpenMedia(event)
@@ -312,6 +313,11 @@ internal class CommunityChatViewModel @AssistedInject constructor(
                 listFirstVisibleItemScrollOffset = event.firstVisibleItemScrollOffset
             )
         }
+    }
+
+    private fun onSearchQueryChanged(event: Event.SearchQueryChanged) {
+        if (event.query == currentState.searchQuery) return
+        setState { copy(searchQuery = event.query) }
     }
 
     private fun isDiscordService(service: String): Boolean =

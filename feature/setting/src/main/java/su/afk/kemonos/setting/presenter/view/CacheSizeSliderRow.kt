@@ -12,23 +12,28 @@ import androidx.compose.ui.unit.dp
 import su.afk.kemonos.setting.R
 import kotlin.math.roundToInt
 
-private val CacheSizeOptionsMb = listOf(100, 150, 300, 500)
-
-/**
- * Дискретный слайдер:
- * 100 / 150 / 300 / 500 MB
- */
 @Composable
 internal fun CacheSizeSliderRow(
     title: String,
     currentMb: Int,
+    minMb: Int = 200,
+    maxMb: Int = 800,
+    stepMb: Int = 100,
     onChangeMb: (Int) -> Unit,
 ) {
-    val initialIndex = remember(currentMb) {
-        CacheSizeOptionsMb.indexOf(currentMb).takeIf { it >= 0 } ?: 2
+    val stepsCount = remember(minMb, maxMb, stepMb) {
+        ((maxMb - minMb) / stepMb).coerceAtLeast(0)
+    }
+    val maxIndex = stepsCount
+
+    val initialIndex = remember(currentMb, minMb, maxMb, stepMb) {
+        ((currentMb.coerceIn(minMb, maxMb) - minMb).toFloat() / stepMb)
+            .roundToInt()
+            .coerceIn(0, maxIndex)
     }
 
     var index by remember(initialIndex) { mutableIntStateOf(initialIndex) }
+    val currentValueMb = minMb + index * stepMb
 
     Column(modifier = Modifier.fillMaxWidth()) {
         Row(verticalAlignment = Alignment.CenterVertically) {
@@ -38,7 +43,7 @@ internal fun CacheSizeSliderRow(
                 modifier = Modifier.weight(1f)
             )
             Text(
-                text = stringResource(R.string.settings_cache_size_value_mb, CacheSizeOptionsMb[index]),
+                text = stringResource(R.string.settings_cache_size_value_mb, currentValueMb),
                 style = MaterialTheme.typography.bodyLarge,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
@@ -49,12 +54,12 @@ internal fun CacheSizeSliderRow(
         Slider(
             value = index.toFloat(),
             onValueChange = { v ->
-                index = v.roundToInt().coerceIn(0, CacheSizeOptionsMb.lastIndex)
+                index = v.roundToInt().coerceIn(0, maxIndex)
             },
-            valueRange = 0f..CacheSizeOptionsMb.lastIndex.toFloat(),
-            steps = CacheSizeOptionsMb.size - 2, // 4 значения -> steps = 2
+            valueRange = 0f..maxIndex.toFloat(),
+            steps = (maxIndex - 1).coerceAtLeast(0),
             onValueChangeFinished = {
-                onChangeMb(CacheSizeOptionsMb[index])
+                onChangeMb(minMb + index * stepMb)
             }
         )
     }

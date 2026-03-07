@@ -62,9 +62,6 @@ interface IUiSettingUseCase {
     /** Размер кэша картинок (MB) */
     suspend fun setCoilCacheSizeMb(value: Int)
 
-    /** Размер кэша превьюшек (MB) */
-    suspend fun setPreviewVideoSizeMb(value: Int)
-
     /** Показывать превью видео */
     suspend fun setShowPreviewVideo(value: Boolean)
 
@@ -97,6 +94,12 @@ interface IUiSettingUseCase {
 
     /** Использовать внешнее хранилище метадатнных */
     suspend fun setUseExternalMetaData(value: Boolean)
+
+    /** Установить адрес сервера превью видео */
+    suspend fun setVideoPreviewServerUrl(value: String)
+
+    /** Установить формат карточки превью видео */
+    suspend fun setVideoPreviewAspectRatio(value: VideoPreviewAspectRatio)
 
     /** Сохранить timestamp первой инициализации баннера оценки в Creators (ms). */
     suspend fun setCreatorsGithubRateBannerInstallTsMs(value: Long)

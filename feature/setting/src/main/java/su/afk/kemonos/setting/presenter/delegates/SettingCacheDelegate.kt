@@ -9,10 +9,13 @@ import su.afk.kemonos.storage.api.repository.community.IStoreCommunityRepository
 import su.afk.kemonos.storage.api.repository.creatorProfile.IStoreCreatorProfileRepository
 import su.afk.kemonos.storage.api.repository.creators.IStoreCreatorsRepository
 import su.afk.kemonos.storage.api.repository.discord.IStoreDiscordRepository
+import su.afk.kemonos.storage.api.repository.dms.IStorageDmsRepository
 import su.afk.kemonos.storage.api.repository.favorites.artist.IStoreFavoriteArtistsRepository
 import su.afk.kemonos.storage.api.repository.favorites.post.IStoreFavoritePostsRepository
+import su.afk.kemonos.storage.api.repository.media.IStorageMediaInfoRepository
 import su.afk.kemonos.storage.api.repository.popular.IStoragePopularPostsRepository
 import su.afk.kemonos.storage.api.repository.post.IStoragePostStorageRepository
+import su.afk.kemonos.storage.api.repository.postsSearch.IStoragePostsSearchRepository
 import su.afk.kemonos.storage.api.repository.profilePosts.IStorageCreatorPostsRepository
 import su.afk.kemonos.storage.api.repository.tags.IStoreTagsRepository
 import javax.inject.Inject
@@ -26,6 +29,9 @@ class SettingCacheDelegate @Inject constructor(
     private val storeCreatorProfileCacheUseCase: IStoreCreatorProfileRepository,
     private val creatorPostsCacheUseCase: IStorageCreatorPostsRepository,
     private val storagePostUseCase: IStoragePostStorageRepository,
+    private val postsSearchRepository: IStoragePostsSearchRepository,
+    private val dmsRepository: IStorageDmsRepository,
+    private val mediaInfoRepository: IStorageMediaInfoRepository,
     private val storagePopularPostsCacheUseCase: IStoragePopularPostsRepository,
     private val storeFavoriteArtistsUseCase: IStoreFavoriteArtistsRepository,
     private val storeFavoritePostsUseCase: IStoreFavoritePostsRepository,
@@ -62,6 +68,9 @@ class SettingCacheDelegate @Inject constructor(
 
             SettingState.Event.CacheClearAction.CreatorPostsPages -> clearCreatorPostsPages()
             SettingState.Event.CacheClearAction.PostContents -> clearPostContents()
+            SettingState.Event.CacheClearAction.PostsSearch -> clearPostsSearch()
+            SettingState.Event.CacheClearAction.Dms -> clearDms()
+            SettingState.Event.CacheClearAction.VideoInfo -> clearVideoInfo()
 
             is SettingState.Event.CacheClearAction.PopularPosts -> clearPopularPosts()
 
@@ -96,6 +105,20 @@ class SettingCacheDelegate @Inject constructor(
 
     private suspend fun clearPostContents() {
         storagePostUseCase.clearAll()
+    }
+
+    private suspend fun clearPostsSearch() {
+        postsSearchRepository.clearAll(SelectedSite.K)
+        postsSearchRepository.clearAll(SelectedSite.C)
+    }
+
+    private suspend fun clearDms() {
+        dmsRepository.clearAll(SelectedSite.K)
+        dmsRepository.clearAll(SelectedSite.C)
+    }
+
+    private suspend fun clearVideoInfo() {
+        mediaInfoRepository.clear()
     }
 
     private suspend fun clearPopularPosts() {

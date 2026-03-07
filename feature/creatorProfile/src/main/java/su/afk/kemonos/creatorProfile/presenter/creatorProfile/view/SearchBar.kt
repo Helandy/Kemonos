@@ -40,10 +40,12 @@ fun SearchBar(
             bottomPadding = 2,
             chipsTopPadding = 4,
             trailingIcon = {
-                IconButton(onClick = {
-                    onClose()
-                }) {
-                    Icon(Icons.Default.Close, contentDescription = stringResource(R.string.close))
+                if (searchText.isBlank()) {
+                    IconButton(onClick = {
+                        onClose()
+                    }) {
+                        Icon(Icons.Default.Close, contentDescription = stringResource(R.string.close))
+                    }
                 }
             },
             onSearch = { focusManager.clearFocus() }

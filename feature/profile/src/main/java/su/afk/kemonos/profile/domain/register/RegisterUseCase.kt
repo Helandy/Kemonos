@@ -1,6 +1,6 @@
 package su.afk.kemonos.profile.domain.register
 
-import su.afk.kemonos.profile.domain.IAuthRepository
+import su.afk.kemonos.profile.domain.repository.IAuthRepository
 import javax.inject.Inject
 
 class RegisterUseCase @Inject constructor(

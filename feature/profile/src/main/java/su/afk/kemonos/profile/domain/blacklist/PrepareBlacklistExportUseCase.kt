@@ -14,7 +14,7 @@ internal class PrepareBlacklistExportUseCase @Inject constructor() {
 
     /** Builds export payload (file name + JSON body) from blacklist rows. */
     operator fun invoke(items: List<BlacklistedAuthor>): BlacklistExportPayload {
-        val datePart = LocalDate.now().format(DateTimeFormatter.ofPattern("dd_MM_yyyy"))
+        val datePart = LocalDate.now().format(DateTimeFormatter.ofPattern("dd_MM_yy"))
         val fileName = "Blacklist_Authors_(${items.size})_${datePart}.json"
         return BlacklistExportPayload(
             fileName = fileName,

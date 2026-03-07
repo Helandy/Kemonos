@@ -4,6 +4,7 @@ import com.google.gson.JsonParser
 import su.afk.kemonos.domain.SelectedSite
 import su.afk.kemonos.preferences.site.ISelectedSiteUseCase
 import su.afk.kemonos.preferences.site.withSite
+import su.afk.kemonos.profile.domain.repository.IImportExportRepository
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import javax.inject.Inject
@@ -55,6 +56,6 @@ internal class PrepareFavoritesExportUseCase @Inject constructor(
     }
 
     private companion object {
-        val exportDateFormatter: DateTimeFormatter = DateTimeFormatter.ofPattern("dd_MM_yyyy")
+        val exportDateFormatter: DateTimeFormatter = DateTimeFormatter.ofPattern("dd_MM_yy")
     }
 }

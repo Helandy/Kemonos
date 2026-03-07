@@ -11,7 +11,7 @@ import javax.inject.Singleton
 
 @Singleton
 class CrashReportManager @Inject constructor(
-    @ApplicationContext private val context: Context,
+    @param:ApplicationContext private val context: Context,
 ) : ICrashReportManager {
 
     private var installed = false

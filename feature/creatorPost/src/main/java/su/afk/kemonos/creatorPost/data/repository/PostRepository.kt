@@ -27,4 +27,35 @@ internal class PostRepository @Inject constructor(
             staleCache = { store.getOrNull(service, id, postId) }
         )
     }
+
+    override suspend fun getPostRevision(
+        service: String,
+        id: String,
+        postId: String,
+        revisionId: Long,
+    ): PostContentDomain {
+        val cachePostId = buildRevisionCachePostId(postId, revisionId)
+        return cacheFirstOrNetwork(
+            freshCache = { store.getFreshOrNull(service, id, cachePostId) },
+            network = {
+                api.getProfilePostRevision(service, id, postId, revisionId).call { dto ->
+                    dto.toDomain()
+                }
+            },
+            saveToCache = { fromNet -> store.upsert(fromNet.withPostId(cachePostId)) },
+            staleCache = { store.getOrNull(service, id, cachePostId) }
+        )
+    }
+
+    private fun PostContentDomain.withPostId(postId: String): PostContentDomain = copy(
+        post = post.copy(id = postId)
+    )
+
+    private fun buildRevisionCachePostId(postId: String, revisionId: Long): String {
+        return "$REVISION_CACHE_PREFIX$postId:$revisionId"
+    }
+
+    private companion object {
+        const val REVISION_CACHE_PREFIX = "__revision__:"
+    }
 }

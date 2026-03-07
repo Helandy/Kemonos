@@ -2,6 +2,7 @@ package su.afk.kemonos.storage.database.migrations.coomer
 
 import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
+import su.afk.kemonos.storage.database.migrations.DestructiveMigrationPrefSync
 
 internal val COOMER_DESTRUCTIVE_TO_10_MIGRATIONS: Array<Migration> =
     (1..8).map { fromVersion ->
@@ -47,4 +48,6 @@ internal fun rebuildCoomerSchema(db: SupportSQLiteDatabase) {
         "CREATE INDEX IF NOT EXISTS `index_posts_popular_cache_queryKey_updatedAt` ON `posts_popular_cache` (`queryKey`, `updatedAt`)",
     )
     createSql.forEach(db::execSQL)
+
+    DestructiveMigrationPrefSync.markDestructiveRebuild(db, scope = "coomer")
 }

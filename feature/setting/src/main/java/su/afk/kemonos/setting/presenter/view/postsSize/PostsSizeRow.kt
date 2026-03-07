@@ -56,5 +56,5 @@ internal fun PostsSizeRow(
             )
         }
     }
-    Divider()
+    HorizontalDivider()
 }

@@ -1,13 +1,16 @@
 package su.afk.kemonos.storage.di
 
 import android.content.Context
+import android.content.SharedPreferences
 import androidx.room.Room
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
+import su.afk.kemonos.preferences.useCase.CacheKeys
 import su.afk.kemonos.storage.database.KemonoDatabase
+import su.afk.kemonos.storage.database.migrations.DestructiveMigrationPrefSync
 import su.afk.kemonos.storage.database.migrations.kemono.*
 import su.afk.kemonos.storage.entity.blacklist.dao.BlacklistedAuthorsDao
 import su.afk.kemonos.storage.entity.comments.dao.CommentsDao
@@ -34,10 +37,13 @@ internal object DatabaseKemonoModule {
 
     @Provides
     @Singleton
-    fun provideKemonoDatabase(@ApplicationContext context: Context): KemonoDatabase =
+    fun provideKemonoDatabase(
+        @ApplicationContext context: Context,
+        prefs: SharedPreferences,
+    ): KemonoDatabase =
         Room.databaseBuilder(context, KemonoDatabase::class.java, "kemono_db")
             .addMigrations(
-                *KEMONO_DESTRUCTIVE_TO_17_MIGRATIONS,
+                *KEMONO_DESTRUCTIVE_TO_18_MIGRATIONS,
                 KEMONO_MIGRATION_2_3,
                 KemonoFrom3To4,
                 KemonoFrom4To5,
@@ -53,6 +59,22 @@ internal object DatabaseKemonoModule {
                 KemonoFrom14To15,
                 KemonoFrom15To16,
                 KemonoFrom16To17,
+                KemonoFrom17To18,
+                KemonoFrom18To19,
+                KemonoFrom19To20,
+                KemonoFrom20To21,
+            )
+            .addCallback(
+                DestructiveMigrationPrefSync.createCleanupCallback(
+                    scope = "kemono",
+                    prefs = prefs,
+                    keysToClearOnDestructiveRebuild = listOf(
+                        CacheKeys.CREATORS_KEMONO,
+                    ),
+                    keysToClearWhenTableEmpty = mapOf(
+                        "creators" to listOf(CacheKeys.CREATORS_KEMONO),
+                    ),
+                )
             )
             .build()
 

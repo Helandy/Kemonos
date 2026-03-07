@@ -43,7 +43,10 @@ internal class MainViewModel @Inject constructor(
     /** Чтобы не запустить стартовую инициализацию дважды */
     private var apiInitStarted = false
     private var startupFlowStarted = false
+    private var updateCheckStarted = false
+    private var updateCheckCompleted = false
     private var apiCheckJob: Job? = null
+    private var pendingApiCheckResult: ApiCheckDelegate.ApiCheckUiResult? = null
 
     init {
         viewModelScope.launch {
@@ -90,8 +93,11 @@ internal class MainViewModel @Inject constructor(
             val uiSettings = uiSetting.prefs.first()
 
             if (uiSettings.skipApiCheckOnLogin.not()) {
-                checkGitHubUpdate()
-                clearCacheStorageUseCase.clear()
+                startApiInitIfNeeded()
+                startUpdateCheckIfNeeded()
+                launch {
+                    clearCacheStorageUseCase.clear()
+                }
             } else {
                 setState { copy(isLoading = false, apiSuccess = true) }
                 navManager.enterTabs()
@@ -100,13 +106,21 @@ internal class MainViewModel @Inject constructor(
     }
 
     /** Проверка версии приложения github */
-    private suspend fun checkGitHubUpdate() {
-        val updateInfo = updateGateDelegate.check()
-        if (updateInfo != null) {
-            setState { copy(updateInfo = updateInfo) }
-            return
+    private fun startUpdateCheckIfNeeded() {
+        if (updateCheckStarted) return
+        updateCheckStarted = true
+
+        viewModelScope.launch {
+            val updateInfo = updateGateDelegate.check()
+            updateCheckCompleted = true
+
+            if (updateInfo != null) {
+                setState { copy(isLoading = false, updateInfo = updateInfo) }
+                return@launch
+            }
+
+            applyPendingApiResultIfReady()
         }
-        startApiInitIfNeeded()
     }
 
     private fun startApiInitIfNeeded() {
@@ -137,7 +151,14 @@ internal class MainViewModel @Inject constructor(
     }
 
     private fun onUpdateLaterClick() {
-        setState { copy(updateInfo = null) }
+        val apiCheckInProgress = apiCheckJob?.isActive == true
+        setState {
+            copy(
+                updateInfo = null,
+                isLoading = apiCheckInProgress && pendingApiCheckResult == null,
+            )
+        }
+        applyPendingApiResultIfReady()
         startApiInitIfNeeded()
     }
 
@@ -162,25 +183,35 @@ internal class MainViewModel @Inject constructor(
             val sitesToApiCheck: Set<SelectedSite> = checkAuthForAllSitesUseCase()
 
             // 2) /posts дергаем только для сайтов, где авторизации нет (или она слетела)
-            when (val result = apiCheckDelegate.check(sitesToApiCheck)) {
-                ApiCheckDelegate.ApiCheckUiResult.Success -> {
-                    setState { copy(isLoading = false, apiSuccess = true) }
-                    navManager.enterTabs()
-                }
-
-                is ApiCheckDelegate.ApiCheckUiResult.Failure -> {
-                    setState {
-                        copy(
-                            isLoading = false,
-                            apiSuccess = false,
-                            kemonoError = result.kemonoError,
-                            coomerError = result.coomerError,
-                        )
-                    }
-                }
-            }
+            pendingApiCheckResult = apiCheckDelegate.check(sitesToApiCheck)
+            applyPendingApiResultIfReady()
         }.also { job ->
             job.invokeOnCompletion { if (apiCheckJob === job) apiCheckJob = null }
+        }
+    }
+
+    private fun applyPendingApiResultIfReady() {
+        if (!updateCheckCompleted) return
+        if (currentState.updateInfo != null) return
+
+        when (val result = pendingApiCheckResult ?: return) {
+            ApiCheckDelegate.ApiCheckUiResult.Success -> {
+                pendingApiCheckResult = null
+                setState { copy(isLoading = false, apiSuccess = true) }
+                navManager.enterTabs()
+            }
+
+            is ApiCheckDelegate.ApiCheckUiResult.Failure -> {
+                pendingApiCheckResult = null
+                setState {
+                    copy(
+                        isLoading = false,
+                        apiSuccess = false,
+                        kemonoError = result.kemonoError,
+                        coomerError = result.coomerError,
+                    )
+                }
+            }
         }
     }
 

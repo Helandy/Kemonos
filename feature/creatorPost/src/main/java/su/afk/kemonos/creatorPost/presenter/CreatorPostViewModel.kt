@@ -8,14 +8,13 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
-import su.afk.kemonos.creatorPost.domain.model.media.MediaInfoState
-import su.afk.kemonos.creatorPost.domain.model.video.VideoThumbState
-import su.afk.kemonos.creatorPost.domain.useCase.GetMediaMetaUseCase
+import su.afk.kemonos.creatorPost.domain.media.model.CommonMediaInfo
+import su.afk.kemonos.creatorPost.domain.media.model.MediaInfoState
 import su.afk.kemonos.creatorPost.navigation.CreatorPostDestination
 import su.afk.kemonos.creatorPost.presenter.CreatorPostState.*
 import su.afk.kemonos.creatorPost.presenter.CreatorPostState.Effect.OpenAudio
 import su.afk.kemonos.creatorPost.presenter.delegates.LikeDelegate
-import su.afk.kemonos.creatorPost.presenter.delegates.MediaMetaDelegate
+import su.afk.kemonos.creatorPost.presenter.delegates.MediaMetaDelegateNew
 import su.afk.kemonos.creatorPost.presenter.delegates.NavigateDelegates
 import su.afk.kemonos.creatorPost.presenter.delegates.PostLoadDelegate
 import su.afk.kemonos.creatorPost.presenter.helper.collectDownloadAllItems
@@ -35,7 +34,6 @@ import su.afk.kemonos.ui.shared.ShareLinkBuilder
 import su.afk.kemonos.ui.shared.model.ShareTarget
 import su.afk.kemonos.ui.translate.TextTranslator
 import su.afk.kemonos.ui.translate.preprocessForTranslation
-import su.afk.kemonos.ui.uiUtils.format.buildFileUrl
 import java.net.URLEncoder
 
 internal class CreatorPostViewModel @AssistedInject constructor(
@@ -43,7 +41,7 @@ internal class CreatorPostViewModel @AssistedInject constructor(
     private val postLoadDelegate: PostLoadDelegate,
     private val getCurrentSiteRootUrlUseCase: IGetCurrentSiteRootUrlUseCase,
     private val domainResolver: IDomainResolver,
-    private val getMediaMetaUseCase: GetMediaMetaUseCase,
+    private val mediaMetaDelegateNew: MediaMetaDelegateNew,
     private val likeDelegate: LikeDelegate,
     private val navigateDelegates: NavigateDelegates,
     private val downloadUtil: IDownloadUtil,
@@ -112,9 +110,8 @@ internal class CreatorPostViewModel @AssistedInject constructor(
             is Event.Download -> download(event.url, event.fileName)
             Event.DownloadAllClicked -> downloadAll()
 
-            is Event.VideoThumbRequested -> requestVideoMeta(event.server, event.path)
             is Event.VideoInfoRequested -> requestVideoMeta(event.server, event.path)
-            is Event.AudioInfoRequested -> requestAudioMeta(event.url)
+            is Event.AudioInfoRequested -> requestAudioMeta(event.server, event.path)
 
             is Event.PlayAudio -> {
                 val safeName = event.name?.takeIf { it.isNotBlank() } ?: event.url.substringAfterLast('/')
@@ -194,9 +191,6 @@ internal class CreatorPostViewModel @AssistedInject constructor(
                     translateLoading = false,
                     translateText = null,
                     translateError = null,
-                    videoThumbs = emptyMap(),
-                    videoInfo = emptyMap(),
-                    audioInfo = emptyMap(),
                 )
             }
         }
@@ -242,66 +236,122 @@ internal class CreatorPostViewModel @AssistedInject constructor(
         }
     }
 
-    private val mediaMetaDelegate = MediaMetaDelegate(
-        scope = viewModelScope,
-        getMediaMeta = getMediaMetaUseCase,
-        timeoutMs = 15_000L
-    )
+    /** Запрашивает мета-информацию видео */
+    private fun requestVideoMeta(server: String, path: String) = viewModelScope.launch {
+        val currentInfoState = currentState.videoInfo[path]
+        if (currentInfoState is MediaInfoState.Success || currentInfoState is MediaInfoState.Loading) return@launch
+        val useExternalMetaData = currentState.uiSettingModel.useExternalMetaData
+        val service = currentState.service
 
-    /** Запрашивает мета-информацию видео и превью-кадр */
-    private fun requestVideoMeta(server: String, path: String) {
-        val url = buildFileUrl(server, path)
-        val needInfo = currentState.videoInfo[url] !is MediaInfoState.Success
-        val needThumb = currentState.videoThumbs[url] !is VideoThumbState.Success
-        if (!needInfo && !needThumb) return
-
-        // loading
         setState {
             copy(
-                videoInfo = if (needInfo) videoInfo + (url to MediaInfoState.Loading) else videoInfo,
-                videoThumbs = if (needThumb) videoThumbs + (url to VideoThumbState.Loading) else videoThumbs,
+                videoInfo = videoInfo + (path to MediaInfoState.Loading),
             )
         }
 
-        mediaMetaDelegate.requestVideo(
-            url = url,
-            path = path,
-            onSuccess = { meta ->
-                setState {
-                    copy(
-                        videoInfo = videoInfo + (url to MediaInfoState.Success(meta.info)),
-                        videoThumbs = videoThumbs + (url to (meta.frame?.let { VideoThumbState.Success(it) }
-                            ?: VideoThumbState.Error(null)))
-                    )
-                }
-            },
-            onError = { t ->
-                setState {
-                    copy(
-                        videoInfo = if (needInfo) videoInfo + (url to MediaInfoState.Error(t)) else videoInfo,
-                        videoThumbs = if (needThumb) videoThumbs + (url to VideoThumbState.Error(t)) else videoThumbs,
-                    )
-                }
+        runCatching {
+            getVideoMetaWithFallback(
+                useExternalMetaData = useExternalMetaData,
+                service = service,
+                server = server,
+                path = path,
+            )
+        }.onSuccess { result ->
+            setState {
+                copy(
+                    videoInfo = videoInfo + (path to MediaInfoState.Success(result)),
+                )
             }
-        )
+        }.onFailure { error ->
+            setState {
+                copy(
+                    videoInfo = videoInfo + (path to MediaInfoState.Error(error)),
+                )
+            }
+        }
     }
 
     /** Запрашивает мета-информацию аудио */
-    private fun requestAudioMeta(url: String) {
-        val needInfo = currentState.audioInfo[url] !is MediaInfoState.Success
-        if (!needInfo) return
+    private fun requestAudioMeta(server: String?, path: String) = viewModelScope.launch {
+        val currentInfoState = currentState.audioInfo[path]
+        if (currentInfoState is MediaInfoState.Success || currentInfoState is MediaInfoState.Loading) return@launch
+        val useExternalMetaData = currentState.uiSettingModel.useExternalMetaData
+        val service = currentState.service
 
-        setState { copy(audioInfo = audioInfo + (url to MediaInfoState.Loading)) }
+        setState {
+            copy(
+                audioInfo = audioInfo + (path to MediaInfoState.Loading),
+            )
+        }
 
-        mediaMetaDelegate.requestAudio(
-            url = url,
-            onSuccess = { meta ->
-                setState { copy(audioInfo = audioInfo + (url to MediaInfoState.Success(meta.info))) }
-            },
-            onError = { t ->
-                setState { copy(audioInfo = audioInfo + (url to MediaInfoState.Error(t))) }
+        runCatching {
+            getAudioMetaWithFallback(
+                useExternalMetaData = useExternalMetaData,
+                service = service,
+                server = server,
+                path = path,
+            )
+        }.onSuccess { result ->
+            setState {
+                copy(
+                    audioInfo = audioInfo + (path to MediaInfoState.Success(result)),
+                )
             }
-        )
+        }.onFailure { error ->
+            setState {
+                copy(
+                    audioInfo = audioInfo + (path to MediaInfoState.Error(error)),
+                )
+            }
+        }
+    }
+
+    private suspend fun getVideoMetaWithFallback(
+        useExternalMetaData: Boolean,
+        service: String,
+        server: String?,
+        path: String,
+    ): CommonMediaInfo {
+        return runCatching {
+            mediaMetaDelegateNew.getVideoInfo(
+                isRemote = useExternalMetaData,
+                server = server,
+                service = service,
+                path = path,
+            )
+        }.recoverCatching { error ->
+            if (!useExternalMetaData) throw error
+            mediaMetaDelegateNew.getVideoInfo(
+                isRemote = false,
+                server = server,
+                service = service,
+                path = path,
+            )
+        }.getOrThrow()
+    }
+
+    private suspend fun getAudioMetaWithFallback(
+        useExternalMetaData: Boolean,
+        service: String,
+        server: String?,
+        path: String,
+    ): CommonMediaInfo {
+        return runCatching {
+            mediaMetaDelegateNew.getAudioInfo(
+                isRemote = useExternalMetaData,
+                service = service,
+                server = server,
+                path = path,
+            )
+        }.recoverCatching { error ->
+            if (!useExternalMetaData) throw error
+            mediaMetaDelegateNew.getAudioInfo(
+                isRemote = false,
+                service = service,
+                server = server,
+                path = path,
+            )
+        }.getOrThrow()
     }
 
     /** Избранное */
@@ -511,7 +561,6 @@ internal class CreatorPostViewModel @AssistedInject constructor(
             translateText = null,
             translateError = null,
 
-            videoThumbs = emptyMap(),
             videoInfo = emptyMap(),
             audioInfo = emptyMap(),
 

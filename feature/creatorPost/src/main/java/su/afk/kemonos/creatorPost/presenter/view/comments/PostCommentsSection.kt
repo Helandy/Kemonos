@@ -43,7 +43,7 @@ internal fun LazyListScope.postCommentsSection(
         items = commentDomains,
         key = { c ->
             val idPart = c.id.ifBlank { "noid" }
-            val pubPart = c.published ?: ""
+            val pubPart = c.published
             "comment:$idPart:$pubPart"
         }
     ) { comment ->
@@ -64,7 +64,7 @@ internal fun CommentItem(
     comment: CommentDomain,
 ) {
     val author = remember(comment.commenter_name, comment.commenter) {
-        comment.commenter_name ?: comment.commenter
+        comment.commenter_name?.takeUnless(String::isBlank) ?: comment.commenter
     }
 
     val content = remember(comment.content) {

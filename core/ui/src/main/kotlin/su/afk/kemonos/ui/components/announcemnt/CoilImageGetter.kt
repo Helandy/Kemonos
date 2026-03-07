@@ -225,6 +225,7 @@ private class ResizableDrawable(
         inner.colorFilter = colorFilter
     }
 
+    @Suppress("DEPRECATION")
     @Deprecated("Deprecated in Java")
     override fun getOpacity(): Int = inner.opacity
 }

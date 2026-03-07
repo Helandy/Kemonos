@@ -1,8 +1,9 @@
 package su.afk.kemonos.storage.repository.video
 
 import su.afk.kemonos.creatorPost.api.domain.model.media.MediaInfo
+import su.afk.kemonos.domain.SelectedSite
 import su.afk.kemonos.preferences.useCase.CacheTimes.TTL_30_DAYS
-import su.afk.kemonos.storage.api.repository.media.IStoreMediaInfoRepository
+import su.afk.kemonos.storage.api.repository.media.IStorageMediaInfoRepository
 import su.afk.kemonos.storage.entity.video.VideoInfoEntity.Companion.toDomain
 import su.afk.kemonos.storage.entity.video.VideoInfoEntity.Companion.toEntity
 import su.afk.kemonos.storage.entity.video.dao.VideoInfoDao
@@ -10,14 +11,14 @@ import javax.inject.Inject
 
 internal class StoreMediaInfoRepository @Inject constructor(
     private val dao: VideoInfoDao
-) : IStoreMediaInfoRepository {
+) : IStorageMediaInfoRepository {
 
-    override suspend fun get(key: String): MediaInfo? {
-        return dao.get(key)?.toDomain()
+    override suspend fun get(site: SelectedSite, path: String): MediaInfo? {
+        return dao.get(site, path)?.toDomain()
     }
 
-    override suspend fun upsert(key: String, info: MediaInfo) {
-        dao.upsert(info.toEntity(key))
+    override suspend fun upsert(site: SelectedSite, path: String, info: MediaInfo) {
+        dao.upsert(info.toEntity(site, path))
     }
 
     override suspend fun clearCache() {
