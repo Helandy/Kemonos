@@ -49,6 +49,7 @@ internal class CreatorsViewModel @Inject constructor(
             ascending = false,
         )
     )
+    private val creatorsPagingRefresh = MutableStateFlow(0)
 
     /** Обновить фильтры в creatorsFilters */
     private fun updateCreatorsFiltersFromState() {
@@ -64,13 +65,18 @@ internal class CreatorsViewModel @Inject constructor(
         setEffect(Effect.ScrollToTop)
     }
 
+    private fun requestCreatorsPagingRefresh() {
+        creatorsPagingRefresh.update { it + 1 }
+    }
+
     /** Получить paging flow */
     @OptIn(ExperimentalCoroutinesApi::class)
     private fun bindCreatorsPaging() {
         val creatorsPagedFlow = combine(
             creatorsFilters,
             site,
-        ) { filters, _ -> filters }
+            creatorsPagingRefresh,
+        ) { filters, _, _ -> filters }
             .flatMapLatest { filters ->
                 listDelegate.creatorsPagedFlow(
                     service = filters.service,
@@ -149,6 +155,7 @@ internal class CreatorsViewModel @Inject constructor(
 
             /** Список авторов */
             updateCreatorsFiltersFromState()
+            requestCreatorsPagingRefresh()
 
             /** Подгрузка рандомных авторов */
             randomListDelegate.loadRandom(currentState, ::setState)
