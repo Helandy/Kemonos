@@ -26,6 +26,7 @@ internal object DatabaseCoomerModule {
     fun provideCoomerDatabase(@ApplicationContext context: Context): CoomerDatabase =
         Room.databaseBuilder(context, CoomerDatabase::class.java, "coomer_db")
             .addMigrations(
+                *COOMER_DESTRUCTIVE_TO_10_MIGRATIONS,
                 COOMER_MIGRATION_2_3,
                 CoomerFrom3To4,
                 CoomerFrom4To5,

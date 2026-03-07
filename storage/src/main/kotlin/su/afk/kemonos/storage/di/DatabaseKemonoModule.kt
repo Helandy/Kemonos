@@ -37,6 +37,7 @@ internal object DatabaseKemonoModule {
     fun provideKemonoDatabase(@ApplicationContext context: Context): KemonoDatabase =
         Room.databaseBuilder(context, KemonoDatabase::class.java, "kemono_db")
             .addMigrations(
+                *KEMONO_DESTRUCTIVE_TO_17_MIGRATIONS,
                 KEMONO_MIGRATION_2_3,
                 KemonoFrom3To4,
                 KemonoFrom4To5,
