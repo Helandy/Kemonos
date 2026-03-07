@@ -54,16 +54,6 @@ internal fun TagsPostsScreen(
             isRefreshing = isRefreshing,
             onRefresh = { onEvent(Event.PullRefresh) },
         ) {
-            PostMediaFilterChips(
-                filter = state.mediaFilter,
-                onToggleHasVideo = { onEvent(Event.ToggleHasVideo) },
-                onToggleHasAttachments = { onEvent(Event.ToggleHasAttachments) },
-                onToggleHasImages = { onEvent(Event.ToggleHasImages) },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(bottom = 8.dp),
-            )
-
             PostsContentPaging(
                 postsViewMode = state.uiSettingModel.tagsPostsViewMode,
                 uiSettingModel = state.uiSettingModel,
@@ -72,6 +62,17 @@ internal fun TagsPostsScreen(
                 currentTag = null,
                 onPostClick = { onEvent(Event.NavigateToPost(it)) },
                 onRetry = { posts.retry() },
+                header = {
+                    PostMediaFilterChips(
+                        filter = state.mediaFilter,
+                        onToggleHasVideo = { onEvent(Event.ToggleHasVideo) },
+                        onToggleHasAttachments = { onEvent(Event.ToggleHasAttachments) },
+                        onToggleHasImages = { onEvent(Event.ToggleHasImages) },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(bottom = 8.dp),
+                    )
+                }
             )
         }
     }
