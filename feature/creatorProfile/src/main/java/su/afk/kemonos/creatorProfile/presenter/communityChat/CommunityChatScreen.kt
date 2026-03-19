@@ -50,8 +50,8 @@ internal fun CommunityChatScreen(
     val listState = remember(state.channelId) { LazyListState() }
     var menuExpanded by rememberSaveable(state.channelId) { mutableStateOf(false) }
     var searchEffectInitialized by rememberSaveable(state.channelId) { mutableStateOf(false) }
-    var pendingScrollRestore by rememberSaveable(state.channelId) { mutableStateOf(true) }
-    var scrollSyncEnabled by rememberSaveable(state.channelId) { mutableStateOf(false) }
+    var pendingScrollRestore by remember(state.channelId) { mutableStateOf(true) }
+    var scrollSyncEnabled by remember(state.channelId) { mutableStateOf(false) }
     val isDiscord = remember(state.service) { state.service.equals("discord", ignoreCase = true) }
     val focusManager = LocalFocusManager.current
     val messageItemUi = remember(
