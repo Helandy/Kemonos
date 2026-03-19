@@ -65,6 +65,11 @@ internal fun FaqScreen(
                 title = stringResource(R.string.profile_faq_q5_title),
                 body = stringResource(R.string.profile_faq_q5_body),
             )
+            FaqItemCard(
+                icon = Icons.Outlined.VideoLibrary,
+                title = stringResource(R.string.profile_faq_q6_title),
+                body = stringResource(R.string.profile_faq_q6_body),
+            )
             Spacer(modifier = Modifier.height(8.dp))
         }
     }

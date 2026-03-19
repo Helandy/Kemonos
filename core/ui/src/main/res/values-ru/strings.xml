@@ -204,6 +204,7 @@
 
     <string name="main_api_meta_request_id">requestId: %1$s</string>
     <string name="main_api_meta_cause">cause: %1$s</string>
+    <string name="main_video_info_domain_unavailable">Домен с информацией видео недоступен</string>
 
     <string name="crash_report_dialog_title">Приложение завершилось с ошибкой</string>
     <string name="crash_report_dialog_message">Во время прошлого запуска приложение аварийно завершилось. Отправить

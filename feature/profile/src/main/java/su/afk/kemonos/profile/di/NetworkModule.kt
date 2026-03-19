@@ -28,5 +28,4 @@ internal object NetworkModule {
     @Singleton
     fun provideAccountApi(retrofit: Retrofit): AccountApi =
         retrofit.create(AccountApi::class.java)
-
 }

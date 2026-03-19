@@ -33,6 +33,16 @@ class SettingNavigatorRegister @Inject constructor() : NavRegistrar {
             }
         }
 
+        entry<SettingDestination.Video> {
+            val viewModel = hiltViewModel<SettingViewModel>()
+            ScreenNavigator(viewModel) { state, _, event ->
+                SettingVideoScreen(
+                    state = state,
+                    onEvent = event,
+                )
+            }
+        }
+
         entry<SettingDestination.Translate> {
             val viewModel = hiltViewModel<SettingViewModel>()
             ScreenNavigator(viewModel) { state, _, event ->

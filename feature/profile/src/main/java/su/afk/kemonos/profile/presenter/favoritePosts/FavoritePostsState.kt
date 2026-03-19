@@ -18,6 +18,7 @@ internal class FavoritePostsState {
         val uiSettingModel: UiSettingModel = UiSettingModel(),
         val authorNamesByKey: Map<String, String> = emptyMap(),
         val groupByAuthorEnabled: Boolean = false,
+        val groupedPosts: List<PostDomain> = emptyList(),
 
         val searchQuery: String = "",
         val mediaFilter: PostMediaFilter = PostMediaFilter(),

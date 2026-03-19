@@ -14,6 +14,7 @@ import su.afk.kemonos.creators.domain.random.RandomCreatorUseCase
 import su.afk.kemonos.creators.presenter.CreatorsState.*
 import su.afk.kemonos.creators.presenter.delegates.CreatorsListDelegate
 import su.afk.kemonos.creators.presenter.delegates.RandomListDelegate
+import su.afk.kemonos.creators.presenter.delegates.VideoInfoDomainStatusDelegate
 import su.afk.kemonos.creators.presenter.model.CreatorsFilters
 import su.afk.kemonos.domain.SelectedSite
 import su.afk.kemonos.domain.models.creator.CreatorsSort
@@ -35,6 +36,7 @@ internal class CreatorsViewModel @Inject constructor(
     private val randomCreatorUseCase: RandomCreatorUseCase,
     private val listDelegate: CreatorsListDelegate,
     private val randomListDelegate: RandomListDelegate,
+    private val videoInfoDomainStatusDelegate: VideoInfoDomainStatusDelegate,
     private val uiSetting: IUiSettingUseCase,
     override val selectedSiteUseCase: ISelectedSiteUseCase,
     override val errorHandler: IErrorHandlerUseCase,
@@ -91,6 +93,7 @@ internal class CreatorsViewModel @Inject constructor(
     }
 
     private var searchDebounceJob: Job? = null
+    private var videoInfoDomainObserveStarted = false
 
     override fun createInitialState(): State = State()
 
@@ -138,9 +141,33 @@ internal class CreatorsViewModel @Inject constructor(
         }.launchIn(viewModelScope)
     }
 
+    private fun observeVideoInfoDomainStatus() {
+        if (videoInfoDomainObserveStarted) return
+        videoInfoDomainObserveStarted = true
+
+        uiSetting.prefs
+            .map { it.videoPreviewServerUrl }
+            .distinctUntilChanged()
+            .onEach {
+                val isAvailable = videoInfoDomainStatusDelegate.check()
+                setState {
+                    copy(
+                        isVideoInfoDomainAvailable = isAvailable,
+                        showVideoInfoDomainBanner = if (isVideoInfoDomainAvailable != false && !isAvailable) {
+                            true
+                        } else {
+                            showVideoInfoDomainBanner
+                        },
+                    )
+                }
+            }
+            .launchIn(viewModelScope)
+    }
+
     init {
         bindCreatorsPaging()
         observeUiSetting()
+        observeVideoInfoDomainStatus()
         initSiteAware()
     }
 
@@ -219,6 +246,7 @@ internal class CreatorsViewModel @Inject constructor(
             Event.HeaderRandomExpanded -> setState { copy(randomExpanded = !randomExpanded) }
             Event.GithubRateClick -> onGithubRateClick()
             Event.HideGithubRateBanner -> onHideGithubRateBanner()
+            Event.HideVideoInfoDomainBanner -> onHideVideoInfoDomainBanner()
         }
     }
 
@@ -269,6 +297,10 @@ internal class CreatorsViewModel @Inject constructor(
     private fun onHideGithubRateBanner() = viewModelScope.launch {
         uiSetting.setCreatorsGithubRateBannerDisabled(true)
         setState { copy(showGithubRateBanner = false) }
+    }
+
+    private fun onHideVideoInfoDomainBanner() {
+        setState { copy(showVideoInfoDomainBanner = false) }
     }
 
     private fun shouldShowGithubRateBanner(model: UiSettingModel): Boolean {

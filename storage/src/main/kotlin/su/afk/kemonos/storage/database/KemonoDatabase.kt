@@ -76,7 +76,7 @@ import su.afk.kemonos.storage.entity.video.dao.VideoInfoDao
         DownloadTaskEntity::class,
         BlacklistedAuthorEntity::class,
     ],
-    version = 17,
+    version = 21,
     exportSchema = false
 )
 @TypeConverters(SelectedSiteConverters::class)

@@ -4,6 +4,7 @@ import androidx.paging.LoadState
 import androidx.paging.LoadStates
 import androidx.paging.PagingData
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.launch
 import su.afk.kemonos.domain.SelectedSite
@@ -63,6 +64,8 @@ internal class HashLookupViewModel @Inject constructor(
                 hashInput = value,
                 isHashInvalid = false,
                 errorMessage = null,
+                result = null,
+                posts = emptyFlow(),
             )
         }
     }
@@ -74,6 +77,8 @@ internal class HashLookupViewModel @Inject constructor(
                 selectedFileName = fileName,
                 isHashInvalid = false,
                 errorMessage = null,
+                result = null,
+                posts = emptyFlow(),
             )
         }
     }
@@ -91,6 +96,8 @@ internal class HashLookupViewModel @Inject constructor(
                     isLoading = true,
                     isHashInvalid = false,
                     errorMessage = null,
+                    result = null,
+                    posts = emptyFlow(),
                 )
             }
 
@@ -115,6 +122,8 @@ internal class HashLookupViewModel @Inject constructor(
                     copy(
                         isLoading = false,
                         errorMessage = throwable.message ?: throwable::class.java.simpleName,
+                        result = null,
+                        posts = emptyFlow(),
                     )
                 }
             }

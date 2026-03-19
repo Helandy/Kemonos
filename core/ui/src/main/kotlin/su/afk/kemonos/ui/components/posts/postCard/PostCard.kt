@@ -9,17 +9,14 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import su.afk.kemonos.domain.models.PostDomain
 import su.afk.kemonos.preferences.domainResolver.LocalDomainResolver
 import su.afk.kemonos.preferences.ui.PostsSize
-import su.afk.kemonos.preferences.ui.PostsSize.Companion.isSmall
 import su.afk.kemonos.preferences.ui.PostsSize.Companion.toPaddingInCornerBadge
 import su.afk.kemonos.preferences.ui.UiSettingModel
-import su.afk.kemonos.ui.R
 import su.afk.kemonos.ui.components.posts.postCard.preview.PostPreview
 import su.afk.kemonos.ui.date.toUiDateTime
 import su.afk.kemonos.ui.preview.KemonosPreviewScreen
@@ -59,6 +56,7 @@ fun PostCard(
             PostPreview(
                 preview = meta.preview,
                 imgBaseUrl = imgBaseUrl,
+                uiSettingModel = uiSettingModel,
                 title = post.title,
                 textPreview = post.substring,
                 blurImage = uiSettingModel.blurImages,
@@ -83,7 +81,7 @@ fun PostCard(
             }
 
             /** Число вложений */
-            if (post.attachments.isNotEmpty() && postsSize.isSmall()) {
+            if (post.attachments.isNotEmpty()) {
                 CornerBadge(
                     text = "\uD83D\uDCCE ${post.attachments.size}",
                     modifier = Modifier.align(Alignment.BottomStart)
@@ -113,14 +111,6 @@ fun PostCard(
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
                 )
-
-                if (post.attachments.isNotEmpty() && postsSize.isSmall().not()) {
-                    Text(
-                        text = stringResource(R.string.attachments_count, post.attachments.size),
-                        style = MaterialTheme.typography.labelSmall,
-                        maxLines = 1
-                    )
-                }
             }
         }
     }

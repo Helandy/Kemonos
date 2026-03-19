@@ -208,6 +208,7 @@
 
     <string name="main_api_meta_request_id">requestId: %1$s</string>
     <string name="main_api_meta_cause">cause: %1$s</string>
+    <string name="main_video_info_domain_unavailable">Video info domain is unavailable</string>
 
     <string name="crash_report_dialog_title">App crashed last time</string>
     <string name="crash_report_dialog_message">The app unexpectedly closed during the previous session. Do you want to

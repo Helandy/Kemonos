@@ -2,6 +2,7 @@ package su.afk.kemonos.profile.domain.favorites
 
 import su.afk.kemonos.domain.SelectedSite
 import su.afk.kemonos.domain.models.PostDomain
+import su.afk.kemonos.profile.domain.repository.IFavoritesRepository
 import javax.inject.Inject
 
 internal class GetFavoritePostsUseCase @Inject constructor(

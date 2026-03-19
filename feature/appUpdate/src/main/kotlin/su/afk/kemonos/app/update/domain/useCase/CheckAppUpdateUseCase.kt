@@ -22,7 +22,7 @@ import javax.inject.Inject
  * иначе возвращает null.
  */
 internal class CheckAppUpdateUseCase @Inject constructor(
-    @ApplicationContext private val context: Context,
+    @param:ApplicationContext private val context: Context,
     private val repository: IAppUpdateRepository,
 ) : ICheckAppUpdateUseCase {
 

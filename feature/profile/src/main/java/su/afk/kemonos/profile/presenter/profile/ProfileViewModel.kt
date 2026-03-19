@@ -28,6 +28,7 @@ import su.afk.kemonos.preferences.ui.IUiSettingUseCase
 import su.afk.kemonos.profile.R
 import su.afk.kemonos.profile.domain.favorites.*
 import su.afk.kemonos.profile.domain.favorites.fresh.IFreshFavoriteArtistsUpdatesUseCase
+import su.afk.kemonos.profile.domain.favorites.model.FavoritesImportRequest
 import su.afk.kemonos.profile.domain.file.ReadJsonFromUriUseCase
 import su.afk.kemonos.profile.domain.file.SaveJsonToFolderUseCase
 import su.afk.kemonos.profile.navigation.AuthDestination

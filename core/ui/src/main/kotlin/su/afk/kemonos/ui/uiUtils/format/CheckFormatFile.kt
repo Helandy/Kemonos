@@ -100,3 +100,43 @@ fun findFirstVideoPath(post: PostDomain): String? {
 
 /** Сборка URL под backend */
 fun buildFileUrl(baseUrl: String, path: String): String = "$baseUrl/data$path"
+
+fun buildVideoPreviewUrl(
+    videoPath: String?,
+    enabled: Boolean,
+    previewServerUrl: String,
+): String? {
+    if (!enabled) return null
+
+    val normalizedPath = videoPath
+        ?.substringBefore('?')
+        ?.substringBefore('#')
+        ?.takeIf { it.isNotBlank() }
+        ?.removeSuffix("/")
+        ?: return null
+
+    val extIndex = normalizedPath.lastIndexOf('.')
+    if (extIndex <= 0) return null
+
+    val previewPath = normalizedPath.substring(0, extIndex)
+    return "${previewServerUrl.trimEnd('/')}/thumbnail/${previewPath.trimStart('/')}/25.webp"
+}
+
+fun buildVideoPreviewUrls(
+    videoPath: String?,
+    enabled: Boolean,
+    previewServerUrl: String,
+): List<String> {
+    val previewUrl25 = buildVideoPreviewUrl(
+        videoPath = videoPath,
+        enabled = enabled,
+        previewServerUrl = previewServerUrl,
+    ) ?: return emptyList()
+    val previewBaseUrl = previewUrl25.removeSuffix("/25.webp")
+
+    return listOf(
+        "$previewBaseUrl/25.webp",
+        "$previewBaseUrl/50.webp",
+        "$previewBaseUrl/75.webp",
+    )
+}

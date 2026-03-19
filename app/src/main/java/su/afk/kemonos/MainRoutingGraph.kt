@@ -24,10 +24,8 @@ import su.afk.kemonos.preferences.ui.AppThemeMode
 import su.afk.kemonos.preferences.ui.IUiSettingUseCase
 import su.afk.kemonos.preferences.ui.UiSettingModel
 import su.afk.kemonos.presenter.bottomBar.BottomNavigationBar
-import su.afk.kemonos.storage.api.videoPreview.IVideoFrameCache
 import su.afk.kemonos.ui.imageLoader.LocalAppImageLoader
 import su.afk.kemonos.ui.theme.KemonosTheme
-import su.afk.kemonos.ui.video.LocalVideoFrameCache
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -35,7 +33,6 @@ import javax.inject.Singleton
 class MainRoutingGraph @Inject constructor(
     private val domainResolver: IDomainResolver,
     private val imageLoader: ImageLoader,
-    private val videoFrameCache: IVideoFrameCache,
     private val errorHandler: IErrorHandlerUseCase,
     private val navManager: NavigationManager,
     private val uiSetting: IUiSettingUseCase,
@@ -70,7 +67,6 @@ class MainRoutingGraph @Inject constructor(
                 CompositionLocalProvider(
                     LocalDomainResolver provides domainResolver,
                     LocalAppImageLoader provides imageLoader,
-                    LocalVideoFrameCache provides videoFrameCache,
                     LocalErrorMapper provides ErrorMapper { t -> errorHandler.parse(t) },
                 ) {
                     AppNavHost(

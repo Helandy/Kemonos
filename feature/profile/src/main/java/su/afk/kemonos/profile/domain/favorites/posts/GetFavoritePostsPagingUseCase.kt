@@ -6,7 +6,7 @@ import androidx.paging.PagingData
 import kotlinx.coroutines.flow.Flow
 import su.afk.kemonos.domain.SelectedSite
 import su.afk.kemonos.domain.models.PostDomain
-import su.afk.kemonos.profile.domain.favorites.IFavoritesRepository
+import su.afk.kemonos.profile.domain.repository.IFavoritesRepository
 import javax.inject.Inject
 
 internal class GetFavoritePostsPagingUseCase @Inject constructor(

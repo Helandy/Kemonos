@@ -3,13 +3,17 @@ package su.afk.kemonos.creatorProfile.presenter.discord
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.flow.Flow
 import su.afk.kemonos.creatorProfile.presenter.creatorProfile.view.CommunityScreen
@@ -31,6 +35,7 @@ internal fun DiscordScreen(
     effect: Flow<Effect>
 ) {
     val context = LocalContext.current
+    val focusManager = LocalFocusManager.current
     val title = state.serverName.ifBlank {
         if (state.service.equals("discord", ignoreCase = true)) {
             "Discord"
@@ -107,7 +112,11 @@ internal fun DiscordScreen(
                         )
                     }
                 }
-            }
+            },
+            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
+            keyboardActions = KeyboardActions(
+                onSearch = { focusManager.clearFocus() }
+            )
         )
 
         if (state.searchText.isNotBlank() && filteredChannels.isEmpty()) {

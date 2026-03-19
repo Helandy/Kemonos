@@ -3,6 +3,8 @@ package su.afk.kemonos.creatorProfile.presenter.communityChat
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
@@ -11,13 +13,18 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filter
 import su.afk.kemonos.creatorProfile.presenter.communityChat.CommunityChatState.*
 import su.afk.kemonos.creatorProfile.presenter.communityChat.CommunityChatState.State
+import su.afk.kemonos.creatorProfile.presenter.communityChat.model.MessageItemActions
+import su.afk.kemonos.creatorProfile.presenter.communityChat.model.MessageItemUi
+import su.afk.kemonos.creatorProfile.presenter.communityChat.model.MessageTranslationUi
 import su.afk.kemonos.creatorProfile.presenter.communityChat.view.MessageItem
 import su.afk.kemonos.creatorProfile.presenter.creatorProfile.view.header.CreatorCenterBackTopBar
 import su.afk.kemonos.deepLink.utils.openUrlInBrowser
@@ -41,14 +48,46 @@ internal fun CommunityChatScreen(
     val resolver = LocalDomainResolver.current
     val fallbackBaseUrl = resolver.baseUrlByService(state.service)
     val listState = remember(state.channelId) { LazyListState() }
-    var searchQuery by rememberSaveable(state.channelId) { mutableStateOf("") }
-    var searchEffectInitialized by rememberSaveable(state.channelId) { mutableStateOf(false) }
     var menuExpanded by rememberSaveable(state.channelId) { mutableStateOf(false) }
-    var pendingScrollRestore by remember(state.channelId) { mutableStateOf(true) }
-    var scrollSyncEnabled by remember(state.channelId) { mutableStateOf(false) }
+    var searchEffectInitialized by rememberSaveable(state.channelId) { mutableStateOf(false) }
+    var pendingScrollRestore by rememberSaveable(state.channelId) { mutableStateOf(true) }
+    var scrollSyncEnabled by rememberSaveable(state.channelId) { mutableStateOf(false) }
     val isDiscord = remember(state.service) { state.service.equals("discord", ignoreCase = true) }
-    val filteredMessages = remember(state.messages, searchQuery) {
-        val query = searchQuery.trim()
+    val focusManager = LocalFocusManager.current
+    val messageItemUi = remember(
+        fallbackBaseUrl,
+        state.uiSettingModel.dateFormatMode,
+        isDiscord,
+        state.uiSettingModel.autoplayCommunityVideo,
+        state.translateExpandedIds,
+        state.translateLoadingIds,
+        state.translatedTextById,
+        state.translateErrorById,
+    ) {
+        MessageItemUi(
+            fallbackBaseUrl = fallbackBaseUrl,
+            dateMode = state.uiSettingModel.dateFormatMode,
+            showAuthorAvatar = isDiscord,
+            autoplayVideoInline = state.uiSettingModel.autoplayCommunityVideo,
+            translation = MessageTranslationUi(
+                expandedIds = state.translateExpandedIds,
+                loadingIds = state.translateLoadingIds,
+                translatedTextById = state.translatedTextById,
+                errorById = state.translateErrorById,
+            )
+        )
+    }
+    val messageItemActions = remember(onEvent) {
+        MessageItemActions(
+            onOpenMedia = { media -> onEvent(Event.OpenMedia(media)) },
+            onOpenUrl = { url -> onEvent(Event.OpenUrl(url)) },
+            onToggleTranslate = { messageId, text ->
+                onEvent(Event.ToggleTranslate(messageId = messageId, text = text))
+            }
+        )
+    }
+    val filteredMessages = remember(state.messages, state.searchQuery) {
+        val query = state.searchQuery.trim()
         if (query.isBlank()) {
             state.messages
         } else {
@@ -88,7 +127,7 @@ internal fun CommunityChatScreen(
             }
         }
     }
-    LaunchedEffect(searchQuery) {
+    LaunchedEffect(state.searchQuery) {
         if (!searchEffectInitialized) {
             searchEffectInitialized = true
             return@LaunchedEffect
@@ -138,9 +177,9 @@ internal fun CommunityChatScreen(
             }
     }
 
-    LaunchedEffect(listState, state.messages.size, state.canLoadMore, state.loadingMore, searchQuery) {
+    LaunchedEffect(listState, state.messages.size, state.canLoadMore, state.loadingMore, state.searchQuery) {
         if (state.messages.isEmpty()) return@LaunchedEffect
-        if (searchQuery.isNotBlank()) return@LaunchedEffect
+        if (state.searchQuery.isNotBlank()) return@LaunchedEffect
 
         snapshotFlow { listState.layoutInfo.visibleItemsInfo.lastOrNull()?.index ?: -1 }
             .distinctUntilChanged()
@@ -204,8 +243,8 @@ internal fun CommunityChatScreen(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     OutlinedTextField(
-                        value = searchQuery,
-                        onValueChange = { searchQuery = it },
+                        value = state.searchQuery,
+                        onValueChange = { onEvent(Event.SearchQueryChanged(it)) },
                         modifier = Modifier.weight(1f),
                         singleLine = true,
                         label = { Text(stringResource(R.string.search)) },
@@ -216,15 +255,19 @@ internal fun CommunityChatScreen(
                             )
                         },
                         trailingIcon = {
-                            if (searchQuery.isNotBlank()) {
-                                IconButton(onClick = { searchQuery = "" }) {
+                            if (state.searchQuery.isNotBlank()) {
+                                IconButton(onClick = { onEvent(Event.SearchQueryChanged("")) }) {
                                     Icon(
                                         imageVector = Icons.Default.Close,
                                         contentDescription = stringResource(R.string.close)
                                     )
                                 }
                             }
-                        }
+                        },
+                        keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
+                        keyboardActions = KeyboardActions(
+                            onSearch = { focusManager.clearFocus() }
+                        )
                     )
 
                     if (isDiscord) {
@@ -260,24 +303,13 @@ internal fun CommunityChatScreen(
                     items(filteredMessages.size) { index ->
                         MessageItem(
                             message = filteredMessages[index],
-                            fallbackBaseUrl = fallbackBaseUrl,
-                            dateMode = state.uiSettingModel.dateFormatMode,
-                            showAuthorAvatar = isDiscord,
-                            autoplayVideoInline = state.uiSettingModel.autoplayCommunityVideo,
-                            onOpenMedia = { media -> onEvent(Event.OpenMedia(media)) },
-                            onOpenUrl = { url -> onEvent(Event.OpenUrl(url)) },
-                            translateExpandedIds = state.translateExpandedIds,
-                            translateLoadingIds = state.translateLoadingIds,
-                            translatedTextById = state.translatedTextById,
-                            translateErrorById = state.translateErrorById,
-                            onToggleTranslate = { messageId, text ->
-                                onEvent(Event.ToggleTranslate(messageId = messageId, text = text))
-                            },
+                            ui = messageItemUi,
+                            actions = messageItemActions,
                         )
                     }
 
                     item {
-                        if (state.loadingMore && searchQuery.isBlank()) {
+                        if (state.loadingMore && state.searchQuery.isBlank()) {
                             Box(
                                 modifier = Modifier
                                     .fillMaxWidth()

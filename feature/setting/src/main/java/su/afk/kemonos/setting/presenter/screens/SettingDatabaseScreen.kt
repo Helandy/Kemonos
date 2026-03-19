@@ -45,14 +45,6 @@ internal fun SettingDatabaseScreen(
             onChangeMb = { onEvent(Event.ChangeViewSetting.CoilCacheSizeMb(it)) },
         )
 
-        Spacer(Modifier.height(10.dp))
-
-        CacheSizeSliderRow(
-            title = stringResource(R.string.settings_cache_video_previews_size_title),
-            currentMb = state.uiSettingModel.previewVideoSizeMb,
-            onChangeMb = { onEvent(Event.ChangeViewSetting.PreviewVideoSizeMb(it)) },
-        )
-
         Spacer(Modifier.height(18.dp))
 
         Column {
@@ -73,6 +65,7 @@ internal fun SettingDatabaseScreen(
 
             CacheRow(
                 title = stringResource(R.string.settings_cache_tags_kemono),
+                description = stringResource(R.string.settings_cache_tags_kemono_description),
                 time = state.tagsKemonoCache,
                 dateFormatMode = state.uiSettingModel.dateFormatMode,
                 onClear = { onEvent(Event.CacheClearAction.Tags(SelectedSite.K)) },
@@ -80,6 +73,7 @@ internal fun SettingDatabaseScreen(
             )
             CacheRow(
                 title = stringResource(R.string.settings_cache_tags_coomer),
+                description = stringResource(R.string.settings_cache_tags_coomer_description),
                 time = state.tagsCoomerCache,
                 dateFormatMode = state.uiSettingModel.dateFormatMode,
                 onClear = { onEvent(Event.CacheClearAction.Tags(SelectedSite.C)) },
@@ -88,6 +82,7 @@ internal fun SettingDatabaseScreen(
 
             CacheRow(
                 title = stringResource(R.string.settings_cache_creators_kemono),
+                description = stringResource(R.string.settings_cache_creators_kemono_description),
                 time = state.creatorsKemonoCache,
                 dateFormatMode = state.uiSettingModel.dateFormatMode,
                 onClear = { onEvent(Event.CacheClearAction.Creators(SelectedSite.K)) },
@@ -95,6 +90,7 @@ internal fun SettingDatabaseScreen(
             )
             CacheRow(
                 title = stringResource(R.string.settings_cache_creators_coomer),
+                description = stringResource(R.string.settings_cache_creators_coomer_description),
                 time = state.creatorsCoomerCache,
                 dateFormatMode = state.uiSettingModel.dateFormatMode,
                 onClear = { onEvent(Event.CacheClearAction.Creators(SelectedSite.C)) },
@@ -103,6 +99,7 @@ internal fun SettingDatabaseScreen(
 
             CacheRow(
                 title = stringResource(R.string.settings_cache_community),
+                description = stringResource(R.string.settings_cache_community_description),
                 time = state.communityCache,
                 dateFormatMode = state.uiSettingModel.dateFormatMode,
                 onClear = { onEvent(Event.CacheClearAction.Community) },
@@ -110,6 +107,7 @@ internal fun SettingDatabaseScreen(
             )
             CacheRow(
                 title = stringResource(R.string.settings_cache_discord),
+                description = stringResource(R.string.settings_cache_discord_description),
                 time = state.discordCache,
                 dateFormatMode = state.uiSettingModel.dateFormatMode,
                 onClear = { onEvent(Event.CacheClearAction.Discord) },
@@ -118,6 +116,7 @@ internal fun SettingDatabaseScreen(
 
             CacheRow(
                 title = stringResource(R.string.settings_cache_profiles),
+                description = stringResource(R.string.settings_cache_profiles_description),
                 time = state.creatorProfilesCache,
                 dateFormatMode = state.uiSettingModel.dateFormatMode,
                 onClear = { onEvent(Event.CacheClearAction.CreatorProfiles) },
@@ -126,6 +125,7 @@ internal fun SettingDatabaseScreen(
 
             CacheRow(
                 title = stringResource(R.string.settings_cache_creator_posts_pages),
+                description = stringResource(R.string.settings_cache_creator_posts_pages_description),
                 time = state.creatorPostsCache,
                 dateFormatMode = state.uiSettingModel.dateFormatMode,
                 onClear = { onEvent(Event.CacheClearAction.CreatorPostsPages) },
@@ -134,6 +134,7 @@ internal fun SettingDatabaseScreen(
 
             CacheRow(
                 title = stringResource(R.string.settings_cache_post_contents),
+                description = stringResource(R.string.settings_cache_post_contents_description),
                 time = state.postContentsCache,
                 dateFormatMode = state.uiSettingModel.dateFormatMode,
                 onClear = { onEvent(Event.CacheClearAction.PostContents) },
@@ -141,7 +142,35 @@ internal fun SettingDatabaseScreen(
             )
 
             CacheRow(
+                title = stringResource(R.string.settings_cache_posts_search),
+                description = stringResource(R.string.settings_cache_posts_search_description),
+                time = state.postsSearchCache,
+                dateFormatMode = state.uiSettingModel.dateFormatMode,
+                onClear = { onEvent(Event.CacheClearAction.PostsSearch) },
+                busy = state.clearInProgress
+            )
+
+            CacheRow(
+                title = stringResource(R.string.settings_cache_dms),
+                description = stringResource(R.string.settings_cache_dms_description),
+                time = state.dmsCache,
+                dateFormatMode = state.uiSettingModel.dateFormatMode,
+                onClear = { onEvent(Event.CacheClearAction.Dms) },
+                busy = state.clearInProgress
+            )
+
+            CacheRow(
+                title = stringResource(R.string.settings_cache_video_info),
+                description = stringResource(R.string.settings_cache_video_info_description),
+                time = state.videoInfoCache,
+                dateFormatMode = state.uiSettingModel.dateFormatMode,
+                onClear = { onEvent(Event.CacheClearAction.VideoInfo) },
+                busy = state.clearInProgress
+            )
+
+            CacheRow(
                 title = stringResource(R.string.settings_cache_popular_kemono),
+                description = stringResource(R.string.settings_cache_popular_kemono_description),
                 time = state.popularKemonoCache,
                 dateFormatMode = state.uiSettingModel.dateFormatMode,
                 onClear = { onEvent(Event.CacheClearAction.PopularPosts) },
@@ -150,6 +179,7 @@ internal fun SettingDatabaseScreen(
 
             CacheRow(
                 title = stringResource(R.string.settings_cache_fav_posts_kemono),
+                description = stringResource(R.string.settings_cache_fav_posts_kemono_description),
                 time = state.favPostsKemonoCache,
                 dateFormatMode = state.uiSettingModel.dateFormatMode,
                 onClear = { onEvent(Event.CacheClearAction.FavoritesPosts) },
@@ -158,6 +188,7 @@ internal fun SettingDatabaseScreen(
 
             CacheRow(
                 title = stringResource(R.string.settings_cache_fav_authors_kemono),
+                description = stringResource(R.string.settings_cache_fav_authors_kemono_description),
                 time = state.favCreatorsKemonoCache,
                 dateFormatMode = state.uiSettingModel.dateFormatMode,
                 onClear = { onEvent(Event.CacheClearAction.FavoritesArtists) },

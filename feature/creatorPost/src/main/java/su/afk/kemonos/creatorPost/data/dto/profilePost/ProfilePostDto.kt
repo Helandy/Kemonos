@@ -18,10 +18,10 @@ internal data class PostResponseDto(
     @SerializedName("post")
     val post: PostUnifiedDto,
 
-    @SerializedName("attachments")
+    @SerializedName(value = "attachments", alternate = ["result_attachments"])
     val attachments: List<AttachmentDto>? = null,
 
-    @SerializedName("previews")
+    @SerializedName(value = "previews", alternate = ["result_previews"])
     val previews: List<PreviewDto>? = null,
 
     @SerializedName("videos")

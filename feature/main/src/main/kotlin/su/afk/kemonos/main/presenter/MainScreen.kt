@@ -7,6 +7,8 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -34,6 +36,8 @@ internal fun MainScreen(
     onEvent: (Event) -> Unit,
 ) {
     val context = LocalContext.current
+    val crashReportSavedSuccess = stringResource(R.string.crash_report_saved_success)
+    val currentCrashReportSavedSuccess by rememberUpdatedState(crashReportSavedSuccess)
 
     LaunchedEffect(Unit) {
         effect.collect { item ->
@@ -47,7 +51,7 @@ internal fun MainScreen(
                     runCatching { saveCrashReportToDownloads(context, item.path) }
                         .onSuccess {
                             context.toast(
-                                text = context.getString(R.string.crash_report_saved_success),
+                                text = currentCrashReportSavedSuccess,
                                 long = true
                             )
                             onEvent(Event.CrashReportShared(item.path))

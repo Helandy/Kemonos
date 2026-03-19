@@ -15,6 +15,7 @@ internal class CommunityChatState {
         val channelId: String = "",
         val channelName: String = "",
         val channelPostCount: Int? = null,
+        val searchQuery: String = "",
         val reverseOrder: Boolean = false,
         val loading: Boolean = false,
         val loadingMore: Boolean = false,
@@ -38,6 +39,7 @@ internal class CommunityChatState {
             val firstVisibleItemIndex: Int,
             val firstVisibleItemScrollOffset: Int,
         ) : Event
+        data class SearchQueryChanged(val query: String) : Event
         data object LoadMore : Event
         data object ToggleReverseOrder : Event
         data class OpenMedia(val media: CommunityMedia) : Event

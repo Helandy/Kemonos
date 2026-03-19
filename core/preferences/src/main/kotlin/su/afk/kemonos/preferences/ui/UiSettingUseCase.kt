@@ -24,7 +24,6 @@ import su.afk.kemonos.preferences.ui.UiSettingKey.FAVORITE_POSTS_VIEW_MODE
 import su.afk.kemonos.preferences.ui.UiSettingKey.POPULAR_POSTS_GRID_SIZE
 import su.afk.kemonos.preferences.ui.UiSettingKey.POPULAR_POSTS_VIEW_MODE
 import su.afk.kemonos.preferences.ui.UiSettingKey.POSTS_SIZE
-import su.afk.kemonos.preferences.ui.UiSettingKey.PREVIEW_VIDEO_SIZE_MB
 import su.afk.kemonos.preferences.ui.UiSettingKey.PROFILE_POSTS_GRID_SIZE
 import su.afk.kemonos.preferences.ui.UiSettingKey.PROFILE_POSTS_VIEW_MODE
 import su.afk.kemonos.preferences.ui.UiSettingKey.RANDOM_BUTTON_PLACEMENT
@@ -42,6 +41,8 @@ import su.afk.kemonos.preferences.ui.UiSettingKey.TAGS_POSTS_VIEW_MODE
 import su.afk.kemonos.preferences.ui.UiSettingKey.TRANSLATE_LANGUAGE_TAG
 import su.afk.kemonos.preferences.ui.UiSettingKey.TRANSLATE_TARGET
 import su.afk.kemonos.preferences.ui.UiSettingKey.USE_EXTERNAL_METADATA
+import su.afk.kemonos.preferences.ui.UiSettingKey.VIDEO_PREVIEW_ASPECT_RATIO
+import su.afk.kemonos.preferences.ui.UiSettingKey.VIDEO_PREVIEW_SERVER_URL
 import javax.inject.Inject
 
 internal class UiSettingUseCase @Inject constructor(
@@ -83,7 +84,6 @@ internal class UiSettingUseCase @Inject constructor(
             searchPostsGridSize = p.readEnum(SEARCH_POSTS_GRID_SIZE, legacyPostsSize),
 
             coilCacheSizeMb = p[COIL_CACHE_SIZE_MB] ?: UiSettingModel.DEFAULT_COIL_CACHE_SIZE,
-            previewVideoSizeMb = p[PREVIEW_VIDEO_SIZE_MB] ?: UiSettingModel.DEFAULT_VIDEO_PREVIEW_SIZE,
 
             showPreviewVideo = p[SHOW_PREVIEW_VIDEO] ?: UiSettingModel.DEFAULT_SHOW_VIDEO_PREVIEW,
             autoplayCommunityVideo = p[AUTOPLAY_COMMUNITY_VIDEO] ?: UiSettingModel.DEFAULT_AUTOPLAY_COMMUNITY_VIDEO,
@@ -102,6 +102,11 @@ internal class UiSettingUseCase @Inject constructor(
             downloadFolderMode = p.readEnum(DOWNLOAD_FOLDER_MODE, UiSettingModel.DEFAULT_DOWNLOAD_FOLDER_MODE),
             addServiceName = p[ADD_SERVICE_NAME] ?: UiSettingModel.DEFAULT_ADD_SERVICE_NAME,
             useExternalMetaData = p[USE_EXTERNAL_METADATA] ?: UiSettingModel.USE_EXTERNAL_METADATA,
+            videoPreviewServerUrl = p[VIDEO_PREVIEW_SERVER_URL] ?: UiSettingModel.DEFAULT_VIDEO_PREVIEW_SERVER_URL,
+            videoPreviewAspectRatio = p.readEnum(
+                VIDEO_PREVIEW_ASPECT_RATIO,
+                UiSettingModel.DEFAULT_VIDEO_PREVIEW_ASPECT_RATIO
+            ),
             creatorsGithubRateBannerInstallTsMs = p[CREATORS_GITHUB_RATE_BANNER_INSTALL_TS_MS] ?: 0L,
             creatorsGithubRateBannerDisabled = p[CREATORS_GITHUB_RATE_BANNER_DISABLED] ?: false,
         )
@@ -223,11 +228,6 @@ internal class UiSettingUseCase @Inject constructor(
         dataStore.edit { it[COIL_CACHE_SIZE_MB] = value.coerceAtLeast(0) }
     }
 
-    /** Размер кэша превьюшек (MB) */
-    override suspend fun setPreviewVideoSizeMb(value: Int) {
-        dataStore.edit { it[PREVIEW_VIDEO_SIZE_MB] = value.coerceAtLeast(0) }
-    }
-
     /** Показывать ли превью видео */
     override suspend fun setShowPreviewVideo(value: Boolean) {
         dataStore.edit { it[SHOW_PREVIEW_VIDEO] = value }
@@ -283,6 +283,14 @@ internal class UiSettingUseCase @Inject constructor(
         dataStore.edit { it[USE_EXTERNAL_METADATA] = value }
     }
 
+    override suspend fun setVideoPreviewServerUrl(value: String) {
+        dataStore.edit { it[VIDEO_PREVIEW_SERVER_URL] = value }
+    }
+
+    override suspend fun setVideoPreviewAspectRatio(value: VideoPreviewAspectRatio) {
+        dataStore.edit { it[VIDEO_PREVIEW_ASPECT_RATIO] = value.name }
+    }
+
     /** Сохранить timestamp первой инициализации баннера оценки в Creators (ms). */
     override suspend fun setCreatorsGithubRateBannerInstallTsMs(value: Long) {
         dataStore.edit { it[CREATORS_GITHUB_RATE_BANNER_INSTALL_TS_MS] = value }
@@ -322,8 +330,6 @@ object UiSettingKey {
     val TAGS_POSTS_GRID_SIZE = stringPreferencesKey("TAGS_POSTS_GRID_SIZE")
     val SEARCH_POSTS_GRID_SIZE = stringPreferencesKey("SEARCH_POSTS_GRID_SIZE")
 
-    val PREVIEW_VIDEO_SIZE_MB = intPreferencesKey("PREVIEW_VIDEO_SIZE_MB")
-
     val SHOW_PREVIEW_VIDEO = booleanPreferencesKey("SHOW_PREVIEW_VIDEO")
     val AUTOPLAY_COMMUNITY_VIDEO = booleanPreferencesKey("AUTOPLAY_COMMUNITY_VIDEO")
     val DISCORD_COMMUNITY_REVERSE_ORDER_DEFAULT =
@@ -338,6 +344,8 @@ object UiSettingKey {
     val DOWNLOAD_FOLDER_MODE = stringPreferencesKey("DOWNLOAD_FOLDER_MODE")
     val ADD_SERVICE_NAME = booleanPreferencesKey("ADD_SERVICE_NAME")
     val USE_EXTERNAL_METADATA = booleanPreferencesKey("USE_EXTERNAL_METADATA")
+    val VIDEO_PREVIEW_SERVER_URL = stringPreferencesKey("VIDEO_PREVIEW_SERVER_URL")
+    val VIDEO_PREVIEW_ASPECT_RATIO = stringPreferencesKey("VIDEO_PREVIEW_ASPECT_RATIO")
     val CREATORS_GITHUB_RATE_BANNER_INSTALL_TS_MS =
         longPreferencesKey("CREATORS_GITHUB_RATE_BANNER_INSTALL_TS_MS")
     val CREATORS_GITHUB_RATE_BANNER_DISABLED =

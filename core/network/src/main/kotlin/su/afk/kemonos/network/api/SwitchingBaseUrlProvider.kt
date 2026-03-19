@@ -1,6 +1,7 @@
 package su.afk.kemonos.network.api
 
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
@@ -14,35 +15,41 @@ interface BaseUrlProvider {
     fun get(): HttpUrl
 }
 
-/** Сменай baseUrl сайта  */
-class SwitchingBaseUrlProvider(
+open class FlowBaseUrlProvider(
     scope: CoroutineScope,
-    prefs: UrlPrefs
+    initialUrl: String,
+    urlFlow: Flow<String>,
 ) : BaseUrlProvider {
 
-    private val ref = AtomicReference<HttpUrl>(
-        when (prefs.selectedSite.value) {
-            SelectedSite.K -> prefs.kemonoUrl.value.toHttpUrl()
-            SelectedSite.C -> prefs.coomerUrl.value.toHttpUrl()
-        }
-    )
+    private val ref = AtomicReference(initialUrl.toHttpUrl())
 
     init {
         scope.launch {
-            combine(
-                prefs.selectedSite,
-                prefs.kemonoUrl,
-                prefs.coomerUrl
-            ) { site, kUrl, cUrl ->
-                when (site) {
-                    SelectedSite.K -> kUrl
-                    SelectedSite.C -> cUrl
-                }
-            }
-                .distinctUntilChanged()
-                .collect { url -> ref.set(url.toHttpUrl()) }
+            urlFlow.collect { url -> ref.set(url.toHttpUrl()) }
         }
     }
 
     override fun get(): HttpUrl = ref.get()
 }
+
+/** Сменай baseUrl сайта  */
+class SwitchingBaseUrlProvider(
+    scope: CoroutineScope,
+    prefs: UrlPrefs
+) : FlowBaseUrlProvider(
+    scope = scope,
+    initialUrl = when (prefs.selectedSite.value) {
+        SelectedSite.K -> prefs.kemonoUrl.value
+        SelectedSite.C -> prefs.coomerUrl.value
+    },
+    urlFlow = combine(
+        prefs.selectedSite,
+        prefs.kemonoUrl,
+        prefs.coomerUrl
+    ) { site, kUrl, cUrl ->
+        when (site) {
+            SelectedSite.K -> kUrl
+            SelectedSite.C -> cUrl
+        }
+    }.distinctUntilChanged(),
+)

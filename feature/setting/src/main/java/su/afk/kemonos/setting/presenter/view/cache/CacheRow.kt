@@ -18,6 +18,7 @@ import su.afk.kemonos.ui.preview.KemonosPreviewScreen
 internal fun CacheRow(
     dateFormatMode: DateFormatMode,
     title: String,
+    description: String? = null,
     time: CacheTimeUi,
     onClear: () -> Unit,
     busy: Boolean,
@@ -31,6 +32,14 @@ internal fun CacheRow(
         ) {
             Column(Modifier.weight(1f)) {
                 Text(title, style = MaterialTheme.typography.titleMedium)
+                if (!description.isNullOrBlank()) {
+                    Spacer(Modifier.height(2.dp))
+                    Text(
+                        text = description,
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
 
                 val last = time.lastMs?.toUiDateTime(dateFormatMode)
                 val next = time.nextMs?.toUiDateTime(dateFormatMode)
@@ -78,6 +87,7 @@ private fun PreviewCacheRow() {
         CacheRow(
             dateFormatMode = DateFormatMode.DD_MM_YYYY,
             title = "Title",
+            description = "Description",
             time = CacheTimeUi(
                 lastMs = 1000.toLong(),
                 nextMs = 1000.toLong(),

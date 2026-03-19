@@ -130,7 +130,7 @@ fun rememberTikTokSwipeState(
         object : NestedScrollConnection {
 
             override fun onPreScroll(available: Offset, source: NestedScrollSource): Offset {
-                if (source != NestedScrollSource.Drag) return Offset.Zero
+                if (source != NestedScrollSource.UserInput) return Offset.Zero
 
                 val dy = available.y
 

@@ -1,3 +1,5 @@
+@file:Suppress("DEPRECATION")
+
 package su.afk.kemonos.auth.di
 
 import android.content.Context

@@ -1,12 +1,14 @@
 package su.afk.kemonos.ui.di
 
 import android.content.Context
+import android.content.pm.ApplicationInfo
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import coil3.ImageLoader
+import coil3.annotation.ExperimentalCoilApi
 import coil3.disk.DiskCache
 import coil3.disk.directory
-import coil3.gif.GifDecoder
+import coil3.gif.AnimatedImageDecoder
 import coil3.memory.MemoryCache
 import coil3.network.okhttp.OkHttpNetworkFetcherFactory
 import coil3.request.CachePolicy
@@ -22,8 +24,11 @@ import kotlinx.coroutines.runBlocking
 import okhttp3.OkHttpClient
 import su.afk.kemonos.constants.Constant.COIL_DISK_DIR_NAME
 import su.afk.kemonos.preferences.ui.UiSettingKey.COIL_CACHE_SIZE_MB
+import su.afk.kemonos.ui.imageLoader.CoilRequestLoggingInterceptor
+import su.afk.kemonos.ui.imageLoader.SuccessOnlyImageCacheStrategy
 import su.afk.kemonos.ui.imageLoader.imageProgress.ImageProgressStore
 import su.afk.kemonos.ui.imageLoader.imageProgress.ProgressInterceptor
+import java.util.concurrent.TimeUnit
 import javax.inject.Qualifier
 import javax.inject.Singleton
 
@@ -43,14 +48,24 @@ object CoilModule {
     @Singleton
     @CoilOkHttp
     fun provideCoilOkHttpClient(
+        @ApplicationContext appContext: Context,
         progressStore: ImageProgressStore,
-    ): OkHttpClient =
-        OkHttpClient.Builder()
+    ): OkHttpClient = OkHttpClient.Builder()
+        .apply {
+            if (appContext.isDebuggableApp()) {
+                addInterceptor(CoilRequestLoggingInterceptor())
+            }
+        }
             .addNetworkInterceptor(ProgressInterceptor(progressStore))
+        .connectTimeout(30, TimeUnit.SECONDS)
+        .readTimeout(30, TimeUnit.SECONDS)
+        .writeTimeout(30, TimeUnit.SECONDS)
             .build()
 
+    /** Превью картинок */
     @Provides
     @Singleton
+    @OptIn(ExperimentalCoilApi::class)
     fun provideImageLoader(
         @ApplicationContext appContext: Context,
         dataStore: DataStore<Preferences>,
@@ -64,13 +79,19 @@ object CoilModule {
 
         return ImageLoader.Builder(appContext)
             .components {
-                add(GifDecoder.Factory())
-                add(OkHttpNetworkFetcherFactory(okHttpClient))
+                // Avoid android.graphics.Movie-based GIF decoding, which can crash on cancellation.
+                add(AnimatedImageDecoder.Factory())
+                add(
+                    OkHttpNetworkFetcherFactory(
+                        callFactory = { okHttpClient },
+                        cacheStrategy = { SuccessOnlyImageCacheStrategy },
+                    )
+                )
             }
             .crossfade(true)
             .memoryCache {
                 MemoryCache.Builder()
-                    .maxSizePercent(appContext, 0.20)
+                    .maxSizePercent(appContext, 0.25)
                     .build()
             }
             .diskCache {
@@ -82,21 +103,29 @@ object CoilModule {
             .build()
     }
 
+    /** Фулл просмотр картинки */
     @Provides
     @Singleton
     @ImageViewCoil
+    @OptIn(ExperimentalCoilApi::class)
     fun provideImageViewImageLoader(
         @ApplicationContext appContext: Context,
         @CoilOkHttp okHttpClient: OkHttpClient,
     ): ImageLoader = ImageLoader.Builder(appContext)
         .components {
-            add(GifDecoder.Factory())
-            add(OkHttpNetworkFetcherFactory(okHttpClient))
+            // Keep the image viewer on the same decoder path as the app-wide loader.
+            add(AnimatedImageDecoder.Factory())
+            add(
+                OkHttpNetworkFetcherFactory(
+                    callFactory = { okHttpClient },
+                    cacheStrategy = { SuccessOnlyImageCacheStrategy },
+                )
+            )
         }
         .crossfade(true)
         .memoryCache {
             MemoryCache.Builder()
-                .maxSizeBytes(IMAGE_VIEW_MIN_MEMORY_CACHE_BYTES)
+                .maxSizePercent(appContext, 0.20)
                 .build()
         }
         .memoryCachePolicy(CachePolicy.ENABLED)
@@ -110,14 +139,14 @@ object CoilModule {
         .build()
 
 
-    private const val DEFAULT_COIL_CACHE_MB = 300
-    private const val MIN_COIL_CACHE_MB = 50
-    private const val MAX_COIL_CACHE_MB = 500
-
-    /** 150 mb RAM */
-    private const val IMAGE_VIEW_MIN_MEMORY_CACHE_BYTES = 150L * 1024L * 1024L
+    private const val DEFAULT_COIL_CACHE_MB = 500
+    private const val MIN_COIL_CACHE_MB = 100
+    private const val MAX_COIL_CACHE_MB = 800
 
     /** 100 mb DISK */
     private const val IMAGE_VIEW_DISK_CACHE_BYTES = 100L * 1024L * 1024L
     private const val IMAGE_VIEW_COIL_DISK_DIR_NAME = "${COIL_DISK_DIR_NAME}_image_view"
 }
+
+private fun Context.isDebuggableApp(): Boolean =
+    (applicationInfo.flags and ApplicationInfo.FLAG_DEBUGGABLE) != 0

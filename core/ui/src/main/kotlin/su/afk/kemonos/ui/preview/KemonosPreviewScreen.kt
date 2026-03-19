@@ -10,8 +10,6 @@ import su.afk.kemonos.preferences.domainResolver.LocalDomainResolver
 import su.afk.kemonos.preferences.domainResolver.PreviewDomainResolver
 import su.afk.kemonos.ui.imageLoader.LocalAppImageLoader
 import su.afk.kemonos.ui.imageLoader.previewImageLoader
-import su.afk.kemonos.ui.video.LocalVideoFrameCache
-import su.afk.kemonos.ui.video.PreviewVideoFrameCache
 
 /** Универсальный превьюер с мок зависимостями */
 @Composable
@@ -24,7 +22,6 @@ fun KemonosPreviewScreen(
         LocalDomainResolver provides PreviewDomainResolver,
         LocalAppImageLoader provides previewImageLoader(context),
         LocalErrorMapper provides PreviewErrorMapper,
-        LocalVideoFrameCache provides PreviewVideoFrameCache,
     ) {
         MaterialTheme {
             content()

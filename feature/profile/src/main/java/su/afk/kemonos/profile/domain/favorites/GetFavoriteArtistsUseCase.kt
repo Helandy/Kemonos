@@ -4,7 +4,9 @@ import su.afk.kemonos.domain.SelectedSite
 import su.afk.kemonos.domain.models.creator.FavoriteArtist
 import su.afk.kemonos.profile.api.domain.IGetFavoriteArtistsUseCase
 import su.afk.kemonos.profile.api.domain.favoriteProfiles.FreshFavoriteArtistKey
+import su.afk.kemonos.profile.domain.favorites.fresh.IComputeFreshFavoriteArtistsUpdatesUseCase
 import su.afk.kemonos.profile.domain.favorites.fresh.IFreshFavoriteArtistsUpdatesUseCase
+import su.afk.kemonos.profile.domain.repository.IFavoritesRepository
 import su.afk.kemonos.storage.api.repository.favorites.updates.IFreshFavoriteArtistsUpdatesRepository
 import javax.inject.Inject
 

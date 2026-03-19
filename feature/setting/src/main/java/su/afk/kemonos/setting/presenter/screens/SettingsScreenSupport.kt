@@ -63,6 +63,7 @@ internal fun previewSettingState(
         coomerUrl = "https://coomer.su",
         inputKemonoDomain = "kemono.su",
         inputCoomerDomain = "coomer.su",
+        inputVideoPreviewServerDomain = "kemonos.afk.su",
         saveSuccess = true,
         uiSettingModel = UiSettingModel(
             suggestRandomAuthors = true,
@@ -70,10 +71,10 @@ internal fun previewSettingState(
             randomButtonPlacement = RandomButtonPlacement.SCREEN,
             translateLanguageTag = "en",
             coilCacheSizeMb = 512,
-            previewVideoSizeMb = 256,
             addServiceName = true,
             downloadFolderMode = DownloadFolderMode.CREATOR_POST_ID,
             creatorProfileHiddenTabs = setOf(CreatorProfileTabKey.DMS),
+            videoPreviewServerUrl = "https://kemonos.afk.su",
         ),
         tagsKemonoCache = CacheTimeUi(
             lastMs = PREVIEW_NOW_MS - DAY_IN_MS,

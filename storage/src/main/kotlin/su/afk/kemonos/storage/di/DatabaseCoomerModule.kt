@@ -1,13 +1,16 @@
 package su.afk.kemonos.storage.di
 
 import android.content.Context
+import android.content.SharedPreferences
 import androidx.room.Room
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
+import su.afk.kemonos.preferences.useCase.CacheKeys
 import su.afk.kemonos.storage.database.CoomerDatabase
+import su.afk.kemonos.storage.database.migrations.DestructiveMigrationPrefSync
 import su.afk.kemonos.storage.database.migrations.coomer.*
 import su.afk.kemonos.storage.entity.creators.dao.CoomerCreatorsDao
 import su.afk.kemonos.storage.entity.dms.dao.CoomerDmsCacheDao
@@ -23,7 +26,10 @@ internal object DatabaseCoomerModule {
 
     @Provides
     @Singleton
-    fun provideCoomerDatabase(@ApplicationContext context: Context): CoomerDatabase =
+    fun provideCoomerDatabase(
+        @ApplicationContext context: Context,
+        prefs: SharedPreferences,
+    ): CoomerDatabase =
         Room.databaseBuilder(context, CoomerDatabase::class.java, "coomer_db")
             .addMigrations(
                 *COOMER_DESTRUCTIVE_TO_10_MIGRATIONS,
@@ -35,6 +41,18 @@ internal object DatabaseCoomerModule {
                 CoomerFrom7To8,
                 CoomerFrom8To9,
                 CoomerFrom9To10,
+            )
+            .addCallback(
+                DestructiveMigrationPrefSync.createCleanupCallback(
+                    scope = "coomer",
+                    prefs = prefs,
+                    keysToClearOnDestructiveRebuild = listOf(
+                        CacheKeys.CREATORS_COOMER,
+                    ),
+                    keysToClearWhenTableEmpty = mapOf(
+                        "creators" to listOf(CacheKeys.CREATORS_COOMER),
+                    ),
+                )
             )
             .build()
 

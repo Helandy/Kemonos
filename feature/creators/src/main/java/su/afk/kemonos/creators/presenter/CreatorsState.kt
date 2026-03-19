@@ -39,6 +39,8 @@ internal class CreatorsState {
         /** Скрыть рандомных авторов */
         val randomExpanded: Boolean = true,
         val showGithubRateBanner: Boolean = false,
+        val isVideoInfoDomainAvailable: Boolean? = null,
+        val showVideoInfoDomainBanner: Boolean = true,
 
         val selectedSite: SelectedSite = SelectedSite.K,
         val uiSettingModel: UiSettingModel = UiSettingModel(),
@@ -57,6 +59,7 @@ internal class CreatorsState {
         data object HeaderRandomExpanded : Event
         data object GithubRateClick : Event
         data object HideGithubRateBanner : Event
+        data object HideVideoInfoDomainBanner : Event
     }
 
     sealed interface Effect : UiEffect {

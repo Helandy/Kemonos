@@ -4,12 +4,14 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
@@ -34,9 +36,11 @@ fun PostsSearchBarWithMediaFilters(
     showMediaFiltersInfoTooltip: Boolean = false,
     trailingIcon: @Composable (() -> Unit)? = null,
     onSearch: () -> Unit = {},
+    onClearSearch: () -> Unit = {},
 ) {
     val tooltipState = rememberTooltipState(isPersistent = true)
     val scope = rememberCoroutineScope()
+    val focusManager = LocalFocusManager.current
 
     Column(
         modifier = modifier
@@ -49,7 +53,32 @@ fun PostsSearchBarWithMediaFilters(
             label = { Text(label) },
             singleLine = true,
             modifier = Modifier.fillMaxWidth(),
-            trailingIcon = trailingIcon,
+            trailingIcon = if (query.isNotBlank() || trailingIcon != null) {
+                {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(2.dp),
+                    ) {
+                        if (query.isNotBlank()) {
+                            IconButton(
+                                onClick = {
+                                    onQueryChange("")
+                                    onClearSearch()
+                                    focusManager.clearFocus()
+                                },
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.Close,
+                                    contentDescription = stringResource(R.string.close),
+                                )
+                            }
+                        }
+                        trailingIcon?.invoke()
+                    }
+                }
+            } else {
+                null
+            },
             keyboardOptions = KeyboardOptions(
                 imeAction = ImeAction.Search
             ),
@@ -65,7 +94,9 @@ fun PostsSearchBarWithMediaFilters(
             ) {
                 TooltipBox(
                     state = tooltipState,
-                    positionProvider = TooltipDefaults.rememberPlainTooltipPositionProvider(),
+                    positionProvider = TooltipDefaults.rememberTooltipPositionProvider(
+                        TooltipAnchorPosition.Above
+                    ),
                     tooltip = {
                         PlainTooltip {
                             Text(stringResource(R.string.posts_filter_local_info_tooltip))

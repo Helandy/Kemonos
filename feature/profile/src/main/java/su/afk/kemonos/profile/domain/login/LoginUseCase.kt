@@ -1,6 +1,6 @@
 package su.afk.kemonos.profile.domain.login
 
-import su.afk.kemonos.profile.domain.IAuthRepository
+import su.afk.kemonos.profile.domain.repository.IAuthRepository
 import javax.inject.Inject
 
 class LoginUseCase @Inject constructor(

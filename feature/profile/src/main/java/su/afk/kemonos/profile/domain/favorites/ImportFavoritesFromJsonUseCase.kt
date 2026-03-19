@@ -6,6 +6,8 @@ import com.google.gson.JsonParser
 import su.afk.kemonos.domain.SelectedSite
 import su.afk.kemonos.preferences.site.ISelectedSiteUseCase
 import su.afk.kemonos.preferences.site.withSite
+import su.afk.kemonos.profile.domain.repository.IFavoritesRepository
+import su.afk.kemonos.profile.domain.repository.IImportExportRepository
 import javax.inject.Inject
 
 internal enum class FavoritesImportType {

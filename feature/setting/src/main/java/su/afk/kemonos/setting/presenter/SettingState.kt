@@ -18,6 +18,7 @@ class SettingState {
 
         val inputKemonoDomain: String = "",
         val inputCoomerDomain: String = "",
+        val inputVideoPreviewServerDomain: String = "",
 
         val isSaving: Boolean = false,
         val saveSuccess: Boolean = false,
@@ -34,6 +35,9 @@ class SettingState {
         val creatorsCoomerCache: CacheTimeUi = CacheTimeUi(null, null, false),
 
         val postContentsCache: CacheTimeUi = CacheTimeUi(null, null, false),
+        val postsSearchCache: CacheTimeUi = CacheTimeUi(null, null, false),
+        val dmsCache: CacheTimeUi = CacheTimeUi(null, null, false),
+        val videoInfoCache: CacheTimeUi = CacheTimeUi(null, null, false),
         val creatorPostsCache: CacheTimeUi = CacheTimeUi(null, null, false),
         val popularKemonoCache: CacheTimeUi = CacheTimeUi(null, null, false),
         val favPostsKemonoCache: CacheTimeUi = CacheTimeUi(null, null, false),
@@ -48,6 +52,7 @@ class SettingState {
         data object Back : Event
         data object OpenCreatorTabsOrderEditor : Event
         data object OpenUiSettings : Event
+        data object OpenVideoSettings : Event
         data object OpenTranslateSettings : Event
         data object OpenNetworkSettings : Event
         data object OpenDatabaseSettings : Event
@@ -83,10 +88,10 @@ class SettingState {
             data class EventDateFormatMode(val value: DateFormatMode) : ChangeViewSetting
 
             data class CoilCacheSizeMb(val value: Int) : ChangeViewSetting
-            data class PreviewVideoSizeMb(val value: Int) : ChangeViewSetting
 
             data class EditPostsSize(val value: PostsSize) : ChangeViewSetting
             data class ShowPreviewVideo(val value: Boolean) : ChangeViewSetting
+            data class VideoPreviewAspectRatioChanged(val value: VideoPreviewAspectRatio) : ChangeViewSetting
             data class AutoplayCommunityVideo(val value: Boolean) : ChangeViewSetting
             data class DiscordCommunityReverseOrderDefault(val value: Boolean) : ChangeViewSetting
             data class BlurImages(val value: Boolean) : ChangeViewSetting
@@ -104,6 +109,7 @@ class SettingState {
         sealed interface ApiSetting : Event {
             data class InputKemonoDomainChanged(val value: String) : ApiSetting
             data class InputCoomerDomainChanged(val value: String) : ApiSetting
+            data class InputVideoPreviewServerDomainChanged(val value: String) : ApiSetting
             data object SaveUrls : ApiSetting
         }
 
@@ -113,6 +119,9 @@ class SettingState {
             object CreatorProfiles : CacheClearAction
             object CreatorPostsPages : CacheClearAction
             object PostContents : CacheClearAction
+            object PostsSearch : CacheClearAction
+            object Dms : CacheClearAction
+            object VideoInfo : CacheClearAction
             object PopularPosts : CacheClearAction
             object FavoritesArtists : CacheClearAction
             object FavoritesPosts : CacheClearAction

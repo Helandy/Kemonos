@@ -12,9 +12,10 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import su.afk.kemonos.creatorPost.domain.model.media.MediaInfoState
+import su.afk.kemonos.creatorPost.domain.media.model.MediaInfoState
 import su.afk.kemonos.domain.models.AttachmentDomain
 import su.afk.kemonos.ui.R
 import su.afk.kemonos.ui.uiUtils.format.formatDurationMinutesSeconds
@@ -23,20 +24,21 @@ import su.afk.kemonos.ui.uiUtils.format.formatSizeMegabytesRounded
 @Composable
 internal fun AudioInfoItem(
     audio: AttachmentDomain,
-    url: String,
     infoState: MediaInfoState?,
-    requestInfo: (url: String) -> Unit,
+    server: String?,
+    path: String,
+    requestInfo: (server: String?, path: String) -> Unit,
     onPlay: (AttachmentDomain) -> Unit,
     onDownload: (AttachmentDomain) -> Unit,
     onShare: (AttachmentDomain) -> Unit,
 ) {
-    LaunchedEffect(url) {
-        requestInfo(url)
+    LaunchedEffect(server, path) {
+        requestInfo(server, path)
     }
 
     val title = audio.name
         ?.takeIf { it.isNotBlank() }
-        ?: audio.path.substringAfterLast('/')
+        ?: path.substringAfterLast('/')
 
     Column(
         modifier = Modifier.fillMaxWidth()
@@ -69,8 +71,7 @@ internal fun AudioInfoItem(
                     style = MaterialTheme.typography.bodyLarge
                 )
 
-                when (val state = infoState ?: MediaInfoState.Idle) {
-                    MediaInfoState.Idle -> Unit
+                when (val state = infoState ?: MediaInfoState.Loading) {
 
                     MediaInfoState.Loading -> {
                         Text(
@@ -82,18 +83,24 @@ internal fun AudioInfoItem(
 
                     is MediaInfoState.Success -> {
                         val data = state.data
-
-                        val duration = formatDurationMinutesSeconds(data.durationMs) ?: "?"
-                        val sizeStr = formatSizeMegabytesRounded(data.sizeBytes) ?: "?"
+                        val mediaInfo = data.mediaInfo
+                        val duration = formatDurationMinutesSeconds(mediaInfo?.durationMs ?: -1L) ?: "?"
+                        val sizeStr = formatSizeMegabytesRounded(mediaInfo?.sizeBytes ?: -1L) ?: "?"
 
                         Text(
                             text = "⏱ $duration   📦 $sizeStr",
                             style = MaterialTheme.typography.bodySmall,
+                            fontWeight = FontWeight.Bold,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     }
 
                     is MediaInfoState.Error -> {
+                        Text(
+                            text = "⏱ ?   📦 ?",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.error
+                        )
                     }
                 }
             }

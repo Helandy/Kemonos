@@ -7,9 +7,10 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDownward
 import androidx.compose.material.icons.filled.ArrowUpward
 import androidx.compose.material.icons.filled.Casino
-import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalDensity
@@ -42,7 +43,10 @@ fun <T> SearchBarNew(
     onToggleAscending: () -> Unit,
 
     showRandom: Boolean = false,
+    randomEnabled: Boolean = true,
     onRandomClick: (() -> Unit)? = null,
+    onSearch: () -> Unit = {},
+    onClearSearch: () -> Unit = {},
 ) {
     val focusManager = LocalFocusManager.current
     val density = LocalDensity.current
@@ -61,19 +65,39 @@ fun <T> SearchBarNew(
                 label = { Text(stringResource(R.string.main_screen_search)) },
                 singleLine = true,
                 trailingIcon = {
-                    Row {
-                        if (showRandom && onRandomClick != null) {
-                            IconButton(onClick = onRandomClick) {
-                                Icon(
-                                    imageVector = Icons.Filled.Casino,
-                                    contentDescription = stringResource(R.string.random),
-                                    tint = MaterialTheme.colorScheme.primary
-                                )
+                    val hasRandom = showRandom && onRandomClick != null
+                    if (query.isNotBlank() || hasRandom) {
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(2.dp),
+                        ) {
+                            if (query.isNotBlank()) {
+                                IconButton(
+                                    onClick = {
+                                        onQueryChange("")
+                                        onClearSearch()
+                                        focusManager.clearFocus()
+                                    }
+                                ) {
+                                    Icon(
+                                        imageVector = Icons.Default.Close,
+                                        contentDescription = stringResource(R.string.close),
+                                    )
+                                }
                             }
-                        }
 
-                        IconButton(onClick = { onQueryChange(query) }) {
-                            Icon(Icons.Default.Search, contentDescription = "Search")
+                            if (hasRandom) {
+                                IconButton(
+                                    onClick = onRandomClick,
+                                    enabled = randomEnabled,
+                                ) {
+                                    Icon(
+                                        imageVector = Icons.Filled.Casino,
+                                        contentDescription = stringResource(R.string.random),
+                                        tint = MaterialTheme.colorScheme.primary,
+                                    )
+                                }
+                            }
                         }
                     }
                 },
@@ -84,7 +108,7 @@ fun <T> SearchBarNew(
                 keyboardActions = KeyboardActions(
                     onSearch = {
                         focusManager.clearFocus()
-                        onQueryChange(query)
+                        onSearch()
                     }
                 ),
                 modifier = Modifier.fillMaxWidth()

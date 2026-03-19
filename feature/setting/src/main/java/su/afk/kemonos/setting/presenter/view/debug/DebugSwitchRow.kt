@@ -1,7 +1,7 @@
 package su.afk.kemonos.setting.presenter.view.debug
 
 import androidx.compose.foundation.layout.*
-import androidx.compose.material3.Divider
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
@@ -41,5 +41,5 @@ internal fun DebugSwitchRow(
         )
     }
 
-    Divider()
+    HorizontalDivider()
 }

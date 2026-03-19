@@ -337,7 +337,7 @@ internal class CreatorProfileViewModel @AssistedInject constructor(
 
         searchJob?.cancel()
         searchJob = viewModelScope.launch {
-            delay(2_000)
+            delay(1_500)
             loadProfileAndPosts()
         }
     }

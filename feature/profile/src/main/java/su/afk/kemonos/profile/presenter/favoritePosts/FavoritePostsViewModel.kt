@@ -47,6 +47,7 @@ internal class FavoritePostsViewModel @Inject constructor(
 
     override fun createInitialState(): State = State()
 
+    private var allPosts: List<PostDomain> = emptyList()
     private val searchQueryFlow = MutableStateFlow("")
     private val mediaFilterFlow = MutableStateFlow(PostMediaFilter())
     private val groupByAuthorFlow = MutableStateFlow(false)
@@ -115,6 +116,11 @@ internal class FavoritePostsViewModel @Inject constructor(
                 )
                 setState {
                     copy(
+                        groupedPosts = filterGroupedPosts(
+                            items = allPosts,
+                            query = query,
+                            mediaFilter = mediaFilter,
+                        ),
                         posts = if (mediaFilter.isActive) {
                             pagingFlow.map { page ->
                                 page.filter { post ->
@@ -128,6 +134,29 @@ internal class FavoritePostsViewModel @Inject constructor(
                 }
             }
             .launchIn(viewModelScope)
+    }
+
+    private fun filterGroupedPosts(
+        items: List<PostDomain>,
+        query: String,
+        mediaFilter: PostMediaFilter,
+    ): List<PostDomain> {
+        val normalizedQuery = query.trim()
+        val queryEnabled = normalizedQuery.length >= 2
+
+        return items.asSequence()
+            .sortedWith(
+                compareByDescending<PostDomain> { it.favedSeq != null }
+                    .thenByDescending { it.favedSeq ?: Int.MIN_VALUE }
+                    .thenByDescending { it.id }
+            )
+            .filter { post ->
+                !queryEnabled || post.title?.contains(normalizedQuery, ignoreCase = true) == true
+            }
+            .filter { post ->
+                !mediaFilter.isActive || post.matchesMediaFilter(mediaFilter)
+            }
+            .toList()
     }
 
 
@@ -182,6 +211,21 @@ internal class FavoritePostsViewModel @Inject constructor(
 
         runCatching {
             getFavoritePostsUseCase(site = currentState.selectSite, refresh = refresh)
+        }.onSuccess { posts ->
+            allPosts = posts.sortedWith(
+                compareByDescending<PostDomain> { it.favedSeq != null }
+                    .thenByDescending { it.favedSeq ?: Int.MIN_VALUE }
+                    .thenByDescending { it.id }
+            )
+            setState {
+                copy(
+                    groupedPosts = filterGroupedPosts(
+                        items = allPosts,
+                        query = searchQueryFlow.value,
+                        mediaFilter = mediaFilterFlow.value,
+                    )
+                )
+            }
         }.onFailure { t ->
             errorHandler.parse(t)
         }

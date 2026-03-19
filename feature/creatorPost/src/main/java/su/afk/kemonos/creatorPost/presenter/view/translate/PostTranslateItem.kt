@@ -105,7 +105,9 @@ internal fun PostTranslateItem(
 
                         TooltipBox(
                             state = tooltipState,
-                            positionProvider = TooltipDefaults.rememberPlainTooltipPositionProvider(),
+                            positionProvider = TooltipDefaults.rememberTooltipPositionProvider(
+                                TooltipAnchorPosition.Above
+                            ),
                             tooltip = {
                                 PlainTooltip {
                                     Text(stringResource(R.string.translate_quality_hint))

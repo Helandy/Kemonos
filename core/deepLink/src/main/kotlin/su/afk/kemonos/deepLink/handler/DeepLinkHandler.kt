@@ -15,7 +15,7 @@ interface DeepLinkHandler {
 internal class DeepLinkHandlerImpl @Inject constructor(
     private val resolver: DeepLinkResolver,
     private val navigationManager: NavigationManager,
-    @Named("MainScope") private val mainScope: CoroutineScope,
+    @param:Named("MainScope") private val mainScope: CoroutineScope,
 ) : DeepLinkHandler {
 
     override fun handle(intent: Intent) {

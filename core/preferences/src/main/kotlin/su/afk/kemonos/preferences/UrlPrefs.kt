@@ -18,7 +18,7 @@ import javax.inject.Singleton
 @Singleton
 class UrlPrefs @Inject constructor(
     private val dataStore: DataStore<Preferences>,
-    @Named("AppScope") private val appScope: CoroutineScope,
+    @param:Named("AppScope") private val appScope: CoroutineScope,
 ) {
     val kemonoUrl: StateFlow<String> = dataStore.data
         .map { it[KEY_K]?.normalizeBaseUrl() ?: DEFAULT_K }

@@ -6,8 +6,13 @@ import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import su.afk.kemonos.profile.api.domain.*
 import su.afk.kemonos.profile.domain.account.GetAccountUseCase
-import su.afk.kemonos.profile.domain.favorites.*
+import su.afk.kemonos.profile.domain.favorites.GetFavoriteArtistsUseCase
+import su.afk.kemonos.profile.domain.favorites.IsCreatorFavoriteUseCase
+import su.afk.kemonos.profile.domain.favorites.IsPostFavoriteUseCase
+import su.afk.kemonos.profile.domain.favorites.RefreshFavoriteArtistsUseCase
+import su.afk.kemonos.profile.domain.favorites.fresh.ComputeFreshFavoriteArtistsUpdatesUseCase
 import su.afk.kemonos.profile.domain.favorites.fresh.FreshFavoriteArtistsUpdatesUseCase
+import su.afk.kemonos.profile.domain.favorites.fresh.IComputeFreshFavoriteArtistsUpdatesUseCase
 import su.afk.kemonos.profile.domain.favorites.fresh.IFreshFavoriteArtistsUpdatesUseCase
 import javax.inject.Singleton
 
@@ -39,5 +44,5 @@ internal interface UseCaseModule {
 
     @Binds
     @Singleton
-    fun bindRefreshFavoriteArtists(impl: RefreshFavoriteArtists): IRefreshFavoriteArtists
+    fun bindRefreshFavoriteArtists(impl: RefreshFavoriteArtistsUseCase): IRefreshFavoriteArtistsUseCase
 }

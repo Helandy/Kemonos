@@ -80,8 +80,7 @@ class BackendMessageParser @Inject constructor(
             /** Для массива — ищем первое подходящее значение в элементах */
             el.firstNotNullOfOrNull { v -> findFirstByKeys(v, keys) }
         }
-
-        else -> null
+        is JsonPrimitive, JsonNull -> null
     }
 
     /**
@@ -105,7 +104,7 @@ class BackendMessageParser @Inject constructor(
         is JsonPrimitive -> if (el.isString) el.content else null
         is JsonObject -> el.values.firstNotNullOfOrNull(::findFirstStringAnywhere)
         is JsonArray -> el.firstNotNullOfOrNull(::findFirstStringAnywhere)
-        else -> null
+        JsonNull -> null
     }
 
     /**
@@ -120,8 +119,7 @@ class BackendMessageParser @Inject constructor(
         is JsonObject -> el["message"]?.let(::jsonElementToString)
             ?: el["detail"]?.let(::jsonElementToString)
             ?: el["error"]?.let(::jsonElementToString)
-
-        else -> null
+        JsonNull -> null
     }
 
     /** ---------------- HTML part ---------------- */

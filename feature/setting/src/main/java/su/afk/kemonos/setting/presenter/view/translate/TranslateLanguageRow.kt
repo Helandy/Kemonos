@@ -136,5 +136,5 @@ internal fun TranslateLanguageRow(
         modifier = Modifier.padding(start = 4.dp, bottom = 6.dp)
     )
 
-    Divider()
+    HorizontalDivider()
 }
