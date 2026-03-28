@@ -5,6 +5,7 @@ import retrofit2.Response
 import su.afk.kemonos.auth.ClearAuthUseCase
 import su.afk.kemonos.auth.SaveAuthSiteUseCase
 import su.afk.kemonos.domain.SelectedSite
+import su.afk.kemonos.domain.models.AuthUser
 import su.afk.kemonos.domain.models.ErrorItem
 import su.afk.kemonos.error.error.extractBackendMessage
 import su.afk.kemonos.network.util.safeString
@@ -109,7 +110,7 @@ internal class AuthRepository @Inject constructor(
                 )
             }
 
-            saveAuthSiteUseCase(site = site, session = session, user = user)
+            saveAuthSiteUseCase(site = site, session = session, user = user.toAuthUser())
 
             return LoginRemoteResult.Success
         }
@@ -161,4 +162,11 @@ internal class AuthRepository @Inject constructor(
             body = body,
         )
     }
+
+    private fun Login.toAuthUser(): AuthUser = AuthUser(
+        id = id,
+        username = username,
+        createdAt = createdAt,
+        role = role,
+    )
 }

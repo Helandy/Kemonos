@@ -15,6 +15,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import su.afk.kemonos.auth.ObserveAuthStateUseCase
 import su.afk.kemonos.domain.SelectedSite
+import su.afk.kemonos.domain.models.AuthUser
 import su.afk.kemonos.download.api.IDownloadNavigator
 import su.afk.kemonos.error.error.IErrorHandlerUseCase
 import su.afk.kemonos.error.error.storage.RetryStorage
@@ -26,6 +27,7 @@ import su.afk.kemonos.preferences.site.ISelectedSiteUseCase
 import su.afk.kemonos.preferences.site.setSiteAndAwait
 import su.afk.kemonos.preferences.ui.IUiSettingUseCase
 import su.afk.kemonos.profile.R
+import su.afk.kemonos.profile.api.model.Login
 import su.afk.kemonos.profile.domain.favorites.*
 import su.afk.kemonos.profile.domain.favorites.fresh.IFreshFavoriteArtistsUpdatesUseCase
 import su.afk.kemonos.profile.domain.favorites.model.FavoritesImportRequest
@@ -116,8 +118,8 @@ internal class ProfileViewModel @Inject constructor(
                 AuthSnapshot(
                     isKemonoAuthorized = auth.isKemonoAuthorized,
                     isCoomerAuthorized = auth.isCoomerAuthorized,
-                    kemonoLogin = auth.kemono.user,
-                    coomerLogin = auth.coomer.user,
+                    kemonoLogin = auth.kemono.user?.toLogin(),
+                    coomerLogin = auth.coomer.user?.toLogin(),
                     kemonoUpdatedFavoritesCount = freshUpdatesUseCase.get(SelectedSite.K).size,
                     coomerUpdatedFavoritesCount = freshUpdatesUseCase.get(SelectedSite.C).size,
                 )
@@ -139,6 +141,13 @@ internal class ProfileViewModel @Inject constructor(
             }
             .launchIn(viewModelScope)
     }
+
+    private fun AuthUser.toLogin(): Login = Login(
+        id = id,
+        username = username,
+        createdAt = createdAt,
+        role = role,
+    )
 
     /** Выйти */
     private fun onLogoutClick(site: SelectedSite) = logoutDelegate.onLogoutClick(

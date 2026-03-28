@@ -16,7 +16,7 @@ import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
-internal object AuthPrefsModule {
+internal object AuthDataStoreModule {
 
     @Provides
     @Singleton

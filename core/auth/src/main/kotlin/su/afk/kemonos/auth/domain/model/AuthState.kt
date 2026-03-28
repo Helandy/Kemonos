@@ -1,10 +1,10 @@
-package su.afk.kemonos.auth
+package su.afk.kemonos.auth.domain.model
 
-import su.afk.kemonos.profile.api.model.Login
+import su.afk.kemonos.domain.models.AuthUser
 
 data class SiteAuthState(
     val session: String?,
-    val user: Login?,
+    val user: AuthUser?,
 ) {
     val isAuthorized: Boolean
         get() = session != null && user != null

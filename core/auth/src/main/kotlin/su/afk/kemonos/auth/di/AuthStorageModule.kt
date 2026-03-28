@@ -20,7 +20,7 @@ annotation class AuthEncryptedPrefs
 
 @Module
 @InstallIn(SingletonComponent::class)
-internal object AuthEncryptedPrefsModule {
+internal object AuthStorageModule {
 
     @Provides
     @Singleton

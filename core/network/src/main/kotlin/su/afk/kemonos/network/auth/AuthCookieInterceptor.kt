@@ -1,17 +1,16 @@
 package su.afk.kemonos.network.auth
 
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
 import okhttp3.Interceptor
 import okhttp3.Response
 import retrofit2.Invocation
-import su.afk.kemonos.auth.IAuthLocalDataSource
+import su.afk.kemonos.auth.domain.repository.AuthSessionProvider
 import su.afk.kemonos.domain.SelectedSite
 import su.afk.kemonos.preferences.site.ISelectedSiteUseCase
 import javax.inject.Inject
 
 internal class AuthCookieInterceptor @Inject constructor(
-    private val authLocalDataSource: IAuthLocalDataSource,
+    private val authSessionProvider: AuthSessionProvider,
     private val selectedSiteProvider: ISelectedSiteUseCase,
 ) : Interceptor {
 
@@ -33,15 +32,8 @@ internal class AuthCookieInterceptor @Inject constructor(
         /** какой сайт сейчас выбран (Kemono / Coomer) */
         val currentSite: SelectedSite = selectedSiteProvider.getSite()
 
-        /** достаём authState синхронно */
-        val authState = runBlocking {
-            authLocalDataSource.authState.first()
-        }
-
-        /** выбираем нужную сессию по сайту */
-        val session = when (currentSite) {
-            SelectedSite.K -> authState.kemono.session
-            SelectedSite.C -> authState.coomer.session
+        val session = runBlocking {
+            authSessionProvider.getSession(currentSite)
         }
 
         if (session.isNullOrBlank()) {
