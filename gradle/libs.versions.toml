@@ -6,9 +6,9 @@ jvmVersion = "21"
 
 # --- App versioning
 appVersionName = "1.11"
-appVersionCode = "72"
+appVersionCode = "73"
 
-agp = "8.12.3"
+agp = "8.13.2"
 kotlin = "2.3.20"
 ksp = "2.3.4"
 
@@ -25,7 +25,7 @@ credentials = "1.5.0"
 # --- Compose
 # Для BOM не задавать вручную версии для compose libs
 # foundation/material3/icons/etс должно подтягиваться BOM
-composeBom = "2026.03.00"
+composeBom = "2026.03.01"
 
 # --- DI
 hilt = "2.58"

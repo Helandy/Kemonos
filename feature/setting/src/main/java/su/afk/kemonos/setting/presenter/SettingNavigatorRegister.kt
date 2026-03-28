@@ -53,6 +53,16 @@ class SettingNavigatorRegister @Inject constructor() : NavRegistrar {
             }
         }
 
+        entry<SettingDestination.TranslateModels> {
+            val viewModel = hiltViewModel<SettingViewModel>()
+            ScreenNavigator(viewModel) { state, _, event ->
+                SettingTranslateModelsScreen(
+                    state = state,
+                    onEvent = event,
+                )
+            }
+        }
+
         entry<SettingDestination.Network> {
             val viewModel = hiltViewModel<SettingViewModel>()
             ScreenNavigator(viewModel) { state, _, event ->
