@@ -3,6 +3,7 @@ package su.afk.kemonos.setting.presenter
 import su.afk.kemonos.domain.SelectedSite
 import su.afk.kemonos.preferences.model.CacheTimeUi
 import su.afk.kemonos.preferences.ui.*
+import su.afk.kemonos.setting.domain.model.TranslateModelInfo
 import su.afk.kemonos.ui.presenter.baseViewModel.UiEffect
 import su.afk.kemonos.ui.presenter.baseViewModel.UiEvent
 import su.afk.kemonos.ui.presenter.baseViewModel.UiState
@@ -46,6 +47,9 @@ class SettingState {
 
         val clearInProgress: Boolean = false,
         val clearSuccess: Boolean? = null,
+        val translateModels: List<TranslateModelInfo> = emptyList(),
+        val translateModelsLoading: Boolean = false,
+        val deletingTranslateModelId: String? = null,
     ) : UiState
 
     sealed interface Event : UiEvent {
@@ -54,11 +58,14 @@ class SettingState {
         data object OpenUiSettings : Event
         data object OpenVideoSettings : Event
         data object OpenTranslateSettings : Event
+        data object OpenTranslateModels : Event
         data object OpenNetworkSettings : Event
         data object OpenDatabaseSettings : Event
         data object OpenDownloadSettings : Event
         data object OpenHelpImportSettings : Event
         data object OpenDebugStorageSettings : Event
+        data object RefreshTranslateModels : Event
+        data class DeleteTranslateModel(val modelId: String) : Event
 
         sealed interface ChangeViewSetting : Event {
             data class SkipApiCheckOnLogin(val value: Boolean) : ChangeViewSetting

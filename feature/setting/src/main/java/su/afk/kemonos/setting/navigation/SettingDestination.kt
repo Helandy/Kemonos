@@ -7,6 +7,7 @@ internal object SettingDestination {
     object Ui : NavKey
     object Video : NavKey
     object Translate : NavKey
+    object TranslateModels : NavKey
     object Network : NavKey
     object Database : NavKey
     object Downloads : NavKey

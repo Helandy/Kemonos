@@ -14,6 +14,7 @@ import su.afk.kemonos.setting.presenter.SettingState.Event
 import su.afk.kemonos.setting.presenter.SettingState.State
 import su.afk.kemonos.setting.presenter.view.common.SectionSpacer
 import su.afk.kemonos.setting.presenter.view.common.SettingsSectionTitle
+import su.afk.kemonos.setting.presenter.view.language.AppLanguageSettingsRow
 import su.afk.kemonos.setting.presenter.view.translate.TranslateLanguageRow
 import su.afk.kemonos.setting.presenter.view.translate.TranslateTargetRow
 import su.afk.kemonos.ui.presenter.baseScreen.TopBarScroll
@@ -52,6 +53,14 @@ internal fun SettingTranslateScreen(
             onChange = {
                 onEvent(Event.ChangeViewSetting.TranslateLanguageTag(it))
             },
+        )
+
+        Spacer(Modifier.height(12.dp))
+
+        AppLanguageSettingsRow(
+            title = stringResource(R.string.settings_translate_models_open_title),
+            subtitle = stringResource(R.string.settings_translate_models_open_subtitle),
+            onClick = { onEvent(Event.OpenTranslateModels) },
         )
     }
 }

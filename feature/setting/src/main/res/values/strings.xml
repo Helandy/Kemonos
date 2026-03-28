@@ -136,6 +136,13 @@
     <string name="settings_translate_language_current">
         Selected: %1$s
     </string>
+    <string name="settings_translate_models_open_title">Downloaded models</string>
+    <string name="settings_translate_models_open_subtitle">List downloaded languages, size, and delete models</string>
+    <string name="settings_translate_models_title">Model manager</string>
+    <string name="settings_translate_models_loading">Loading models…</string>
+    <string name="settings_translate_models_empty">No downloaded models yet</string>
+    <string name="settings_translate_models_pair">%1$s → %2$s</string>
+    <string name="settings_translate_models_delete">Delete</string>
 
     <!-- UI Settings sections -->
     <string name="settings_debug_title">Debug</string>

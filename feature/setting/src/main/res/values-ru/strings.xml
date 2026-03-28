@@ -142,6 +142,13 @@
     <string name="settings_translate_language_current">
         Выбран: %1$s
     </string>
+    <string name="settings_translate_models_open_title">Скачанные модели</string>
+    <string name="settings_translate_models_open_subtitle">Список языков, размер и удаление моделей</string>
+    <string name="settings_translate_models_title">Управление моделями</string>
+    <string name="settings_translate_models_loading">Загружаю модели…</string>
+    <string name="settings_translate_models_empty">Скачанных моделей пока нет</string>
+    <string name="settings_translate_models_pair">%1$s → %2$s</string>
+    <string name="settings_translate_models_delete">Удалить</string>
 
     <string name="settings_debug_title">Debug</string>
     <string name="settings_ui_general_title">Общие</string>

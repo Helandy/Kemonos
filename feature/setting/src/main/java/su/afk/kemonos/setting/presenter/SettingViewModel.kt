@@ -4,6 +4,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.launch
 import su.afk.kemonos.error.error.IErrorHandlerUseCase
 import su.afk.kemonos.error.error.storage.RetryStorage
 import su.afk.kemonos.navigation.NavigationManager
@@ -14,6 +15,8 @@ import su.afk.kemonos.preferences.useCase.CacheKeys
 import su.afk.kemonos.preferences.useCase.CacheTimes
 import su.afk.kemonos.preferences.useCase.ICacheTimestampUseCase
 import su.afk.kemonos.setting.BuildConfig
+import su.afk.kemonos.setting.domain.useCase.DeleteDownloadedTranslateModelUseCase
+import su.afk.kemonos.setting.domain.useCase.GetDownloadedTranslateModelsUseCase
 import su.afk.kemonos.setting.navigation.SettingDestination
 import su.afk.kemonos.setting.presenter.delegates.SettingApiDelegate
 import su.afk.kemonos.setting.presenter.delegates.SettingCacheDelegate
@@ -31,6 +34,8 @@ class SettingViewModel @Inject constructor(
     private val uiPrefsDelegate: SettingUiPreferencesDelegate,
     private val apiDelegate: SettingApiDelegate,
     private val cacheDelegate: SettingCacheDelegate,
+    private val getDownloadedTranslateModelsUseCase: GetDownloadedTranslateModelsUseCase,
+    private val deleteDownloadedTranslateModelUseCase: DeleteDownloadedTranslateModelUseCase,
     private val navManager: NavigationManager,
     override val errorHandler: IErrorHandlerUseCase,
     override val retryStorage: RetryStorage
@@ -45,11 +50,14 @@ class SettingViewModel @Inject constructor(
             SettingState.Event.OpenUiSettings -> navManager.navigate(SettingDestination.Ui)
             SettingState.Event.OpenVideoSettings -> navManager.navigate(SettingDestination.Video)
             SettingState.Event.OpenTranslateSettings -> navManager.navigate(SettingDestination.Translate)
+            SettingState.Event.OpenTranslateModels -> navManager.navigate(SettingDestination.TranslateModels)
             SettingState.Event.OpenNetworkSettings -> navManager.navigate(SettingDestination.Network)
             SettingState.Event.OpenDatabaseSettings -> navManager.navigate(SettingDestination.Database)
             SettingState.Event.OpenDownloadSettings -> navManager.navigate(SettingDestination.Downloads)
             SettingState.Event.OpenHelpImportSettings -> navManager.navigate(SettingDestination.HelpImport)
             SettingState.Event.OpenDebugStorageSettings -> navManager.navigate(SettingDestination.DebugStorage)
+            SettingState.Event.RefreshTranslateModels -> refreshTranslateModels()
+            is SettingState.Event.DeleteTranslateModel -> deleteTranslateModel(event.modelId)
 
             is SettingState.Event.ChangeViewSetting ->
                 uiPrefsDelegate.handle(event, viewModelScope)
@@ -132,5 +140,38 @@ class SettingViewModel @Inject constructor(
                 }
             }
             .launchIn(viewModelScope)
+    }
+
+    private fun refreshTranslateModels() {
+        viewModelScope.launch {
+            setState { copy(translateModelsLoading = true) }
+            try {
+                val models = getDownloadedTranslateModelsUseCase()
+                setState {
+                    copy(
+                        translateModels = models,
+                        deletingTranslateModelId = null,
+                    )
+                }
+            } finally {
+                setState {
+                    copy(
+                        translateModelsLoading = false,
+                        deletingTranslateModelId = null,
+                    )
+                }
+            }
+        }
+    }
+
+    private fun deleteTranslateModel(modelId: String) {
+        viewModelScope.launch {
+            setState { copy(deletingTranslateModelId = modelId) }
+            try {
+                deleteDownloadedTranslateModelUseCase(modelId)
+            } finally {
+                refreshTranslateModels()
+            }
+        }
     }
 }
