@@ -101,6 +101,12 @@ interface IUiSettingUseCase {
     /** Установить формат карточки превью видео */
     suspend fun setVideoPreviewAspectRatio(value: VideoPreviewAspectRatio)
 
+    /** Кропить превью видео по размеру карточки */
+    suspend fun setCropVideoPreview(value: Boolean)
+
+    /** Кропить превью видео в карточках постов */
+    suspend fun setCropPostPreviewVideo(value: Boolean)
+
     /** Сохранить timestamp первой инициализации баннера оценки в Creators (ms). */
     suspend fun setCreatorsGithubRateBannerInstallTsMs(value: Long)
 

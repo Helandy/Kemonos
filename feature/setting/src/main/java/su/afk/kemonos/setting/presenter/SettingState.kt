@@ -99,6 +99,8 @@ class SettingState {
             data class EditPostsSize(val value: PostsSize) : ChangeViewSetting
             data class ShowPreviewVideo(val value: Boolean) : ChangeViewSetting
             data class VideoPreviewAspectRatioChanged(val value: VideoPreviewAspectRatio) : ChangeViewSetting
+            data class CropVideoPreview(val value: Boolean) : ChangeViewSetting
+            data class CropPostPreviewVideo(val value: Boolean) : ChangeViewSetting
             data class AutoplayCommunityVideo(val value: Boolean) : ChangeViewSetting
             data class DiscordCommunityReverseOrderDefault(val value: Boolean) : ChangeViewSetting
             data class BlurImages(val value: Boolean) : ChangeViewSetting

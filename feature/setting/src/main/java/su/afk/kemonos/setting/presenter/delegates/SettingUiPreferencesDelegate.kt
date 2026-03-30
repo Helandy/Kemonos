@@ -108,6 +108,14 @@ class SettingUiPreferencesDelegate @Inject constructor(
             is SettingState.Event.ChangeViewSetting.VideoPreviewAspectRatioChanged ->
                 scope.launch { uiSetting.setVideoPreviewAspectRatio(event.value) }
 
+            /** Кропить превью видео по размеру карточки */
+            is SettingState.Event.ChangeViewSetting.CropVideoPreview ->
+                scope.launch { uiSetting.setCropVideoPreview(event.value) }
+
+            /** Кропить превью видео в карточках постов */
+            is SettingState.Event.ChangeViewSetting.CropPostPreviewVideo ->
+                scope.launch { uiSetting.setCropPostPreviewVideo(event.value) }
+
             /** Автовоспроизведение видео в Community/Discord */
             is SettingState.Event.ChangeViewSetting.AutoplayCommunityVideo ->
                 scope.launch { uiSetting.setAutoplayCommunityVideo(event.value) }
