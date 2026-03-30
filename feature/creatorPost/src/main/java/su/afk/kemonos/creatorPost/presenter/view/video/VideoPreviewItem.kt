@@ -33,6 +33,7 @@ import su.afk.kemonos.ui.video.openVideoExternally
 internal fun VideoPreviewItem(
     showPreview: Boolean,
     blurImage: Boolean,
+    cropVideoPreview: Boolean,
     previewAspectRatio: Float,
     previewServerUrl: String,
     useExternalMetaData: Boolean,
@@ -82,6 +83,7 @@ internal fun VideoPreviewItem(
                     videoPath = video.path,
                     contentDescription = video.name,
                     blurImage = blurImage,
+                    cropVideoPreview = cropVideoPreview,
                 )
             } else if (useSelfPreview) {
                 SelfPreview(

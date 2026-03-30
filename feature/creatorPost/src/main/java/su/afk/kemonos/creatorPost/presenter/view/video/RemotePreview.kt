@@ -30,6 +30,7 @@ internal fun RemotePreview(
     videoPath: String,
     contentDescription: String,
     blurImage: Boolean,
+    cropVideoPreview: Boolean,
 ) {
     val previewUrls = remember(videoPath, showPreview, previewServerUrl) {
         buildVideoPreviewUrls(
@@ -47,6 +48,7 @@ internal fun RemotePreview(
             model = previewUrl,
             contentDescription = contentDescription,
             blurImage = blurImage,
+            cropVideoPreview = cropVideoPreview,
             onPreviewUnavailable = { failedUrl ->
                 val updatedFailedUrls = failedPreviewUrls + failedUrl
                 failedPreviewUrls = updatedFailedUrls
@@ -92,6 +94,7 @@ private fun RemotePreviewImage(
     model: Any?,
     contentDescription: String,
     blurImage: Boolean,
+    cropVideoPreview: Boolean,
     onPreviewUnavailable: (String) -> Unit,
 ) {
     if (model != null) {
@@ -139,11 +142,21 @@ private fun RemotePreviewImage(
                 .background(MaterialTheme.colorScheme.surfaceVariant)
                 .then(if (blurImage) Modifier.blur(14.dp) else Modifier),
         ) {
+            if (!cropVideoPreview) {
+                androidx.compose.foundation.Image(
+                    painter = painter,
+                    contentDescription = null,
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .blur(18.dp),
+                    contentScale = ContentScale.Crop,
+                )
+            }
             androidx.compose.foundation.Image(
                 painter = painter,
                 contentDescription = contentDescription,
                 modifier = Modifier.fillMaxSize(),
-                contentScale = ContentScale.Crop,
+                contentScale = if (cropVideoPreview) ContentScale.Crop else ContentScale.Fit,
             )
         }
     } else {

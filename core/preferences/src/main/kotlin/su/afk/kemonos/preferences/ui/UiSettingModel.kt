@@ -211,6 +211,10 @@ data class UiSettingModel(
     val videoPreviewServerUrl: String = DEFAULT_VIDEO_PREVIEW_SERVER_URL,
     /** Формат карточки превью видео */
     val videoPreviewAspectRatio: VideoPreviewAspectRatio = DEFAULT_VIDEO_PREVIEW_ASPECT_RATIO,
+    /** Кропить превью видео в экране видео-секции поста (RemotePreview) */
+    val cropVideoPreview: Boolean = DEFAULT_CROP_VIDEO_PREVIEW,
+    /** Кропить превью видео в карточках постов (PostPreview) */
+    val cropPostPreviewVideo: Boolean = DEFAULT_CROP_POST_PREVIEW_VIDEO,
 
     /** Timestamp первой инициализации баннера оценки в Creators (0 = еще не установлен). */
     val creatorsGithubRateBannerInstallTsMs: Long = 0L,
@@ -254,5 +258,7 @@ data class UiSettingModel(
         const val USE_EXTERNAL_METADATA = true
         const val DEFAULT_VIDEO_PREVIEW_SERVER_URL = "https://kemonos.win"
         val DEFAULT_VIDEO_PREVIEW_ASPECT_RATIO = VideoPreviewAspectRatio.RATIO_3F_2F
+        const val DEFAULT_CROP_VIDEO_PREVIEW = true
+        const val DEFAULT_CROP_POST_PREVIEW_VIDEO = true
     }
 }

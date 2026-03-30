@@ -185,6 +185,11 @@
     <string name="settings_video_preview_ratio_1_2">1/2</string>
     <string name="settings_video_preview_ratio_3f_2f">3/2</string>
     <string name="settings_video_preview_ratio_2f_3f">2/3</string>
+    <string name="settings_video_preview_crop_post_title">Crop previews in post cards</string>
+    <string name="settings_video_preview_crop_post_subtitle">Applies to feed/grid cards (PostPreview)</string>
+    <string name="settings_video_preview_crop_remote_title">Crop previews in video section</string>
+    <string name="settings_video_preview_crop_remote_subtitle">Applies to opened post video items (RemotePreview)
+    </string>
     <string name="settings_autoplay_community_video_title">Autoplay videos in Community/Discord</string>
     <string name="settings_autoplay_community_video_subtitle">Load and play videos inline without tap</string>
     <string name="settings_discord_reverse_default_title">Discord: newest first</string>

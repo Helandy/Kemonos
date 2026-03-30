@@ -51,6 +51,7 @@ internal fun PostPreview(
                 RemoteVideoPostPreview(
                     videoPath = preview.path,
                     previewServerUrl = uiSettingModel.videoPreviewServerUrl,
+                    cropVideoPreview = uiSettingModel.cropPostPreviewVideo,
                     title = title,
                     imageModifier = imageModifier,
                 )
@@ -77,6 +78,7 @@ internal fun PostPreview(
 private fun RemoteVideoPostPreview(
     videoPath: String?,
     previewServerUrl: String,
+    cropVideoPreview: Boolean,
     title: String?,
     imageModifier: Modifier,
 ) {
@@ -107,11 +109,21 @@ private fun RemoteVideoPostPreview(
     )
     when (painter.state.collectAsStateWithLifecycle().value) {
         is AsyncImagePainter.State.Success -> {
+            if (!cropVideoPreview) {
+                Image(
+                    painter = painter,
+                    contentDescription = null,
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .blur(18.dp),
+                    contentScale = ContentScale.Crop,
+                )
+            }
             Image(
                 painter = painter,
                 contentDescription = title,
                 modifier = imageModifier,
-                contentScale = ContentScale.Crop,
+                contentScale = if (cropVideoPreview) ContentScale.Crop else ContentScale.Fit,
             )
         }
 

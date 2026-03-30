@@ -49,6 +49,18 @@ internal fun SettingVideoScreen(
             value = state.uiSettingModel.videoPreviewAspectRatio,
             onChange = { onEvent(Event.ChangeViewSetting.VideoPreviewAspectRatioChanged(it)) },
         )
+        SwitchRow(
+            title = stringResource(R.string.settings_video_preview_crop_post_title),
+            subtitle = stringResource(R.string.settings_video_preview_crop_post_subtitle),
+            checked = state.uiSettingModel.cropPostPreviewVideo,
+            onCheckedChange = { onEvent(Event.ChangeViewSetting.CropPostPreviewVideo(it)) },
+        )
+        SwitchRow(
+            title = stringResource(R.string.settings_video_preview_crop_remote_title),
+            subtitle = stringResource(R.string.settings_video_preview_crop_remote_subtitle),
+            checked = state.uiSettingModel.cropVideoPreview,
+            onCheckedChange = { onEvent(Event.ChangeViewSetting.CropVideoPreview(it)) },
+        )
 
         SwitchRow(
             title = stringResource(R.string.settings_autoplay_community_video_title),

@@ -15,6 +15,8 @@ import su.afk.kemonos.preferences.ui.UiSettingKey.CREATORS_GITHUB_RATE_BANNER_IN
 import su.afk.kemonos.preferences.ui.UiSettingKey.CREATORS_VIEW_MODE
 import su.afk.kemonos.preferences.ui.UiSettingKey.CREATOR_PROFILE_HIDDEN_TABS
 import su.afk.kemonos.preferences.ui.UiSettingKey.CREATOR_PROFILE_TABS_ORDER
+import su.afk.kemonos.preferences.ui.UiSettingKey.CROP_POST_PREVIEW_VIDEO
+import su.afk.kemonos.preferences.ui.UiSettingKey.CROP_VIDEO_PREVIEW
 import su.afk.kemonos.preferences.ui.UiSettingKey.DATE_FORMAT_MODE
 import su.afk.kemonos.preferences.ui.UiSettingKey.DISCORD_COMMUNITY_REVERSE_ORDER_DEFAULT
 import su.afk.kemonos.preferences.ui.UiSettingKey.DOWNLOAD_FOLDER_MODE
@@ -107,6 +109,8 @@ internal class UiSettingUseCase @Inject constructor(
                 VIDEO_PREVIEW_ASPECT_RATIO,
                 UiSettingModel.DEFAULT_VIDEO_PREVIEW_ASPECT_RATIO
             ),
+            cropVideoPreview = p[CROP_VIDEO_PREVIEW] ?: UiSettingModel.DEFAULT_CROP_VIDEO_PREVIEW,
+            cropPostPreviewVideo = p[CROP_POST_PREVIEW_VIDEO] ?: UiSettingModel.DEFAULT_CROP_POST_PREVIEW_VIDEO,
             creatorsGithubRateBannerInstallTsMs = p[CREATORS_GITHUB_RATE_BANNER_INSTALL_TS_MS] ?: 0L,
             creatorsGithubRateBannerDisabled = p[CREATORS_GITHUB_RATE_BANNER_DISABLED] ?: false,
         )
@@ -291,6 +295,14 @@ internal class UiSettingUseCase @Inject constructor(
         dataStore.edit { it[VIDEO_PREVIEW_ASPECT_RATIO] = value.name }
     }
 
+    override suspend fun setCropVideoPreview(value: Boolean) {
+        dataStore.edit { it[CROP_VIDEO_PREVIEW] = value }
+    }
+
+    override suspend fun setCropPostPreviewVideo(value: Boolean) {
+        dataStore.edit { it[CROP_POST_PREVIEW_VIDEO] = value }
+    }
+
     /** Сохранить timestamp первой инициализации баннера оценки в Creators (ms). */
     override suspend fun setCreatorsGithubRateBannerInstallTsMs(value: Long) {
         dataStore.edit { it[CREATORS_GITHUB_RATE_BANNER_INSTALL_TS_MS] = value }
@@ -346,6 +358,8 @@ object UiSettingKey {
     val USE_EXTERNAL_METADATA = booleanPreferencesKey("USE_EXTERNAL_METADATA")
     val VIDEO_PREVIEW_SERVER_URL = stringPreferencesKey("VIDEO_PREVIEW_SERVER_URL")
     val VIDEO_PREVIEW_ASPECT_RATIO = stringPreferencesKey("VIDEO_PREVIEW_ASPECT_RATIO")
+    val CROP_VIDEO_PREVIEW = booleanPreferencesKey("CROP_VIDEO_PREVIEW")
+    val CROP_POST_PREVIEW_VIDEO = booleanPreferencesKey("CROP_POST_PREVIEW_VIDEO")
     val CREATORS_GITHUB_RATE_BANNER_INSTALL_TS_MS =
         longPreferencesKey("CREATORS_GITHUB_RATE_BANNER_INSTALL_TS_MS")
     val CREATORS_GITHUB_RATE_BANNER_DISABLED =
