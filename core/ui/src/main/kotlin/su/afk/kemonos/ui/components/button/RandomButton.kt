@@ -19,11 +19,10 @@ import su.afk.kemonos.ui.R
 fun RandomButton(
     enabled: Boolean,
     onClick: () -> Unit,
-    modifier: Modifier = Modifier,
 ) {
     FloatingActionButton(
         onClick = { if (enabled) onClick() },
-        modifier = modifier
+        modifier = Modifier.padding(horizontal = 8.dp)
             .alpha(if (enabled) 1f else 0.5f)
             .clickable(enabled = enabled) {},
         containerColor = MaterialTheme.colorScheme.primary,

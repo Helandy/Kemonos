@@ -20,6 +20,7 @@ fun FavoriteActionButton(
     onFavoriteClick: () -> Unit,
 ) {
     FloatingActionButton(
+        modifier = Modifier.padding(horizontal = 8.dp),
         onClick = { if (enabled) onFavoriteClick() },
         containerColor = favoriteColor(isFavorite)
     ) {
