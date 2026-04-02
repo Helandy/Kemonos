@@ -20,11 +20,10 @@ fun SiteToggleFab(
     enable: Boolean,
     selectedSite: SelectedSite,
     onToggleSite: () -> Unit,
-    modifier: Modifier = Modifier,
 ) {
     FloatingActionButton(
         onClick = { if (enable) onToggleSite() },
-        modifier = modifier
+        modifier = Modifier.padding(horizontal = 8.dp)
             .alpha(if (enable) 1f else 0.5f)
             .clickable(enabled = enable) {},
         containerColor = MaterialTheme.colorScheme.primary,
