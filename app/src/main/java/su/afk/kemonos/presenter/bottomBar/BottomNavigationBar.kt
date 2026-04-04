@@ -6,10 +6,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Article
 import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.Groups
-import androidx.compose.material3.Icon
-import androidx.compose.material3.NavigationBar
-import androidx.compose.material3.NavigationBarDefaults
-import androidx.compose.material3.NavigationBarItem
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalDensity
@@ -47,11 +44,12 @@ internal fun BottomNavigationBar(
     } else {
         BottomBarIconGestures
     }
+    val systemBarLikeColor = MaterialTheme.colorScheme.background
 
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .background(NavigationBarDefaults.containerColor)
+            .background(systemBarLikeColor)
             .navigationBarsPadding()
     ) {
         NavigationBar(
@@ -59,7 +57,7 @@ internal fun BottomNavigationBar(
                 .fillMaxWidth()
                 .height(bottomBarHeight),
             windowInsets = WindowInsets(0),
-            containerColor = NavigationBarDefaults.containerColor,
+            containerColor = systemBarLikeColor,
         ) {
             items.forEach { (tab, icon) ->
                 val selected = tab == currentTab
