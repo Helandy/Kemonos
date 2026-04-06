@@ -78,6 +78,8 @@
     <!--    setting ui -->
     <string name="settings_ui_title">Interface</string>
     <string name="settings_ui_hint">Display and behavior settings.</string>
+    <string name="settings_default_site_title">Site display mode</string>
+    <string name="settings_fab_visibility_title">Site toggle button</string>
     <!-- UI settings -->
     <string name="settings_ui_creators_view_mode">Creators view</string>
     <string name="settings_ui_creators_favorite_view_mode">Creators favorites view</string>

@@ -1,12 +1,25 @@
 package su.afk.kemonos.preferences.ui
 
 import kotlinx.coroutines.flow.Flow
+import su.afk.kemonos.domain.SelectedSite
 
 interface IUiSettingUseCase {
     val prefs: Flow<UiSettingModel>
 
     /** Debug: пропустить проверку API при входе */
     suspend fun setSkipApiCheckOnLogin(value: Boolean)
+
+    /** Показывать Kemono */
+    suspend fun setShowKemono(value: Boolean)
+
+    /** Показывать Coomer */
+    suspend fun setShowCoomer(value: Boolean)
+
+    /** Основной сайт по умолчанию */
+    suspend fun setDefaultSite(value: SelectedSite)
+
+    /** Режим отображения FAB */
+    suspend fun setFabVisibilityMode(value: FabVisibilityMode)
 
     /** Вид отображения авторов  */
     suspend fun setCreatorsViewMode(value: CreatorViewMode)

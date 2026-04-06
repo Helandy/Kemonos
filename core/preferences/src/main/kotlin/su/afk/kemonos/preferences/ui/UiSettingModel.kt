@@ -4,6 +4,7 @@ import androidx.compose.ui.unit.dp
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.util.*
+import su.afk.kemonos.domain.SelectedSite
 
 enum class CreatorViewMode { LIST, GRID }
 enum class PostsViewMode { LIST, GRID }
@@ -106,6 +107,31 @@ enum class CreatorProfileTabKey {
     COMMUNITY,
 }
 
+enum class SiteDisplayMode(val showKemono: Boolean, val showCoomer: Boolean, val defaultSite: SelectedSite) {
+    BOTH_DEFAULT_K(false, false, SelectedSite.K),  // placeholder, not used
+    BOTH_DEFAULT_KEMONO(true, true, SelectedSite.K),
+    BOTH_DEFAULT_COOMER(true, true, SelectedSite.C),
+    ONLY_KEMONO(true, false, SelectedSite.K),
+    ONLY_COOMER(false, true, SelectedSite.C);
+
+    companion object {
+        fun from(showKemono: Boolean, showCoomer: Boolean, defaultSite: SelectedSite): SiteDisplayMode {
+            return entries.find { it.showKemono == showKemono && it.showCoomer == showCoomer && it.defaultSite == defaultSite }
+                ?: if (showKemono && showCoomer) {
+                    if (defaultSite == SelectedSite.K) BOTH_DEFAULT_KEMONO else BOTH_DEFAULT_COOMER
+                } else if (showKemono) ONLY_KEMONO
+                else if (showCoomer) ONLY_COOMER
+                else BOTH_DEFAULT_KEMONO
+        }
+    }
+}
+
+enum class FabVisibilityMode {
+    ALWAYS_ON,
+    ALWAYS_OFF,
+    ON_BOTH,
+}
+
 enum class VideoPreviewAspectRatio(val ratio: Float) {
     RATIO_16_9(16f / 9f),
     RATIO_2_1(2f / 1f),
@@ -119,6 +145,18 @@ data class UiSettingModel(
 
     /** debug-only: пропустить проверку API при входе */
     val skipApiCheckOnLogin: Boolean = false,
+
+    /** Показывать Kemono в списках */
+    val showKemono: Boolean = DEFAULT_SHOW_KEMANO,
+
+    /** Показывать Coomer в списках */
+    val showCoomer: Boolean = DEFAULT_SHOW_COOMER,
+
+    /** Основной сайт по умолчанию */
+    val defaultSite: SelectedSite = DEFAULT_DEFAULT_SITE,
+
+    /** Режим отображения FAB переключения сайта */
+    val fabVisibilityMode: FabVisibilityMode = FabVisibilityMode.ON_BOTH,
 
     /** Вид отображения авторов на главной */
     val creatorsViewMode: CreatorViewMode = DEFAULT_CREATORS_VIEW_MODE,
@@ -223,6 +261,10 @@ data class UiSettingModel(
     val creatorsGithubRateBannerDisabled: Boolean = false,
 ) {
     companion object {
+        const val DEFAULT_SHOW_KEMANO = true
+        const val DEFAULT_SHOW_COOMER = true
+        val DEFAULT_DEFAULT_SITE = SelectedSite.K
+
         val DEFAULT_CREATORS_VIEW_MODE = CreatorViewMode.LIST
         val DEFAULT_POSTS_VIEW_MODE = PostsViewMode.GRID
         val DEFAULT_CREATOR_PROFILE_TABS_ORDER = listOf(

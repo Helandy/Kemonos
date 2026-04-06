@@ -1,6 +1,9 @@
 package su.afk.kemonos.posts.presenter.pageTags
 
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import su.afk.kemonos.domain.SelectedSite
 import su.afk.kemonos.error.error.IErrorHandlerUseCase
@@ -13,6 +16,7 @@ import su.afk.kemonos.posts.navigation.PostsDestination
 import su.afk.kemonos.posts.presenter.pageTags.TagsPageState.*
 import su.afk.kemonos.posts.util.Const.TAGS_SELECTED_NAV_KEY
 import su.afk.kemonos.preferences.site.ISelectedSiteUseCase
+import su.afk.kemonos.preferences.ui.IUiSettingUseCase
 import su.afk.kemonos.ui.presenter.changeSite.SiteAwareBaseViewModelNew
 import javax.inject.Inject
 
@@ -21,10 +25,14 @@ internal class TagsPageViewModel @Inject constructor(
     private val getAllTagsUseCase: GetAllTagsUseCase,
     private val navManager: NavigationManager,
     private val navigationStorage: NavigationStorage,
+    private val uiSetting: IUiSettingUseCase,
     override val selectedSiteUseCase: ISelectedSiteUseCase,
     override val errorHandler: IErrorHandlerUseCase,
     override val retryStorage: RetryStorage,
 ) : SiteAwareBaseViewModelNew<State, Event, Effect>() {
+
+    private var siteInitializedFromSettings = false
+    private var lastDefaultSite: SelectedSite? = null
 
     override fun createInitialState(): State = State()
 
@@ -35,7 +43,27 @@ internal class TagsPageViewModel @Inject constructor(
     }
 
     init {
+        observeUiSetting()
         initSiteAware()
+    }
+
+    private fun observeUiSetting() {
+        uiSetting.prefs.distinctUntilChanged()
+            .onEach { model ->
+                if (!siteInitializedFromSettings) {
+                    siteInitializedFromSettings = true
+                    lastDefaultSite = model.defaultSite
+                    viewModelScope.launch {
+                        selectedSiteUseCase.setSite(model.defaultSite)
+                    }
+                } else if (model.defaultSite != lastDefaultSite) {
+                    lastDefaultSite = model.defaultSite
+                    viewModelScope.launch {
+                        selectedSiteUseCase.setSite(model.defaultSite)
+                    }
+                }
+            }
+            .launchIn(viewModelScope)
     }
 
     override fun onEvent(event: Event) {

@@ -10,6 +10,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.key
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -39,9 +40,38 @@ internal fun ProfileScreen(
     effect: Flow<ProfileState.Effect>,
 ) {
     val context = LocalContext.current
-    val pagerState = rememberPagerState(pageCount = { 2 })
+    val ui = state.uiSettingModel
+    val showCoomer = ui.showCoomer
+    val showKemono = ui.showKemono
+    val defaultSite = ui.defaultSite
+
+    val pageCount = when {
+        showCoomer && showKemono -> 2
+        showCoomer || showKemono -> 1
+        else -> 1
+    }
+
+    val initialPage = when {
+        pageCount == 1 -> 0
+        defaultSite == SelectedSite.K -> 1
+        else -> 0
+    }
+
+    val pagerState = key(pageCount, defaultSite) {
+        rememberPagerState(pageCount = { pageCount }, initialPage = initialPage)
+    }
     val scope = rememberCoroutineScope()
-    if (pagerState.currentPage == 0) SelectedSite.C else SelectedSite.K
+
+    LaunchedEffect(pageCount, defaultSite) {
+        val targetPage = when {
+            pageCount == 1 -> 0
+            defaultSite == SelectedSite.K -> 1
+            else -> 0
+        }
+        if (pagerState.currentPage != targetPage) {
+            pagerState.scrollToPage(targetPage)
+        }
+    }
 
     val folderPickerLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.OpenDocumentTree()
@@ -86,19 +116,23 @@ internal fun ProfileScreen(
                     verticalArrangement = Arrangement.spacedBy(8.dp),
                 ) {
                     SecondaryTabRow(
-                        selectedTabIndex = pagerState.currentPage,
+                        selectedTabIndex = pagerState.currentPage.coerceIn(0, pageCount - 1),
                         containerColor = MaterialTheme.colorScheme.surfaceContainerLow,
                     ) {
-                        Tab(
-                            selected = pagerState.currentPage == 0,
-                            onClick = { scope.launch { pagerState.animateScrollToPage(0) } },
-                            text = { Text(text = stringResource(R.string.coomer), fontWeight = FontWeight.Medium) },
-                        )
-                        Tab(
-                            selected = pagerState.currentPage == 1,
-                            onClick = { scope.launch { pagerState.animateScrollToPage(1) } },
-                            text = { Text(text = stringResource(R.string.kemono), fontWeight = FontWeight.Medium) },
-                        )
+                        if (showCoomer) {
+                            Tab(
+                                selected = pagerState.currentPage == 0,
+                                onClick = { scope.launch { pagerState.animateScrollToPage(0) } },
+                                text = { Text(text = stringResource(R.string.coomer), fontWeight = FontWeight.Medium) },
+                            )
+                        }
+                        if (showKemono) {
+                            Tab(
+                                selected = pagerState.currentPage == if (showCoomer) 1 else 0,
+                                onClick = { scope.launch { pagerState.animateScrollToPage(if (showCoomer) 1 else 0) } },
+                                text = { Text(text = stringResource(R.string.kemono), fontWeight = FontWeight.Medium) },
+                            )
+                        }
                     }
 
                     HorizontalPager(
@@ -107,8 +141,8 @@ internal fun ProfileScreen(
                         contentPadding = PaddingValues(horizontal = 12.dp, vertical = 4.dp),
                         pageSpacing = 12.dp,
                     ) { page ->
-                        when (page) {
-                            0 -> SitePage(
+                        when {
+                            showCoomer && page == 0 -> SitePage(
                                 dateMode = state.uiSettingModel.dateFormatMode,
                                 title = stringResource(R.string.profile_coomer_account_title),
                                 isLoggedIn = state.isLoginCoomer,
@@ -139,7 +173,7 @@ internal fun ProfileScreen(
                                 },
                             )
 
-                            1 -> SitePage(
+                            showKemono && page == if (showCoomer) 1 else 0 -> SitePage(
                                 dateMode = state.uiSettingModel.dateFormatMode,
                                 title = stringResource(R.string.profile_kemono_account_title),
                                 isLoggedIn = state.isLoginKemono,

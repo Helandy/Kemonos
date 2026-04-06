@@ -31,6 +31,8 @@ internal class HashLookupViewModel @Inject constructor(
 ) : SiteAwareBaseViewModelNew<State, Event, Effect>() {
 
     private val hashRegex = Regex("^[a-fA-F0-9]{64}$")
+    private var siteInitializedFromSettings = false
+    private var lastDefaultSite: SelectedSite? = null
 
     override fun createInitialState(): State = State()
 
@@ -54,6 +56,18 @@ internal class HashLookupViewModel @Inject constructor(
 
     private fun observeUiSetting() {
         uiSetting.observeDistinct(viewModelScope) { model ->
+            if (!siteInitializedFromSettings) {
+                siteInitializedFromSettings = true
+                lastDefaultSite = model.defaultSite
+                viewModelScope.launch {
+                    selectedSiteUseCase.setSite(model.defaultSite)
+                }
+            } else if (model.defaultSite != lastDefaultSite) {
+                lastDefaultSite = model.defaultSite
+                viewModelScope.launch {
+                    selectedSiteUseCase.setSite(model.defaultSite)
+                }
+            }
             setState { copy(uiSettingModel = model) }
         }
     }

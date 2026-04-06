@@ -68,8 +68,8 @@ internal class FavoritePostsViewModel @Inject constructor(
     }
 
     init {
-        observeUiSetting()
         loadSelectedSite()
+        observeUiSetting()
     }
 
     override fun onEvent(event: Event) {
@@ -161,12 +161,12 @@ internal class FavoritePostsViewModel @Inject constructor(
 
 
     /**
-     * Инициализация экрана: выбираем сайт из navigation args, иначе берём уже активный в app state.
+     * Инициализация экрана: выбираем сайт из navigation args, иначе берём defaultSite из настроек.
      * Затем синхронизируем favorites и запускаем observe-пайплайн фильтров/поиска.
      */
     private fun loadSelectedSite() = viewModelScope.launch {
         val selectSite = navigationStorage.consume<SelectedSite>(KEY_SELECT_SITE)
-            ?: selectedSiteUseCase.getSite()
+            ?: uiSetting.prefs.first().defaultSite
 
         selectedSiteUseCase.setSiteAndAwait(selectSite)
 
