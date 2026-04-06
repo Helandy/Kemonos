@@ -21,6 +21,7 @@ import androidx.paging.compose.collectAsLazyPagingItems
 import kotlinx.coroutines.flow.Flow
 import su.afk.kemonos.domain.SelectedSite
 import su.afk.kemonos.posts.presenter.pageSearchPosts.SearchPostsState.*
+import su.afk.kemonos.preferences.ui.FabVisibilityMode
 import su.afk.kemonos.preferences.ui.RandomButtonPlacement
 import su.afk.kemonos.ui.R
 import su.afk.kemonos.ui.components.button.RandomButton
@@ -129,11 +130,13 @@ internal fun SearchPostsScreen(
                 }
         },
         floatingActionButtonStart = {
-            SiteToggleFab(
-                enable = !isBusy,
-                selectedSite = site,
-                onToggleSite = { onEvent(Event.SwitchSite) },
-            )
+            if (FabVisibilityMode.shouldShowSiteToggleFab(state.uiSettingModel)) {
+                SiteToggleFab(
+                    enable = !isBusy,
+                    selectedSite = site,
+                    onToggleSite = { onEvent(Event.SwitchSite) },
+                )
+            }
         },
         floatingActionButtonEnd = {
             if (showRandomFab) {

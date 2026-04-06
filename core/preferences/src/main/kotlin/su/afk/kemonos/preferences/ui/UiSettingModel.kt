@@ -1,10 +1,10 @@
 package su.afk.kemonos.preferences.ui
 
 import androidx.compose.ui.unit.dp
+import su.afk.kemonos.domain.SelectedSite
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.util.*
-import su.afk.kemonos.domain.SelectedSite
 
 enum class CreatorViewMode { LIST, GRID }
 enum class PostsViewMode { LIST, GRID }
@@ -129,6 +129,16 @@ enum class FabVisibilityMode {
     ALWAYS_ON,
     ALWAYS_OFF,
     ON_BOTH,
+    ;
+
+    companion object {
+        fun shouldShowSiteToggleFab(uiSettingModel: UiSettingModel): Boolean =
+            when (uiSettingModel.fabVisibilityMode) {
+                ALWAYS_ON -> true
+                ALWAYS_OFF -> false
+                ON_BOTH -> uiSettingModel.showKemono && uiSettingModel.showCoomer
+            }
+    }
 }
 
 enum class VideoPreviewAspectRatio(val ratio: Float) {

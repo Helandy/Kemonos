@@ -140,7 +140,7 @@ internal fun CreatorTabsOrderScreen(
                             Column(modifier = Modifier.weight(1f)) {
                                 Text(
                                     text = stringResource(tab.titleRes()),
-                                    style = MaterialTheme.typography.bodyMedium,
+                                    style = MaterialTheme.typography.bodyLarge,
                                 )
                                 if (isPostsTab) {
                                     Text(

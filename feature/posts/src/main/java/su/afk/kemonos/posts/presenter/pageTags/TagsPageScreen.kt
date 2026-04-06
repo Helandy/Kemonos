@@ -26,6 +26,7 @@ import kotlinx.coroutines.flow.Flow
 import su.afk.kemonos.domain.SelectedSite
 import su.afk.kemonos.posts.api.tags.Tags
 import su.afk.kemonos.posts.presenter.pageTags.TagsPageState.*
+import su.afk.kemonos.preferences.ui.FabVisibilityMode
 import su.afk.kemonos.ui.R
 import su.afk.kemonos.ui.components.button.SiteToggleFab
 import su.afk.kemonos.ui.presenter.baseScreen.BaseScreen
@@ -81,11 +82,13 @@ internal fun TagsPageScreen(
             )
         },
         floatingActionButtonStart = {
-            SiteToggleFab(
-                enable = !isPageLoading,
-                selectedSite = site,
-                onToggleSite = { onEvent(Event.SwitchSite) },
-            )
+            if (FabVisibilityMode.shouldShowSiteToggleFab(state.uiSettingModel)) {
+                SiteToggleFab(
+                    enable = !isPageLoading,
+                    selectedSite = site,
+                    onToggleSite = { onEvent(Event.SwitchSite) },
+                )
+            }
         },
         isLoading = isPageLoading && state.allTags.isEmpty(),
         isEmpty = isEmptyResult,
