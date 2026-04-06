@@ -24,6 +24,7 @@ import su.afk.kemonos.domain.SelectedSite
 import su.afk.kemonos.posts.api.dms.DmDomain
 import su.afk.kemonos.posts.presenter.pageDm.DmState.*
 import su.afk.kemonos.posts.presenter.pageDm.DmState.State
+import su.afk.kemonos.preferences.ui.FabVisibilityMode
 import su.afk.kemonos.ui.R
 import su.afk.kemonos.ui.components.button.SiteToggleFab
 import su.afk.kemonos.ui.components.dm.DmCreatorUi
@@ -83,11 +84,13 @@ internal fun DmScreen(
             )
         },
         floatingActionButtonStart = {
-            SiteToggleFab(
-                enable = !isBusy,
-                selectedSite = site,
-                onToggleSite = { onEvent(Event.SwitchSite) },
-            )
+            if (FabVisibilityMode.shouldShowSiteToggleFab(state.uiSettingModel)) {
+                SiteToggleFab(
+                    enable = !isBusy,
+                    selectedSite = site,
+                    onToggleSite = { onEvent(Event.SwitchSite) },
+                )
+            }
         },
         isLoading = isPageLoading && dms.itemCount == 0,
     ) {

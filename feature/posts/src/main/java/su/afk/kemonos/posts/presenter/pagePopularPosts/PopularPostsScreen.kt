@@ -15,6 +15,7 @@ import kotlinx.coroutines.flow.Flow
 import su.afk.kemonos.domain.SelectedSite
 import su.afk.kemonos.posts.presenter.pagePopularPosts.PopularPostsState.*
 import su.afk.kemonos.posts.presenter.pagePopularPosts.views.PopularPeriodsPanel
+import su.afk.kemonos.preferences.ui.FabVisibilityMode
 import su.afk.kemonos.ui.components.button.SiteToggleFab
 import su.afk.kemonos.ui.components.posts.PostsContentPaging
 import su.afk.kemonos.ui.presenter.baseScreen.BaseScreen
@@ -51,11 +52,13 @@ internal fun PopularPostsScreen(
             )
         },
         floatingActionButtonStart = {
-            SiteToggleFab(
-                enable = !isBusy,
-                selectedSite = site,
-                onToggleSite = { onEvent(Event.SwitchSite) },
-            )
+            if (FabVisibilityMode.shouldShowSiteToggleFab(state.uiSettingModel)) {
+                SiteToggleFab(
+                    enable = !isBusy,
+                    selectedSite = site,
+                    onToggleSite = { onEvent(Event.SwitchSite) },
+                )
+            }
         },
         isLoading = isPageLoading && posts.itemCount == 0,
     ) {

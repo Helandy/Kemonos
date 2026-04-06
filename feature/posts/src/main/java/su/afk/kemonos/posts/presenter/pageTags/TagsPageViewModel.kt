@@ -62,6 +62,7 @@ internal class TagsPageViewModel @Inject constructor(
                         selectedSiteUseCase.setSite(model.defaultSite)
                     }
                 }
+                setState { copy(uiSettingModel = model) }
             }
             .launchIn(viewModelScope)
     }
