@@ -108,7 +108,6 @@ enum class CreatorProfileTabKey {
 }
 
 enum class SiteDisplayMode(val showKemono: Boolean, val showCoomer: Boolean, val defaultSite: SelectedSite) {
-    BOTH_DEFAULT_K(false, false, SelectedSite.K),  // placeholder, not used
     BOTH_DEFAULT_KEMONO(true, true, SelectedSite.K),
     BOTH_DEFAULT_COOMER(true, true, SelectedSite.C),
     ONLY_KEMONO(true, false, SelectedSite.K),
@@ -263,7 +262,7 @@ data class UiSettingModel(
     companion object {
         const val DEFAULT_SHOW_KEMANO = true
         const val DEFAULT_SHOW_COOMER = true
-        val DEFAULT_DEFAULT_SITE = SelectedSite.K
+        val DEFAULT_DEFAULT_SITE = SelectedSite.C
 
         val DEFAULT_CREATORS_VIEW_MODE = CreatorViewMode.LIST
         val DEFAULT_POSTS_VIEW_MODE = PostsViewMode.GRID

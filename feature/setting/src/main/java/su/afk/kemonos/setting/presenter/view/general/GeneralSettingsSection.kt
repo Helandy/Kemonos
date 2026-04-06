@@ -26,11 +26,9 @@ internal fun GeneralSettingsSection(
     suggestRandomAuthors: Boolean,
     onSuggestRandomAuthors: (Boolean) -> Unit,
     showKemono: Boolean,
-    onShowKemono: (Boolean) -> Unit,
     showCoomer: Boolean,
-    onShowCoomer: (Boolean) -> Unit,
     defaultSite: SelectedSite,
-    onDefaultSite: (SelectedSite) -> Unit,
+    onSiteDisplayModeChanged: (SiteDisplayMode) -> Unit,
     fabVisibilityMode: FabVisibilityMode,
     onFabVisibilityModeChange: (FabVisibilityMode) -> Unit,
     appThemeMode: AppThemeMode,
@@ -66,11 +64,9 @@ internal fun GeneralSettingsSection(
         Column(modifier = Modifier.padding(vertical = 8.dp)) {
             SiteDisplayModeSetting(
                 showKemono = showKemono,
-                onShowKemono = onShowKemono,
                 showCoomer = showCoomer,
-                onShowCoomer = onShowCoomer,
                 defaultSite = defaultSite,
-                onDefaultSite = onDefaultSite,
+                onSiteDisplayModeChanged = onSiteDisplayModeChanged,
             )
 
             HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp))
@@ -216,11 +212,9 @@ private fun DateFormatSetting(
 @Composable
 private fun SiteDisplayModeSetting(
     showKemono: Boolean,
-    onShowKemono: (Boolean) -> Unit,
     showCoomer: Boolean,
-    onShowCoomer: (Boolean) -> Unit,
     defaultSite: SelectedSite,
-    onDefaultSite: (SelectedSite) -> Unit,
+    onSiteDisplayModeChanged: (SiteDisplayMode) -> Unit,
 ) {
     var expanded by remember { mutableStateOf(false) }
     val currentMode = SiteDisplayMode.from(showKemono, showCoomer, defaultSite)
@@ -244,11 +238,10 @@ private fun SiteDisplayModeSetting(
             ) {
                 Text(
                     text = when (currentMode) {
-                        SiteDisplayMode.BOTH_DEFAULT_KEMONO -> "Both (Default: Kemono)"
-                        SiteDisplayMode.BOTH_DEFAULT_COOMER -> "Both (Default: Coomer)"
-                        SiteDisplayMode.ONLY_KEMONO -> "Only Kemono"
-                        SiteDisplayMode.ONLY_COOMER -> "Only Coomer"
-                        SiteDisplayMode.BOTH_DEFAULT_K -> "Both (Default: Kemono)"
+                        SiteDisplayMode.BOTH_DEFAULT_KEMONO -> stringResource(R.string.settings_site_display_both_default_kemono)
+                        SiteDisplayMode.BOTH_DEFAULT_COOMER -> stringResource(R.string.settings_site_display_both_default_coomer)
+                        SiteDisplayMode.ONLY_KEMONO -> stringResource(R.string.settings_site_display_only_kemono)
+                        SiteDisplayMode.ONLY_COOMER -> stringResource(R.string.settings_site_display_only_coomer)
                     },
                     style = MaterialTheme.typography.bodyMedium,
                 )
@@ -259,24 +252,21 @@ private fun SiteDisplayModeSetting(
                 onDismissRequest = { expanded = false },
                 modifier = Modifier.fillMaxWidth(0.9f)
             ) {
-                SiteDisplayMode.entries.filter { it != SiteDisplayMode.BOTH_DEFAULT_K }.forEach { mode ->
+                SiteDisplayMode.entries.forEach { mode ->
                     DropdownMenuItem(
                         text = {
                             Text(
                                 text = when (mode) {
-                                    SiteDisplayMode.BOTH_DEFAULT_KEMONO -> "Both (Default: Kemono)"
-                                    SiteDisplayMode.BOTH_DEFAULT_COOMER -> "Both (Default: Coomer)"
-                                    SiteDisplayMode.ONLY_KEMONO -> "Only Kemono"
-                                    SiteDisplayMode.ONLY_COOMER -> "Only Coomer"
-                                    SiteDisplayMode.BOTH_DEFAULT_K -> "Both (Default: Kemono)"
+                                    SiteDisplayMode.BOTH_DEFAULT_KEMONO -> stringResource(R.string.settings_site_display_both_default_kemono)
+                                    SiteDisplayMode.BOTH_DEFAULT_COOMER -> stringResource(R.string.settings_site_display_both_default_coomer)
+                                    SiteDisplayMode.ONLY_KEMONO -> stringResource(R.string.settings_site_display_only_kemono)
+                                    SiteDisplayMode.ONLY_COOMER -> stringResource(R.string.settings_site_display_only_coomer)
                                 }
                             )
                         },
                         onClick = {
                             expanded = false
-                            onShowKemono(mode.showKemono)
-                            onShowCoomer(mode.showCoomer)
-                            onDefaultSite(mode.defaultSite)
+                            onSiteDisplayModeChanged(mode)
                         }
                     )
                 }
@@ -312,9 +302,9 @@ private fun FabVisibilityModeSetting(
             ) {
                 Text(
                     text = when (value) {
-                        FabVisibilityMode.ALWAYS_ON -> "Always On"
-                        FabVisibilityMode.ALWAYS_OFF -> "Always Off"
-                        FabVisibilityMode.ON_BOTH -> "On Only When Both"
+                        FabVisibilityMode.ALWAYS_ON -> stringResource(R.string.settings_fab_always_on)
+                        FabVisibilityMode.ALWAYS_OFF -> stringResource(R.string.settings_fab_always_off)
+                        FabVisibilityMode.ON_BOTH -> stringResource(R.string.settings_fab_on_both)
                     },
                     style = MaterialTheme.typography.bodyMedium,
                 )
@@ -330,9 +320,9 @@ private fun FabVisibilityModeSetting(
                         text = {
                             Text(
                                 text = when (mode) {
-                                    FabVisibilityMode.ALWAYS_ON -> "Always On"
-                                    FabVisibilityMode.ALWAYS_OFF -> "Always Off"
-                                    FabVisibilityMode.ON_BOTH -> "On Only When Both"
+                                    FabVisibilityMode.ALWAYS_ON -> stringResource(R.string.settings_fab_always_on)
+                                    FabVisibilityMode.ALWAYS_OFF -> stringResource(R.string.settings_fab_always_off)
+                                    FabVisibilityMode.ON_BOTH -> stringResource(R.string.settings_fab_on_both)
                                 }
                             )
                         },

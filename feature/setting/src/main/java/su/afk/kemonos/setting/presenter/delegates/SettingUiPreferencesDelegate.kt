@@ -27,6 +27,10 @@ class SettingUiPreferencesDelegate @Inject constructor(
             is SettingState.Event.ChangeViewSetting.DefaultSite ->
                 scope.launch { uiSetting.setDefaultSite(event.value) }
 
+            /** Режим отображения сайта */
+            is SettingState.Event.ChangeViewSetting.SiteDisplayModeChanged ->
+                scope.launch { uiSetting.setSiteDisplayMode(event.value) }
+
             /** Режим отображения FAB */
             is SettingState.Event.ChangeViewSetting.FabVisibilityModeChanged ->
                 scope.launch { uiSetting.setFabVisibilityMode(event.value) }

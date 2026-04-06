@@ -73,6 +73,7 @@ class SettingState {
             data class ShowKemono(val value: Boolean) : ChangeViewSetting
             data class ShowCoomer(val value: Boolean) : ChangeViewSetting
             data class DefaultSite(val value: SelectedSite) : ChangeViewSetting
+            data class SiteDisplayModeChanged(val value: SiteDisplayMode) : ChangeViewSetting
             data class FabVisibilityModeChanged(val value: FabVisibilityMode) : ChangeViewSetting
 
             data class SuggestRandomAuthors(val value: Boolean) : ChangeViewSetting

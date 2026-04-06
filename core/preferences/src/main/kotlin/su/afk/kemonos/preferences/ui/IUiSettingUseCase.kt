@@ -18,6 +18,9 @@ interface IUiSettingUseCase {
     /** Основной сайт по умолчанию */
     suspend fun setDefaultSite(value: SelectedSite)
 
+    /** Режим отображения сайта */
+    suspend fun setSiteDisplayMode(value: SiteDisplayMode)
+
     /** Режим отображения FAB */
     suspend fun setFabVisibilityMode(value: FabVisibilityMode)
 

@@ -153,6 +153,15 @@ internal class UiSettingUseCase @Inject constructor(
         }
     }
 
+    /** Режим отображения сайта */
+    override suspend fun setSiteDisplayMode(value: SiteDisplayMode) {
+        dataStore.edit {
+            it[SHOW_KEMANO] = value.showKemono
+            it[SHOW_COOMER] = value.showCoomer
+            it[DEFAULT_SITE] = value.defaultSite.name
+        }
+    }
+
     /** Режим отображения FAB */
     override suspend fun setFabVisibilityMode(value: FabVisibilityMode) {
         dataStore.edit {

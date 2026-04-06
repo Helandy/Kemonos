@@ -80,6 +80,18 @@
     <string name="settings_ui_hint">Display and behavior settings.</string>
     <string name="settings_default_site_title">Site display mode</string>
     <string name="settings_fab_visibility_title">Site toggle button</string>
+
+    <!-- Site display mode options -->
+    <string name="settings_site_display_both_default_kemono">Both (Default: Kemono)</string>
+    <string name="settings_site_display_both_default_coomer">Both (Default: Coomer)</string>
+    <string name="settings_site_display_only_kemono">Only Kemono</string>
+    <string name="settings_site_display_only_coomer">Only Coomer</string>
+
+    <!-- Fab visibility mode options -->
+    <string name="settings_fab_always_on">Always On</string>
+    <string name="settings_fab_always_off">Always Off</string>
+    <string name="settings_fab_on_both">On Only When Both</string>
+
     <!-- UI settings -->
     <string name="settings_ui_creators_view_mode">Creators view</string>
     <string name="settings_ui_creators_favorite_view_mode">Creators favorites view</string>
