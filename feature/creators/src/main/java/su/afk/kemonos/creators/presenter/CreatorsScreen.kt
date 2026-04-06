@@ -26,6 +26,7 @@ import su.afk.kemonos.creators.presenter.view.CreatorsVideoInfoDomainBanner
 import su.afk.kemonos.domain.SelectedSite
 import su.afk.kemonos.domain.models.creator.FavoriteArtist
 import su.afk.kemonos.preferences.ui.CreatorViewMode
+import su.afk.kemonos.preferences.ui.FabVisibilityMode
 import su.afk.kemonos.preferences.ui.RandomButtonPlacement
 import su.afk.kemonos.preferences.ui.UiSettingModel
 import su.afk.kemonos.ui.components.button.RandomButton
@@ -106,11 +107,18 @@ internal fun CreatorsScreen(
             )
         },
         floatingActionButtonStart = {
-            SiteToggleFab(
-                enable = !isScreenLoading,
-                selectedSite = site,
-                onToggleSite = { onEvent(Event.SwitchSiteClicked) },
-            )
+            val showFab = when (state.uiSettingModel.fabVisibilityMode) {
+                FabVisibilityMode.ALWAYS_ON -> true
+                FabVisibilityMode.ALWAYS_OFF -> false
+                FabVisibilityMode.ON_BOTH -> state.uiSettingModel.showKemono && state.uiSettingModel.showCoomer
+            }
+            if (showFab) {
+                SiteToggleFab(
+                    enable = !isScreenLoading,
+                    selectedSite = site,
+                    onToggleSite = { onEvent(Event.SwitchSiteClicked) },
+                )
+            }
         },
         floatingActionButtonEnd = {
             if (showRandomFab) {

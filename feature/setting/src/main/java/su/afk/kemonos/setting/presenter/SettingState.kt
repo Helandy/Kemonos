@@ -70,6 +70,12 @@ class SettingState {
         sealed interface ChangeViewSetting : Event {
             data class SkipApiCheckOnLogin(val value: Boolean) : ChangeViewSetting
 
+            data class ShowKemono(val value: Boolean) : ChangeViewSetting
+            data class ShowCoomer(val value: Boolean) : ChangeViewSetting
+            data class DefaultSite(val value: SelectedSite) : ChangeViewSetting
+            data class SiteDisplayModeChanged(val value: SiteDisplayMode) : ChangeViewSetting
+            data class FabVisibilityModeChanged(val value: FabVisibilityMode) : ChangeViewSetting
+
             data class SuggestRandomAuthors(val value: Boolean) : ChangeViewSetting
 
             data class CreatorsViewMode(val value: CreatorViewMode) : ChangeViewSetting

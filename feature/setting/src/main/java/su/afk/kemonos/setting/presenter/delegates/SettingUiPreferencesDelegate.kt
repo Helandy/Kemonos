@@ -15,6 +15,26 @@ class SettingUiPreferencesDelegate @Inject constructor(
             is SettingState.Event.ChangeViewSetting.SkipApiCheckOnLogin ->
                 scope.launch { uiSetting.setSkipApiCheckOnLogin(event.value) }
 
+            /** Показывать Kemono */
+            is SettingState.Event.ChangeViewSetting.ShowKemono ->
+                scope.launch { uiSetting.setShowKemono(event.value) }
+
+            /** Показывать Coomer */
+            is SettingState.Event.ChangeViewSetting.ShowCoomer ->
+                scope.launch { uiSetting.setShowCoomer(event.value) }
+
+            /** Основной сайт по умолчанию */
+            is SettingState.Event.ChangeViewSetting.DefaultSite ->
+                scope.launch { uiSetting.setDefaultSite(event.value) }
+
+            /** Режим отображения сайта */
+            is SettingState.Event.ChangeViewSetting.SiteDisplayModeChanged ->
+                scope.launch { uiSetting.setSiteDisplayMode(event.value) }
+
+            /** Режим отображения FAB */
+            is SettingState.Event.ChangeViewSetting.FabVisibilityModeChanged ->
+                scope.launch { uiSetting.setFabVisibilityMode(event.value) }
+
             /** Предлагать рандомных авторов */
             is SettingState.Event.ChangeViewSetting.SuggestRandomAuthors ->
                 scope.launch { uiSetting.setSuggestRandomAuthors(event.value) }

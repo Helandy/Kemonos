@@ -47,8 +47,8 @@ internal class FavoriteProfilesViewModel @Inject constructor(
     override fun createInitialState(): State = State()
 
     init {
-        observeUiSetting()
         loadSelectedSite()
+        observeUiSetting()
     }
 
     override fun onEvent(event: Event) {
@@ -116,11 +116,11 @@ internal class FavoriteProfilesViewModel @Inject constructor(
 
     /**
      * Инициализирует сайт/фильтры и запускает первичный refresh+paging.
-     * Если сайт не передали через навигацию, используем текущий выбранный сайт приложения.
+     * Если сайт не передали через навигацию, используем defaultSite из настроек.
      */
     private fun loadSelectedSite() = viewModelScope.launch {
         val site = navigationStorage.consume<SelectedSite>(KEY_SELECT_SITE)
-            ?: selectedSiteUseCase.getSite()
+            ?: uiSetting.prefs.first().defaultSite
 
         selectedSiteUseCase.setSiteAndAwait(site)
 
