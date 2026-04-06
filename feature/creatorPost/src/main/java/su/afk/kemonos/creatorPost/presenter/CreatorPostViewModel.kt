@@ -402,7 +402,12 @@ internal class CreatorPostViewModel @AssistedInject constructor(
 
     /** Открывает экран изображения и собирает галерею для свайпа */
     fun navigateOpenImage(originalUrl: String) {
-        val imageUrls = collectImageGalleryUrls(selectedUrl = originalUrl)
+        val imageUrlsWithThumbnails = collectImageGalleryUrlsWithThumbnails(selectedUrl = originalUrl)
+        val thumbnailUrlsMap = mutableMapOf<String, String>()
+        val imageUrls = imageUrlsWithThumbnails.map { (fullUrl, thumbnailUrl) ->
+            thumbnailUrl?.let { thumbnailUrlsMap[fullUrl] = it }
+            fullUrl
+        }
         val selectedIndex = imageUrls.indexOf(originalUrl).takeIf { it >= 0 }
 
         navigateDelegates.navigateOpenImage(
@@ -413,6 +418,7 @@ internal class CreatorPostViewModel @AssistedInject constructor(
             creatorName = currentState.profile?.name,
             postId = currentState.postId,
             postTitle = currentState.post?.post?.title,
+            thumbnailUrls = thumbnailUrlsMap,
         )
     }
 
@@ -513,23 +519,35 @@ internal class CreatorPostViewModel @AssistedInject constructor(
         }
     }
 
-    /** Формирует список URL картинок для image-view галереи */
-    private fun collectImageGalleryUrls(selectedUrl: String): List<String> {
+    /** Формирует список URL картинок с thumbnail для image-view галереи */
+    private fun collectImageGalleryUrlsWithThumbnails(selectedUrl: String): List<Pair<String, String?>> {
+        val imgBaseUrl = domainResolver.imageBaseUrlByService(currentState.service)
+
         val contentImages = currentState.contentBlocks
             .orEmpty()
             .mapNotNull { block -> (block as? PostBlock.Image)?.url }
             .filter { it.isNotBlank() }
+            .map { it to null }
 
         val previewImages = currentState.post
             ?.previews
             .orEmpty()
             .asSequence()
             .filter { it.type == "thumbnail" }
-            .mapNotNull(::buildPreviewFullUrl)
+            .mapNotNull { preview ->
+                val fullUrl = buildPreviewFullUrl(preview)
+                val thumbnailUrl = buildThumbnailUrl(imgBaseUrl, preview)
+                if (fullUrl != null) fullUrl to thumbnailUrl else null
+            }
             .toList()
 
-        val merged = (contentImages + previewImages).distinct()
-        return if (selectedUrl in merged) merged else (listOf(selectedUrl) + merged).distinct()
+        val merged = (contentImages + previewImages).distinctBy { it.first }
+        return if (selectedUrl in merged.map { it.first }) {
+            merged
+        } else {
+            val selectedPair = listOf(selectedUrl to null)
+            (selectedPair + merged).distinctBy { it.first }
+        }
     }
 
     /** Строит полный URL для thumbnail-превью */
@@ -540,6 +558,12 @@ internal class CreatorPostViewModel @AssistedInject constructor(
 
         val encodedName = URLEncoder.encode(name, "UTF-8")
         return "$server/data$path?f=$encodedName"
+    }
+
+    /** Строит thumbnail URL из PreviewDomain */
+    private fun buildThumbnailUrl(imgBaseUrl: String, preview: PreviewDomain): String? {
+        val path = preview.path ?: return null
+        return "$imgBaseUrl/thumbnail/data$path"
     }
 
     /** Сбрасывает state при переходе на соседний пост */

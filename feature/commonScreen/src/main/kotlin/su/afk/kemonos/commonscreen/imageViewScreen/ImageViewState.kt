@@ -16,6 +16,7 @@ internal class ImageViewState {
         val creatorName: String? = null,
         val postId: String? = null,
         val postTitle: String? = null,
+        val thumbnailUrls: Map<String, String> = emptyMap(),
 
         val requestId: String = java.util.UUID.randomUUID().toString(),
         val reloadKey: Int = 0,

@@ -10,6 +10,7 @@ import su.afk.kemonos.commonscreen.navigator.ImageNavigationConst.KEY_POST_TITLE
 import su.afk.kemonos.commonscreen.navigator.ImageNavigationConst.KEY_SELECTED_IMAGE
 import su.afk.kemonos.commonscreen.navigator.ImageNavigationConst.KEY_SELECTED_IMAGE_INDEX
 import su.afk.kemonos.commonscreen.navigator.ImageNavigationConst.KEY_SERVICE
+import su.afk.kemonos.commonscreen.navigator.ImageNavigationConst.KEY_THUMBNAIL_URLS
 import su.afk.kemonos.navigation.storage.NavigationStorage
 import javax.inject.Inject
 
@@ -24,6 +25,7 @@ class ImageViewNavigator @Inject constructor(
         creatorName: String?,
         postId: String?,
         postTitle: String?,
+        thumbnailUrls: Map<String, String>,
     ): NavKey {
         val sanitizedUrls = imageUrls
             .asSequence()
@@ -48,6 +50,9 @@ class ImageViewNavigator @Inject constructor(
         creatorName?.let { navigationStorage.put(KEY_CREATOR_NAME, it) }
         postId?.let { navigationStorage.put(KEY_POST_ID, it) }
         postTitle?.let { navigationStorage.put(KEY_POST_TITLE, it) }
+        if (thumbnailUrls.isNotEmpty()) {
+            navigationStorage.put(KEY_THUMBNAIL_URLS, thumbnailUrls)
+        }
 
         return CommonScreenDestination.ImageViewDest(imageUrl)
     }

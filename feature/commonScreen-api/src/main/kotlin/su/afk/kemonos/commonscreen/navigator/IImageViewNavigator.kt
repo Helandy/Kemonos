@@ -11,5 +11,6 @@ interface IImageViewNavigator {
         creatorName: String? = null,
         postId: String? = null,
         postTitle: String? = null,
+        thumbnailUrls: Map<String, String> = emptyMap(),
     ): NavKey
 }

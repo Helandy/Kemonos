@@ -34,6 +34,8 @@ import coil3.network.httpHeaders
 import coil3.request.CachePolicy
 import coil3.request.ImageRequest
 import coil3.size.Precision
+import su.afk.kemonos.ui.imageLoader.AsyncImageWithStatus
+import su.afk.kemonos.ui.imageLoader.LocalAppImageLoader
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
@@ -122,7 +124,26 @@ internal fun ImageViewScreen(
                     ),
                 success = { SubcomposeAsyncImageContent() },
                 loading = {
-                    ImageLoadingContent(state = state)
+                    Box(modifier = Modifier.fillMaxSize()) {
+                        val thumbnailUrl = state.thumbnailUrls[state.imageUrl]
+                        if (!thumbnailUrl.isNullOrBlank()) {
+                            AsyncImageWithStatus(
+                                model = thumbnailUrl,
+                                contentDescription = null,
+                                imageLoader = LocalAppImageLoader.current,
+                                contentScale = ContentScale.Fit,
+                                modifier = Modifier.fillMaxSize(),
+                            )
+                        }
+                        Box(
+                            modifier = Modifier
+                                .align(Alignment.TopCenter)
+                                .padding(16.dp)
+                                .statusBarsPadding()
+                        ) {
+                            ImageLoadingContent(state = state)
+                        }
+                    }
                 },
                 error = {
                     DefaultErrorContent(
@@ -260,44 +281,43 @@ internal fun ImageViewScreen(
 
 @Composable
 private fun ImageLoadingContent(state: ImageViewState.State) {
-    Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-        Column(horizontalAlignment = Alignment.CenterHorizontally) {
-            val isDeterminate =
-                state.contentLength > 0L && state.bytesRead > 0L && state.progress > 0f
+    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+        val isDeterminate =
+            state.contentLength > 0L && state.bytesRead > 0L && state.progress > 0f
 
-            if (isDeterminate) {
-                CircularProgressIndicator(
-                    progress = { state.progress },
-                    modifier = Modifier.size(72.dp),
-                    color = MaterialTheme.colorScheme.primary,
-                    strokeWidth = 6.dp,
-                    strokeCap = ProgressIndicatorDefaults.CircularDeterminateStrokeCap,
-                )
-            } else {
-                CircularProgressIndicator(
-                    modifier = Modifier.size(72.dp),
-                    color = MaterialTheme.colorScheme.primary,
-                    strokeWidth = 6.dp,
-                    trackColor = ProgressIndicatorDefaults.circularIndeterminateTrackColor,
-                    strokeCap = ProgressIndicatorDefaults.CircularIndeterminateStrokeCap,
-                )
-            }
-
-            Spacer(Modifier.height(12.dp))
-
-            val transferText = buildTransferText(
-                bytesRead = state.bytesRead,
-                contentLength = state.contentLength,
+        if (isDeterminate) {
+            LinearProgressIndicator(
+                progress = { state.progress },
+                modifier = Modifier
+                    .width(200.dp)
+                    .height(4.dp),
+                color = MaterialTheme.colorScheme.primary,
+                trackColor = MaterialTheme.colorScheme.surfaceVariant,
             )
+        } else {
+            LinearProgressIndicator(
+                modifier = Modifier
+                    .width(200.dp)
+                    .height(4.dp),
+                color = MaterialTheme.colorScheme.primary,
+                trackColor = MaterialTheme.colorScheme.surfaceVariant,
+            )
+        }
 
-            if (transferText != null) {
-                Text(text = transferText, style = MaterialTheme.typography.bodyMedium)
-            } else {
-                Text(
-                    text = stringResource(R.string.loading),
-                    style = MaterialTheme.typography.bodyMedium
-                )
-            }
+        Spacer(Modifier.height(8.dp))
+
+        val transferText = buildTransferText(
+            bytesRead = state.bytesRead,
+            contentLength = state.contentLength,
+        )
+
+        if (transferText != null) {
+            Text(text = transferText, style = MaterialTheme.typography.bodySmall)
+        } else {
+            Text(
+                text = stringResource(R.string.loading),
+                style = MaterialTheme.typography.bodySmall
+            )
         }
     }
 }
