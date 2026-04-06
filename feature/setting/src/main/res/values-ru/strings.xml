@@ -83,6 +83,20 @@
     <!--    setting ui -->
     <string name="settings_ui_title">Интерфейс</string>
     <string name="settings_ui_hint">Настройки отображения и поведения приложения.</string>
+    <string name="settings_default_site_title">Режим отображения сайтов</string>
+    <string name="settings_fab_visibility_title">Кнопка переключения сайта</string>
+
+    <!-- Режим отображения сайтов -->
+    <string name="settings_site_display_both_default_kemono">Оба (по умолчанию: Kemono)</string>
+    <string name="settings_site_display_both_default_coomer">Оба (по умолчанию: Coomer)</string>
+    <string name="settings_site_display_only_kemono">Только Kemono</string>
+    <string name="settings_site_display_only_coomer">Только Coomer</string>
+
+    <!-- Параметры видимости FAB -->
+    <string name="settings_fab_always_on">Всегда включена</string>
+    <string name="settings_fab_always_off">Всегда выключена</string>
+    <string name="settings_fab_on_both">Только когда выбраны оба</string>
+
     <!-- UI настройки -->
     <string name="settings_ui_creators_view_mode">Вид авторов</string>
     <string name="settings_ui_creators_favorite_view_mode">Вид авторов в избранном</string>
