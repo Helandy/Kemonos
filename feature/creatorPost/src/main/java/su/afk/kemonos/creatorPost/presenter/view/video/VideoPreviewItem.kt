@@ -115,7 +115,7 @@ internal fun VideoPreviewItem(
                 shape = CircleShape,
                 elevation = ButtonDefaults.buttonElevation(8.dp),
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = MaterialTheme.colorScheme.primary,
+                    containerColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.85f),
                     contentColor = MaterialTheme.colorScheme.onPrimary
                 ),
                 contentPadding = PaddingValues(0.dp),
