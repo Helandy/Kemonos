@@ -23,11 +23,10 @@ internal fun VideoPreviewAspectRatioRow(
 ) {
     val options = listOf(
         VideoPreviewAspectRatio.RATIO_16_9 to R.string.settings_video_preview_ratio_16_9,
-        VideoPreviewAspectRatio.RATIO_2_1 to R.string.settings_video_preview_ratio_2_1,
+        VideoPreviewAspectRatio.RATIO_4_3 to R.string.settings_video_preview_ratio_4_3,
         VideoPreviewAspectRatio.RATIO_1_1 to R.string.settings_video_preview_ratio_1_1,
-        VideoPreviewAspectRatio.RATIO_1_2 to R.string.settings_video_preview_ratio_1_2,
-        VideoPreviewAspectRatio.RATIO_3F_2F to R.string.settings_video_preview_ratio_3f_2f,
-        VideoPreviewAspectRatio.RATIO_2F_3F to R.string.settings_video_preview_ratio_2f_3f,
+        VideoPreviewAspectRatio.RATIO_3_4 to R.string.settings_video_preview_ratio_3_4,
+        VideoPreviewAspectRatio.RATIO_9_16 to R.string.settings_video_preview_ratio_9_16,
     )
 
     Column(
