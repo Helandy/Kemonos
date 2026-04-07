@@ -11,6 +11,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.blur
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
@@ -30,6 +31,7 @@ import java.nio.charset.StandardCharsets
 internal fun MediaGrid(
     items: List<CommunityMedia>,
     autoplayVideoInline: Boolean,
+    blurImage: Boolean,
     onOpenMedia: (CommunityMedia) -> Unit
 ) {
     val context = LocalContext.current
@@ -82,6 +84,7 @@ internal fun MediaGrid(
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .aspectRatio(1f)
+                                    .then(if (blurImage) Modifier.blur(20.dp) else Modifier)
                                     .clip(RoundedCornerShape(10.dp))
                                     .clickable { onOpenMedia(media) },
                                 contentScale = ContentScale.Crop
@@ -127,7 +130,9 @@ internal fun MediaGrid(
                                 AsyncImageWithStatus(
                                     model = if (hasImagePreview) media.previewUrl else firstFrameRequest,
                                     contentDescription = null,
-                                    modifier = Modifier.fillMaxSize(),
+                                    modifier = Modifier
+                                        .fillMaxSize()
+                                        .then(if (blurImage) Modifier.blur(20.dp) else Modifier),
                                     contentScale = ContentScale.Crop
                                 )
                                 Text(

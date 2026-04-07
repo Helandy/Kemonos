@@ -34,10 +34,10 @@ graph TB
     api_creatorPost[":feature:creatorPost-api"]:::jvm
     api_posts[":feature:posts-api"]:::jvm
     api_profile[":feature:profile-api"]:::jvm
+    api_setting[":feature:setting-api"]:::jvm
     api_appUpdate[":feature:appUpdate-api"]:::jvm
     api_download[":feature:download-api"]:::jvm
     api_main[":feature:main-api"]:::jvm
-    api_videoPlayer[":feature:videoPlayer-api"]:::jvm
   end
 
   subgraph feature_impl[":feature:* (impl)"]
@@ -47,10 +47,10 @@ graph TB
     f_creatorPost[":feature:creatorPost"]:::feature
     f_posts[":feature:posts"]:::feature
     f_profile[":feature:profile"]:::feature
+    f_setting[":feature:setting"]:::feature
     f_appUpdate[":feature:appUpdate"]:::feature
     f_download[":feature:download"]:::feature
     f_main[":feature:main"]:::feature
-    f_videoPlayer[":feature:videoPlayer"]:::feature
   end
 
   app --> core_auth
@@ -71,6 +71,7 @@ graph TB
   app --> f_creatorPost
   app --> f_posts
   app --> f_profile
+  app --> f_setting
   app --> f_appUpdate
   app --> f_download
   app --> f_main
@@ -81,10 +82,10 @@ graph TB
   f_creatorPost --> api_creatorPost
   f_posts --> api_posts
   f_profile --> api_profile
+  f_setting --> api_setting
   f_appUpdate --> api_appUpdate
   f_download --> api_download
   f_main --> api_main
-  f_videoPlayer --> api_videoPlayer
 
   storage_impl --> storage_api
 
@@ -125,16 +126,16 @@ graph TB
 
 ### Platform and Build
 
-- Android Gradle Plugin `8.12.3`
+- Android Gradle Plugin `8.13.2`
 - Gradle Version Catalog (`gradle/libs.versions.toml`)
-- Kotlin `2.3.10`
+- Kotlin `2.3.20`
 - Java toolchain `21`
 - KSP `2.3.4`
 - Convention plugins in `build-logic` (including `kemonos.android.feature`)
 
 ### UI
 
-- Jetpack Compose + Compose BOM `2026.02.00`
+- Jetpack Compose + Compose BOM `2026.03.01`
 - Material 3
 - Navigation 3 (`androidx.navigation3` + adaptive)
 - Coil 3 (`coil-compose`, `gif`, `video`, `network-okhttp`)
@@ -209,10 +210,10 @@ graph TB
 - `:feature:creatorPost-api`, `:feature:creatorPost`
 - `:feature:posts-api`, `:feature:posts`
 - `:feature:profile-api`, `:feature:profile`
+- `:feature:setting-api`, `:feature:setting`
 - `:feature:appUpdate-api`, `:feature:appUpdate`
 - `:feature:download-api`, `:feature:download`
 - `:feature:main-api`, `:feature:main`
-- `:feature:videoPlayer-api`, `:feature:videoPlayer`
 
 ## Note
 
