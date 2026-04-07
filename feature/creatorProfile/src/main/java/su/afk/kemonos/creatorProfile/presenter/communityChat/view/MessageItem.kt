@@ -144,6 +144,7 @@ internal fun MessageItem(
                     MediaGrid(
                         items = mediaUrls,
                         autoplayVideoInline = ui.autoplayVideoInline,
+                        blurImage = ui.blurImages,
                         onOpenMedia = actions.onOpenMedia,
                     )
                 }

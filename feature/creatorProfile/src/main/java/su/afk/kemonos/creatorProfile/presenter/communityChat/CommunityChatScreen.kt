@@ -59,6 +59,7 @@ internal fun CommunityChatScreen(
         state.uiSettingModel.dateFormatMode,
         isDiscord,
         state.uiSettingModel.autoplayCommunityVideo,
+        state.uiSettingModel.blurImages,
         state.translateExpandedIds,
         state.translateLoadingIds,
         state.translatedTextById,
@@ -69,6 +70,7 @@ internal fun CommunityChatScreen(
             dateMode = state.uiSettingModel.dateFormatMode,
             showAuthorAvatar = isDiscord,
             autoplayVideoInline = state.uiSettingModel.autoplayCommunityVideo,
+            blurImages = state.uiSettingModel.blurImages,
             translation = MessageTranslationUi(
                 expandedIds = state.translateExpandedIds,
                 loadingIds = state.translateLoadingIds,

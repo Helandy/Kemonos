@@ -7,6 +7,7 @@ internal data class MessageItemUi(
     val dateMode: DateFormatMode,
     val showAuthorAvatar: Boolean,
     val autoplayVideoInline: Boolean,
+    val blurImages: Boolean,
     val translation: MessageTranslationUi,
 )
 
