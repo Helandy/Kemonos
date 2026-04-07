@@ -94,8 +94,6 @@ internal class CreatorsViewModel @Inject constructor(
 
     private var searchDebounceJob: Job? = null
     private var videoInfoDomainObserveStarted = false
-    private var siteInitializedFromSettings = false
-    private var lastDefaultSite: SelectedSite? = null
 
     override fun createInitialState(): State = State()
 
@@ -120,19 +118,6 @@ internal class CreatorsViewModel @Inject constructor(
     /** UI настройки */
     private fun observeUiSetting() {
         uiSetting.prefs.distinctUntilChanged().onEach { model ->
-            if (!siteInitializedFromSettings) {
-                siteInitializedFromSettings = true
-                lastDefaultSite = model.defaultSite
-                viewModelScope.launch {
-                    selectedSiteUseCase.setSite(model.defaultSite)
-                }
-            } else if (model.defaultSite != lastDefaultSite) {
-                lastDefaultSite = model.defaultSite
-                viewModelScope.launch {
-                    selectedSiteUseCase.setSite(model.defaultSite)
-                }
-            }
-
             if (model.creatorsGithubRateBannerInstallTsMs == 0L) {
                 val now = System.currentTimeMillis()
                 uiSetting.setCreatorsGithubRateBannerInstallTsMs(now)

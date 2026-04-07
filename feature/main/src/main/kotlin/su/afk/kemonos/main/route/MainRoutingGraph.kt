@@ -1,4 +1,4 @@
-package su.afk.kemonos
+package su.afk.kemonos.main.route
 
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.WindowInsets
@@ -15,6 +15,8 @@ import coil3.ImageLoader
 import su.afk.kemonos.error.error.ErrorMapper
 import su.afk.kemonos.error.error.IErrorHandlerUseCase
 import su.afk.kemonos.error.error.LocalErrorMapper
+import su.afk.kemonos.main.api.IMainRoutingGraph
+import su.afk.kemonos.main.route.bottomBar.BottomNavigationBar
 import su.afk.kemonos.navigation.AppNavHost
 import su.afk.kemonos.navigation.NavRegistrar
 import su.afk.kemonos.navigation.NavigationManager
@@ -23,7 +25,6 @@ import su.afk.kemonos.preferences.domainResolver.LocalDomainResolver
 import su.afk.kemonos.preferences.ui.AppThemeMode
 import su.afk.kemonos.preferences.ui.IUiSettingUseCase
 import su.afk.kemonos.preferences.ui.UiSettingModel
-import su.afk.kemonos.presenter.bottomBar.BottomNavigationBar
 import su.afk.kemonos.ui.imageLoader.LocalAppImageLoader
 import su.afk.kemonos.ui.theme.KemonosTheme
 import javax.inject.Inject
@@ -36,11 +37,11 @@ class MainRoutingGraph @Inject constructor(
     private val errorHandler: IErrorHandlerUseCase,
     private val navManager: NavigationManager,
     private val uiSetting: IUiSettingUseCase,
-    private val registrars: Set<@JvmSuppressWildcards NavRegistrar>
-) {
+    private val registrars: Set<@JvmSuppressWildcards NavRegistrar>,
+) : IMainRoutingGraph {
 
     @Composable
-    fun MainGraph() {
+    override fun MainGraph() {
         val settings by uiSetting.prefs.collectAsState(initial = UiSettingModel())
         val systemDark = isSystemInDarkTheme()
         val darkTheme = when (settings.appThemeMode) {
@@ -52,17 +53,17 @@ class MainRoutingGraph @Inject constructor(
         KemonosTheme(darkTheme = darkTheme) {
             val inTabs = navManager.startAppBackStack.isEmpty()
             Scaffold(
-                modifier = Modifier,
+                modifier = Modifier.Companion,
                 contentWindowInsets = WindowInsets(0),
                 containerColor = MaterialTheme.colorScheme.background,
                 bottomBar = {
                     if (inTabs) {
                         BottomNavigationBar(
                             currentTab = navManager.currentTab,
-                            onTabClick = { tab -> navManager.switchTab(tab) }
+                            onTabClick = { tab -> navManager.switchTab(tab) },
                         )
                     }
-                }
+                },
             ) { padding ->
                 CompositionLocalProvider(
                     LocalDomainResolver provides domainResolver,

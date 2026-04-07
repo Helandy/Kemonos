@@ -7,6 +7,8 @@ android {
 }
 
 dependencies {
+    implementation(libs.bundles.coil)
+
     implementation(project(":core:navigation"))
     implementation(project(":core:model"))
     implementation(project(":core:ui"))

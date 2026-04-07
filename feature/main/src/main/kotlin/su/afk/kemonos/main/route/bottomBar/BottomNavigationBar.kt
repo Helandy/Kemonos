@@ -1,4 +1,4 @@
-package su.afk.kemonos.presenter.bottomBar
+package su.afk.kemonos.main.route.bottomBar
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -23,7 +23,7 @@ private val BottomBarIconThreeButtons: Dp = 20.dp
 @Composable
 internal fun BottomNavigationBar(
     currentTab: BottomTab,
-    onTabClick: (BottomTab) -> Unit
+    onTabClick: (BottomTab) -> Unit,
 ) {
     val items = listOf(
         BottomTab.CREATORS to Icons.Filled.Groups,
@@ -50,7 +50,7 @@ internal fun BottomNavigationBar(
         modifier = Modifier
             .fillMaxWidth()
             .background(systemBarLikeColor)
-            .navigationBarsPadding()
+            .navigationBarsPadding(),
     ) {
         NavigationBar(
             modifier = Modifier
@@ -68,7 +68,7 @@ internal fun BottomNavigationBar(
                         Icon(
                             imageVector = icon,
                             contentDescription = null,
-                            modifier = Modifier.size(bottomBarIconSize)
+                            modifier = Modifier.size(bottomBarIconSize),
                         )
                     },
                 )
