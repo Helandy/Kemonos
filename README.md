@@ -39,7 +39,11 @@ Kemonos is focused on everyday mobile usage: quick browsing, comfortable reading
 - 🔗 Quick actions: share/copy links
 - 👀 Image previews before opening
 - 🎬 Video previews with metadata
-- ⚡ Smooth native Android UI
+- ⬇️ Download manager with status filters and controls
+- 📦 Import/export favorites between devices
+- 🚫 Author blacklist management
+- 🛠️ Advanced settings: UI, downloads, creator tabs order
+- 🌐 Translation settings and model selection
 
 ## Screenshots
 
@@ -66,15 +70,15 @@ Kemonos is focused on everyday mobile usage: quick browsing, comfortable reading
 
 Install the latest APK from [GitHub Releases](https://github.com/Helandy/Kemonos/releases).
 
+## Support
+
+- ⭐ Star the repository
+- 🐞 Open an issue for bugs
+- 💡 Suggest improvements via Discussions/Issues
+
 ## Disclaimer
 
 - This is an unofficial client.
 - The app does not host any content.
 - The app does not bypass paywalls.
 - All rights belong to their respective content owners.
-
-## Support
-
-- ⭐ Star the repository
-- 🐞 Open an issue for bugs
-- 💡 Suggest improvements via Discussions/Issues
