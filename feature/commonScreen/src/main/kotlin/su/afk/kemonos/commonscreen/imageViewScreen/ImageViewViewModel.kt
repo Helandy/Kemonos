@@ -13,6 +13,7 @@ import su.afk.kemonos.commonscreen.navigator.ImageNavigationConst.KEY_POST_TITLE
 import su.afk.kemonos.commonscreen.navigator.ImageNavigationConst.KEY_SELECTED_IMAGE
 import su.afk.kemonos.commonscreen.navigator.ImageNavigationConst.KEY_SELECTED_IMAGE_INDEX
 import su.afk.kemonos.commonscreen.navigator.ImageNavigationConst.KEY_SERVICE
+import su.afk.kemonos.commonscreen.navigator.ImageNavigationConst.KEY_THUMBNAIL_URLS
 import su.afk.kemonos.download.api.IDownloadUtil
 import su.afk.kemonos.error.error.IErrorHandlerUseCase
 import su.afk.kemonos.error.error.storage.RetryStorage
@@ -85,6 +86,7 @@ internal class ImageViewViewModel @Inject constructor(
         val creatorName = navigationStorage.consume<String>(KEY_CREATOR_NAME)
         val postId = navigationStorage.consume<String>(KEY_POST_ID)
         val postTitle = navigationStorage.consume<String>(KEY_POST_TITLE)
+        val thumbnailUrls = navigationStorage.consume<Map<String, String>>(KEY_THUMBNAIL_URLS).orEmpty()
 
         val preparedUrls = prepareImageUrls(imageUrl = imageUrl, imageUrls = imageUrls)
         val safeSelectedIndex = selectedIndex
@@ -103,6 +105,7 @@ internal class ImageViewViewModel @Inject constructor(
                 creatorName = creatorName,
                 postId = postId,
                 postTitle = postTitle,
+                thumbnailUrls = thumbnailUrls,
                 requestId = newRequestId(),
                 loading = true,
                 isLoadError = false,

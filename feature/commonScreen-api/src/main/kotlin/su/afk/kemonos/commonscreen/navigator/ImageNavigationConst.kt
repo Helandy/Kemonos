@@ -8,4 +8,5 @@ object ImageNavigationConst {
     const val KEY_CREATOR_NAME = "image:creator:name"
     const val KEY_POST_ID = "image:post:id"
     const val KEY_POST_TITLE = "image:post:title"
+    const val KEY_THUMBNAIL_URLS = "image:thumbnail:urls"
 }
