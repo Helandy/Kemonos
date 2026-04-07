@@ -23,6 +23,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import androidx.core.net.toUri
@@ -34,9 +35,8 @@ import coil3.network.httpHeaders
 import coil3.request.CachePolicy
 import coil3.request.ImageRequest
 import coil3.size.Precision
-import su.afk.kemonos.ui.imageLoader.AsyncImageWithStatus
-import su.afk.kemonos.ui.imageLoader.LocalAppImageLoader
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
 import su.afk.kemonos.commonscreen.imageViewScreen.ImageViewState.Effect
@@ -44,6 +44,8 @@ import su.afk.kemonos.commonscreen.imageViewScreen.ImageViewState.Event
 import su.afk.kemonos.domain.models.ErrorItem
 import su.afk.kemonos.error.error.view.DefaultErrorContent
 import su.afk.kemonos.ui.R
+import su.afk.kemonos.ui.imageLoader.AsyncImageWithStatus
+import su.afk.kemonos.ui.imageLoader.LocalAppImageLoader
 import su.afk.kemonos.ui.imageLoader.imageProgress.IMAGE_PROGRESS_REQUEST_ID_HEADER
 import su.afk.kemonos.ui.shared.ShareActions
 import su.afk.kemonos.ui.shared.shareRemoteMedia
@@ -107,6 +109,7 @@ internal fun ImageViewScreen(
                 imageLoader = imageLoader,
                 contentDescription = null,
                 contentScale = ContentScale.Fit,
+                alignment = Alignment.Center,
                 onSuccess = {
                     onEvent(Event.ImageLoaded)
                 },
@@ -138,10 +141,12 @@ internal fun ImageViewScreen(
                         Box(
                             modifier = Modifier
                                 .align(Alignment.TopCenter)
-                                .padding(16.dp)
+                                .fillMaxWidth()
                                 .statusBarsPadding()
+                                .padding(top = 8.dp, start = 64.dp, end = 64.dp),
+                            contentAlignment = Alignment.TopCenter,
                         ) {
-                            ImageLoadingContent(state = state)
+                            DelayedImageLoadingContent(state = state)
                         }
                     }
                 },
@@ -280,44 +285,86 @@ internal fun ImageViewScreen(
 }
 
 @Composable
+private fun DelayedImageLoadingContent(state: ImageViewState.State) {
+    var showLoading by remember(state.requestId) { mutableStateOf(false) }
+
+    LaunchedEffect(state.requestId) {
+        delay(220)
+        showLoading = true
+    }
+
+    if (showLoading) {
+        ImageLoadingContent(state = state)
+    }
+}
+
+@Composable
 private fun ImageLoadingContent(state: ImageViewState.State) {
-    Column(horizontalAlignment = Alignment.CenterHorizontally) {
-        val isDeterminate =
-            state.contentLength > 0L && state.bytesRead > 0L && state.progress > 0f
+    Surface(
+        color = MaterialTheme.colorScheme.surface.copy(alpha = 0.8f),
+        tonalElevation = 2.dp,
+        shadowElevation = 0.dp,
+        shape = MaterialTheme.shapes.medium,
+    ) {
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            modifier = Modifier
+                .padding(horizontal = 10.dp)
+                .widthIn(min = 190.dp)
+        ) {
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                CircularProgressIndicator(
+                    modifier = Modifier.size(20.dp),
+                    strokeWidth = 3.dp,
+                )
+                Text(
+                    text = stringResource(R.string.loading),
+                    style = MaterialTheme.typography.bodyMedium,
+                    fontWeight = FontWeight.Medium,
+                )
+            }
 
-        if (isDeterminate) {
-            LinearProgressIndicator(
-                progress = { state.progress },
-                modifier = Modifier
-                    .width(200.dp)
-                    .height(4.dp),
-                color = MaterialTheme.colorScheme.primary,
-                trackColor = MaterialTheme.colorScheme.surfaceVariant,
+            Spacer(Modifier.height(8.dp))
+
+            val isDeterminate =
+                state.contentLength > 0L && state.bytesRead > 0L && state.progress > 0f
+
+            if (isDeterminate) {
+                LinearProgressIndicator(
+                    progress = { state.progress },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(5.dp),
+                    color = MaterialTheme.colorScheme.primary,
+                    trackColor = MaterialTheme.colorScheme.surfaceVariant,
+                )
+            } else {
+                LinearProgressIndicator(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(5.dp),
+                    color = MaterialTheme.colorScheme.primary,
+                    trackColor = MaterialTheme.colorScheme.surfaceVariant,
+                )
+            }
+
+            Spacer(Modifier.height(8.dp))
+
+            val transferText = buildTransferText(
+                bytesRead = state.bytesRead,
+                contentLength = state.contentLength,
             )
-        } else {
-            LinearProgressIndicator(
-                modifier = Modifier
-                    .width(200.dp)
-                    .height(4.dp),
-                color = MaterialTheme.colorScheme.primary,
-                trackColor = MaterialTheme.colorScheme.surfaceVariant,
-            )
-        }
 
-        Spacer(Modifier.height(8.dp))
-
-        val transferText = buildTransferText(
-            bytesRead = state.bytesRead,
-            contentLength = state.contentLength,
-        )
-
-        if (transferText != null) {
-            Text(text = transferText, style = MaterialTheme.typography.bodySmall)
-        } else {
-            Text(
-                text = stringResource(R.string.loading),
-                style = MaterialTheme.typography.bodySmall
-            )
+            if (transferText != null) {
+                Text(
+                    text = transferText,
+                    style = MaterialTheme.typography.bodySmall,
+                    fontWeight = FontWeight.Normal,
+                )
+            }
         }
     }
 }
