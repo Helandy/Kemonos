@@ -29,21 +29,21 @@ class CheckAuthForAllSitesUseCase @Inject constructor(
     suspend operator fun invoke(): Set<SelectedSite> = coroutineScope {
         val needApiCheck = mutableSetOf<SelectedSite>()
 
-        val isKemonoAuth = isAuthKemonoUseCase().first()
         val isCoomerAuth = isAuthCoomerUseCase().first()
-
-        if (isKemonoAuth) {
-            val stillAuth = checkSiteAuth(SelectedSite.K)
-            if (!stillAuth) needApiCheck += SelectedSite.K
-        } else {
-            needApiCheck += SelectedSite.K
-        }
+        val isKemonoAuth = isAuthKemonoUseCase().first()
 
         if (isCoomerAuth) {
             val stillAuth = checkSiteAuth(SelectedSite.C)
             if (!stillAuth) needApiCheck += SelectedSite.C
         } else {
             needApiCheck += SelectedSite.C
+        }
+
+        if (isKemonoAuth) {
+            val stillAuth = checkSiteAuth(SelectedSite.K)
+            if (!stillAuth) needApiCheck += SelectedSite.K
+        } else {
+            needApiCheck += SelectedSite.K
         }
 
         needApiCheck
