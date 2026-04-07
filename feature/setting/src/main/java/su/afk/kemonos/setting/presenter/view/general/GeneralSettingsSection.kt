@@ -8,11 +8,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import su.afk.kemonos.domain.SelectedSite
-import su.afk.kemonos.preferences.ui.AppThemeMode
-import su.afk.kemonos.preferences.ui.DateFormatMode
-import su.afk.kemonos.preferences.ui.FabVisibilityMode
-import su.afk.kemonos.preferences.ui.RandomButtonPlacement
-import su.afk.kemonos.preferences.ui.SiteDisplayMode
+import su.afk.kemonos.preferences.ui.*
 import su.afk.kemonos.setting.R
 import su.afk.kemonos.setting.presenter.view.common.SectionSpacer
 import su.afk.kemonos.setting.presenter.view.common.SettingsSectionTitle
@@ -218,6 +214,12 @@ private fun SiteDisplayModeSetting(
 ) {
     var expanded by remember { mutableStateOf(false) }
     val currentMode = SiteDisplayMode.from(showKemono, showCoomer, defaultSite)
+    val displayModes = listOf(
+        SiteDisplayMode.BOTH_DEFAULT_COOMER,
+        SiteDisplayMode.BOTH_DEFAULT_KEMONO,
+        SiteDisplayMode.ONLY_COOMER,
+        SiteDisplayMode.ONLY_KEMONO,
+    )
 
     Column(
         modifier = Modifier
@@ -252,7 +254,7 @@ private fun SiteDisplayModeSetting(
                 onDismissRequest = { expanded = false },
                 modifier = Modifier.fillMaxWidth(0.9f)
             ) {
-                SiteDisplayMode.entries.forEach { mode ->
+                displayModes.forEach { mode ->
                     DropdownMenuItem(
                         text = {
                             Text(
