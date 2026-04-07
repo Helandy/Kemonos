@@ -48,22 +48,22 @@ Kemonos is focused on everyday mobile usage: quick browsing, comfortable reading
 ## Screenshots
 
 <p align="center">
-  <img src="dock/screenshots/Creators.webp" width="220" alt="Creators list screen in Kemonos Android app"/>
-  <img src="dock/screenshots/CreatorProfile.webp" width="220" alt="Creator profile details screen in Kemonos"/>
-  <img src="dock/screenshots/CreatorProfileSimilar.webp" width="220" alt="Similar creators screen in Kemonos"/>
-  <img src="dock/screenshots/CreatorPost.webp" width="220" alt="Creator post details screen in Kemonos"/>
+  <img src="dock/screenshots/Creators.webp" width="200" alt="Creators list screen in Kemonos Android app"/>
+  <img src="dock/screenshots/CreatorProfile.webp" width="200" alt="Creator profile details screen in Kemonos"/>
+  <img src="dock/screenshots/CreatorProfileSimilar.webp" width="200" alt="Similar creators screen in Kemonos"/>
+  <img src="dock/screenshots/CreatorPost.webp" width="200" alt="Creator post details screen in Kemonos"/>
 </p>
 
 <p align="center">
-  <img src="dock/screenshots/PostsPopular.webp" width="220" alt="Popular posts screen in Kemonos"/>
-  <img src="dock/screenshots/PostsSearch.webp" width="220" alt="Post search screen in Kemonos app"/>
-  <img src="dock/screenshots/Profile.webp" width="220" alt="Creator profile screen in Kemonos"/>
-  <img src="dock/screenshots/Setting.webp" width="220" alt="Settings screen in Kemonos Android client"/>
+  <img src="dock/screenshots/PostsPopular.webp" width="200" alt="Popular posts screen in Kemonos"/>
+  <img src="dock/screenshots/PostsSearch.webp" width="200" alt="Post search screen in Kemonos app"/>
+  <img src="dock/screenshots/Profile.webp" width="200" alt="Creator profile screen in Kemonos"/>
+  <img src="dock/screenshots/Setting.webp" width="200" alt="Settings screen in Kemonos Android client"/>
 </p>
 
 <p align="center">
-  <img src="dock/screenshots/SettingInterface.webp" width="220" alt="Interface settings screen in Kemonos"/>
-  <img src="dock/screenshots/SettingDownload.webp" width="220" alt="Download settings screen in Kemonos"/>
+  <img src="dock/screenshots/SettingInterface.webp" width="200" alt="Interface settings screen in Kemonos"/>
+  <img src="dock/screenshots/SettingDownload.webp" width="200" alt="Download settings screen in Kemonos"/>
 </p>
 
 ## Download
