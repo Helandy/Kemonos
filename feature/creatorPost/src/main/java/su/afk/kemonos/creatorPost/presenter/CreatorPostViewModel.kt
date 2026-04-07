@@ -520,7 +520,7 @@ internal class CreatorPostViewModel @AssistedInject constructor(
     }
 
     /** Формирует список URL картинок с thumbnail для image-view галереи */
-    private fun collectImageGalleryUrlsWithThumbnails(selectedUrl: String): List<Pair<String, String?>> {
+    internal fun collectImageGalleryUrlsWithThumbnails(selectedUrl: String): List<Pair<String, String?>> {
         val imgBaseUrl = domainResolver.imageBaseUrlByService(currentState.service)
 
         val contentImages = currentState.contentBlocks
@@ -541,7 +541,17 @@ internal class CreatorPostViewModel @AssistedInject constructor(
             }
             .toList()
 
-        val merged = (contentImages + previewImages).distinctBy { it.first }
+        val mergedMap = linkedMapOf<String, String?>()
+        (contentImages + previewImages).forEach { (fullUrl, thumbnailUrl) ->
+            when {
+                !mergedMap.containsKey(fullUrl) -> mergedMap[fullUrl] = thumbnailUrl
+                mergedMap[fullUrl].isNullOrBlank() && !thumbnailUrl.isNullOrBlank() -> {
+                    mergedMap[fullUrl] = thumbnailUrl
+                }
+            }
+        }
+
+        val merged = mergedMap.entries.map { it.key to it.value }
         return if (selectedUrl in merged.map { it.first }) {
             merged
         } else {
