@@ -9,7 +9,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import su.afk.kemonos.domain.models.ErrorItem
-import su.afk.kemonos.main.presenter.MainState.State
+import su.afk.kemonos.main.presenter.StartCheckState.State
 import su.afk.kemonos.ui.R
 import su.afk.kemonos.ui.components.input.BaseUrlDomainField
 

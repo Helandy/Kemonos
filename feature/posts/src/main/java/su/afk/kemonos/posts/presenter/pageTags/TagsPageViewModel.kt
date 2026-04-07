@@ -31,9 +31,6 @@ internal class TagsPageViewModel @Inject constructor(
     override val retryStorage: RetryStorage,
 ) : SiteAwareBaseViewModelNew<State, Event, Effect>() {
 
-    private var siteInitializedFromSettings = false
-    private var lastDefaultSite: SelectedSite? = null
-
     override fun createInitialState(): State = State()
 
     override fun onRetry() {
@@ -50,18 +47,6 @@ internal class TagsPageViewModel @Inject constructor(
     private fun observeUiSetting() {
         uiSetting.prefs.distinctUntilChanged()
             .onEach { model ->
-                if (!siteInitializedFromSettings) {
-                    siteInitializedFromSettings = true
-                    lastDefaultSite = model.defaultSite
-                    viewModelScope.launch {
-                        selectedSiteUseCase.setSite(model.defaultSite)
-                    }
-                } else if (model.defaultSite != lastDefaultSite) {
-                    lastDefaultSite = model.defaultSite
-                    viewModelScope.launch {
-                        selectedSiteUseCase.setSite(model.defaultSite)
-                    }
-                }
                 setState { copy(uiSettingModel = model) }
             }
             .launchIn(viewModelScope)

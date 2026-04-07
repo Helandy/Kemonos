@@ -37,8 +37,6 @@ internal class PopularPostsViewModel @Inject constructor(
 ) : SiteAwareBaseViewModelNew<State, Event, Effect>() {
     private val popularRequestFlow = MutableStateFlow<PopularRequest?>(null)
     private var manualRefreshCounter = 0L
-    private var siteInitializedFromSettings = false
-    private var lastDefaultSite: SelectedSite? = null
 
     override fun createInitialState(): State = State()
 
@@ -72,18 +70,6 @@ internal class PopularPostsViewModel @Inject constructor(
 
     private fun observeUiSetting() {
         uiSetting.observeDistinct(viewModelScope) { model ->
-            if (!siteInitializedFromSettings) {
-                siteInitializedFromSettings = true
-                lastDefaultSite = model.defaultSite
-                viewModelScope.launch {
-                    selectedSiteUseCase.setSite(model.defaultSite)
-                }
-            } else if (model.defaultSite != lastDefaultSite) {
-                lastDefaultSite = model.defaultSite
-                viewModelScope.launch {
-                    selectedSiteUseCase.setSite(model.defaultSite)
-                }
-            }
             setState { copy(uiSettingModel = model) }
         }
     }

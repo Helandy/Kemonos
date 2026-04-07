@@ -9,7 +9,7 @@ import su.afk.kemonos.domain.SelectedSite
 import su.afk.kemonos.error.error.IErrorHandlerUseCase
 import su.afk.kemonos.error.error.storage.RetryStorage
 import su.afk.kemonos.main.domain.CheckAuthForAllSitesUseCase
-import su.afk.kemonos.main.presenter.MainState.*
+import su.afk.kemonos.main.presenter.StartCheckState.*
 import su.afk.kemonos.main.presenter.delegates.ApiCheckDelegate
 import su.afk.kemonos.main.presenter.delegates.AppUpdateGateDelegate
 import su.afk.kemonos.main.presenter.delegates.BaseUrlsObserveDelegate
@@ -24,7 +24,7 @@ import su.afk.kemonos.utils.url.normalizeDomain
 import javax.inject.Inject
 
 @HiltViewModel
-internal class MainViewModel @Inject constructor(
+internal class StartCheckViewModel @Inject constructor(
     private val navManager: NavigationManager,
     private val setBaseUrlsUseCase: ISetBaseUrlsUseCase,
     private val checkAuthForAllSitesUseCase: CheckAuthForAllSitesUseCase,

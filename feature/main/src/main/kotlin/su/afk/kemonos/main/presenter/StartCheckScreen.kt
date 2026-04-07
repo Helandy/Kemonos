@@ -20,8 +20,8 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
 import su.afk.kemonos.app.update.api.model.AppUpdateInfo
 import su.afk.kemonos.domain.models.ErrorItem
-import su.afk.kemonos.main.presenter.MainState.Effect
-import su.afk.kemonos.main.presenter.MainState.Event
+import su.afk.kemonos.main.presenter.StartCheckState.Effect
+import su.afk.kemonos.main.presenter.StartCheckState.Event
 import su.afk.kemonos.main.presenter.view.*
 import su.afk.kemonos.ui.R
 import su.afk.kemonos.ui.presenter.baseScreen.BaseScreen
@@ -30,8 +30,8 @@ import java.io.File
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-internal fun MainScreen(
-    state: MainState.State,
+internal fun StartCheckScreen(
+    state: StartCheckState.State,
     effect: Flow<Effect>,
     onEvent: (Event) -> Unit,
 ) {
@@ -168,9 +168,9 @@ private fun PreviewHost(content: @Composable () -> Unit) {
 
 @Preview(name = "Main • Update banner", showBackground = true)
 @Composable
-private fun MainScreenPreview_Update() = PreviewHost {
-    MainScreen(
-        state = MainState.State(
+private fun StartCheckScreenPreview_Update() = PreviewHost {
+    StartCheckScreen(
+        state = StartCheckState.State(
             isLoading = false,
             kemonoUrl = "https://kemono.cr",
             coomerUrl = "https://coomer.st",
@@ -189,9 +189,9 @@ private fun MainScreenPreview_Update() = PreviewHost {
 
 @Preview(name = "Main • Loading", showBackground = true)
 @Composable
-private fun MainScreenPreview_Loading() = PreviewHost {
-    MainScreen(
-        state = MainState.State(
+private fun StartCheckScreenPreview_Loading() = PreviewHost {
+    StartCheckScreen(
+        state = StartCheckState.State(
             kemonoUrl = "https://kemono.cr",
             coomerUrl = "https://coomer.st",
             inputKemonoDomain = "kemono.cr",
@@ -204,9 +204,9 @@ private fun MainScreenPreview_Loading() = PreviewHost {
 
 @Preview(name = "Main • Success", showBackground = true)
 @Composable
-private fun MainScreenPreview_Success() = PreviewHost {
-    MainScreen(
-        state = MainState.State(
+private fun StartCheckScreenPreview_Success() = PreviewHost {
+    StartCheckScreen(
+        state = StartCheckState.State(
             isLoading = false,
             apiSuccess = true,
             kemonoUrl = "https://kemono.cr",
@@ -221,9 +221,9 @@ private fun MainScreenPreview_Success() = PreviewHost {
 
 @Preview(name = "Main • API unavailable", showBackground = true)
 @Composable
-private fun MainScreenPreview_Error() = PreviewHost {
-    MainScreen(
-        state = MainState.State(
+private fun StartCheckScreenPreview_Error() = PreviewHost {
+    StartCheckScreen(
+        state = StartCheckState.State(
             isLoading = false,
             kemonoError = ErrorItem(
                 title = "API недоступно",

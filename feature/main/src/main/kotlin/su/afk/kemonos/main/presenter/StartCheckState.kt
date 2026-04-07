@@ -6,7 +6,7 @@ import su.afk.kemonos.ui.presenter.baseViewModel.UiEffect
 import su.afk.kemonos.ui.presenter.baseViewModel.UiEvent
 import su.afk.kemonos.ui.presenter.baseViewModel.UiState
 
-internal class MainState {
+internal class StartCheckState {
 
     data class State(
         val isLoading: Boolean = true,

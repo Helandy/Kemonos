@@ -7,13 +7,18 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import dagger.hilt.android.AndroidEntryPoint
 import su.afk.kemonos.deepLink.handler.DeepLinkHandler
+import su.afk.kemonos.main.api.IMainRoutingGraph
+import su.afk.kemonos.main.api.IMainSettingsSync
 import javax.inject.Inject
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
 
     @Inject
-    lateinit var mainRoutingGraph: MainRoutingGraph
+    lateinit var mainRoutingGraph: IMainRoutingGraph
+
+    @Inject
+    lateinit var mainSettingsSync: IMainSettingsSync
 
     @Inject
     lateinit var deepLinkHandler: DeepLinkHandler
@@ -23,6 +28,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
 
         deepLinkHandler.handle(intent)
+        mainSettingsSync.start()
 
         setContent {
             mainRoutingGraph.MainGraph()

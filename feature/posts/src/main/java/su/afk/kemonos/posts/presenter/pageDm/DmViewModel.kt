@@ -40,8 +40,6 @@ internal class DmViewModel @Inject constructor(
     private val searchQueryFlow = MutableStateFlow("")
     private val loadSiteFlow = MutableStateFlow<SelectedSite?>(null)
     private val manualRefreshCounterFlow = MutableStateFlow(0L)
-    private var siteInitializedFromSettings = false
-    private var lastDefaultSite: SelectedSite? = null
 
     init {
         observeUiSetting()
@@ -74,18 +72,6 @@ internal class DmViewModel @Inject constructor(
 
     private fun observeUiSetting() {
         uiSetting.observeDistinct(viewModelScope) { model ->
-            if (!siteInitializedFromSettings) {
-                siteInitializedFromSettings = true
-                lastDefaultSite = model.defaultSite
-                viewModelScope.launch {
-                    selectedSiteUseCase.setSite(model.defaultSite)
-                }
-            } else if (model.defaultSite != lastDefaultSite) {
-                lastDefaultSite = model.defaultSite
-                viewModelScope.launch {
-                    selectedSiteUseCase.setSite(model.defaultSite)
-                }
-            }
             setState { copy(uiSettingModel = model) }
         }
     }
