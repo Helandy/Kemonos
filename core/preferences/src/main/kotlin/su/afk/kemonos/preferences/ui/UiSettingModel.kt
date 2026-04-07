@@ -143,11 +143,10 @@ enum class FabVisibilityMode {
 
 enum class VideoPreviewAspectRatio(val ratio: Float) {
     RATIO_16_9(16f / 9f),
-    RATIO_2_1(2f / 1f),
+    RATIO_4_3(4f / 3f),
     RATIO_1_1(1f / 1f),
-    RATIO_1_2(1f / 2f),
-    RATIO_3F_2F(3f / 2f),
-    RATIO_2F_3F(2f / 3f),
+    RATIO_3_4(3f / 4f),
+    RATIO_9_16(9f / 16f),
 }
 
 data class UiSettingModel(
@@ -308,8 +307,8 @@ data class UiSettingModel(
         const val DEFAULT_ADD_SERVICE_NAME = false
         const val USE_EXTERNAL_METADATA = true
         const val DEFAULT_VIDEO_PREVIEW_SERVER_URL = "https://kemonos.win"
-        val DEFAULT_VIDEO_PREVIEW_ASPECT_RATIO = VideoPreviewAspectRatio.RATIO_3F_2F
-        const val DEFAULT_CROP_VIDEO_PREVIEW = true
+        val DEFAULT_VIDEO_PREVIEW_ASPECT_RATIO = VideoPreviewAspectRatio.RATIO_1_1
+        const val DEFAULT_CROP_VIDEO_PREVIEW = false
         const val DEFAULT_CROP_POST_PREVIEW_VIDEO = true
     }
 }
