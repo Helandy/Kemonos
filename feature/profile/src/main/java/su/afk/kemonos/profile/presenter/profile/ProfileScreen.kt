@@ -41,9 +41,9 @@ internal fun ProfileScreen(
 ) {
     val context = LocalContext.current
     val ui = state.uiSettingModel
-    val showCoomer = ui.showCoomer
-    val showKemono = ui.showKemono
-    val defaultSite = ui.defaultSite
+    val showCoomer = ui.siteDisplayMode.showCoomer
+    val showKemono = ui.siteDisplayMode.showKemono
+    val defaultSite = ui.siteDisplayMode.defaultSite
 
     val pageCount = when {
         showCoomer && showKemono -> 2

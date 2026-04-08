@@ -26,7 +26,7 @@ import su.afk.kemonos.domain.SelectedSite
 import su.afk.kemonos.posts.R
 import su.afk.kemonos.posts.domain.model.hashLookup.HashLookupDomain
 import su.afk.kemonos.posts.presenter.pageHashLookup.HashLookupState.*
-import su.afk.kemonos.preferences.ui.FabVisibilityMode
+import su.afk.kemonos.preferences.ui.shouldShowSiteToggleFab
 import su.afk.kemonos.ui.components.button.SiteToggleFab
 import su.afk.kemonos.ui.components.posts.PostsContentPaging
 import su.afk.kemonos.ui.presenter.baseScreen.BaseScreen
@@ -77,7 +77,7 @@ internal fun HashLookupScreen(
         topBarScroll = topBarScrollMode,
         contentPadding = PaddingValues(horizontal = 12.dp),
         floatingActionButtonStart = {
-            if (FabVisibilityMode.shouldShowSiteToggleFab(state.uiSettingModel)) {
+            if (state.uiSettingModel.shouldShowSiteToggleFab()) {
                 SiteToggleFab(
                     enable = !isBusy,
                     selectedSite = site,

@@ -68,12 +68,8 @@ internal fun SettingUiScreen(
         GeneralSettingsSection(
             suggestRandomAuthors = ui.suggestRandomAuthors,
             onSuggestRandomAuthors = { onEvent(Event.ChangeViewSetting.SuggestRandomAuthors(it)) },
-            showKemono = ui.showKemono,
-            showCoomer = ui.showCoomer,
-            defaultSite = ui.defaultSite,
+            siteDisplayMode = ui.siteDisplayMode,
             onSiteDisplayModeChanged = { onEvent(Event.ChangeViewSetting.SiteDisplayModeChanged(it)) },
-            fabVisibilityMode = ui.fabVisibilityMode,
-            onFabVisibilityModeChange = { onEvent(Event.ChangeViewSetting.FabVisibilityModeChanged(it)) },
             appThemeMode = ui.appThemeMode,
             onAppThemeMode = { onEvent(Event.ChangeViewSetting.EventAppThemeMode(it)) },
             dateFormatMode = ui.dateFormatMode,

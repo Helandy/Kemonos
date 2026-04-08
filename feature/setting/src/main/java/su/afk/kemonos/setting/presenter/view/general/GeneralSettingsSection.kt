@@ -7,8 +7,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import su.afk.kemonos.domain.SelectedSite
-import su.afk.kemonos.preferences.ui.*
+import su.afk.kemonos.preferences.ui.AppThemeMode
+import su.afk.kemonos.preferences.ui.DateFormatMode
+import su.afk.kemonos.preferences.ui.RandomButtonPlacement
+import su.afk.kemonos.preferences.ui.SiteDisplayMode
 import su.afk.kemonos.setting.R
 import su.afk.kemonos.setting.presenter.view.common.SectionSpacer
 import su.afk.kemonos.setting.presenter.view.common.SettingsSectionTitle
@@ -21,12 +23,8 @@ import java.util.*
 internal fun GeneralSettingsSection(
     suggestRandomAuthors: Boolean,
     onSuggestRandomAuthors: (Boolean) -> Unit,
-    showKemono: Boolean,
-    showCoomer: Boolean,
-    defaultSite: SelectedSite,
+    siteDisplayMode: SiteDisplayMode,
     onSiteDisplayModeChanged: (SiteDisplayMode) -> Unit,
-    fabVisibilityMode: FabVisibilityMode,
-    onFabVisibilityModeChange: (FabVisibilityMode) -> Unit,
     appThemeMode: AppThemeMode,
     onAppThemeMode: (AppThemeMode) -> Unit,
     dateFormatMode: DateFormatMode,
@@ -59,17 +57,8 @@ internal fun GeneralSettingsSection(
     ElevatedCard(modifier = Modifier.fillMaxWidth()) {
         Column(modifier = Modifier.padding(vertical = 8.dp)) {
             SiteDisplayModeSetting(
-                showKemono = showKemono,
-                showCoomer = showCoomer,
-                defaultSite = defaultSite,
+                siteDisplayMode = siteDisplayMode,
                 onSiteDisplayModeChanged = onSiteDisplayModeChanged,
-            )
-
-            HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp))
-
-            FabVisibilityModeSetting(
-                value = fabVisibilityMode,
-                onChange = onFabVisibilityModeChange,
             )
 
             HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp))
@@ -207,13 +196,10 @@ private fun DateFormatSetting(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun SiteDisplayModeSetting(
-    showKemono: Boolean,
-    showCoomer: Boolean,
-    defaultSite: SelectedSite,
+    siteDisplayMode: SiteDisplayMode,
     onSiteDisplayModeChanged: (SiteDisplayMode) -> Unit,
 ) {
     var expanded by remember { mutableStateOf(false) }
-    val currentMode = SiteDisplayMode.from(showKemono, showCoomer, defaultSite)
     val displayModes = listOf(
         SiteDisplayMode.BOTH_DEFAULT_COOMER,
         SiteDisplayMode.BOTH_DEFAULT_KEMONO,
@@ -239,7 +225,7 @@ private fun SiteDisplayModeSetting(
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Text(
-                    text = when (currentMode) {
+                    text = when (siteDisplayMode) {
                         SiteDisplayMode.BOTH_DEFAULT_KEMONO -> stringResource(R.string.settings_site_display_both_default_kemono)
                         SiteDisplayMode.BOTH_DEFAULT_COOMER -> stringResource(R.string.settings_site_display_both_default_coomer)
                         SiteDisplayMode.ONLY_KEMONO -> stringResource(R.string.settings_site_display_only_kemono)
@@ -269,68 +255,6 @@ private fun SiteDisplayModeSetting(
                         onClick = {
                             expanded = false
                             onSiteDisplayModeChanged(mode)
-                        }
-                    )
-                }
-            }
-        }
-    }
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-private fun FabVisibilityModeSetting(
-    value: FabVisibilityMode,
-    onChange: (FabVisibilityMode) -> Unit,
-) {
-    var expanded by remember { mutableStateOf(false) }
-
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = 8.dp)
-    ) {
-        Text(
-            text = stringResource(R.string.settings_fab_visibility_title),
-            style = MaterialTheme.typography.bodyLarge,
-        )
-
-        Spacer(Modifier.height(8.dp))
-
-        Box {
-            OutlinedButton(
-                onClick = { expanded = true },
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Text(
-                    text = when (value) {
-                        FabVisibilityMode.ALWAYS_ON -> stringResource(R.string.settings_fab_always_on)
-                        FabVisibilityMode.ALWAYS_OFF -> stringResource(R.string.settings_fab_always_off)
-                        FabVisibilityMode.ON_BOTH -> stringResource(R.string.settings_fab_on_both)
-                    },
-                    style = MaterialTheme.typography.bodyMedium,
-                )
-            }
-
-            DropdownMenu(
-                expanded = expanded,
-                onDismissRequest = { expanded = false },
-                modifier = Modifier.fillMaxWidth(0.9f)
-            ) {
-                FabVisibilityMode.entries.forEach { mode ->
-                    DropdownMenuItem(
-                        text = {
-                            Text(
-                                text = when (mode) {
-                                    FabVisibilityMode.ALWAYS_ON -> stringResource(R.string.settings_fab_always_on)
-                                    FabVisibilityMode.ALWAYS_OFF -> stringResource(R.string.settings_fab_always_off)
-                                    FabVisibilityMode.ON_BOTH -> stringResource(R.string.settings_fab_on_both)
-                                }
-                            )
-                        },
-                        onClick = {
-                            expanded = false
-                            onChange(mode)
                         }
                     )
                 }

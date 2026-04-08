@@ -4,7 +4,6 @@ import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.*
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
-import su.afk.kemonos.domain.SelectedSite
 import su.afk.kemonos.preferences.ui.UiSettingKey.ADD_SERVICE_NAME
 import su.afk.kemonos.preferences.ui.UiSettingKey.APP_THEME_MODE
 import su.afk.kemonos.preferences.ui.UiSettingKey.AUTOPLAY_COMMUNITY_VIDEO
@@ -19,11 +18,9 @@ import su.afk.kemonos.preferences.ui.UiSettingKey.CREATOR_PROFILE_TABS_ORDER
 import su.afk.kemonos.preferences.ui.UiSettingKey.CROP_POST_PREVIEW_VIDEO
 import su.afk.kemonos.preferences.ui.UiSettingKey.CROP_VIDEO_PREVIEW
 import su.afk.kemonos.preferences.ui.UiSettingKey.DATE_FORMAT_MODE
-import su.afk.kemonos.preferences.ui.UiSettingKey.DEFAULT_SITE
 import su.afk.kemonos.preferences.ui.UiSettingKey.DISCORD_COMMUNITY_REVERSE_ORDER_DEFAULT
 import su.afk.kemonos.preferences.ui.UiSettingKey.DOWNLOAD_FOLDER_MODE
 import su.afk.kemonos.preferences.ui.UiSettingKey.EXPERIMENTAL_CALENDAR
-import su.afk.kemonos.preferences.ui.UiSettingKey.FAB_VISIBILITY_MODE
 import su.afk.kemonos.preferences.ui.UiSettingKey.FAVORITE_POSTS_GRID_SIZE
 import su.afk.kemonos.preferences.ui.UiSettingKey.FAVORITE_POSTS_VIEW_MODE
 import su.afk.kemonos.preferences.ui.UiSettingKey.POPULAR_POSTS_GRID_SIZE
@@ -34,13 +31,12 @@ import su.afk.kemonos.preferences.ui.UiSettingKey.PROFILE_POSTS_VIEW_MODE
 import su.afk.kemonos.preferences.ui.UiSettingKey.RANDOM_BUTTON_PLACEMENT
 import su.afk.kemonos.preferences.ui.UiSettingKey.SEARCH_POSTS_GRID_SIZE
 import su.afk.kemonos.preferences.ui.UiSettingKey.SEARCH_POSTS_VIEW_MODE
-import su.afk.kemonos.preferences.ui.UiSettingKey.SHOW_COOMER
 import su.afk.kemonos.preferences.ui.UiSettingKey.SHOW_COMMENTS_IN_POST
 import su.afk.kemonos.preferences.ui.UiSettingKey.SHOW_IMAGE_PREVIEW_ACTION
 import su.afk.kemonos.preferences.ui.UiSettingKey.SHOW_IMAGE_PREVIEW_DOWNLOAD_ACTION
 import su.afk.kemonos.preferences.ui.UiSettingKey.SHOW_IMAGE_PREVIEW_SHARE_ACTION
-import su.afk.kemonos.preferences.ui.UiSettingKey.SHOW_KEMANO
 import su.afk.kemonos.preferences.ui.UiSettingKey.SHOW_PREVIEW_VIDEO
+import su.afk.kemonos.preferences.ui.UiSettingKey.SITE_DISPLAY_MODE
 import su.afk.kemonos.preferences.ui.UiSettingKey.SKIP_API_CHECK_ON_LOGIN
 import su.afk.kemonos.preferences.ui.UiSettingKey.SUGGEST_RANDOM_AUTHORS
 import su.afk.kemonos.preferences.ui.UiSettingKey.TAGS_POSTS_GRID_SIZE
@@ -58,13 +54,11 @@ internal class UiSettingUseCase @Inject constructor(
 
     override val prefs: Flow<UiSettingModel> = dataStore.data.map { p ->
         val legacyPostsSize = p.readEnum(POSTS_SIZE, UiSettingModel.DEFAULT_POSTS_SIZE)
+        val siteDisplayMode = p.readEnum(SITE_DISPLAY_MODE, UiSettingModel.DEFAULT_SITE_DISPLAY_MODE)
 
         UiSettingModel(
             skipApiCheckOnLogin = p[SKIP_API_CHECK_ON_LOGIN] ?: false,
-            showKemono = p[SHOW_KEMANO] ?: UiSettingModel.DEFAULT_SHOW_KEMANO,
-            showCoomer = p[SHOW_COOMER] ?: UiSettingModel.DEFAULT_SHOW_COOMER,
-            defaultSite = p.readEnum(DEFAULT_SITE, UiSettingModel.DEFAULT_DEFAULT_SITE),
-            fabVisibilityMode = p.readEnum(FAB_VISIBILITY_MODE, FabVisibilityMode.ON_BOTH),
+            siteDisplayMode = siteDisplayMode,
             creatorsViewMode = p.readEnum(CREATORS_VIEW_MODE, UiSettingModel.DEFAULT_CREATORS_VIEW_MODE),
             creatorsFavoriteViewMode = p.readEnum(
                 CREATORS_FAVORITE_VIEW_MODE,
@@ -132,40 +126,10 @@ internal class UiSettingUseCase @Inject constructor(
         }
     }
 
-    /** Показывать Kemono */
-    override suspend fun setShowKemono(value: Boolean) {
-        dataStore.edit {
-            it[SHOW_KEMANO] = value
-        }
-    }
-
-    /** Показывать Coomer */
-    override suspend fun setShowCoomer(value: Boolean) {
-        dataStore.edit {
-            it[SHOW_COOMER] = value
-        }
-    }
-
-    /** Основной сайт по умолчанию */
-    override suspend fun setDefaultSite(value: SelectedSite) {
-        dataStore.edit {
-            it[DEFAULT_SITE] = value.name
-        }
-    }
-
     /** Режим отображения сайта */
     override suspend fun setSiteDisplayMode(value: SiteDisplayMode) {
         dataStore.edit {
-            it[SHOW_KEMANO] = value.showKemono
-            it[SHOW_COOMER] = value.showCoomer
-            it[DEFAULT_SITE] = value.defaultSite.name
-        }
-    }
-
-    /** Режим отображения FAB */
-    override suspend fun setFabVisibilityMode(value: FabVisibilityMode) {
-        dataStore.edit {
-            it[FAB_VISIBILITY_MODE] = value.name
+            it[SITE_DISPLAY_MODE] = value.name
         }
     }
 
@@ -362,10 +326,7 @@ internal class UiSettingUseCase @Inject constructor(
 
 object UiSettingKey {
     val SKIP_API_CHECK_ON_LOGIN = booleanPreferencesKey("SKIP_API_CHECK_ON_LOGIN")
-    val SHOW_KEMANO = booleanPreferencesKey("SHOW_KEMANO")
-    val SHOW_COOMER = booleanPreferencesKey("SHOW_COOMER")
-    val DEFAULT_SITE = stringPreferencesKey("DEFAULT_SITE")
-    val FAB_VISIBILITY_MODE = stringPreferencesKey("FAB_VISIBILITY_MODE")
+    val SITE_DISPLAY_MODE = stringPreferencesKey("SITE_DISPLAY_MODE")
     val CREATORS_VIEW_MODE = stringPreferencesKey("CREATORS_VIEW_MODE")
     val CREATORS_FAVORITE_VIEW_MODE = stringPreferencesKey("CREATORS_FAVORITE_VIEW_MODE")
 
