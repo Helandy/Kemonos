@@ -83,7 +83,7 @@
     <!--    setting ui -->
     <string name="settings_ui_title">Интерфейс</string>
     <string name="settings_ui_hint">Настройки отображения и поведения приложения.</string>
-    <string name="settings_default_site_title">Режим отображения сайтов</string>
+    <string name="settings_default_site_title">Предпочитаемый сайт</string>
 
     <!-- Режим отображения сайтов -->
     <string name="settings_site_display_both_default_kemono">Оба (по умолчанию: Kemono)</string>

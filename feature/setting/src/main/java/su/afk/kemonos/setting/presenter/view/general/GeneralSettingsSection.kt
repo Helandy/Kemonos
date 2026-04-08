@@ -7,7 +7,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import su.afk.kemonos.domain.SelectedSite
 import su.afk.kemonos.preferences.ui.AppThemeMode
 import su.afk.kemonos.preferences.ui.DateFormatMode
 import su.afk.kemonos.preferences.ui.RandomButtonPlacement
@@ -24,9 +23,7 @@ import java.util.*
 internal fun GeneralSettingsSection(
     suggestRandomAuthors: Boolean,
     onSuggestRandomAuthors: (Boolean) -> Unit,
-    showKemono: Boolean,
-    showCoomer: Boolean,
-    defaultSite: SelectedSite,
+    siteDisplayMode: SiteDisplayMode,
     onSiteDisplayModeChanged: (SiteDisplayMode) -> Unit,
     appThemeMode: AppThemeMode,
     onAppThemeMode: (AppThemeMode) -> Unit,
@@ -60,9 +57,7 @@ internal fun GeneralSettingsSection(
     ElevatedCard(modifier = Modifier.fillMaxWidth()) {
         Column(modifier = Modifier.padding(vertical = 8.dp)) {
             SiteDisplayModeSetting(
-                showKemono = showKemono,
-                showCoomer = showCoomer,
-                defaultSite = defaultSite,
+                siteDisplayMode = siteDisplayMode,
                 onSiteDisplayModeChanged = onSiteDisplayModeChanged,
             )
 
@@ -201,13 +196,10 @@ private fun DateFormatSetting(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun SiteDisplayModeSetting(
-    showKemono: Boolean,
-    showCoomer: Boolean,
-    defaultSite: SelectedSite,
+    siteDisplayMode: SiteDisplayMode,
     onSiteDisplayModeChanged: (SiteDisplayMode) -> Unit,
 ) {
     var expanded by remember { mutableStateOf(false) }
-    val currentMode = SiteDisplayMode.from(showKemono, showCoomer, defaultSite)
     val displayModes = listOf(
         SiteDisplayMode.BOTH_DEFAULT_COOMER,
         SiteDisplayMode.BOTH_DEFAULT_KEMONO,
@@ -233,7 +225,7 @@ private fun SiteDisplayModeSetting(
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Text(
-                    text = when (currentMode) {
+                    text = when (siteDisplayMode) {
                         SiteDisplayMode.BOTH_DEFAULT_KEMONO -> stringResource(R.string.settings_site_display_both_default_kemono)
                         SiteDisplayMode.BOTH_DEFAULT_COOMER -> stringResource(R.string.settings_site_display_both_default_coomer)
                         SiteDisplayMode.ONLY_KEMONO -> stringResource(R.string.settings_site_display_only_kemono)

@@ -26,7 +26,7 @@ class MainSettingsSync @Inject constructor(
         if (syncJob != null) return
 
         syncJob = uiSettingUseCase.prefs
-            .map { it.defaultSite }
+            .map { it.siteDisplayMode.defaultSite }
             .distinctUntilChanged()
             .onEach { site ->
                 selectedSiteUseCase.setSite(site)

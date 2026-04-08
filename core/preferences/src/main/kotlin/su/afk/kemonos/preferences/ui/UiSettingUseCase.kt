@@ -54,19 +54,11 @@ internal class UiSettingUseCase @Inject constructor(
 
     override val prefs: Flow<UiSettingModel> = dataStore.data.map { p ->
         val legacyPostsSize = p.readEnum(POSTS_SIZE, UiSettingModel.DEFAULT_POSTS_SIZE)
-        val siteDisplayMode = p.readEnum(
-            SITE_DISPLAY_MODE, SiteDisplayMode.from(
-                showKemono = UiSettingModel.DEFAULT_SHOW_KEMANO,
-                showCoomer = UiSettingModel.DEFAULT_SHOW_COOMER,
-                defaultSite = UiSettingModel.DEFAULT_DEFAULT_SITE
-            )
-        )
+        val siteDisplayMode = p.readEnum(SITE_DISPLAY_MODE, UiSettingModel.DEFAULT_SITE_DISPLAY_MODE)
 
         UiSettingModel(
             skipApiCheckOnLogin = p[SKIP_API_CHECK_ON_LOGIN] ?: false,
-            showKemono = siteDisplayMode.showKemono,
-            showCoomer = siteDisplayMode.showCoomer,
-            defaultSite = siteDisplayMode.defaultSite,
+            siteDisplayMode = siteDisplayMode,
             creatorsViewMode = p.readEnum(CREATORS_VIEW_MODE, UiSettingModel.DEFAULT_CREATORS_VIEW_MODE),
             creatorsFavoriteViewMode = p.readEnum(
                 CREATORS_FAVORITE_VIEW_MODE,

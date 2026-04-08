@@ -68,9 +68,7 @@ internal fun SettingUiScreen(
         GeneralSettingsSection(
             suggestRandomAuthors = ui.suggestRandomAuthors,
             onSuggestRandomAuthors = { onEvent(Event.ChangeViewSetting.SuggestRandomAuthors(it)) },
-            showKemono = ui.showKemono,
-            showCoomer = ui.showCoomer,
-            defaultSite = ui.defaultSite,
+            siteDisplayMode = ui.siteDisplayMode,
             onSiteDisplayModeChanged = { onEvent(Event.ChangeViewSetting.SiteDisplayModeChanged(it)) },
             appThemeMode = ui.appThemeMode,
             onAppThemeMode = { onEvent(Event.ChangeViewSetting.EventAppThemeMode(it)) },

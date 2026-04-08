@@ -120,7 +120,7 @@ internal class FavoriteProfilesViewModel @Inject constructor(
      */
     private fun loadSelectedSite() = viewModelScope.launch {
         val site = navigationStorage.consume<SelectedSite>(KEY_SELECT_SITE)
-            ?: uiSetting.prefs.first().defaultSite
+            ?: uiSetting.prefs.first().siteDisplayMode.defaultSite
 
         selectedSiteUseCase.setSiteAndAwait(site)
 

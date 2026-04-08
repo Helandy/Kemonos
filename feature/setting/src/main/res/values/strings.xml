@@ -78,7 +78,7 @@
     <!--    setting ui -->
     <string name="settings_ui_title">Interface</string>
     <string name="settings_ui_hint">Display and behavior settings.</string>
-    <string name="settings_default_site_title">Site display mode</string>
+    <string name="settings_default_site_title">Preferred site</string>
 
     <!-- Site display mode options -->
     <string name="settings_site_display_both_default_kemono">Both (Default: Kemono)</string>

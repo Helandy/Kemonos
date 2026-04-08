@@ -111,18 +111,7 @@ enum class SiteDisplayMode(val showKemono: Boolean, val showCoomer: Boolean, val
     BOTH_DEFAULT_KEMONO(true, true, SelectedSite.K),
     BOTH_DEFAULT_COOMER(true, true, SelectedSite.C),
     ONLY_KEMONO(true, false, SelectedSite.K),
-    ONLY_COOMER(false, true, SelectedSite.C);
-
-    companion object {
-        fun from(showKemono: Boolean, showCoomer: Boolean, defaultSite: SelectedSite): SiteDisplayMode {
-            return entries.find { it.showKemono == showKemono && it.showCoomer == showCoomer && it.defaultSite == defaultSite }
-                ?: if (showKemono && showCoomer) {
-                    if (defaultSite == SelectedSite.K) BOTH_DEFAULT_KEMONO else BOTH_DEFAULT_COOMER
-                } else if (showKemono) ONLY_KEMONO
-                else if (showCoomer) ONLY_COOMER
-                else BOTH_DEFAULT_KEMONO
-        }
-    }
+    ONLY_COOMER(false, true, SelectedSite.C)
 }
 
 enum class VideoPreviewAspectRatio(val ratio: Float) {
@@ -138,14 +127,8 @@ data class UiSettingModel(
     /** debug-only: пропустить проверку API при входе */
     val skipApiCheckOnLogin: Boolean = false,
 
-    /** Показывать Kemono в списках */
-    val showKemono: Boolean = DEFAULT_SHOW_KEMANO,
-
-    /** Показывать Coomer в списках */
-    val showCoomer: Boolean = DEFAULT_SHOW_COOMER,
-
-    /** Основной сайт по умолчанию */
-    val defaultSite: SelectedSite = DEFAULT_DEFAULT_SITE,
+    /** Режим отображения сайтов */
+    val siteDisplayMode: SiteDisplayMode = DEFAULT_SITE_DISPLAY_MODE,
 
     /** Вид отображения авторов на главной */
     val creatorsViewMode: CreatorViewMode = DEFAULT_CREATORS_VIEW_MODE,
@@ -250,9 +233,7 @@ data class UiSettingModel(
     val creatorsGithubRateBannerDisabled: Boolean = false,
 ) {
     companion object {
-        const val DEFAULT_SHOW_KEMANO = true
-        const val DEFAULT_SHOW_COOMER = true
-        val DEFAULT_DEFAULT_SITE = SelectedSite.C
+        val DEFAULT_SITE_DISPLAY_MODE = SiteDisplayMode.BOTH_DEFAULT_COOMER
 
         val DEFAULT_CREATORS_VIEW_MODE = CreatorViewMode.LIST
         val DEFAULT_POSTS_VIEW_MODE = PostsViewMode.GRID
@@ -295,7 +276,7 @@ data class UiSettingModel(
 }
 
 fun UiSettingModel.shouldShowSiteToggleFab(): Boolean =
-    when (SiteDisplayMode.from(showKemono = showKemono, showCoomer = showCoomer, defaultSite = defaultSite)) {
+    when (siteDisplayMode) {
         SiteDisplayMode.BOTH_DEFAULT_COOMER,
         SiteDisplayMode.BOTH_DEFAULT_KEMONO -> true
 
