@@ -125,22 +125,6 @@ enum class SiteDisplayMode(val showKemono: Boolean, val showCoomer: Boolean, val
     }
 }
 
-enum class FabVisibilityMode {
-    ALWAYS_ON,
-    ALWAYS_OFF,
-    ON_BOTH,
-    ;
-
-    companion object {
-        fun shouldShowSiteToggleFab(uiSettingModel: UiSettingModel): Boolean =
-            when (uiSettingModel.fabVisibilityMode) {
-                ALWAYS_ON -> true
-                ALWAYS_OFF -> false
-                ON_BOTH -> uiSettingModel.showKemono && uiSettingModel.showCoomer
-            }
-    }
-}
-
 enum class VideoPreviewAspectRatio(val ratio: Float) {
     RATIO_16_9(16f / 9f),
     RATIO_4_3(4f / 3f),
@@ -162,9 +146,6 @@ data class UiSettingModel(
 
     /** Основной сайт по умолчанию */
     val defaultSite: SelectedSite = DEFAULT_DEFAULT_SITE,
-
-    /** Режим отображения FAB переключения сайта */
-    val fabVisibilityMode: FabVisibilityMode = FabVisibilityMode.ON_BOTH,
 
     /** Вид отображения авторов на главной */
     val creatorsViewMode: CreatorViewMode = DEFAULT_CREATORS_VIEW_MODE,
@@ -312,3 +293,12 @@ data class UiSettingModel(
         const val DEFAULT_CROP_POST_PREVIEW_VIDEO = true
     }
 }
+
+fun UiSettingModel.shouldShowSiteToggleFab(): Boolean =
+    when (SiteDisplayMode.from(showKemono = showKemono, showCoomer = showCoomer, defaultSite = defaultSite)) {
+        SiteDisplayMode.BOTH_DEFAULT_COOMER,
+        SiteDisplayMode.BOTH_DEFAULT_KEMONO -> true
+
+        SiteDisplayMode.ONLY_COOMER,
+        SiteDisplayMode.ONLY_KEMONO -> false
+    }

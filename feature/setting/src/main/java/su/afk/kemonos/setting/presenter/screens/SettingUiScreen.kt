@@ -72,8 +72,6 @@ internal fun SettingUiScreen(
             showCoomer = ui.showCoomer,
             defaultSite = ui.defaultSite,
             onSiteDisplayModeChanged = { onEvent(Event.ChangeViewSetting.SiteDisplayModeChanged(it)) },
-            fabVisibilityMode = ui.fabVisibilityMode,
-            onFabVisibilityModeChange = { onEvent(Event.ChangeViewSetting.FabVisibilityModeChanged(it)) },
             appThemeMode = ui.appThemeMode,
             onAppThemeMode = { onEvent(Event.ChangeViewSetting.EventAppThemeMode(it)) },
             dateFormatMode = ui.dateFormatMode,
