@@ -135,6 +135,8 @@
     <string name="profile_faq_q6_body">Сервер превью запрашивает само видео, и иногда файл оказывается битым или
         временно недоступным. Из-за этого превью может не загрузиться.
     </string>
+    <string name="profile_faq_q7_title">Если запрос в профиле не проходит с ошибкой 500/400</string>
+    <string name="profile_faq_q7_body">Попробуйте отключить в настройках tabs, которые вызывают ошибку.</string>
 
     <!--  LogoutDialog  -->
     <string name="logout_title">Выйти из аккаунта %1$s?</string>

@@ -29,7 +29,11 @@ internal class PostLoadDelegate @Inject constructor(
         val postDeferred = async { getPostUseCase(request.service, request.creatorId, request.postId) }
         val commentsDeferred = async {
             if (request.showComments) {
-                getCommentsUseCase(request.service, request.creatorId, request.postId)
+                runCatching {
+                    getCommentsUseCase(request.service, request.creatorId, request.postId)
+                }.getOrElse {
+                    emptyList()
+                }
             } else {
                 emptyList()
             }

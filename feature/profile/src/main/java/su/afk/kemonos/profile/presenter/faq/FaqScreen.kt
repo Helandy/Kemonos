@@ -70,6 +70,11 @@ internal fun FaqScreen(
                 title = stringResource(R.string.profile_faq_q6_title),
                 body = stringResource(R.string.profile_faq_q6_body),
             )
+            FaqItemCard(
+                icon = Icons.Outlined.Tune,
+                title = stringResource(R.string.profile_faq_q7_title),
+                body = stringResource(R.string.profile_faq_q7_body),
+            )
             Spacer(modifier = Modifier.height(8.dp))
         }
     }

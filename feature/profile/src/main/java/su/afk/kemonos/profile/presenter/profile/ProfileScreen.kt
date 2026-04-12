@@ -8,10 +8,8 @@ import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.key
-import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
@@ -57,20 +55,17 @@ internal fun ProfileScreen(
         else -> 0
     }
 
-    val pagerState = key(pageCount, defaultSite) {
-        rememberPagerState(pageCount = { pageCount }, initialPage = initialPage)
+    var savedPage by rememberSaveable(pageCount) {
+        mutableIntStateOf(initialPage.coerceIn(0, pageCount - 1))
     }
+    val pagerState = rememberPagerState(
+        initialPage = savedPage.coerceIn(0, pageCount - 1),
+        pageCount = { pageCount }
+    )
     val scope = rememberCoroutineScope()
 
-    LaunchedEffect(pageCount, defaultSite) {
-        val targetPage = when {
-            pageCount == 1 -> 0
-            defaultSite == SelectedSite.K -> 1
-            else -> 0
-        }
-        if (pagerState.currentPage != targetPage) {
-            pagerState.scrollToPage(targetPage)
-        }
+    LaunchedEffect(pagerState.currentPage, pageCount) {
+        savedPage = pagerState.currentPage.coerceIn(0, pageCount - 1)
     }
 
     val folderPickerLauncher = rememberLauncherForActivityResult(

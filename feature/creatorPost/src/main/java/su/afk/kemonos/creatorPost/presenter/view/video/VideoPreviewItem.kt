@@ -3,7 +3,6 @@ package su.afk.kemonos.creatorPost.presenter.view.video
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Download
@@ -110,15 +109,12 @@ internal fun VideoPreviewItem(
             VideoPreviewLoading(thumbLoading)
 
             /** Play Button */
-            Button(
+            FilledIconButton(
                 onClick = { openVideoExternally(context, url, video.name) },
-                shape = CircleShape,
-                elevation = ButtonDefaults.buttonElevation(8.dp),
-                colors = ButtonDefaults.buttonColors(
+                colors = IconButtonDefaults.filledIconButtonColors(
                     containerColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.85f),
                     contentColor = MaterialTheme.colorScheme.onPrimary
                 ),
-                contentPadding = PaddingValues(0.dp),
                 modifier = Modifier
                     .size(62.dp)
                     .align(Alignment.Center)
