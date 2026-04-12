@@ -5,8 +5,8 @@ minSdk = "29"
 jvmVersion = "21"
 
 # --- App versioning
-appVersionName = "1.12"
-appVersionCode = "75"
+appVersionName = "1.12.1"
+appVersionCode = "76"
 
 agp = "8.13.2"
 kotlin = "2.3.20"
@@ -20,7 +20,7 @@ datastore = "1.2.1"
 paging = "3.4.2"
 room = "2.8.4"
 securityCrypto = "1.1.0"
-credentials = "1.5.0"
+credentials = "1.6.0"
 
 # --- Compose
 # Для BOM не задавать вручную версии для compose libs
@@ -42,18 +42,18 @@ re2j = "1.8"
 
 # --- Serialization / Coroutines
 coroutines = "1.10.2"
-kotlinxSerializationJson = "1.10.0"
+kotlinxSerializationJson = "1.11.0"
 
 # --- Media / Images / UI helpers
 coil3 = "3.4.0"
-multiplatformMarkdownRendererM3 = "0.39.2"
+multiplatformMarkdownRendererM3 = "0.40.2"
 
 # --- Navigation3
-navigation3 = "1.0.1"
+navigation3 = "1.1.0"
 material3AdaptiveNav3 = "1.0.0-alpha03"
 
 # --- Play Services
-playServicesCast = "22.3.0"
+playServicesCast = "22.3.1"
 
 # --- Translate
 translate = "17.0.3"

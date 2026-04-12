@@ -134,6 +134,8 @@
     <string name="profile_faq_q6_body">The preview server requests the original video, and sometimes that file is
         corrupted or temporarily unavailable. When that happens, the preview may fail to load.
     </string>
+    <string name="profile_faq_q7_title">If profile requests fail with 500/400 errors</string>
+    <string name="profile_faq_q7_body">Try disabling the tabs that trigger errors in Settings.</string>
 
     <!-- LogoutDialog -->
     <string name="logout_title">Log out of %1$s?</string>
