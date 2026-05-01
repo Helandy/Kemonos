@@ -1,5 +1,6 @@
 package su.afk.kemonos.ui.presenter.baseScreen
 
+import androidx.compose.foundation.layout.RowScope
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.ArrowBack
 import androidx.compose.material3.*
@@ -13,6 +14,7 @@ fun CenterBackTopBar(
     title: String,
     onBack: () -> Unit,
     scrollBehavior: TopAppBarScrollBehavior? = null,
+    actions: @Composable RowScope.() -> Unit = {},
 ) {
     CenterAlignedTopAppBar(
         title = {
@@ -30,6 +32,7 @@ fun CenterBackTopBar(
                 )
             }
         },
+        actions = actions,
         scrollBehavior = scrollBehavior,
         windowInsets = TopAppBarDefaults.windowInsets,
         colors = TopAppBarDefaults.topAppBarColors(

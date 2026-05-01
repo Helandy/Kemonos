@@ -13,11 +13,9 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.Delete
-import androidx.compose.material.icons.outlined.FolderOpen
-import androidx.compose.material.icons.outlined.Link
+import androidx.compose.material.icons.outlined.*
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -42,6 +40,7 @@ internal fun DownloadsScreen(
     onEvent: (DownloadsState.Event) -> Unit,
 ) {
     val filteredItems = state.items.filter { state.selectedFilter.matches(it.status) }
+    val canRestartAll = state.items.any { it.isRestartable }
 
     BaseScreen(
         isScroll = false,
@@ -51,7 +50,12 @@ internal fun DownloadsScreen(
                 title = stringResource(R.string.downloads_title),
                 onBack = { onEvent(DownloadsState.Event.BackClick) },
                 scrollBehavior = scrollBehavior,
-            )
+            ) {
+                DownloadsActionsMenu(
+                    canRestartAll = canRestartAll,
+                    onRestartAll = { onEvent(DownloadsState.Event.RestartAllDownloads) },
+                )
+            }
         },
     ) {
         DownloadStatusFilterChips(
@@ -96,6 +100,42 @@ internal fun DownloadsScreen(
                     )
                 }
             }
+        }
+    }
+}
+
+@Composable
+private fun DownloadsActionsMenu(
+    canRestartAll: Boolean,
+    onRestartAll: () -> Unit,
+) {
+    var expanded by remember { mutableStateOf(false) }
+
+    Box {
+        IconButton(onClick = { expanded = true }) {
+            Icon(
+                imageVector = Icons.Outlined.MoreVert,
+                contentDescription = stringResource(R.string.downloads_actions),
+            )
+        }
+        DropdownMenu(
+            expanded = expanded,
+            onDismissRequest = { expanded = false },
+        ) {
+            DropdownMenuItem(
+                text = { Text(text = stringResource(R.string.downloads_action_restart_all)) },
+                enabled = canRestartAll,
+                leadingIcon = {
+                    Icon(
+                        imageVector = Icons.Outlined.Refresh,
+                        contentDescription = null,
+                    )
+                },
+                onClick = {
+                    expanded = false
+                    onRestartAll()
+                },
+            )
         }
     }
 }

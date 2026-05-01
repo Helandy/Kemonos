@@ -1,7 +1,7 @@
 package su.afk.kemonos.download.presenter.model
 
 import android.app.DownloadManager
-import su.afk.kemonos.download.data.DownloadManagerSnapshot
+import su.afk.kemonos.download.domain.model.DownloadManagerSnapshot
 import su.afk.kemonos.storage.api.repository.download.TrackedDownload
 
 internal data class DownloadUiItem(
@@ -17,6 +17,11 @@ internal data class DownloadUiItem(
     val localUri: String?,
     val lastModifiedMs: Long?,
 ) {
+    val isRestartable: Boolean
+        get() = status != DownloadManager.STATUS_SUCCESSFUL &&
+                status != DownloadManager.STATUS_RUNNING &&
+                status != DownloadManager.STATUS_PENDING
+
     companion object {
         const val STATUS_REMOVED = -1
 
