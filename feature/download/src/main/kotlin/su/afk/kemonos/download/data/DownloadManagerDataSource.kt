@@ -4,33 +4,20 @@ import android.app.DownloadManager
 import android.content.Context
 import android.database.Cursor
 import dagger.hilt.android.qualifiers.ApplicationContext
+import su.afk.kemonos.download.domain.model.DownloadManagerSnapshot
+import su.afk.kemonos.download.domain.repository.DownloadManagerDataSource
+import su.afk.kemonos.utils.withIo
 import javax.inject.Inject
-
-internal interface DownloadManagerDataSource {
-    fun querySnapshots(ids: List<Long>): Map<Long, DownloadManagerSnapshot>
-    fun remove(id: Long): Int
-}
-
-internal data class DownloadManagerSnapshot(
-    val title: String?,
-    val status: Int,
-    val reason: Int,
-    val bytesDownloaded: Long,
-    val totalBytes: Long,
-    val mediaType: String?,
-    val remoteUri: String?,
-    val localUri: String?,
-    val lastModifiedMs: Long?,
-)
 
 internal class DownloadManagerDataSourceImpl @Inject constructor(
     @ApplicationContext context: Context,
 ) : DownloadManagerDataSource {
     private val downloadManager = context.getSystemService(Context.DOWNLOAD_SERVICE) as DownloadManager
 
-    override fun querySnapshots(ids: List<Long>): Map<Long, DownloadManagerSnapshot> {
-        if (ids.isEmpty()) return emptyMap()
-        return buildMap {
+    override suspend fun querySnapshots(ids: List<Long>): Map<Long, DownloadManagerSnapshot> = withIo {
+        if (ids.isEmpty()) {
+            emptyMap()
+        } else buildMap {
             ids.distinct().chunked(QUERY_BATCH_SIZE).forEach { batch ->
                 val query = DownloadManager.Query().setFilterById(*batch.toLongArray())
                 val cursor = downloadManager.query(query)
@@ -68,7 +55,9 @@ internal class DownloadManagerDataSourceImpl @Inject constructor(
         }
     }
 
-    override fun remove(id: Long): Int = downloadManager.remove(id)
+    override suspend fun remove(id: Long): Int = withIo {
+        downloadManager.remove(id)
+    }
 }
 
 private fun Cursor.getStringOrNull(index: Int): String? {

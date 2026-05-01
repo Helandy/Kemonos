@@ -13,7 +13,10 @@ dependencies {
     implementation(project(":core:preferences"))
     implementation(project(":core:ui"))
     implementation(project(":core:error"))
+    implementation(project(":core:utils"))
 
     implementation(project(":storage-api"))
     implementation(project(":feature:download-api"))
+
+    testImplementation(libs.junit)
 }
