@@ -13,6 +13,7 @@ import kotlinx.coroutines.sync.withLock
 import su.afk.kemonos.download.domain.repository.DownloadManagerDataSource
 import su.afk.kemonos.download.domain.usecase.DeleteDownloadUseCase
 import su.afk.kemonos.download.domain.usecase.RestartDownloadUseCase
+import su.afk.kemonos.download.domain.usecase.RestartDownloadsUseCase
 import su.afk.kemonos.download.domain.usecase.StopDownloadUseCase
 import su.afk.kemonos.download.presenter.model.DownloadUiItem
 import su.afk.kemonos.error.error.IErrorHandlerUseCase
@@ -30,6 +31,7 @@ internal class DownloadsViewModel @Inject constructor(
     private val downloadManagerDataSource: DownloadManagerDataSource,
     private val stopDownloadUseCase: StopDownloadUseCase,
     private val restartDownloadUseCase: RestartDownloadUseCase,
+    private val restartDownloadsUseCase: RestartDownloadsUseCase,
     private val deleteDownloadUseCase: DeleteDownloadUseCase,
     private val trackedDownloadsRepository: ITrackedDownloadsRepository,
     private val uiSetting: IUiSettingUseCase,
@@ -51,6 +53,7 @@ internal class DownloadsViewModel @Inject constructor(
             is DownloadsState.Event.SelectFilter -> setState { copy(selectedFilter = event.filter) }
             is DownloadsState.Event.StopDownload -> stopDownload(event.downloadId)
             is DownloadsState.Event.RestartDownload -> restartDownload(event.downloadId)
+            DownloadsState.Event.RestartAllDownloads -> restartAllDownloads()
             is DownloadsState.Event.DeleteDownload -> deleteDownload(event.downloadId)
         }
     }
@@ -123,6 +126,26 @@ internal class DownloadsViewModel @Inject constructor(
             refreshMutex.withLock {
                 speedMap.remove(downloadId)
                 lastSnapshots.remove(downloadId)
+                refreshInternal(onlyActive = false)
+            }
+        }
+    }
+
+    private fun restartAllDownloads() {
+        viewModelScope.launch {
+            val trackedItems = refreshMutex.withLock {
+                currentState.items
+                    .filter { it.isRestartable }
+                    .mapNotNull { trackedById[it.downloadId] }
+            }
+            if (trackedItems.isEmpty()) return@launch
+
+            val restartedIds = restartDownloadsUseCase(trackedItems)
+            refreshMutex.withLock {
+                restartedIds.forEach { downloadId ->
+                    speedMap.remove(downloadId)
+                    lastSnapshots.remove(downloadId)
+                }
                 refreshInternal(onlyActive = false)
             }
         }

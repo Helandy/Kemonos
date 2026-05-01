@@ -17,6 +17,11 @@ internal data class DownloadUiItem(
     val localUri: String?,
     val lastModifiedMs: Long?,
 ) {
+    val isRestartable: Boolean
+        get() = status != DownloadManager.STATUS_SUCCESSFUL &&
+                status != DownloadManager.STATUS_RUNNING &&
+                status != DownloadManager.STATUS_PENDING
+
     companion object {
         const val STATUS_REMOVED = -1
 

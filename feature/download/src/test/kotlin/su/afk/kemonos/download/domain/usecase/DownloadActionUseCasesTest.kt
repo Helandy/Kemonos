@@ -53,6 +53,31 @@ internal class DownloadActionUseCasesTest {
     }
 
     @Test
+    fun restartAllRestartsEveryProvidedDownloadAndReturnsOldIds() = runBlocking {
+        val dataSource = FakeDownloadManagerDataSource()
+        val downloadUtil = FakeDownloadUtil(newDownloadId = 200L)
+        val repository = FakeTrackedDownloadsRepository()
+        val restartDownloadUseCase = RestartDownloadUseCase(
+            downloadManagerDataSource = dataSource,
+            downloadUtil = downloadUtil,
+            trackedDownloadsRepository = repository,
+        )
+        val useCase = RestartDownloadsUseCase(restartDownloadUseCase)
+
+        val restartedIds = useCase(
+            listOf(
+                trackedDownload(id = 100L),
+                trackedDownload(id = 101L),
+            )
+        )
+
+        assertEquals(listOf(100L, 101L), restartedIds)
+        assertEquals(listOf(100L, 101L), dataSource.removedIds)
+        assertEquals(listOf(100L, 101L), repository.deletedIds)
+        assertEquals(2, downloadUtil.enqueued.size)
+    }
+
+    @Test
     fun stopRemovesSystemDownloadAndPersistsUserStoppedRuntimeState() = runBlocking {
         val dataSource = FakeDownloadManagerDataSource()
         val repository = FakeTrackedDownloadsRepository()
