@@ -36,6 +36,15 @@ internal object AuthStorageModule {
         @ApplicationContext context: Context,
         masterKey: MasterKey,
     ): SharedPreferences =
+        try {
+            createEncryptedPrefs(context, masterKey)
+        } catch (e: Exception) {
+            context.deleteSharedPreferences("auth_secure_prefs")
+            createEncryptedPrefs(context, masterKey)
+        }
+
+    /** На случай если будет перенос бэкапом с устройства на устройства и файл не расшифруется */
+    private fun createEncryptedPrefs(context: Context, masterKey: MasterKey): SharedPreferences =
         EncryptedSharedPreferences.create(
             context,
             "auth_secure_prefs",

@@ -1,10 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <data-extraction-rules>
     <cloud-backup>
+        <include domain="sharedprefs" path="main_prefs.xml"/>
+        <include domain="sharedprefs" path="auth_secure_prefs.xml"/>
+        <include domain="files" path="datastore/settings.preferences_pb"/>
+        <include domain="files" path="datastore/auth_prefs.preferences_pb"/>
         <!-- Do not restore Room/SQLite databases on reinstall. -->
         <exclude domain="database" path="."/>
     </cloud-backup>
     <device-transfer>
+        <include domain="sharedprefs" path="."/>
+        <include domain="files" path="."/>
         <!-- Avoid DB transfer during device-to-device restore. -->
         <exclude domain="database" path="."/>
     </device-transfer>
