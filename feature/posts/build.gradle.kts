@@ -1,11 +1,13 @@
 plugins {
     id("kemonos.android.feature")
+    alias(libs.plugins.kotlin.serialization)
 }
 
 android {
     namespace = "su.afk.kemonos.posts"
 }
 dependencies {
+    implementation(libs.bundles.serialization.json)
     implementation(libs.bundles.retrofit)
     implementation(libs.bundles.paging)
 

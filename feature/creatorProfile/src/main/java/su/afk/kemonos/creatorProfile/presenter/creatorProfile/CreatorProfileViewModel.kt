@@ -1,5 +1,6 @@
 package su.afk.kemonos.creatorProfile.presenter.creatorProfile
 
+import androidx.lifecycle.SavedStateHandle
 import androidx.paging.cachedIn
 import androidx.paging.filter
 import dagger.assisted.Assisted
@@ -14,10 +15,12 @@ import su.afk.kemonos.creatorProfile.api.IGetProfileUseCase
 import su.afk.kemonos.creatorProfile.api.domain.models.profileCommunity.CommunityChannel
 import su.afk.kemonos.creatorProfile.domain.paging.GetProfilePostsPagingUseCase
 import su.afk.kemonos.creatorProfile.navigation.CreatorDestination
+import su.afk.kemonos.creatorProfile.presenter.creatorProfile.CreatorProfileState.*
 import su.afk.kemonos.creatorProfile.presenter.creatorProfile.delegates.LikeDelegate
 import su.afk.kemonos.creatorProfile.presenter.creatorProfile.delegates.LoadingTabsContent
 import su.afk.kemonos.creatorProfile.presenter.creatorProfile.delegates.NavigationDelegate
 import su.afk.kemonos.creatorProfile.presenter.creatorProfile.model.ProfileTab
+import su.afk.kemonos.creatorProfile.presenter.creatorProfile.model.ProfileTab.Companion.toCreatorProfileTabKey
 import su.afk.kemonos.creatorProfile.util.Utils.queryKey
 import su.afk.kemonos.domain.models.Profile
 import su.afk.kemonos.domain.models.Tag
@@ -34,6 +37,8 @@ import su.afk.kemonos.storage.api.repository.blacklist.IStoreBlacklistedAuthorsR
 import su.afk.kemonos.storage.api.repository.profilePosts.IStorageCreatorPostsRepository
 import su.afk.kemonos.ui.components.posts.filter.matchesMediaFilter
 import su.afk.kemonos.ui.presenter.baseViewModel.BaseViewModelNew
+import su.afk.kemonos.ui.presenter.baseViewModel.getSerializableState
+import su.afk.kemonos.ui.presenter.baseViewModel.setSerializableState
 import su.afk.kemonos.ui.shared.ShareLinkBuilder
 import su.afk.kemonos.ui.shared.model.ShareTarget
 
@@ -50,56 +55,60 @@ internal class CreatorProfileViewModel @AssistedInject constructor(
     private val postsCache: IStorageCreatorPostsRepository,
     private val blacklistedAuthorsRepository: IStoreBlacklistedAuthorsRepository,
     private val uiSetting: IUiSettingUseCase,
+    @Assisted savedStateHandle: SavedStateHandle,
     override val errorHandler: IErrorHandlerUseCase,
     override val retryStorage: RetryStorage,
-) : BaseViewModelNew<CreatorProfileState.State, CreatorProfileState.Event, CreatorProfileState.Effect>() {
+) : BaseViewModelNew<State, Event, Effect>(savedStateHandle) {
 
     private var searchJob: Job? = null
     private var observeBlacklistJob: Job? = null
 
-    override fun createInitialState(): CreatorProfileState.State = CreatorProfileState.State()
+    override fun createInitialState(): State =
+        (savedStateHandle.getSerializableState<CreatorProfilePersistedState>(KEY_STATE)
+            ?: CreatorProfilePersistedState.fromDest(dest))
+            .toState()
 
-    private data class TabCheckSpec(
-        val key: CreatorProfileTabKey,
-        val loader: suspend () -> Unit,
-    )
-
-    override fun onEvent(event: CreatorProfileState.Event) {
+    override fun onEvent(event: Event) {
         when (event) {
-            CreatorProfileState.Event.Retry -> onRetry()
-            CreatorProfileState.Event.PullRefresh -> onPullRefresh()
+            Event.Retry -> onRetry()
+            Event.PullRefresh -> onPullRefresh()
 
-            CreatorProfileState.Event.Back -> navManager.back()
-            CreatorProfileState.Event.CopyProfileLink -> copyProfileLink()
-            is CreatorProfileState.Event.OpenCreatorPlatformLink -> setEffect(CreatorProfileState.Effect.OpenUrl(event.url))
+            Event.Back -> navManager.back()
+            Event.CopyProfileLink -> copyProfileLink()
+            is Event.OpenCreatorPlatformLink -> setEffect(Effect.OpenUrl(event.url))
 
-            is CreatorProfileState.Event.OpenImage -> navigationDelegate.navigateToOpenImage(event.url)
-            is CreatorProfileState.Event.OpenLinkProfile -> navigationDelegate.navigateToLinkProfile(event.link)
-            is CreatorProfileState.Event.OpenPost -> viewModelScope.launch {
-                navigationDelegate.navigateToPost(event.post)
-            }
+            is Event.OpenImage -> navigationDelegate.navigateToOpenImage(event.url)
+            is Event.OpenLinkProfile -> navigationDelegate.navigateToLinkProfile(event.link)
+            is Event.OpenPost -> viewModelScope.launch { navigationDelegate.navigateToPost(event.post) }
 
-            is CreatorProfileState.Event.TabChanged -> setState { copy(selectedTab = event.tab) }
-            is CreatorProfileState.Event.OpenCommunityChannel -> openCommunityChannel(event.channel)
-            is CreatorProfileState.Event.TagClicked -> clickTag(event.tag)
-            CreatorProfileState.Event.ClearTag -> clearTag()
+            is Event.TabChanged -> setState { copy(selectedTab = event.tab) }
+            is Event.OpenCommunityChannel -> openCommunityChannel(event.channel)
+            is Event.TagClicked -> clickTag(event.tag)
+            Event.ClearTag -> clearTag()
 
-            CreatorProfileState.Event.ToggleSearch -> setState { copy(isSearchVisible = !currentState.isSearchVisible) }
-            CreatorProfileState.Event.CloseSearch -> closeSearch()
-            is CreatorProfileState.Event.SearchTextChanged -> setSearchText(event.text)
+            Event.ToggleSearch -> setState { copy(isSearchVisible = !currentState.isSearchVisible) }
+            Event.CloseSearch -> closeSearch()
+            is Event.SearchTextChanged -> setSearchText(event.text)
 
-            CreatorProfileState.Event.ToggleHasVideo -> toggleHasVideo()
-            CreatorProfileState.Event.ToggleHasAttachments -> toggleHasAttachments()
-            CreatorProfileState.Event.ToggleHasImages -> toggleHasImages()
-            CreatorProfileState.Event.ToggleBlacklist -> toggleBlacklist()
+            Event.ToggleHasVideo -> toggleHasVideo()
+            Event.ToggleHasAttachments -> toggleHasAttachments()
+            Event.ToggleHasImages -> toggleHasImages()
+            Event.ToggleBlacklist -> toggleBlacklist()
 
-            CreatorProfileState.Event.FavoriteClick -> onFavoriteClick()
+            Event.FavoriteClick -> onFavoriteClick()
         }
     }
 
     @AssistedFactory
     interface Factory {
-        fun create(dest: CreatorDestination.CreatorProfile): CreatorProfileViewModel
+        fun create(
+            dest: CreatorDestination.CreatorProfile,
+            savedStateHandle: SavedStateHandle,
+        ): CreatorProfileViewModel
+    }
+
+    override fun saveToSavedState(state: State) {
+        savedStateHandle.setSerializableState(KEY_STATE, state.toPersistedState())
     }
 
     override fun onRetry() {
@@ -118,15 +127,7 @@ internal class CreatorProfileViewModel @AssistedInject constructor(
     init {
         observeUiSetting()
 
-        setState {
-            copy(
-                service = dest.service,
-                id = dest.id,
-                currentTag = dest.tag
-            )
-        }
-
-        if (!isDiscordProfile(dest.service)) {
+        if (!isDiscordProfile(currentState.service)) {
             observeBlacklist()
             loadAll()
         }
@@ -167,7 +168,7 @@ internal class CreatorProfileViewModel @AssistedInject constructor(
         if (currentState.discordUrlOpened) return true
 
         setState { copy(isDiscordProfile = true, loading = false, discordUrlOpened = true) }
-        setEffect(CreatorProfileState.Effect.OpenUrl(url))
+        setEffect(Effect.OpenUrl(url))
 
         return true
     }
@@ -342,7 +343,7 @@ internal class CreatorProfileViewModel @AssistedInject constructor(
         }
     }
 
-    /** скрыть поиск */
+    /** Скрыть поиск */
     fun closeSearch() {
         searchJob?.cancel()
         setState {
@@ -399,7 +400,7 @@ internal class CreatorProfileViewModel @AssistedInject constructor(
             }
             .onFailure { t ->
                 val errorMessage = errorHandler.parse(t).toFavoriteToastBar()
-                setEffect(CreatorProfileState.Effect.ShowToast(errorMessage))
+                setEffect(Effect.ShowToast(errorMessage))
             }
         setState { copy(favoriteActionLoading = false) }
     }
@@ -438,7 +439,7 @@ internal class CreatorProfileViewModel @AssistedInject constructor(
                 userId = currentState.id
             )
         )
-        setEffect(CreatorProfileState.Effect.CopyPostLink(url))
+        setEffect(Effect.CopyPostLink(url))
     }
 
     private fun observeBlacklist() {
@@ -461,7 +462,7 @@ internal class CreatorProfileViewModel @AssistedInject constructor(
                 service = profile.service,
                 creatorId = profile.id
             )
-            setEffect(CreatorProfileState.Effect.RemovedFromBlacklist)
+            setEffect(Effect.RemovedFromBlacklist)
             return@launch
         }
 
@@ -473,17 +474,15 @@ internal class CreatorProfileViewModel @AssistedInject constructor(
                 createdAt = System.currentTimeMillis()
             )
         )
-        setEffect(CreatorProfileState.Effect.AddedToBlacklist)
+        setEffect(Effect.AddedToBlacklist)
     }
 
-    private fun ProfileTab.toCreatorProfileTabKey(): CreatorProfileTabKey = when (this) {
-        ProfileTab.POSTS -> CreatorProfileTabKey.POSTS
-        ProfileTab.ANNOUNCEMENTS -> CreatorProfileTabKey.ANNOUNCEMENTS
-        ProfileTab.FANCARD -> CreatorProfileTabKey.FANCARD
-        ProfileTab.DMS -> CreatorProfileTabKey.DMS
-        ProfileTab.TAGS -> CreatorProfileTabKey.TAGS
-        ProfileTab.LINKS -> CreatorProfileTabKey.LINKS
-        ProfileTab.SIMILAR -> CreatorProfileTabKey.SIMILAR
-        ProfileTab.COMMUNITY -> CreatorProfileTabKey.COMMUNITY
+    companion object {
+        private const val KEY_STATE = "creator_profile_state"
+
+        private data class TabCheckSpec(
+            val key: CreatorProfileTabKey,
+            val loader: suspend () -> Unit,
+        )
     }
 }

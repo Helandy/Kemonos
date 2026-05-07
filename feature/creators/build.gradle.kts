@@ -1,5 +1,6 @@
 plugins {
     id("kemonos.android.feature")
+    alias(libs.plugins.kotlin.serialization)
 }
 
 android {
@@ -7,6 +8,7 @@ android {
 }
 
 dependencies {
+    implementation(libs.bundles.serialization.json)
     implementation(libs.bundles.paging)
     implementation(libs.bundles.retrofit)
 

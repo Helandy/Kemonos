@@ -2,6 +2,7 @@ package su.afk.kemonos.profile.presenter.blacklist
 
 import android.content.Context
 import android.net.Uri
+import androidx.lifecycle.SavedStateHandle
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
@@ -36,6 +37,8 @@ import su.afk.kemonos.profile.presenter.importResult.ImportResultStatus
 import su.afk.kemonos.profile.utils.Const.KEY_IMPORT_RESULT_PAYLOAD
 import su.afk.kemonos.storage.api.repository.blacklist.IStoreBlacklistedAuthorsRepository
 import su.afk.kemonos.ui.presenter.baseViewModel.BaseViewModelNew
+import su.afk.kemonos.ui.presenter.baseViewModel.getSerializableState
+import su.afk.kemonos.ui.presenter.baseViewModel.setSerializableState
 import javax.inject.Inject
 
 @HiltViewModel
@@ -52,10 +55,17 @@ internal class AuthorsBlacklistViewModel @Inject constructor(
     private val saveJsonToFolderUseCase: SaveJsonToFolderUseCase,
     private val uiSetting: IUiSettingUseCase,
     @param:ApplicationContext private val appContext: Context,
+    savedStateHandle: SavedStateHandle,
     override val errorHandler: IErrorHandlerUseCase,
     override val retryStorage: RetryStorage,
-) : BaseViewModelNew<State, Event, Effect>() {
-    override fun createInitialState(): State = State()
+) : BaseViewModelNew<State, Event, Effect>(savedStateHandle) {
+    override fun createInitialState(): State =
+        savedStateHandle.getSerializableState<AuthorsBlacklistPersistedState>(KEY_STATE)?.toState()
+            ?: State()
+
+    override fun saveToSavedState(state: State) {
+        savedStateHandle.setSerializableState(KEY_STATE, state.toPersistedState())
+    }
 
     init {
         observeUiSetting()
@@ -259,4 +269,7 @@ internal class AuthorsBlacklistViewModel @Inject constructor(
         selectedSiteUseCase.setSiteAndAwait(targetSite)
     }
 
+    private companion object {
+        const val KEY_STATE = "authors_blacklist_state"
+    }
 }

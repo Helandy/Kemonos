@@ -1,5 +1,6 @@
 package su.afk.kemonos.posts.presenter.pagePopularPosts
 
+import androidx.lifecycle.SavedStateHandle
 import androidx.paging.cachedIn
 import androidx.paging.filter
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -22,6 +23,8 @@ import su.afk.kemonos.preferences.site.ISelectedSiteUseCase
 import su.afk.kemonos.preferences.ui.IUiSettingUseCase
 import su.afk.kemonos.storage.api.repository.blacklist.IStoreBlacklistedAuthorsRepository
 import su.afk.kemonos.storage.api.repository.blacklist.blacklistKey
+import su.afk.kemonos.ui.presenter.baseViewModel.getSerializableState
+import su.afk.kemonos.ui.presenter.baseViewModel.setSerializableState
 import su.afk.kemonos.ui.presenter.changeSite.SiteAwareBaseViewModelNew
 import javax.inject.Inject
 
@@ -31,14 +34,21 @@ internal class PopularPostsViewModel @Inject constructor(
     private val navigateToPostDelegate: NavigateToPostDelegate,
     private val uiSetting: IUiSettingUseCase,
     private val blacklistedAuthorsRepository: IStoreBlacklistedAuthorsRepository,
+    savedStateHandle: SavedStateHandle,
     override val selectedSiteUseCase: ISelectedSiteUseCase,
     override val errorHandler: IErrorHandlerUseCase,
     override val retryStorage: RetryStorage,
-) : SiteAwareBaseViewModelNew<State, Event, Effect>() {
+) : SiteAwareBaseViewModelNew<State, Event, Effect>(savedStateHandle) {
     private val popularRequestFlow = MutableStateFlow<PopularRequest?>(null)
     private var manualRefreshCounter = 0L
 
-    override fun createInitialState(): State = State()
+    override fun createInitialState(): State =
+        savedStateHandle.getSerializableState<PopularPostsPersistedState>(KEY_STATE)?.toState()
+            ?: State()
+
+    override fun saveToSavedState(state: State) {
+        savedStateHandle.setSerializableState(KEY_STATE, state.toPersistedState())
+    }
 
     init {
         observeUiSetting()
@@ -48,6 +58,14 @@ internal class PopularPostsViewModel @Inject constructor(
 
     override fun onRetry() {
         submitCurrentRequest(forceRefresh = true)
+    }
+
+    override suspend fun loadInitialSite(site: SelectedSite) {
+        popularRequestFlow.value = PopularRequest(
+            site = site,
+            date = currentState.popularDateForPopular,
+            period = currentState.popularPeriod,
+        )
     }
 
     override suspend fun reloadSite(site: SelectedSite) {
@@ -194,5 +212,9 @@ internal class PopularPostsViewModel @Inject constructor(
         viewModelScope.launch {
             navigateToPostDelegate.navigateToPost(post)
         }
+    }
+
+    private companion object {
+        const val KEY_STATE = "popular_posts_state"
     }
 }

@@ -3,6 +3,7 @@ package su.afk.kemonos.posts.presenter.pageSearchPosts
 import androidx.paging.PagingData
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
+import kotlinx.serialization.Serializable
 import su.afk.kemonos.domain.models.PostDomain
 import su.afk.kemonos.preferences.ui.UiSettingModel
 import su.afk.kemonos.ui.components.posts.filter.PostMediaFilter
@@ -38,3 +39,21 @@ internal class SearchPostsState {
 
     sealed interface Effect : UiEffect
 }
+
+@Serializable
+internal data class SearchPostsPersistedState(
+    val searchQuery: String = "",
+    val mediaFilter: PostMediaFilter = PostMediaFilter(),
+)
+
+internal fun SearchPostsPersistedState.toState(): SearchPostsState.State =
+    SearchPostsState.State(
+        searchQuery = searchQuery,
+        mediaFilter = mediaFilter,
+    )
+
+internal fun SearchPostsState.State.toPersistedState(): SearchPostsPersistedState =
+    SearchPostsPersistedState(
+        searchQuery = searchQuery,
+        mediaFilter = mediaFilter,
+    )

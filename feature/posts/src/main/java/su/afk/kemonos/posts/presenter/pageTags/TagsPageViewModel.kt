@@ -1,5 +1,6 @@
 package su.afk.kemonos.posts.presenter.pageTags
 
+import androidx.lifecycle.SavedStateHandle
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.launchIn
@@ -26,10 +27,11 @@ internal class TagsPageViewModel @Inject constructor(
     private val navManager: NavigationManager,
     private val navigationStorage: NavigationStorage,
     private val uiSetting: IUiSettingUseCase,
+    savedStateHandle: SavedStateHandle,
     override val selectedSiteUseCase: ISelectedSiteUseCase,
     override val errorHandler: IErrorHandlerUseCase,
     override val retryStorage: RetryStorage,
-) : SiteAwareBaseViewModelNew<State, Event, Effect>() {
+) : SiteAwareBaseViewModelNew<State, Event, Effect>(savedStateHandle) {
 
     override fun createInitialState(): State = State()
 

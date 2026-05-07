@@ -4,37 +4,66 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
-import androidx.compose.runtime.snapshots.SnapshotStateList
+import androidx.navigation3.runtime.NavBackStack
 import androidx.navigation3.runtime.NavKey
 import su.afk.kemonos.navigation.tab.BottomTab
 
 class NavigationManager(
-    private val roots: Map<BottomTab, NavKey>,
-    private val mainDest: NavKey,
+    val roots: Map<BottomTab, NavKey>,
+    val mainDest: NavKey,
     initialTab: BottomTab,
 ) {
 
     /** Стек MainDest при запуске */
-    val startAppBackStack: SnapshotStateList<NavKey> = mutableStateListOf(mainDest)
+    var startAppBackStack: MutableList<NavKey> by mutableStateOf(mutableStateListOf(mainDest))
+        private set
 
     /** Активный стек либо startAppBackStack, либо стек табов */
-    val backStack: SnapshotStateList<NavKey>
+    val backStack: MutableList<NavKey>
         get() = if (startAppBackStack.isNotEmpty()) startAppBackStack else stacks.getValue(currentTab)
 
-    private val stacks: Map<BottomTab, SnapshotStateList<NavKey>> =
+    private var stacks: Map<BottomTab, MutableList<NavKey>> by mutableStateOf(
         BottomTab.entries.associateWith { mutableStateListOf<NavKey>() }
+    )
 
     /** Стек табов при работе */
     var currentTab: BottomTab by mutableStateOf(initialTab)
         private set
 
-    fun stack(tab: BottomTab): SnapshotStateList<NavKey> = stacks.getValue(tab)
+    fun stack(tab: BottomTab): MutableList<NavKey> = stacks.getValue(tab)
 
     init {
         BottomTab.entries.forEach { tab ->
             val stack = stacks.getValue(tab)
             if (stack.isEmpty()) stack += roots.getValue(tab)
         }
+    }
+
+    fun attachBackStacks(
+        startAppBackStack: NavBackStack<NavKey>,
+        tabStacks: Map<BottomTab, NavBackStack<NavKey>>,
+    ) {
+        if (this.startAppBackStack.hasPendingNavigation(mainDest) &&
+            startAppBackStack.isInitialStack(mainDest)
+        ) {
+            startAppBackStack.replaceWith(this.startAppBackStack)
+        }
+
+        BottomTab.entries.forEach { tab ->
+            val root = roots.getValue(tab)
+            val currentStack = stacks.getValue(tab)
+            val saveableStack = tabStacks.getValue(tab)
+            if (currentStack.hasPendingNavigation(root) && saveableStack.isInitialStack(root)) {
+                saveableStack.replaceWith(currentStack)
+            }
+        }
+
+        this.startAppBackStack = startAppBackStack
+        this.stacks = tabStacks
+    }
+
+    fun restoreCurrentTab(tab: BottomTab) {
+        currentTab = tab
     }
 
     /** уходим с MainDest в табы */
@@ -99,5 +128,16 @@ class NavigationManager(
             }
         }
         currentTab = BottomTab.CREATORS
+    }
+
+    private fun List<NavKey>.isInitialStack(root: NavKey): Boolean =
+        size == 1 && firstOrNull() == root
+
+    private fun List<NavKey>.hasPendingNavigation(root: NavKey): Boolean =
+        !isInitialStack(root)
+
+    private fun MutableList<NavKey>.replaceWith(items: List<NavKey>) {
+        clear()
+        addAll(items)
     }
 }

@@ -1,11 +1,13 @@
 plugins {
     id("kemonos.android.feature")
+    alias(libs.plugins.kotlin.serialization)
 }
 
 android {
     namespace = "su.afk.kemonos.commonScreen"
 }
 dependencies {
+    implementation(libs.bundles.serialization.json)
     implementation(libs.bundles.coil)
 
     implementation(project(":core:navigation"))

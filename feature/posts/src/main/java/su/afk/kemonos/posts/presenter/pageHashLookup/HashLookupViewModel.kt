@@ -1,5 +1,6 @@
 package su.afk.kemonos.posts.presenter.pageHashLookup
 
+import androidx.lifecycle.SavedStateHandle
 import androidx.paging.LoadState
 import androidx.paging.LoadStates
 import androidx.paging.PagingData
@@ -25,10 +26,11 @@ internal class HashLookupViewModel @Inject constructor(
     private val getHashLookupUseCase: GetHashLookupUseCase,
     private val navigateToPostDelegate: NavigateToPostDelegate,
     private val uiSetting: IUiSettingUseCase,
+    savedStateHandle: SavedStateHandle,
     override val selectedSiteUseCase: ISelectedSiteUseCase,
     override val errorHandler: IErrorHandlerUseCase,
     override val retryStorage: RetryStorage,
-) : SiteAwareBaseViewModelNew<State, Event, Effect>() {
+) : SiteAwareBaseViewModelNew<State, Event, Effect>(savedStateHandle) {
 
     private val hashRegex = Regex("^[a-fA-F0-9]{64}$")
 

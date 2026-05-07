@@ -3,6 +3,7 @@ package su.afk.kemonos.posts.presenter.pagePopularPosts
 import androidx.paging.PagingData
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
+import kotlinx.serialization.Serializable
 import su.afk.kemonos.domain.models.PostDomain
 import su.afk.kemonos.posts.api.popular.PopularInfo
 import su.afk.kemonos.posts.api.popular.PopularProps
@@ -37,3 +38,21 @@ internal class PopularPostsState {
 
     sealed interface Effect : UiEffect
 }
+
+@Serializable
+internal data class PopularPostsPersistedState(
+    val popularPeriod: Period = Period.RECENT,
+    val popularDateForPopular: String? = null,
+)
+
+internal fun PopularPostsPersistedState.toState(): PopularPostsState.State =
+    PopularPostsState.State(
+        popularPeriod = popularPeriod,
+        popularDateForPopular = popularDateForPopular,
+    )
+
+internal fun PopularPostsState.State.toPersistedState(): PopularPostsPersistedState =
+    PopularPostsPersistedState(
+        popularPeriod = popularPeriod,
+        popularDateForPopular = popularDateForPopular,
+    )

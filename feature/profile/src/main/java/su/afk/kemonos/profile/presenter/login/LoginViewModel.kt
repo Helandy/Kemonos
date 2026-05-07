@@ -1,5 +1,6 @@
 package su.afk.kemonos.profile.presenter.login
 
+import androidx.lifecycle.SavedStateHandle
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import su.afk.kemonos.domain.SelectedSite
@@ -23,9 +24,10 @@ internal class LoginViewModel @Inject constructor(
     private val navigationManager: NavigationManager,
     private val navigationStorage: NavigationStorage,
     private val selectedSiteProvider: ISelectedSiteUseCase,
+    savedStateHandle: SavedStateHandle,
     override val errorHandler: IErrorHandlerUseCase,
     override val retryStorage: RetryStorage,
-) : BaseViewModelNew<State, Event, Effect>() {
+) : BaseViewModelNew<State, Event, Effect>(savedStateHandle) {
 
     /** Начальное состояние экрана логина. */
     override fun createInitialState(): State = State()

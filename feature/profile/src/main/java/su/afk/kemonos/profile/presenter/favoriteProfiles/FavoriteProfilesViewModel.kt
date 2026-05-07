@@ -1,5 +1,6 @@
 package su.afk.kemonos.profile.presenter.favoriteProfiles
 
+import androidx.lifecycle.SavedStateHandle
 import androidx.paging.cachedIn
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.FlowPreview
@@ -24,6 +25,8 @@ import su.afk.kemonos.profile.domain.favorites.fresh.IFreshFavoriteArtistsUpdate
 import su.afk.kemonos.profile.presenter.favoriteProfiles.FavoriteProfilesState.*
 import su.afk.kemonos.profile.utils.Const.KEY_SELECT_SITE
 import su.afk.kemonos.ui.presenter.baseViewModel.BaseViewModelNew
+import su.afk.kemonos.ui.presenter.baseViewModel.getSerializableState
+import su.afk.kemonos.ui.presenter.baseViewModel.setSerializableState
 import javax.inject.Inject
 
 @HiltViewModel
@@ -37,14 +40,21 @@ internal class FavoriteProfilesViewModel @Inject constructor(
     private val navigationStorage: NavigationStorage,
     private val uiSetting: IUiSettingUseCase,
     private val freshUpdatesUseCase: IFreshFavoriteArtistsUpdatesUseCase,
+    savedStateHandle: SavedStateHandle,
     override val errorHandler: IErrorHandlerUseCase,
     override val retryStorage: RetryStorage,
-) : BaseViewModelNew<State, Event, Effect>() {
+) : BaseViewModelNew<State, Event, Effect>(savedStateHandle) {
 
-    private val searchQueryFlow = MutableStateFlow("")
+    private val searchQueryFlow = MutableStateFlow(currentState.searchQuery)
     private var observeJob: Job? = null
 
-    override fun createInitialState(): State = State()
+    override fun createInitialState(): State =
+        savedStateHandle.getSerializableState<FavoriteProfilesPersistedState>(KEY_STATE)?.toState()
+            ?: State()
+
+    override fun saveToSavedState(state: State) {
+        savedStateHandle.setSerializableState(KEY_STATE, state.toPersistedState())
+    }
 
     init {
         loadSelectedSite()
@@ -119,8 +129,15 @@ internal class FavoriteProfilesViewModel @Inject constructor(
      * Если сайт не передали через навигацию, используем defaultSite из настроек.
      */
     private fun loadSelectedSite() = viewModelScope.launch {
-        val site = navigationStorage.consume<SelectedSite>(KEY_SELECT_SITE)
+        val restoredState = savedStateHandle.getSerializableState<FavoriteProfilesPersistedState>(KEY_STATE)
+        val hasRestoredState = restoredState != null
+
+        val site = if (hasRestoredState) {
+            restoredState.selectedSite
+        } else {
+            navigationStorage.consume<SelectedSite>(KEY_SELECT_SITE)
             ?: uiSetting.prefs.first().siteDisplayMode.defaultSite
+        }
 
         selectedSiteUseCase.setSiteAndAwait(site)
 
@@ -131,9 +148,10 @@ internal class FavoriteProfilesViewModel @Inject constructor(
         setState {
             copy(
                 selectedSite = site,
-                selectedService = "Services",
-                sortedType = restoredSortType,
-                sortAscending = savedFilters.sortAscending,
+                selectedService = currentState.selectedService,
+                searchQuery = currentState.searchQuery,
+                sortedType = if (hasRestoredState) currentState.sortedType else restoredSortType,
+                sortAscending = if (hasRestoredState) currentState.sortAscending else savedFilters.sortAscending,
                 freshSet = freshUpdatesUseCase.get(site),
             )
         }
@@ -214,5 +232,9 @@ internal class FavoriteProfilesViewModel @Inject constructor(
                 id = creator.id,
             )
         )
+    }
+
+    private companion object {
+        const val KEY_STATE = "favorite_profiles_state"
     }
 }

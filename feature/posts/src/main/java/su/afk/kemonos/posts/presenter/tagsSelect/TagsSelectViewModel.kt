@@ -1,5 +1,6 @@
 package su.afk.kemonos.posts.presenter.tagsSelect
 
+import androidx.lifecycle.SavedStateHandle
 import androidx.paging.cachedIn
 import androidx.paging.filter
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -23,6 +24,8 @@ import su.afk.kemonos.storage.api.repository.blacklist.blacklistKey
 import su.afk.kemonos.ui.components.posts.filter.PostMediaFilter
 import su.afk.kemonos.ui.components.posts.filter.matchesMediaFilter
 import su.afk.kemonos.ui.presenter.baseViewModel.BaseViewModelNew
+import su.afk.kemonos.ui.presenter.baseViewModel.getSerializableState
+import su.afk.kemonos.ui.presenter.baseViewModel.setSerializableState
 import javax.inject.Inject
 
 @HiltViewModel
@@ -34,24 +37,32 @@ internal class TagsSelectViewModel @Inject constructor(
     private val navigationStorage: NavigationStorage,
     private val uiSetting: IUiSettingUseCase,
     private val blacklistedAuthorsRepository: IStoreBlacklistedAuthorsRepository,
+    savedStateHandle: SavedStateHandle,
     override val errorHandler: IErrorHandlerUseCase,
     override val retryStorage: RetryStorage,
-) : BaseViewModelNew<State, Event, Effect>() {
+) : BaseViewModelNew<State, Event, Effect>(savedStateHandle) {
 
-    private val selectedTagFlow = MutableStateFlow<String?>(null)
-    private val mediaFilterFlow = MutableStateFlow(PostMediaFilter())
+    override fun createInitialState(): State =
+        savedStateHandle.getSerializableState<TagsSelectPersistedState>(KEY_STATE)?.toState()
+            ?: State()
+
+    override fun saveToSavedState(state: State) {
+        savedStateHandle.setSerializableState(KEY_STATE, state.toPersistedState())
+    }
+
+    private val selectedTagFlow = MutableStateFlow(currentState.selectedTag)
+    private val mediaFilterFlow = MutableStateFlow(currentState.mediaFilter)
     private val blacklistedAuthorKeysFlow = MutableStateFlow<Set<String>>(emptySet())
     private val manualRefreshCounterFlow = MutableStateFlow(0L)
-
-    override fun createInitialState(): State = State()
 
     init {
         observeUiSetting()
         observeTagContentAndBlacklist()
 
-        val selectedTag = navigationStorage.consume<String>(TAGS_SELECTED_NAV_KEY)
-            ?.trim()
-            ?.ifEmpty { null }
+        val selectedTag = currentState.selectedTag
+            ?: navigationStorage.consume<String>(TAGS_SELECTED_NAV_KEY)
+                ?.trim()
+                ?.ifEmpty { null }
         selectedTagFlow.value = selectedTag
     }
 
@@ -211,4 +222,8 @@ internal class TagsSelectViewModel @Inject constructor(
         val blacklistedAuthorKeys: Set<String>,
         val manualRefreshCounter: Long,
     )
+
+    private companion object {
+        const val KEY_STATE = "tags_select_state"
+    }
 }

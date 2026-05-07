@@ -1,5 +1,6 @@
 package su.afk.kemonos.ui.presenter.changeSite
 
+import androidx.lifecycle.SavedStateHandle
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -13,8 +14,9 @@ import su.afk.kemonos.ui.presenter.baseViewModel.UiEffect
 import su.afk.kemonos.ui.presenter.baseViewModel.UiEvent
 import su.afk.kemonos.ui.presenter.baseViewModel.UiState
 
-abstract class SiteAwareBaseViewModelNew<S : UiState, E : UiEvent, F : UiEffect> :
-    BaseViewModelNew<S, E, F>() {
+abstract class SiteAwareBaseViewModelNew<S : UiState, E : UiEvent, F : UiEffect>(
+    savedStateHandle: SavedStateHandle
+) : BaseViewModelNew<S, E, F>(savedStateHandle) {
 
     protected abstract val selectedSiteUseCase: ISelectedSiteUseCase
 
@@ -47,8 +49,10 @@ abstract class SiteAwareBaseViewModelNew<S : UiState, E : UiEvent, F : UiEffect>
         }
     }
 
-    private suspend fun onSiteLoaded(site: SelectedSite) = reloadSite(site)
+    private suspend fun onSiteLoaded(site: SelectedSite) = loadInitialSite(site)
     private suspend fun onSiteChanged(site: SelectedSite) = reloadSite(site)
+
+    protected open suspend fun loadInitialSite(site: SelectedSite) = reloadSite(site)
 
     protected abstract suspend fun reloadSite(site: SelectedSite)
 

@@ -3,6 +3,7 @@ package su.afk.kemonos.creators.presenter
 import androidx.paging.PagingData
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
+import kotlinx.serialization.Serializable
 import su.afk.kemonos.domain.SelectedSite
 import su.afk.kemonos.domain.models.creator.CreatorsSort
 import su.afk.kemonos.domain.models.creator.FavoriteArtist
@@ -67,3 +68,42 @@ internal class CreatorsState {
         data class OpenUrl(val url: String) : Effect
     }
 }
+
+@Serializable
+internal data class CreatorsPersistedState(
+    val selectedService: String = CreatorsState.ALL_SERVICES_LABEL,
+    val selectedServiceFilter: String? = null,
+    val searchQuery: String = "",
+    val sortedType: CreatorsSort = CreatorsSort.POPULARITY,
+    val sortAscending: Boolean = false,
+    val randomExpanded: Boolean = true,
+    val showGithubRateBanner: Boolean = false,
+    val showVideoInfoDomainBanner: Boolean = true,
+    val selectedSite: SelectedSite = SelectedSite.K,
+)
+
+internal fun CreatorsPersistedState.toState(): CreatorsState.State =
+    CreatorsState.State(
+        selectedService = selectedService,
+        selectedServiceFilter = selectedServiceFilter,
+        searchQuery = searchQuery,
+        sortedType = sortedType,
+        sortAscending = sortAscending,
+        randomExpanded = randomExpanded,
+        showGithubRateBanner = showGithubRateBanner,
+        showVideoInfoDomainBanner = showVideoInfoDomainBanner,
+        selectedSite = selectedSite,
+    )
+
+internal fun CreatorsState.State.toPersistedState(): CreatorsPersistedState =
+    CreatorsPersistedState(
+        selectedService = selectedService,
+        selectedServiceFilter = selectedServiceFilter,
+        searchQuery = searchQuery,
+        sortedType = sortedType,
+        sortAscending = sortAscending,
+        randomExpanded = randomExpanded,
+        showGithubRateBanner = showGithubRateBanner,
+        showVideoInfoDomainBanner = showVideoInfoDomainBanner,
+        selectedSite = selectedSite,
+    )

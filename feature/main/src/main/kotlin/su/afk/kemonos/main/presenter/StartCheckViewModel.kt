@@ -1,5 +1,6 @@
 package su.afk.kemonos.main.presenter
 
+import androidx.lifecycle.SavedStateHandle
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.first
@@ -34,9 +35,10 @@ internal class StartCheckViewModel @Inject constructor(
     private val baseUrlsObserveDelegate: BaseUrlsObserveDelegate,
     private val uiSetting: IUiSettingUseCase,
     private val crashReportManager: ICrashReportManager,
+    savedStateHandle: SavedStateHandle,
     override val errorHandler: IErrorHandlerUseCase,
     override val retryStorage: RetryStorage,
-) : BaseViewModelNew<State, Event, Effect>() {
+) : BaseViewModelNew<State, Event, Effect>(savedStateHandle) {
 
     override fun createInitialState(): State = State()
 

@@ -1,6 +1,7 @@
 package su.afk.kemonos.download.presenter
 
 import android.app.DownloadManager
+import androidx.lifecycle.SavedStateHandle
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -24,6 +25,8 @@ import su.afk.kemonos.storage.api.repository.download.ITrackedDownloadsRepositor
 import su.afk.kemonos.storage.api.repository.download.TrackedDownload
 import su.afk.kemonos.ui.presenter.baseViewModel.BaseViewModelNew
 import su.afk.kemonos.ui.presenter.baseViewModel.UiEffect
+import su.afk.kemonos.ui.presenter.baseViewModel.getSerializableState
+import su.afk.kemonos.ui.presenter.baseViewModel.setSerializableState
 import javax.inject.Inject
 
 @HiltViewModel
@@ -36,16 +39,23 @@ internal class DownloadsViewModel @Inject constructor(
     private val trackedDownloadsRepository: ITrackedDownloadsRepository,
     private val uiSetting: IUiSettingUseCase,
     private val navigationManager: NavigationManager,
+    savedStateHandle: SavedStateHandle,
     override val errorHandler: IErrorHandlerUseCase,
     override val retryStorage: RetryStorage,
-) : BaseViewModelNew<DownloadsState.State, DownloadsState.Event, UiEffect>() {
+) : BaseViewModelNew<DownloadsState.State, DownloadsState.Event, UiEffect>(savedStateHandle) {
     private val refreshMutex = Mutex()
     private val speedMap = mutableMapOf<Long, SpeedPoint>()
     private val lastSnapshots = mutableMapOf<Long, DownloadSnapshot>()
     private var tracked: List<TrackedDownload> = emptyList()
     private val trackedById = mutableMapOf<Long, TrackedDownload>()
 
-    override fun createInitialState(): DownloadsState.State = DownloadsState.State()
+    override fun createInitialState(): DownloadsState.State =
+        savedStateHandle.getSerializableState<DownloadsPersistedState>(KEY_STATE)?.toState()
+            ?: DownloadsState.State()
+
+    override fun saveToSavedState(state: DownloadsState.State) {
+        savedStateHandle.setSerializableState(KEY_STATE, state.toPersistedState())
+    }
 
     override fun onEvent(event: DownloadsState.Event) {
         when (event) {
@@ -269,6 +279,7 @@ private data class SpeedPoint(
 )
 
 private const val POLL_INTERVAL_MS = 1000L
+private const val KEY_STATE = "downloads_state"
 
 private fun Int?.isActiveStatus(): Boolean =
     this == DownloadManager.STATUS_PENDING ||

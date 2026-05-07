@@ -1,5 +1,6 @@
 package su.afk.kemonos.creatorProfile.presenter.discord
 
+import androidx.lifecycle.SavedStateHandle
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
@@ -17,6 +18,8 @@ import su.afk.kemonos.navigation.NavigationManager
 import su.afk.kemonos.preferences.IGetCurrentSiteRootUrlUseCase
 import su.afk.kemonos.preferences.ui.IUiSettingUseCase
 import su.afk.kemonos.ui.presenter.baseViewModel.BaseViewModelNew
+import su.afk.kemonos.ui.presenter.baseViewModel.getSerializableState
+import su.afk.kemonos.ui.presenter.baseViewModel.setSerializableState
 import su.afk.kemonos.ui.shared.ShareLinkBuilder
 import su.afk.kemonos.ui.shared.model.ShareTarget
 
@@ -27,20 +30,32 @@ internal class DiscordViewModel @AssistedInject constructor(
     private val getDiscordCommunityChannelsUseCase: GetDiscordCommunityChannelsUseCase,
     private val getCurrentSiteRootUrlUseCase: IGetCurrentSiteRootUrlUseCase,
     private val uiSetting: IUiSettingUseCase,
+    @Assisted savedStateHandle: SavedStateHandle,
     override val errorHandler: IErrorHandlerUseCase,
     override val retryStorage: RetryStorage,
-) : BaseViewModelNew<State, Event, Effect>() {
+) : BaseViewModelNew<State, Event, Effect>(savedStateHandle) {
 
     companion object {
         private const val DISCORD_SERVICE = "discord"
+        private const val KEY_STATE = "discord_state"
     }
 
     @AssistedFactory
     interface Factory {
-        fun create(dest: CreatorDestination.CreatorProfile): DiscordViewModel
+        fun create(
+            dest: CreatorDestination.CreatorProfile,
+            savedStateHandle: SavedStateHandle,
+        ): DiscordViewModel
     }
 
-    override fun createInitialState(): State = State()
+    override fun createInitialState(): State =
+        (savedStateHandle.getSerializableState<DiscordPersistedState>(KEY_STATE)
+            ?: DiscordPersistedState.fromDest(dest))
+            .toState()
+
+    override fun saveToSavedState(state: State) {
+        savedStateHandle.setSerializableState(KEY_STATE, state.toPersistedState())
+    }
 
     override fun onEvent(event: Event) {
         when (event) {
@@ -54,13 +69,6 @@ internal class DiscordViewModel @AssistedInject constructor(
 
     init {
         observeUiSetting()
-
-        setState {
-            copy(
-                service = dest.service,
-                creatorId = dest.id
-            )
-        }
 
         if (currentState.service.equals(DISCORD_SERVICE, ignoreCase = true) &&
             currentState.creatorId.isNotBlank()

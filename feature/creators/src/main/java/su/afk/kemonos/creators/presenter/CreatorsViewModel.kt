@@ -1,5 +1,6 @@
 package su.afk.kemonos.creators.presenter
 
+import androidx.lifecycle.SavedStateHandle
 import androidx.paging.cachedIn
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -25,6 +26,8 @@ import su.afk.kemonos.navigation.NavigationManager
 import su.afk.kemonos.preferences.site.ISelectedSiteUseCase
 import su.afk.kemonos.preferences.ui.IUiSettingUseCase
 import su.afk.kemonos.preferences.ui.UiSettingModel
+import su.afk.kemonos.ui.presenter.baseViewModel.getSerializableState
+import su.afk.kemonos.ui.presenter.baseViewModel.setSerializableState
 import su.afk.kemonos.ui.presenter.changeSite.SiteAwareBaseViewModelNew
 import javax.inject.Inject
 
@@ -38,19 +41,14 @@ internal class CreatorsViewModel @Inject constructor(
     private val randomListDelegate: RandomListDelegate,
     private val videoInfoDomainStatusDelegate: VideoInfoDomainStatusDelegate,
     private val uiSetting: IUiSettingUseCase,
+    savedStateHandle: SavedStateHandle,
     override val selectedSiteUseCase: ISelectedSiteUseCase,
     override val errorHandler: IErrorHandlerUseCase,
     override val retryStorage: RetryStorage,
-) : SiteAwareBaseViewModelNew<State, Event, Effect>() {
+) : SiteAwareBaseViewModelNew<State, Event, Effect>(savedStateHandle) {
 
-    private val creatorsFilters = MutableStateFlow(
-        CreatorsFilters(
-            service = null,
-            query = "",
-            sort = CreatorsSort.POPULARITY,
-            ascending = false,
-        )
-    )
+    private val hasRestoredState = savedStateHandle.contains(KEY_STATE)
+    private val creatorsFilters = MutableStateFlow(currentState.toCreatorsFilters())
     private val creatorsPagingRefresh = MutableStateFlow(0)
 
     /** Обновить фильтры в creatorsFilters */
@@ -95,10 +93,22 @@ internal class CreatorsViewModel @Inject constructor(
     private var searchDebounceJob: Job? = null
     private var videoInfoDomainObserveStarted = false
 
-    override fun createInitialState(): State = State()
+    override fun createInitialState(): State =
+        savedStateHandle.getSerializableState<CreatorsPersistedState>(KEY_STATE)?.toState()
+            ?: State()
+
+    override fun saveToSavedState(state: State) {
+        savedStateHandle.setSerializableState(KEY_STATE, state.toPersistedState())
+    }
 
     override fun onRetry() {
         viewModelScope.launch { initAndReloadSite() }
+    }
+
+    override suspend fun loadInitialSite(site: SelectedSite) {
+        setState { copy(selectedSite = site) }
+        updateCreatorsFiltersFromState()
+        initAndReloadSite()
     }
 
     override suspend fun reloadSite(site: SelectedSite) {
@@ -109,6 +119,7 @@ internal class CreatorsViewModel @Inject constructor(
                 searchQuery = "",
                 sortedType = CreatorsSort.POPULARITY,
                 sortAscending = false,
+                selectedSite = site,
             )
         }
 
@@ -126,7 +137,11 @@ internal class CreatorsViewModel @Inject constructor(
                 setState {
                     copy(
                         uiSettingModel = modelWithInstallTs,
-                        showGithubRateBanner = shouldShowGithubRateBanner(modelWithInstallTs),
+                        showGithubRateBanner = if (hasRestoredState) {
+                            showGithubRateBanner
+                        } else {
+                            shouldShowGithubRateBanner(modelWithInstallTs)
+                        },
                     )
                 }
                 return@onEach
@@ -135,7 +150,11 @@ internal class CreatorsViewModel @Inject constructor(
             setState {
                 copy(
                     uiSettingModel = model,
-                    showGithubRateBanner = shouldShowGithubRateBanner(model),
+                    showGithubRateBanner = if (hasRestoredState) {
+                        showGithubRateBanner
+                    } else {
+                        shouldShowGithubRateBanner(model)
+                    },
                 )
             }
         }.launchIn(viewModelScope)
@@ -153,7 +172,9 @@ internal class CreatorsViewModel @Inject constructor(
                 setState {
                     copy(
                         isVideoInfoDomainAvailable = isAvailable,
-                        showVideoInfoDomainBanner = if (isVideoInfoDomainAvailable != false && !isAvailable) {
+                        showVideoInfoDomainBanner = if (hasRestoredState) {
+                            showVideoInfoDomainBanner
+                        } else if (isVideoInfoDomainAvailable != false && !isAvailable) {
                             true
                         } else {
                             showVideoInfoDomainBanner
@@ -313,5 +334,15 @@ internal class CreatorsViewModel @Inject constructor(
     private companion object {
         const val GITHUB_RATE_BANNER_DELAY_MS = 7L * 24L * 60L * 60L * 1000L
         const val GITHUB_PROJECT_URL = "https://github.com/Helandy/Kemonos"
+
+        const val KEY_STATE = "creators_state"
     }
 }
+
+private fun State.toCreatorsFilters(): CreatorsFilters =
+    CreatorsFilters(
+        service = selectedServiceFilter,
+        query = searchQuery,
+        sort = sortedType,
+        ascending = sortAscending,
+    )

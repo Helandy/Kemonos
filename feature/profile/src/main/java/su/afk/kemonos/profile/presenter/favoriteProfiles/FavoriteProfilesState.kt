@@ -3,6 +3,7 @@ package su.afk.kemonos.profile.presenter.favoriteProfiles
 import androidx.paging.PagingData
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
+import kotlinx.serialization.Serializable
 import su.afk.kemonos.domain.SelectedSite
 import su.afk.kemonos.domain.models.creator.FavoriteArtist
 import su.afk.kemonos.preferences.ui.UiSettingModel
@@ -50,3 +51,30 @@ internal class FavoriteProfilesState {
 
     sealed interface Effect : UiEffect
 }
+
+@Serializable
+internal data class FavoriteProfilesPersistedState(
+    val selectedService: String = "Services",
+    val searchQuery: String = "",
+    val sortedType: FavoriteSortedType = FavoriteSortedType.NewPostsDate,
+    val sortAscending: Boolean = false,
+    val selectedSite: SelectedSite = SelectedSite.K,
+)
+
+internal fun FavoriteProfilesPersistedState.toState(): FavoriteProfilesState.State =
+    FavoriteProfilesState.State(
+        selectedService = selectedService,
+        searchQuery = searchQuery,
+        sortedType = sortedType,
+        sortAscending = sortAscending,
+        selectedSite = selectedSite,
+    )
+
+internal fun FavoriteProfilesState.State.toPersistedState(): FavoriteProfilesPersistedState =
+    FavoriteProfilesPersistedState(
+        selectedService = selectedService,
+        searchQuery = searchQuery,
+        sortedType = sortedType,
+        sortAscending = sortAscending,
+        selectedSite = selectedSite,
+    )

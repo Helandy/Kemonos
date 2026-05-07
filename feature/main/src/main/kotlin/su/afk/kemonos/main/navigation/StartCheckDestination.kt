@@ -1,5 +1,7 @@
 package su.afk.kemonos.main.navigation
 
 import androidx.navigation3.runtime.NavKey
+import kotlinx.serialization.Serializable
 
-object StartCheckDestination : NavKey
+@Serializable
+data object StartCheckDestination : NavKey

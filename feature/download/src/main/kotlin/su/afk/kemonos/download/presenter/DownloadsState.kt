@@ -1,6 +1,7 @@
 package su.afk.kemonos.download.presenter
 
 import android.app.DownloadManager
+import kotlinx.serialization.Serializable
 import su.afk.kemonos.download.presenter.model.DownloadUiItem
 import su.afk.kemonos.preferences.ui.UiSettingModel
 import su.afk.kemonos.ui.presenter.baseViewModel.UiEvent
@@ -25,6 +26,7 @@ internal class DownloadsState {
     }
 }
 
+@Serializable
 internal enum class DownloadStatusFilter {
     ALL,
     RUNNING,
@@ -45,3 +47,14 @@ internal enum class DownloadStatusFilter {
         STOPPED -> status == DownloadUiItem.STATUS_REMOVED
     }
 }
+
+@Serializable
+internal data class DownloadsPersistedState(
+    val selectedFilter: DownloadStatusFilter = DownloadStatusFilter.ALL,
+)
+
+internal fun DownloadsPersistedState.toState(): DownloadsState.State =
+    DownloadsState.State(selectedFilter = selectedFilter)
+
+internal fun DownloadsState.State.toPersistedState(): DownloadsPersistedState =
+    DownloadsPersistedState(selectedFilter = selectedFilter)
