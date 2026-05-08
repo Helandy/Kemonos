@@ -5,8 +5,8 @@ minSdk = "29"
 jvmVersion = "21"
 
 # --- App versioning
-appVersionName = "1.12.2"
-appVersionCode = "77"
+appVersionName = "1.13"
+appVersionCode = "78"
 
 agp = "8.13.2"
 kotlin = "2.3.21"
@@ -17,7 +17,7 @@ androidxCore = "1.18.0"
 activityCompose = "1.13.0"
 lifecycle = "2.10.0"
 datastore = "1.2.1"
-paging = "3.4.2"
+paging = "3.5.0"
 room = "2.8.4"
 securityCrypto = "1.1.0"
 credentials = "1.6.0"
@@ -25,7 +25,7 @@ credentials = "1.6.0"
 # --- Compose
 # Для BOM не задавать вручную версии для compose libs
 # foundation/material3/icons/etс должно подтягиваться BOM
-composeBom = "2026.04.01"
+composeBom = "2026.05.00"
 
 # --- DI
 hilt = "2.58"

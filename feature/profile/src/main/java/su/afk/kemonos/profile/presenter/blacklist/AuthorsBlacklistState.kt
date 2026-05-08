@@ -1,6 +1,7 @@
 package su.afk.kemonos.profile.presenter.blacklist
 
 import android.net.Uri
+import kotlinx.serialization.Serializable
 import su.afk.kemonos.preferences.ui.UiSettingModel
 import su.afk.kemonos.storage.api.repository.blacklist.BlacklistedAuthor
 import su.afk.kemonos.ui.presenter.baseViewModel.UiEffect
@@ -36,3 +37,14 @@ internal class AuthorsBlacklistState {
         data class ShowMessage(val message: String) : Effect
     }
 }
+
+@Serializable
+internal data class AuthorsBlacklistPersistedState(
+    val query: String = "",
+)
+
+internal fun AuthorsBlacklistPersistedState.toState(): AuthorsBlacklistState.State =
+    AuthorsBlacklistState.State(query = query)
+
+internal fun AuthorsBlacklistState.State.toPersistedState(): AuthorsBlacklistPersistedState =
+    AuthorsBlacklistPersistedState(query = query)

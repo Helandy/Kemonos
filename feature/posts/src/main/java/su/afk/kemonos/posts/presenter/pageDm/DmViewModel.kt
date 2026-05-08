@@ -1,5 +1,6 @@
 package su.afk.kemonos.posts.presenter.pageDm
 
+import androidx.lifecycle.SavedStateHandle
 import androidx.paging.cachedIn
 import androidx.paging.filter
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -20,6 +21,8 @@ import su.afk.kemonos.preferences.site.ISelectedSiteUseCase
 import su.afk.kemonos.preferences.ui.IUiSettingUseCase
 import su.afk.kemonos.storage.api.repository.blacklist.IStoreBlacklistedAuthorsRepository
 import su.afk.kemonos.storage.api.repository.blacklist.blacklistKey
+import su.afk.kemonos.ui.presenter.baseViewModel.getSerializableState
+import su.afk.kemonos.ui.presenter.baseViewModel.setSerializableState
 import su.afk.kemonos.ui.presenter.changeSite.SiteAwareBaseViewModelNew
 import javax.inject.Inject
 
@@ -30,14 +33,21 @@ internal class DmViewModel @Inject constructor(
     private val blacklistedAuthorsRepository: IStoreBlacklistedAuthorsRepository,
     private val navManager: NavigationManager,
     private val creatorProfileNavigator: ICreatorProfileNavigator,
+    savedStateHandle: SavedStateHandle,
     override val selectedSiteUseCase: ISelectedSiteUseCase,
     override val errorHandler: IErrorHandlerUseCase,
     override val retryStorage: RetryStorage,
-) : SiteAwareBaseViewModelNew<DmState.State, DmState.Event, DmState.Effect>() {
+) : SiteAwareBaseViewModelNew<DmState.State, DmState.Event, DmState.Effect>(savedStateHandle) {
 
-    override fun createInitialState(): DmState.State = DmState.State()
+    override fun createInitialState(): DmState.State =
+        savedStateHandle.getSerializableState<DmPersistedState>(KEY_STATE)?.toState()
+            ?: DmState.State()
 
-    private val searchQueryFlow = MutableStateFlow("")
+    override fun saveToSavedState(state: DmState.State) {
+        savedStateHandle.setSerializableState(KEY_STATE, state.toPersistedState())
+    }
+
+    private val searchQueryFlow = MutableStateFlow(currentState.searchQuery)
     private val loadSiteFlow = MutableStateFlow<SelectedSite?>(null)
     private val manualRefreshCounterFlow = MutableStateFlow(0L)
 
@@ -49,6 +59,10 @@ internal class DmViewModel @Inject constructor(
 
     override fun onRetry() {
         triggerManualRefresh()
+    }
+
+    override suspend fun loadInitialSite(site: SelectedSite) {
+        loadSiteFlow.value = site
     }
 
     override suspend fun reloadSite(site: SelectedSite) {
@@ -152,5 +166,9 @@ internal class DmViewModel @Inject constructor(
                 id = id,
             )
         )
+    }
+
+    private companion object {
+        const val KEY_STATE = "dm_state"
     }
 }

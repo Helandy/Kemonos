@@ -8,8 +8,20 @@ object CommonScreenDestination {
 
     @Serializable
     data class ImageViewDest(
-        val imageUrl: String,
+        val args: ImageViewArgs,
     ) : NavKey
+
+    @Serializable
+    data class ImageViewArgs(
+        val imageUrl: String,
+        val imageUrls: List<String> = emptyList(),
+        val selectedIndex: Int = 0,
+        val service: String? = null,
+        val creatorName: String? = null,
+        val postId: String? = null,
+        val postTitle: String? = null,
+        val thumbnailUrls: Map<String, String> = emptyMap(),
+    )
 
     @Serializable
     data class ErrorNavigatorDest(

@@ -1,9 +1,11 @@
 package su.afk.kemonos.ui.components.posts.filter
 
+import kotlinx.serialization.Serializable
 import su.afk.kemonos.domain.models.PostDomain
 import su.afk.kemonos.ui.uiUtils.format.isImageFile
 import su.afk.kemonos.ui.uiUtils.format.isVideoFile
 
+@Serializable
 data class PostMediaFilter(
     val hasVideo: Boolean = false,
     val hasAttachments: Boolean = false,

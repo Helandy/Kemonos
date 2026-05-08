@@ -1,5 +1,6 @@
 package su.afk.kemonos.posts.presenter.pageSearchPosts
 
+import androidx.lifecycle.SavedStateHandle
 import androidx.paging.cachedIn
 import androidx.paging.filter
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -25,6 +26,8 @@ import su.afk.kemonos.storage.api.repository.blacklist.blacklistKey
 import su.afk.kemonos.storage.api.repository.postsSearchHistory.IStoragePostsSearchHistoryRepository
 import su.afk.kemonos.ui.components.posts.filter.PostMediaFilter
 import su.afk.kemonos.ui.components.posts.filter.matchesMediaFilter
+import su.afk.kemonos.ui.presenter.baseViewModel.getSerializableState
+import su.afk.kemonos.ui.presenter.baseViewModel.setSerializableState
 import su.afk.kemonos.ui.presenter.changeSite.SiteAwareBaseViewModelNew
 import javax.inject.Inject
 
@@ -35,15 +38,23 @@ internal class SearchPostsViewModel @Inject constructor(
     private val uiSetting: IUiSettingUseCase,
     private val blacklistedAuthorsRepository: IStoreBlacklistedAuthorsRepository,
     private val postsSearchHistoryRepository: IStoragePostsSearchHistoryRepository,
+    savedStateHandle: SavedStateHandle,
     override val selectedSiteUseCase: ISelectedSiteUseCase,
     override val errorHandler: IErrorHandlerUseCase,
     override val retryStorage: RetryStorage,
-) : SiteAwareBaseViewModelNew<State, Event, Effect>() {
+) : SiteAwareBaseViewModelNew<State, Event, Effect>(savedStateHandle) {
 
-    override fun createInitialState(): State = State()
+    override fun createInitialState(): State =
+        savedStateHandle.getSerializableState<SearchPostsPersistedState>(KEY_STATE)
+            ?.toState()
+            ?: State()
 
-    private val searchQueryFlow = MutableStateFlow("")
-    private val mediaFilterFlow = MutableStateFlow(PostMediaFilter())
+    override fun saveToSavedState(state: State) {
+        savedStateHandle.setSerializableState(KEY_STATE, state.toPersistedState())
+    }
+
+    private val searchQueryFlow = MutableStateFlow(currentState.searchQuery)
+    private val mediaFilterFlow = MutableStateFlow(currentState.mediaFilter)
     private val loadSiteFlow = MutableStateFlow<SelectedSite?>(null)
     private val manualRefreshCounterFlow = MutableStateFlow(0L)
 
@@ -60,12 +71,18 @@ internal class SearchPostsViewModel @Inject constructor(
         triggerManualRefresh()
     }
 
+    override suspend fun loadInitialSite(site: SelectedSite) {
+        loadSiteFlow.value = site
+    }
+
     override suspend fun reloadSite(site: SelectedSite) {
         // Disable loading while resetting query/filter context to avoid transient load on old site.
         loadSiteFlow.value = null
 
-        setState { copy(searchQuery = "") }
+        val emptyFilter = PostMediaFilter()
+        setState { copy(searchQuery = "", mediaFilter = emptyFilter) }
         searchQueryFlow.value = ""
+        mediaFilterFlow.value = emptyFilter
 
         loadSiteFlow.value = site
     }
@@ -231,5 +248,9 @@ internal class SearchPostsViewModel @Inject constructor(
         viewModelScope.launch {
             navigateToPostDelegate.navigateToPost(post)
         }
+    }
+
+    private companion object {
+        const val KEY_STATE = "search_posts_state"
     }
 }

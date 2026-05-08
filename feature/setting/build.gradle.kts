@@ -1,5 +1,6 @@
 plugins {
     id("kemonos.android.feature")
+    alias(libs.plugins.kotlin.serialization)
 }
 
 android {
@@ -16,6 +17,7 @@ android {
 }
 
 dependencies {
+    implementation(libs.bundles.serialization.json)
     implementation(libs.bundles.coil)
 
     implementation(project(":core:navigation"))

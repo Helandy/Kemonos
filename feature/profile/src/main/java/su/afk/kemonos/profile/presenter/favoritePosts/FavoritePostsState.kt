@@ -3,6 +3,7 @@ package su.afk.kemonos.profile.presenter.favoritePosts
 import androidx.paging.PagingData
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
+import kotlinx.serialization.Serializable
 import su.afk.kemonos.domain.SelectedSite
 import su.afk.kemonos.domain.models.PostDomain
 import su.afk.kemonos.preferences.ui.UiSettingModel
@@ -41,3 +42,27 @@ internal class FavoritePostsState {
 
     sealed interface Effect : UiEffect
 }
+
+@Serializable
+internal data class FavoritePostsPersistedState(
+    val selectSite: SelectedSite = SelectedSite.K,
+    val groupByAuthorEnabled: Boolean = false,
+    val searchQuery: String = "",
+    val mediaFilter: PostMediaFilter = PostMediaFilter(),
+)
+
+internal fun FavoritePostsPersistedState.toState(): FavoritePostsState.State =
+    FavoritePostsState.State(
+        selectSite = selectSite,
+        groupByAuthorEnabled = groupByAuthorEnabled,
+        searchQuery = searchQuery,
+        mediaFilter = mediaFilter,
+    )
+
+internal fun FavoritePostsState.State.toPersistedState(): FavoritePostsPersistedState =
+    FavoritePostsPersistedState(
+        selectSite = selectSite,
+        groupByAuthorEnabled = groupByAuthorEnabled,
+        searchQuery = searchQuery,
+        mediaFilter = mediaFilter,
+    )

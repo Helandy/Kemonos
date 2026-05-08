@@ -1,5 +1,6 @@
 package su.afk.kemonos.setting.presenter
 
+import androidx.lifecycle.SavedStateHandle
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.launchIn
@@ -37,9 +38,10 @@ class SettingViewModel @Inject constructor(
     private val getDownloadedTranslateModelsUseCase: GetDownloadedTranslateModelsUseCase,
     private val deleteDownloadedTranslateModelUseCase: DeleteDownloadedTranslateModelUseCase,
     private val navManager: NavigationManager,
+    savedStateHandle: SavedStateHandle,
     override val errorHandler: IErrorHandlerUseCase,
     override val retryStorage: RetryStorage
-) : BaseViewModelNew<SettingState.State, SettingState.Event, SettingState.Effect>() {
+) : BaseViewModelNew<SettingState.State, SettingState.Event, SettingState.Effect>(savedStateHandle) {
 
     override fun createInitialState(): SettingState.State = SettingState.State()
 

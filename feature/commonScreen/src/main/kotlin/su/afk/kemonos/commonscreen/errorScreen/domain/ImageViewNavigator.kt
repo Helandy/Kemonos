@@ -3,20 +3,9 @@ package su.afk.kemonos.commonscreen.errorScreen.domain
 import androidx.navigation3.runtime.NavKey
 import su.afk.kemonos.commonscreen.navigator.CommonScreenDestination
 import su.afk.kemonos.commonscreen.navigator.IImageViewNavigator
-import su.afk.kemonos.commonscreen.navigator.ImageNavigationConst.KEY_CREATOR_NAME
-import su.afk.kemonos.commonscreen.navigator.ImageNavigationConst.KEY_IMAGE_URLS
-import su.afk.kemonos.commonscreen.navigator.ImageNavigationConst.KEY_POST_ID
-import su.afk.kemonos.commonscreen.navigator.ImageNavigationConst.KEY_POST_TITLE
-import su.afk.kemonos.commonscreen.navigator.ImageNavigationConst.KEY_SELECTED_IMAGE
-import su.afk.kemonos.commonscreen.navigator.ImageNavigationConst.KEY_SELECTED_IMAGE_INDEX
-import su.afk.kemonos.commonscreen.navigator.ImageNavigationConst.KEY_SERVICE
-import su.afk.kemonos.commonscreen.navigator.ImageNavigationConst.KEY_THUMBNAIL_URLS
-import su.afk.kemonos.navigation.storage.NavigationStorage
 import javax.inject.Inject
 
-class ImageViewNavigator @Inject constructor(
-    private val navigationStorage: NavigationStorage,
-) : IImageViewNavigator {
+class ImageViewNavigator @Inject constructor() : IImageViewNavigator {
     override fun invoke(
         imageUrl: String,
         imageUrls: List<String>,
@@ -43,17 +32,17 @@ class ImageViewNavigator @Inject constructor(
             ?: galleryUrls.indexOf(imageUrl).takeIf { it >= 0 }
             ?: 0
 
-        navigationStorage.put(KEY_SELECTED_IMAGE, imageUrl)
-        navigationStorage.put(KEY_IMAGE_URLS, galleryUrls)
-        navigationStorage.put(KEY_SELECTED_IMAGE_INDEX, safeSelectedIndex)
-        service?.let { navigationStorage.put(KEY_SERVICE, it) }
-        creatorName?.let { navigationStorage.put(KEY_CREATOR_NAME, it) }
-        postId?.let { navigationStorage.put(KEY_POST_ID, it) }
-        postTitle?.let { navigationStorage.put(KEY_POST_TITLE, it) }
-        if (thumbnailUrls.isNotEmpty()) {
-            navigationStorage.put(KEY_THUMBNAIL_URLS, thumbnailUrls)
-        }
-
-        return CommonScreenDestination.ImageViewDest(imageUrl)
+        return CommonScreenDestination.ImageViewDest(
+            args = CommonScreenDestination.ImageViewArgs(
+                imageUrl = imageUrl,
+                imageUrls = galleryUrls,
+                selectedIndex = safeSelectedIndex,
+                service = service,
+                creatorName = creatorName,
+                postId = postId,
+                postTitle = postTitle,
+                thumbnailUrls = thumbnailUrls,
+            )
+        )
     }
 }

@@ -1,5 +1,7 @@
 package su.afk.kemonos.commonscreen.imageViewScreen
 
+import kotlinx.serialization.Serializable
+
 import su.afk.kemonos.domain.models.ErrorItem
 import su.afk.kemonos.ui.presenter.baseViewModel.UiEffect
 import su.afk.kemonos.ui.presenter.baseViewModel.UiEvent
@@ -46,3 +48,15 @@ internal class ImageViewState {
         data class CopyUrl(val url: String) : Effect
     }
 }
+
+@Serializable
+internal data class ImageViewPersistedState(
+    val selectedIndex: Int = 0,
+    val reloadKey: Int = 0,
+)
+
+internal fun ImageViewState.State.toPersistedState(): ImageViewPersistedState =
+    ImageViewPersistedState(
+        selectedIndex = selectedIndex,
+        reloadKey = reloadKey,
+    )

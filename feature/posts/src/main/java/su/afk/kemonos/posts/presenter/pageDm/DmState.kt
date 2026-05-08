@@ -3,6 +3,7 @@ package su.afk.kemonos.posts.presenter.pageDm
 import androidx.paging.PagingData
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
+import kotlinx.serialization.Serializable
 import su.afk.kemonos.posts.api.dms.DmDomain
 import su.afk.kemonos.preferences.ui.UiSettingModel
 import su.afk.kemonos.ui.presenter.baseViewModel.UiEffect
@@ -26,3 +27,14 @@ internal class DmState {
 
     sealed interface Effect : UiEffect
 }
+
+@Serializable
+internal data class DmPersistedState(
+    val searchQuery: String = "",
+)
+
+internal fun DmPersistedState.toState(): DmState.State =
+    DmState.State(searchQuery = searchQuery)
+
+internal fun DmState.State.toPersistedState(): DmPersistedState =
+    DmPersistedState(searchQuery = searchQuery)

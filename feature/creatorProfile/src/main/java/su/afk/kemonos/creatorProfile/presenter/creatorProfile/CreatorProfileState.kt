@@ -3,12 +3,14 @@ package su.afk.kemonos.creatorProfile.presenter.creatorProfile
 import androidx.paging.PagingData
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
+import kotlinx.serialization.Serializable
 import su.afk.kemonos.creatorProfile.api.domain.models.profileAnnouncements.ProfileAnnouncement
 import su.afk.kemonos.creatorProfile.api.domain.models.profileCommunity.CommunityChannel
 import su.afk.kemonos.creatorProfile.api.domain.models.profileDms.Dm
 import su.afk.kemonos.creatorProfile.api.domain.models.profileFanCards.ProfileFanCard
 import su.afk.kemonos.creatorProfile.api.domain.models.profileLinks.ProfileLink
 import su.afk.kemonos.creatorProfile.api.domain.models.profileSimilar.SimilarCreator
+import su.afk.kemonos.creatorProfile.navigation.CreatorDestination
 import su.afk.kemonos.creatorProfile.presenter.creatorProfile.model.ProfileTab
 import su.afk.kemonos.domain.models.PostDomain
 import su.afk.kemonos.domain.models.Profile
@@ -116,3 +118,39 @@ internal class CreatorProfileState {
         data object RemovedFromBlacklist : Effect
     }
 }
+
+@Serializable
+internal data class CreatorProfilePersistedState(
+    val service: String,
+    val id: String,
+    val selectedTab: ProfileTab = ProfileTab.POSTS,
+    val currentTag: Tag? = null,
+    val discordUrlOpened: Boolean = false,
+) {
+    companion object {
+        internal fun fromDest(dest: CreatorDestination.CreatorProfile): CreatorProfilePersistedState =
+            CreatorProfilePersistedState(
+                service = dest.service,
+                id = dest.id,
+                currentTag = dest.tag,
+            )
+    }
+}
+
+internal fun CreatorProfilePersistedState.toState(): CreatorProfileState.State =
+    CreatorProfileState.State(
+        service = service,
+        id = id,
+        selectedTab = selectedTab,
+        currentTag = currentTag,
+        discordUrlOpened = discordUrlOpened,
+    )
+
+internal fun CreatorProfileState.State.toPersistedState(): CreatorProfilePersistedState =
+    CreatorProfilePersistedState(
+        service = service,
+        id = id,
+        selectedTab = selectedTab,
+        currentTag = currentTag,
+        discordUrlOpened = discordUrlOpened,
+    )

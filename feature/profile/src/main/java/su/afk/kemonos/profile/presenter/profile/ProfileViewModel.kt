@@ -2,6 +2,7 @@ package su.afk.kemonos.profile.presenter.profile
 
 import android.content.Context
 import android.net.Uri
+import androidx.lifecycle.SavedStateHandle
 import androidx.navigation3.runtime.NavKey
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -63,9 +64,10 @@ internal class ProfileViewModel @Inject constructor(
     private val saveJsonToFolderUseCase: SaveJsonToFolderUseCase,
     private val freshUpdatesUseCase: IFreshFavoriteArtistsUpdatesUseCase,
     @param:ApplicationContext private val appContext: Context,
+    savedStateHandle: SavedStateHandle,
     override val errorHandler: IErrorHandlerUseCase,
     override val retryStorage: RetryStorage,
-) : BaseViewModelNew<State, Event, Effect>() {
+) : BaseViewModelNew<State, Event, Effect>(savedStateHandle) {
 
     override fun createInitialState(): State = State()
     private var authObserveJob: Job? = null

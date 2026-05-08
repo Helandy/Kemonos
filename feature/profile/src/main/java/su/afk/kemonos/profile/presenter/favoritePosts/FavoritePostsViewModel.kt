@@ -1,5 +1,6 @@
 package su.afk.kemonos.profile.presenter.favoritePosts
 
+import androidx.lifecycle.SavedStateHandle
 import androidx.paging.cachedIn
 import androidx.paging.filter
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -27,6 +28,8 @@ import su.afk.kemonos.storage.api.repository.favorites.post.IStoreFavoritePostsR
 import su.afk.kemonos.ui.components.posts.filter.PostMediaFilter
 import su.afk.kemonos.ui.components.posts.filter.matchesMediaFilter
 import su.afk.kemonos.ui.presenter.baseViewModel.BaseViewModelNew
+import su.afk.kemonos.ui.presenter.baseViewModel.getSerializableState
+import su.afk.kemonos.ui.presenter.baseViewModel.setSerializableState
 import javax.inject.Inject
 
 @HiltViewModel
@@ -41,16 +44,23 @@ internal class FavoritePostsViewModel @Inject constructor(
     private val getFavoritePostsPagingUseCase: GetFavoritePostsPagingUseCase,
     private val navigationStorage: NavigationStorage,
     private val uiSetting: IUiSettingUseCase,
+    savedStateHandle: SavedStateHandle,
     override val errorHandler: IErrorHandlerUseCase,
     override val retryStorage: RetryStorage,
-) : BaseViewModelNew<State, Event, Effect>() {
+) : BaseViewModelNew<State, Event, Effect>(savedStateHandle) {
 
-    override fun createInitialState(): State = State()
+    override fun createInitialState(): State =
+        savedStateHandle.getSerializableState<FavoritePostsPersistedState>(KEY_STATE)?.toState()
+            ?: State()
+
+    override fun saveToSavedState(state: State) {
+        savedStateHandle.setSerializableState(KEY_STATE, state.toPersistedState())
+    }
 
     private var allPosts: List<PostDomain> = emptyList()
-    private val searchQueryFlow = MutableStateFlow("")
-    private val mediaFilterFlow = MutableStateFlow(PostMediaFilter())
-    private val groupByAuthorFlow = MutableStateFlow(false)
+    private val searchQueryFlow = MutableStateFlow(currentState.searchQuery)
+    private val mediaFilterFlow = MutableStateFlow(currentState.mediaFilter)
+    private val groupByAuthorFlow = MutableStateFlow(currentState.groupByAuthorEnabled)
     private var observeSearchJob: Job? = null
 
     /** Повторная попытка должна обновлять данные, но не переинициализировать выбранный сайт. */
@@ -165,7 +175,8 @@ internal class FavoritePostsViewModel @Inject constructor(
      * Затем синхронизируем favorites и запускаем observe-пайплайн фильтров/поиска.
      */
     private fun loadSelectedSite() = viewModelScope.launch {
-        val selectSite = navigationStorage.consume<SelectedSite>(KEY_SELECT_SITE)
+        val selectSite = savedStateHandle.getSerializableState<FavoritePostsPersistedState>(KEY_STATE)?.selectSite
+            ?: navigationStorage.consume<SelectedSite>(KEY_SELECT_SITE)
             ?: uiSetting.prefs.first().siteDisplayMode.defaultSite
 
         selectedSiteUseCase.setSiteAndAwait(selectSite)
@@ -298,4 +309,7 @@ internal class FavoritePostsViewModel @Inject constructor(
         }
     }
 
+    private companion object {
+        const val KEY_STATE = "favorite_posts_state"
+    }
 }

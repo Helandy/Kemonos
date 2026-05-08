@@ -1,5 +1,6 @@
 package su.afk.kemonos.creatorPost.presenter
 
+import androidx.lifecycle.SavedStateHandle
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
@@ -30,6 +31,8 @@ import su.afk.kemonos.preferences.ui.IUiSettingUseCase
 import su.afk.kemonos.preferences.ui.TranslateTarget
 import su.afk.kemonos.ui.presenter.androidView.model.PostBlock
 import su.afk.kemonos.ui.presenter.baseViewModel.BaseViewModelNew
+import su.afk.kemonos.ui.presenter.baseViewModel.getSerializableState
+import su.afk.kemonos.ui.presenter.baseViewModel.setSerializableState
 import su.afk.kemonos.ui.shared.ShareLinkBuilder
 import su.afk.kemonos.ui.shared.model.ShareTarget
 import su.afk.kemonos.ui.translate.TextTranslator
@@ -47,19 +50,30 @@ internal class CreatorPostViewModel @AssistedInject constructor(
     private val downloadUtil: IDownloadUtil,
     private val translator: TextTranslator,
     private val uiSetting: IUiSettingUseCase,
+    @Assisted savedStateHandle: SavedStateHandle,
     override val errorHandler: IErrorHandlerUseCase,
     override val retryStorage: RetryStorage,
-) : BaseViewModelNew<State, Event, Effect>() {
+) : BaseViewModelNew<State, Event, Effect>(savedStateHandle) {
     private var loadingJob: Job? = null
     private var loadingRequestId: Long = 0L
 
     @AssistedFactory
     interface Factory {
-        fun create(dest: CreatorPostDestination.CreatorPost): CreatorPostViewModel
+        fun create(
+            dest: CreatorPostDestination.CreatorPost,
+            savedStateHandle: SavedStateHandle,
+        ): CreatorPostViewModel
     }
 
     /** Начальное состояние экрана поста */
-    override fun createInitialState(): State = State.default()
+    override fun createInitialState(): State =
+        (savedStateHandle.getSerializableState<CreatorPostPersistedState>(KEY_STATE)
+            ?: CreatorPostPersistedState.fromDest(dest))
+            .toState()
+
+    override fun saveToSavedState(state: State) {
+        savedStateHandle.setSerializableState(KEY_STATE, state.toPersistedState())
+    }
 
     /** Повторная загрузка после ошибки */
     override fun onRetry() {
@@ -77,15 +91,7 @@ internal class CreatorPostViewModel @AssistedInject constructor(
 
     init {
         observeUiSetting()
-        setState {
-            copy(
-                loading = true,
-                service = dest.service,
-                id = dest.id,
-                postId = dest.postId,
-                showBarCreator = dest.showBarCreator
-            )
-        }
+        setState { copy(loading = true) }
 
         loadingPost()
     }
@@ -149,20 +155,35 @@ internal class CreatorPostViewModel @AssistedInject constructor(
             val loaded = postLoadDelegate.load(request)
 
             if (!isLatestRequest(request)) return@launch
+            val restoredRevisionId = currentState.selectedRevisionId
+                ?.takeIf { restored -> restored in loaded.revisionIds }
+            val resolvedLoaded = if (restoredRevisionId != null) {
+                loaded.sourcePost?.let { sourcePost ->
+                    val revision = postLoadDelegate.loadRevision(sourcePost, restoredRevisionId)
+                    loaded.copy(
+                        resolvedPost = revision.resolvedPost,
+                        selectedRevisionId = restoredRevisionId,
+                        showButtonTranslate = revision.showButtonTranslate,
+                        contentBlocks = revision.contentBlocks,
+                    )
+                } ?: loaded
+            } else {
+                loaded
+            }
 
             setState {
                 copy(
                     loading = false,
-                    sourcePost = loaded.sourcePost,
-                    post = loaded.resolvedPost,
-                    revisionIds = loaded.revisionIds,
-                    selectedRevisionId = loaded.selectedRevisionId,
-                    showButtonTranslate = loaded.showButtonTranslate,
-                    contentBlocks = loaded.contentBlocks,
-                    commentDomains = loaded.comments,
-                    profile = loaded.profile,
+                    sourcePost = resolvedLoaded.sourcePost,
+                    post = resolvedLoaded.resolvedPost,
+                    revisionIds = resolvedLoaded.revisionIds,
+                    selectedRevisionId = resolvedLoaded.selectedRevisionId,
+                    showButtonTranslate = resolvedLoaded.showButtonTranslate,
+                    contentBlocks = resolvedLoaded.contentBlocks,
+                    commentDomains = resolvedLoaded.comments,
+                    profile = resolvedLoaded.profile,
 
-                    translateExpanded = false,
+                    translateExpanded = translateExpanded && resolvedLoaded.showButtonTranslate,
                     translateLoading = false,
                     translateText = null,
                     translateError = null,
@@ -629,4 +650,7 @@ internal class CreatorPostViewModel @AssistedInject constructor(
         copy(shareInProgress = false)
     }
 
+    private companion object {
+        const val KEY_STATE = "creator_post_state"
+    }
 }

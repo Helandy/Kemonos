@@ -1,6 +1,8 @@
 package su.afk.kemonos.creatorProfile.presenter.communityChat
 
+import kotlinx.serialization.Serializable
 import su.afk.kemonos.creatorProfile.api.domain.models.profileCommunity.CommunityMessage
+import su.afk.kemonos.creatorProfile.navigation.CreatorDestination
 import su.afk.kemonos.creatorProfile.presenter.communityChat.model.CommunityMedia
 import su.afk.kemonos.preferences.ui.UiSettingModel
 import su.afk.kemonos.ui.presenter.baseViewModel.UiEffect
@@ -65,3 +67,57 @@ internal class CommunityChatState {
         ) : Effect
     }
 }
+
+@Serializable
+internal data class CommunityChatPersistedState(
+    val service: String = "",
+    val creatorId: String = "",
+    val channelId: String = "",
+    val channelName: String = "",
+    val channelPostCount: Int? = null,
+    val searchQuery: String = "",
+    val reverseOrder: Boolean = false,
+    val offset: Int = 0,
+    val listFirstVisibleItemIndex: Int = 0,
+    val listFirstVisibleItemScrollOffset: Int = 0,
+) {
+    companion object {
+        internal fun fromDest(dest: CreatorDestination.CommunityChat?): CommunityChatPersistedState =
+            CommunityChatPersistedState(
+                service = dest?.service.orEmpty(),
+                creatorId = dest?.creatorId.orEmpty(),
+                channelId = dest?.channelId.orEmpty(),
+                channelName = dest?.channelName.orEmpty(),
+                channelPostCount = dest?.channelPostCount,
+            )
+    }
+}
+
+internal fun CommunityChatPersistedState.toState(canLoadMore: Boolean): CommunityChatState.State =
+    CommunityChatState.State(
+        service = service,
+        creatorId = creatorId,
+        channelId = channelId,
+        channelName = channelName,
+        channelPostCount = channelPostCount,
+        searchQuery = searchQuery,
+        reverseOrder = reverseOrder,
+        offset = offset,
+        canLoadMore = canLoadMore,
+        listFirstVisibleItemIndex = listFirstVisibleItemIndex,
+        listFirstVisibleItemScrollOffset = listFirstVisibleItemScrollOffset,
+    )
+
+internal fun CommunityChatState.State.toPersistedState(): CommunityChatPersistedState =
+    CommunityChatPersistedState(
+        service = service,
+        creatorId = creatorId,
+        channelId = channelId,
+        channelName = channelName,
+        channelPostCount = channelPostCount,
+        searchQuery = searchQuery,
+        reverseOrder = reverseOrder,
+        offset = offset,
+        listFirstVisibleItemIndex = listFirstVisibleItemIndex,
+        listFirstVisibleItemScrollOffset = listFirstVisibleItemScrollOffset,
+    )

@@ -1,43 +1,55 @@
 package su.afk.kemonos.commonscreen.imageViewScreen
 
 import androidx.core.net.toUri
-import dagger.hilt.android.lifecycle.HiltViewModel
+import androidx.lifecycle.SavedStateHandle
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedFactory
+import dagger.assisted.AssistedInject
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import su.afk.kemonos.commonscreen.imageViewScreen.ImageViewState.*
-import su.afk.kemonos.commonscreen.navigator.ImageNavigationConst.KEY_CREATOR_NAME
-import su.afk.kemonos.commonscreen.navigator.ImageNavigationConst.KEY_IMAGE_URLS
-import su.afk.kemonos.commonscreen.navigator.ImageNavigationConst.KEY_POST_ID
-import su.afk.kemonos.commonscreen.navigator.ImageNavigationConst.KEY_POST_TITLE
-import su.afk.kemonos.commonscreen.navigator.ImageNavigationConst.KEY_SELECTED_IMAGE
-import su.afk.kemonos.commonscreen.navigator.ImageNavigationConst.KEY_SELECTED_IMAGE_INDEX
-import su.afk.kemonos.commonscreen.navigator.ImageNavigationConst.KEY_SERVICE
-import su.afk.kemonos.commonscreen.navigator.ImageNavigationConst.KEY_THUMBNAIL_URLS
+import su.afk.kemonos.commonscreen.navigator.CommonScreenDestination
 import su.afk.kemonos.download.api.IDownloadUtil
 import su.afk.kemonos.error.error.IErrorHandlerUseCase
 import su.afk.kemonos.error.error.storage.RetryStorage
 import su.afk.kemonos.navigation.NavigationManager
-import su.afk.kemonos.navigation.storage.NavigationStorage
 import su.afk.kemonos.ui.imageLoader.imageProgress.ImageProgressStore
 import su.afk.kemonos.ui.presenter.baseViewModel.BaseViewModelNew
+import su.afk.kemonos.ui.presenter.baseViewModel.getSerializableState
+import su.afk.kemonos.ui.presenter.baseViewModel.setSerializableState
 import java.util.*
-import javax.inject.Inject
 import kotlin.time.Duration.Companion.milliseconds
 
 /** Отдельный экран для просмотра картинки */
 @OptIn(FlowPreview::class)
-@HiltViewModel
-internal class ImageViewViewModel @Inject constructor(
+internal class ImageViewViewModel @AssistedInject constructor(
+    @Assisted private val dest: CommonScreenDestination.ImageViewDest,
     private val navManager: NavigationManager,
-    private val navigationStorage: NavigationStorage,
     private val progressStore: ImageProgressStore,
     private val downloadUtil: IDownloadUtil,
+    @Assisted savedStateHandle: SavedStateHandle,
     override val errorHandler: IErrorHandlerUseCase,
     override val retryStorage: RetryStorage
-) : BaseViewModelNew<State, Event, Effect>() {
+) : BaseViewModelNew<State, Event, Effect>(savedStateHandle) {
 
-    override fun createInitialState(): State = State()
+    @AssistedFactory
+    interface Factory {
+        fun create(
+            dest: CommonScreenDestination.ImageViewDest,
+            savedStateHandle: SavedStateHandle,
+        ): ImageViewViewModel
+    }
+
+    override fun createInitialState(): State =
+        createStateFromArgs(
+            args = dest.args,
+            persistedState = savedStateHandle.getSerializableState(KEY_STATE),
+        )
+
+    override fun saveToSavedState(state: State) {
+        savedStateHandle.setSerializableState(KEY_STATE, state.toPersistedState())
+    }
 
     override fun onEvent(event: Event) {
         when (event) {
@@ -79,43 +91,6 @@ internal class ImageViewViewModel @Inject constructor(
     }
 
     init {
-        val imageUrl = navigationStorage.consume<String>(KEY_SELECTED_IMAGE)
-        val imageUrls = navigationStorage.consume<List<String>>(KEY_IMAGE_URLS).orEmpty()
-        val selectedIndex = navigationStorage.consume<Int>(KEY_SELECTED_IMAGE_INDEX)
-        val service = navigationStorage.consume<String>(KEY_SERVICE)
-        val creatorName = navigationStorage.consume<String>(KEY_CREATOR_NAME)
-        val postId = navigationStorage.consume<String>(KEY_POST_ID)
-        val postTitle = navigationStorage.consume<String>(KEY_POST_TITLE)
-        val thumbnailUrls = navigationStorage.consume<Map<String, String>>(KEY_THUMBNAIL_URLS).orEmpty()
-
-        val preparedUrls = prepareImageUrls(imageUrl = imageUrl, imageUrls = imageUrls)
-        val safeSelectedIndex = selectedIndex
-            ?.takeIf { it in preparedUrls.indices }
-            ?: imageUrl
-                ?.let { selected -> preparedUrls.indexOf(selected).takeIf { idx -> idx >= 0 } }
-            ?: 0
-        val initialUrl = preparedUrls.getOrNull(safeSelectedIndex) ?: imageUrl
-
-        setState {
-            copy(
-                imageUrl = initialUrl,
-                imageUrls = preparedUrls,
-                selectedIndex = safeSelectedIndex,
-                service = service,
-                creatorName = creatorName,
-                postId = postId,
-                postTitle = postTitle,
-                thumbnailUrls = thumbnailUrls,
-                requestId = newRequestId(),
-                loading = true,
-                isLoadError = false,
-                errorItem = null,
-                bytesRead = 0L,
-                contentLength = -1L,
-                progress = 0f,
-            )
-        }
-
         observeProgress()
     }
 
@@ -218,6 +193,33 @@ internal class ImageViewViewModel @Inject constructor(
         }
     }
 
+    private fun createStateFromArgs(
+        args: CommonScreenDestination.ImageViewArgs,
+        persistedState: ImageViewPersistedState?,
+    ): State {
+        val preparedUrls = prepareImageUrls(imageUrl = args.imageUrl, imageUrls = args.imageUrls)
+        val selectedIndex = persistedState?.selectedIndex ?: args.selectedIndex
+        val safeSelectedIndex = selectedIndex
+            .takeIf { it in preparedUrls.indices }
+            ?: preparedUrls.indexOf(args.imageUrl).takeIf { idx -> idx >= 0 }
+            ?: 0
+        val initialUrl = preparedUrls.getOrNull(safeSelectedIndex) ?: args.imageUrl
+
+        return State(
+            imageUrl = initialUrl,
+            imageUrls = preparedUrls,
+            selectedIndex = safeSelectedIndex,
+            service = args.service,
+            creatorName = args.creatorName,
+            postId = args.postId,
+            postTitle = args.postTitle,
+            thumbnailUrls = args.thumbnailUrls,
+            requestId = newRequestId(),
+            reloadKey = persistedState?.reloadKey ?: 0,
+            loading = true,
+        )
+    }
+
     private fun prepareImageUrls(imageUrl: String?, imageUrls: List<String>): List<String> {
         val sanitizedUrls = imageUrls.filter { it.isNotBlank() }
 
@@ -231,4 +233,8 @@ internal class ImageViewViewModel @Inject constructor(
     }
 
     private fun newRequestId(): String = UUID.randomUUID().toString()
+
+    private companion object {
+        const val KEY_STATE = "image_view_state"
+    }
 }

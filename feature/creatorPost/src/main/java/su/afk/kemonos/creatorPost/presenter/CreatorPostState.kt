@@ -1,8 +1,10 @@
 package su.afk.kemonos.creatorPost.presenter
 
+import kotlinx.serialization.Serializable
 import su.afk.kemonos.creatorPost.api.domain.model.CommentDomain
 import su.afk.kemonos.creatorPost.api.domain.model.PostContentDomain
 import su.afk.kemonos.creatorPost.domain.media.model.MediaInfoState
+import su.afk.kemonos.creatorPost.navigation.CreatorPostDestination
 import su.afk.kemonos.domain.models.Profile
 import su.afk.kemonos.preferences.ui.UiSettingModel
 import su.afk.kemonos.ui.presenter.androidView.model.PostBlock
@@ -127,3 +129,43 @@ internal class CreatorPostState {
         data class OpenAudio(val url: String, val name: String?, val mime: String) : Effect
     }
 }
+
+@Serializable
+internal data class CreatorPostPersistedState(
+    val service: String,
+    val id: String,
+    val postId: String,
+    val showBarCreator: Boolean,
+    val selectedRevisionId: Int? = null,
+    val translateExpanded: Boolean = false,
+) {
+    companion object {
+        internal fun fromDest(dest: CreatorPostDestination.CreatorPost): CreatorPostPersistedState =
+            CreatorPostPersistedState(
+                service = dest.service,
+                id = dest.id,
+                postId = dest.postId,
+                showBarCreator = dest.showBarCreator,
+            )
+    }
+}
+
+internal fun CreatorPostPersistedState.toState(): CreatorPostState.State =
+    CreatorPostState.State.default().copy(
+        service = service,
+        id = id,
+        postId = postId,
+        showBarCreator = showBarCreator,
+        selectedRevisionId = selectedRevisionId,
+        translateExpanded = translateExpanded,
+    )
+
+internal fun CreatorPostState.State.toPersistedState(): CreatorPostPersistedState =
+    CreatorPostPersistedState(
+        service = service,
+        id = id,
+        postId = postId,
+        showBarCreator = showBarCreator,
+        selectedRevisionId = selectedRevisionId,
+        translateExpanded = translateExpanded,
+    )

@@ -3,6 +3,7 @@ package su.afk.kemonos.posts.presenter.tagsSelect
 import androidx.paging.PagingData
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
+import kotlinx.serialization.Serializable
 import su.afk.kemonos.domain.models.PostDomain
 import su.afk.kemonos.preferences.ui.UiSettingModel
 import su.afk.kemonos.ui.components.posts.filter.PostMediaFilter
@@ -33,3 +34,21 @@ internal class TagsSelectState {
 
     sealed interface Effect : UiEffect
 }
+
+@Serializable
+internal data class TagsSelectPersistedState(
+    val selectedTag: String? = null,
+    val mediaFilter: PostMediaFilter = PostMediaFilter(),
+)
+
+internal fun TagsSelectPersistedState.toState(): TagsSelectState.State =
+    TagsSelectState.State(
+        selectedTag = selectedTag,
+        mediaFilter = mediaFilter,
+    )
+
+internal fun TagsSelectState.State.toPersistedState(): TagsSelectPersistedState =
+    TagsSelectPersistedState(
+        selectedTag = selectedTag,
+        mediaFilter = mediaFilter,
+    )

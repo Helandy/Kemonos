@@ -1,6 +1,8 @@
 package su.afk.kemonos.creatorProfile.presenter.discord
 
+import kotlinx.serialization.Serializable
 import su.afk.kemonos.creatorProfile.api.domain.models.profileCommunity.CommunityChannel
+import su.afk.kemonos.creatorProfile.navigation.CreatorDestination
 import su.afk.kemonos.preferences.ui.UiSettingModel
 import su.afk.kemonos.ui.presenter.baseViewModel.UiEffect
 import su.afk.kemonos.ui.presenter.baseViewModel.UiEvent
@@ -31,3 +33,35 @@ internal class DiscordState {
         data class CopyPostLink(val message: String) : Effect
     }
 }
+
+@Serializable
+internal data class DiscordPersistedState(
+    val service: String,
+    val creatorId: String,
+    val serverName: String = "",
+    val searchText: String = "",
+) {
+    companion object {
+        internal fun fromDest(dest: CreatorDestination.CreatorProfile): DiscordPersistedState =
+            DiscordPersistedState(
+                service = dest.service,
+                creatorId = dest.id,
+            )
+    }
+}
+
+internal fun DiscordPersistedState.toState(): DiscordState.State =
+    DiscordState.State(
+        service = service,
+        creatorId = creatorId,
+        serverName = serverName,
+        searchText = searchText,
+    )
+
+internal fun DiscordState.State.toPersistedState(): DiscordPersistedState =
+    DiscordPersistedState(
+        service = service,
+        creatorId = creatorId,
+        serverName = serverName,
+        searchText = searchText,
+    )

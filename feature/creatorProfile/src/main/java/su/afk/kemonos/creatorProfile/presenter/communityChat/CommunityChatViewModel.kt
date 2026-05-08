@@ -1,5 +1,6 @@
 package su.afk.kemonos.creatorProfile.presenter.communityChat
 
+import androidx.lifecycle.SavedStateHandle
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
@@ -22,6 +23,8 @@ import su.afk.kemonos.preferences.IGetCurrentSiteRootUrlUseCase
 import su.afk.kemonos.preferences.ui.IUiSettingUseCase
 import su.afk.kemonos.preferences.ui.TranslateTarget
 import su.afk.kemonos.ui.presenter.baseViewModel.BaseViewModelNew
+import su.afk.kemonos.ui.presenter.baseViewModel.getSerializableState
+import su.afk.kemonos.ui.presenter.baseViewModel.setSerializableState
 import su.afk.kemonos.ui.translate.TextTranslator
 import su.afk.kemonos.ui.translate.preprocessForTranslation
 import su.afk.kemonos.ui.uiUtils.format.isImageFile
@@ -37,28 +40,45 @@ internal class CommunityChatViewModel @AssistedInject constructor(
     private val getDiscordCommunityMessagesUseCase: GetDiscordCommunityMessagesUseCase,
     private val translator: TextTranslator,
     private val uiSetting: IUiSettingUseCase,
+    @Assisted savedStateHandle: SavedStateHandle,
     override val errorHandler: IErrorHandlerUseCase,
     override val retryStorage: RetryStorage,
-) : BaseViewModelNew<State, Event, Effect>() {
+) : BaseViewModelNew<State, Event, Effect>(savedStateHandle) {
     private var initialLoadStarted = false
 
     companion object {
         private const val DISCORD_SERVICE = "discord"
         private const val INITIAL_OFFSET = 0
         private const val DISCORD_PAGE_SIZE = 150
+        private const val KEY_STATE = "community_chat_state"
     }
+
+    private val restoredState = savedStateHandle.getSerializableState<CommunityChatPersistedState>(KEY_STATE)
+    private val hasRestoredState = restoredState != null
 
     @AssistedFactory
     interface Factory {
-        fun create(dest: CreatorDestination.CommunityChat): CommunityChatViewModel
+        fun create(
+            dest: CreatorDestination.CommunityChat,
+            savedStateHandle: SavedStateHandle,
+        ): CommunityChatViewModel
     }
 
-    override fun createInitialState(): State = State()
+    override fun createInitialState(): State =
+        (restoredState ?: CommunityChatPersistedState.fromDest(dest)).toState(
+            canLoadMore = restoredState != null,
+        )
+
+    override fun saveToSavedState(state: State) {
+        savedStateHandle.setSerializableState(KEY_STATE, state.toPersistedState())
+    }
 
     private fun observeUiSetting() {
         uiSetting.prefs.distinctUntilChanged()
             .onEach { model ->
-                val shouldApplyInitialReverse = !initialLoadStarted && isDiscordService(currentState.service)
+                val shouldApplyInitialReverse = !initialLoadStarted &&
+                        !hasRestoredState &&
+                        isDiscordService(currentState.service)
                 setState {
                     copy(
                         uiSettingModel = model,
@@ -71,7 +91,7 @@ internal class CommunityChatViewModel @AssistedInject constructor(
                 }
                 if (!initialLoadStarted && currentState.channelId.isNotBlank()) {
                     initialLoadStarted = true
-                    load(reset = true)
+                    load(reset = !hasRestoredState)
                 }
             }
             .launchIn(viewModelScope)
@@ -94,17 +114,6 @@ internal class CommunityChatViewModel @AssistedInject constructor(
 
     init {
         observeUiSetting()
-
-        setState {
-            copy(
-                service = dest?.service.orEmpty(),
-                creatorId = dest?.creatorId.orEmpty(),
-                channelId = dest?.channelId.orEmpty(),
-                channelName = dest?.channelName.orEmpty(),
-                channelPostCount = dest?.channelPostCount,
-                reverseOrder = false,
-            )
-        }
     }
 
     private fun onToggleTranslate(messageId: String, rawText: String) {

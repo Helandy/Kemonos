@@ -1,5 +1,6 @@
 package su.afk.kemonos.commonscreen.errorScreen
 
+import androidx.lifecycle.SavedStateHandle
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
@@ -11,16 +12,20 @@ import su.afk.kemonos.ui.presenter.baseViewModel.BaseViewModelNew
 
 internal class ErrorViewModel @AssistedInject constructor(
     @Assisted private val dest: CommonScreenDestination.ErrorNavigatorDest,
+    @Assisted savedStateHandle: SavedStateHandle,
     override val errorHandler: IErrorHandlerUseCase,
     override val retryStorage: RetryStorage,
     private val navManager: NavigationManager,
-) : BaseViewModelNew<ErrorScreenState.State, ErrorScreenState.Event, ErrorScreenState.Effect>() {
+) : BaseViewModelNew<ErrorScreenState.State, ErrorScreenState.Event, ErrorScreenState.Effect>(savedStateHandle) {
 
     override fun createInitialState(): ErrorScreenState.State = ErrorScreenState.State()
 
     @AssistedFactory
     interface Factory {
-        fun create(dest: CommonScreenDestination.ErrorNavigatorDest): ErrorViewModel
+        fun create(
+            dest: CommonScreenDestination.ErrorNavigatorDest,
+            savedStateHandle: SavedStateHandle
+        ): ErrorViewModel
     }
 
     init {

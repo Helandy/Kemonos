@@ -1,5 +1,8 @@
 package su.afk.kemonos.domain.models
 
+import kotlinx.serialization.Serializable
+
+@Serializable
 data class ErrorItem(
     val title: String,
     val message: String,
