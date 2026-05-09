@@ -2,7 +2,18 @@ package su.afk.kemonos.setting.presenter
 
 import su.afk.kemonos.domain.SelectedSite
 import su.afk.kemonos.preferences.model.CacheTimeUi
-import su.afk.kemonos.preferences.ui.*
+import su.afk.kemonos.preferences.ui.AppThemeMode
+import su.afk.kemonos.preferences.ui.CreatorProfileTabKey
+import su.afk.kemonos.preferences.ui.CreatorViewMode
+import su.afk.kemonos.preferences.ui.DateFormatMode
+import su.afk.kemonos.preferences.ui.DownloadFolderMode
+import su.afk.kemonos.preferences.ui.PostsSize
+import su.afk.kemonos.preferences.ui.PostsViewMode
+import su.afk.kemonos.preferences.ui.RandomButtonPlacement
+import su.afk.kemonos.preferences.ui.SiteDisplayMode
+import su.afk.kemonos.preferences.ui.TranslateTarget
+import su.afk.kemonos.preferences.ui.UiSettingModel
+import su.afk.kemonos.preferences.ui.VideoPreviewAspectRatio
 import su.afk.kemonos.setting.domain.model.TranslateModelInfo
 import su.afk.kemonos.ui.presenter.baseViewModel.UiEffect
 import su.afk.kemonos.ui.presenter.baseViewModel.UiEvent
@@ -108,6 +119,7 @@ class SettingState {
             data class BlurImages(val value: Boolean) : ChangeViewSetting
             data class ShowImagePreviewDownloadAction(val value: Boolean) : ChangeViewSetting
             data class ShowImagePreviewShareAction(val value: Boolean) : ChangeViewSetting
+            data class UsePreviewOnlyInImageViewer(val value: Boolean) : ChangeViewSetting
             data class ShowCommentsInPost(val value: Boolean) : ChangeViewSetting
 
             data class EditDownloadFolderMode(val value: DownloadFolderMode) : ChangeViewSetting

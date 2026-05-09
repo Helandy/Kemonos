@@ -19,6 +19,8 @@ internal class ImageViewState {
         val postId: String? = null,
         val postTitle: String? = null,
         val thumbnailUrls: Map<String, String> = emptyMap(),
+        val usePreviewOnlyInImageViewer: Boolean = false,
+        val imageViewerSettingsLoaded: Boolean = false,
 
         val requestId: String = java.util.UUID.randomUUID().toString(),
         val reloadKey: Int = 0,

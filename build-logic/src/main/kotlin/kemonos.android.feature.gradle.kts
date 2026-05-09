@@ -1,6 +1,7 @@
+import com.android.build.api.dsl.LibraryExtension
+
 plugins {
     id("com.android.library")
-    id("org.jetbrains.kotlin.android")
     id("org.jetbrains.kotlin.plugin.compose")
 
     // Feature-specific plugins.
@@ -20,7 +21,7 @@ val composeDebugBundle = libs.findBundle("compose-debug").get()
 fun DependencyHandlerScope.implementation(dep: Any) = add("implementation", dep)
 fun DependencyHandlerScope.ksp(dep: Any) = add("ksp", dep)
 
-android {
+extensions.configure<LibraryExtension>("android") {
     compileSdk = libs.findVersion("compileSdk").get().requiredVersion.toInt()
 
     defaultConfig {

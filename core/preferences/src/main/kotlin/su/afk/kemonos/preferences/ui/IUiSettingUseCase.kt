@@ -83,6 +83,9 @@ interface IUiSettingUseCase {
     /** Показывать кнопку шаринга на миниатюрах изображений в посте */
     suspend fun setShowImagePreviewShareAction(value: Boolean)
 
+    /** Показывать превью вместо полной картинки во фуллскрин-просмотрщике */
+    suspend fun setUsePreviewOnlyInImageViewer(value: Boolean)
+
     /** Показывать комментарии в посте */
     suspend fun setShowCommentsInPost(value: Boolean)
 

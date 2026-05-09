@@ -6,14 +6,45 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.gestures.rememberTransformableState
 import androidx.compose.foundation.gestures.transformable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBarsPadding
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowLeft
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.MoreVert
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.LinearProgressIndicator
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.Stable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.key
+import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.mutableLongStateOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
@@ -72,7 +103,8 @@ internal fun ImageViewScreen(
     val scope = rememberCoroutineScope()
 
     val shareState = rememberShareUiState()
-    val gestureState = rememberImageGestureState(resetKey = state.imageUrl to state.selectedIndex)
+    val displayImageUrl = state.displayImageUrl
+    val gestureState = rememberImageGestureState(resetKey = displayImageUrl to state.selectedIndex)
     val transformState = rememberTransformableState { zoom, pan, _ ->
         gestureState.onTransform(zoom = zoom, pan = pan)
     }
@@ -85,7 +117,7 @@ internal fun ImageViewScreen(
 
     val request = rememberImageRequest(
         context = context,
-        imageUrl = state.imageUrl,
+        imageUrl = displayImageUrl,
         requestId = state.requestId,
         reloadKey = state.reloadKey,
         container = gestureState.container,
@@ -103,65 +135,67 @@ internal fun ImageViewScreen(
             }
             .transformable(transformState)
     ) {
-        key(state.reloadKey) {
-            SubcomposeAsyncImage(
-                model = request,
-                imageLoader = imageLoader,
-                contentDescription = null,
-                contentScale = ContentScale.Fit,
-                alignment = Alignment.Center,
-                onSuccess = {
-                    onEvent(Event.ImageLoaded)
-                },
-                onError = {
-                    onEvent(Event.ImageFailed(it.result.throwable))
-                },
-                modifier = Modifier
-                    .fillMaxSize()
-                    .graphicsLayer(
-                        scaleX = gestureState.scale,
-                        scaleY = gestureState.scale,
-                        translationX = gestureState.offsetX,
-                        translationY = gestureState.offsetY,
-                        rotationZ = 0f
-                    ),
-                success = { SubcomposeAsyncImageContent() },
-                loading = {
-                    Box(modifier = Modifier.fillMaxSize()) {
-                        val thumbnailUrl = state.thumbnailUrls[state.imageUrl]
-                        if (!thumbnailUrl.isNullOrBlank()) {
-                            AsyncImageWithStatus(
-                                model = thumbnailUrl,
-                                contentDescription = null,
-                                imageLoader = LocalAppImageLoader.current,
-                                contentScale = ContentScale.Fit,
-                                modifier = Modifier.fillMaxSize(),
-                            )
-                        }
-                        Box(
-                            modifier = Modifier
-                                .align(Alignment.TopCenter)
-                                .fillMaxWidth()
-                                .statusBarsPadding()
-                                .padding(top = 8.dp, start = 64.dp, end = 64.dp),
-                            contentAlignment = Alignment.TopCenter,
-                        ) {
-                            DelayedImageLoadingContent(state = state)
-                        }
-                    }
-                },
-                error = {
-                    DefaultErrorContent(
-                        onBack = { onEvent(Event.Back) },
-                        errorItem = state.errorItem ?: ErrorItem(
-                            title = stringResource(R.string.err_title_generic),
-                            message = stringResource(R.string.err_msg_generic),
-                            url = state.imageUrl,
+        if (state.imageViewerSettingsLoaded) {
+            key(state.reloadKey) {
+                SubcomposeAsyncImage(
+                    model = request,
+                    imageLoader = imageLoader,
+                    contentDescription = null,
+                    contentScale = ContentScale.Fit,
+                    alignment = Alignment.Center,
+                    onSuccess = {
+                        onEvent(Event.ImageLoaded)
+                    },
+                    onError = {
+                        onEvent(Event.ImageFailed(it.result.throwable))
+                    },
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .graphicsLayer(
+                            scaleX = gestureState.scale,
+                            scaleY = gestureState.scale,
+                            translationX = gestureState.offsetX,
+                            translationY = gestureState.offsetY,
+                            rotationZ = 0f
                         ),
-                        onRetry = { onEvent(Event.Retry) }
-                    )
-                }
-            )
+                    success = { SubcomposeAsyncImageContent() },
+                    loading = {
+                        Box(modifier = Modifier.fillMaxSize()) {
+                            val thumbnailUrl = state.thumbnailUrls[state.imageUrl]
+                            if (!thumbnailUrl.isNullOrBlank() && thumbnailUrl != displayImageUrl) {
+                                AsyncImageWithStatus(
+                                    model = thumbnailUrl,
+                                    contentDescription = null,
+                                    imageLoader = LocalAppImageLoader.current,
+                                    contentScale = ContentScale.Fit,
+                                    modifier = Modifier.fillMaxSize(),
+                                )
+                            }
+                            Box(
+                                modifier = Modifier
+                                    .align(Alignment.TopCenter)
+                                    .fillMaxWidth()
+                                    .statusBarsPadding()
+                                    .padding(top = 8.dp, start = 64.dp, end = 64.dp),
+                                contentAlignment = Alignment.TopCenter,
+                            ) {
+                                DelayedImageLoadingContent(state = state)
+                            }
+                        }
+                    },
+                    error = {
+                        DefaultErrorContent(
+                            onBack = { onEvent(Event.Back) },
+                            errorItem = state.errorItem ?: ErrorItem(
+                                title = stringResource(R.string.err_title_generic),
+                                message = stringResource(R.string.err_msg_generic),
+                                url = state.imageUrl,
+                            ),
+                            onRetry = { onEvent(Event.Retry) }
+                        )
+                    }
+                )
+            }
         }
 
         IconButton(
@@ -283,6 +317,17 @@ internal fun ImageViewScreen(
         )
     }
 }
+
+private val ImageViewState.State.displayImageUrl: String?
+    get() {
+        val originalUrl = imageUrl
+        val thumbnailUrl = thumbnailUrls[originalUrl]
+        return if (usePreviewOnlyInImageViewer && !thumbnailUrl.isNullOrBlank()) {
+            thumbnailUrl
+        } else {
+            originalUrl
+        }
+    }
 
 @Composable
 private fun DelayedImageLoadingContent(state: ImageViewState.State) {

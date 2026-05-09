@@ -205,6 +205,8 @@
     <string name="settings_blur_images_substring" translatable="false">Android >12</string>
     <string name="settings_show_image_preview_download_action_title">Show download on image previews</string>
     <string name="settings_show_image_preview_share_action_title">Show share on image previews</string>
+    <string name="settings_use_preview_only_in_image_viewer_title">Use previews in fullscreen image viewer</string>
+    <string name="settings_use_preview_only_in_image_viewer_subtitle">Open the preview instead of loading the full image when available</string>
     <string name="settings_show_comments_in_post_title">Show comments in post</string>
 
     <string name="settings_downloads_title">Downloads</string>
