@@ -10,7 +10,7 @@ import java.io.File
 import javax.inject.Inject
 
 class TranslateModelsRepository @Inject constructor(
-    @ApplicationContext private val context: Context,
+    @param:ApplicationContext private val context: Context,
 ) : ITranslateModelsRepository {
 
     override suspend fun getDownloadedModels(): List<TranslateModelInfo> = withContext(Dispatchers.IO) {

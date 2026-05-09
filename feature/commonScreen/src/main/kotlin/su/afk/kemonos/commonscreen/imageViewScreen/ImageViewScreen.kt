@@ -105,7 +105,7 @@ internal fun ImageViewScreen(
     val shareState = rememberShareUiState()
     val displayImageUrl = state.displayImageUrl
     val gestureState = rememberImageGestureState(resetKey = displayImageUrl to state.selectedIndex)
-    val transformState = rememberTransformableState { zoom, pan, _ ->
+    val transformState = rememberTransformableState { _, zoom, pan, _ ->
         gestureState.onTransform(zoom = zoom, pan = pan)
     }
 
