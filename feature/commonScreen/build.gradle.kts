@@ -12,6 +12,7 @@ dependencies {
 
     implementation(project(":core:navigation"))
     implementation(project(":core:model"))
+    implementation(project(":core:preferences"))
     implementation(project(":core:ui"))
     implementation(project(":core:error"))
 

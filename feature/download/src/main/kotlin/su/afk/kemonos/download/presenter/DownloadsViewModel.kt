@@ -13,6 +13,7 @@ import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import su.afk.kemonos.download.domain.repository.DownloadManagerDataSource
 import su.afk.kemonos.download.domain.usecase.DeleteDownloadUseCase
+import su.afk.kemonos.download.domain.usecase.DeleteDownloadsUseCase
 import su.afk.kemonos.download.domain.usecase.RestartDownloadUseCase
 import su.afk.kemonos.download.domain.usecase.RestartDownloadsUseCase
 import su.afk.kemonos.download.domain.usecase.StopDownloadUseCase
@@ -36,6 +37,7 @@ internal class DownloadsViewModel @Inject constructor(
     private val restartDownloadUseCase: RestartDownloadUseCase,
     private val restartDownloadsUseCase: RestartDownloadsUseCase,
     private val deleteDownloadUseCase: DeleteDownloadUseCase,
+    private val deleteDownloadsUseCase: DeleteDownloadsUseCase,
     private val trackedDownloadsRepository: ITrackedDownloadsRepository,
     private val uiSetting: IUiSettingUseCase,
     private val navigationManager: NavigationManager,
@@ -65,6 +67,7 @@ internal class DownloadsViewModel @Inject constructor(
             is DownloadsState.Event.RestartDownload -> restartDownload(event.downloadId)
             DownloadsState.Event.RestartAllDownloads -> restartAllDownloads()
             is DownloadsState.Event.DeleteDownload -> deleteDownload(event.downloadId)
+            DownloadsState.Event.DeleteCompletedDownloads -> deleteCompletedDownloads()
         }
     }
 
@@ -167,6 +170,26 @@ internal class DownloadsViewModel @Inject constructor(
             refreshMutex.withLock {
                 speedMap.remove(downloadId)
                 lastSnapshots.remove(downloadId)
+                refreshInternal(onlyActive = false)
+            }
+        }
+    }
+
+    private fun deleteCompletedDownloads() {
+        viewModelScope.launch {
+            val completedIds = refreshMutex.withLock {
+                currentState.items
+                    .filter { it.status == DownloadManager.STATUS_SUCCESSFUL }
+                    .map { it.downloadId }
+            }
+            if (completedIds.isEmpty()) return@launch
+
+            deleteDownloadsUseCase(completedIds)
+            refreshMutex.withLock {
+                completedIds.forEach { downloadId ->
+                    speedMap.remove(downloadId)
+                    lastSnapshots.remove(downloadId)
+                }
                 refreshInternal(onlyActive = false)
             }
         }

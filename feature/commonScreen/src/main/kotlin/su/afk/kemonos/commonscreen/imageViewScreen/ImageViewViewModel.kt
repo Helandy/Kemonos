@@ -6,19 +6,26 @@ import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import kotlinx.coroutines.FlowPreview
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.sample
 import kotlinx.coroutines.launch
-import su.afk.kemonos.commonscreen.imageViewScreen.ImageViewState.*
+import su.afk.kemonos.commonscreen.imageViewScreen.ImageViewState.Effect
+import su.afk.kemonos.commonscreen.imageViewScreen.ImageViewState.Event
+import su.afk.kemonos.commonscreen.imageViewScreen.ImageViewState.State
 import su.afk.kemonos.commonscreen.navigator.CommonScreenDestination
 import su.afk.kemonos.download.api.IDownloadUtil
 import su.afk.kemonos.error.error.IErrorHandlerUseCase
 import su.afk.kemonos.error.error.storage.RetryStorage
 import su.afk.kemonos.navigation.NavigationManager
+import su.afk.kemonos.preferences.ui.IUiSettingUseCase
 import su.afk.kemonos.ui.imageLoader.imageProgress.ImageProgressStore
 import su.afk.kemonos.ui.presenter.baseViewModel.BaseViewModelNew
 import su.afk.kemonos.ui.presenter.baseViewModel.getSerializableState
 import su.afk.kemonos.ui.presenter.baseViewModel.setSerializableState
-import java.util.*
+import java.util.UUID
 import kotlin.time.Duration.Companion.milliseconds
 
 /** Отдельный экран для просмотра картинки */
@@ -28,6 +35,7 @@ internal class ImageViewViewModel @AssistedInject constructor(
     private val navManager: NavigationManager,
     private val progressStore: ImageProgressStore,
     private val downloadUtil: IDownloadUtil,
+    private val uiSettingUseCase: IUiSettingUseCase,
     @Assisted savedStateHandle: SavedStateHandle,
     override val errorHandler: IErrorHandlerUseCase,
     override val retryStorage: RetryStorage
@@ -91,7 +99,40 @@ internal class ImageViewViewModel @AssistedInject constructor(
     }
 
     init {
+        observeUiSettings()
         observeProgress()
+    }
+
+    private fun observeUiSettings() {
+        viewModelScope.launch {
+            uiSettingUseCase.prefs
+                .map { it.usePreviewOnlyInImageViewer }
+                .distinctUntilChanged()
+                .collect { enabled ->
+                    val current = state.value
+                    if (
+                        current.imageViewerSettingsLoaded &&
+                        current.usePreviewOnlyInImageViewer == enabled
+                    ) {
+                        return@collect
+                    }
+
+                    progressStore.clear(current.requestId)
+                    setState {
+                        copy(
+                            usePreviewOnlyInImageViewer = enabled,
+                            imageViewerSettingsLoaded = true,
+                            requestId = newRequestId(),
+                            loading = true,
+                            isLoadError = false,
+                            errorItem = null,
+                            bytesRead = 0L,
+                            contentLength = -1L,
+                            progress = 0f,
+                        )
+                    }
+                }
+        }
     }
 
     private fun observeProgress() {

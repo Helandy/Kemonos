@@ -40,5 +40,6 @@
     <string name="downloads_action_restart">Перезапуск</string>
     <string name="downloads_action_restart_all">Перезапустить все</string>
     <string name="downloads_action_delete">Удалить</string>
+    <string name="downloads_action_delete_completed">Удалить все завершенные загрузки</string>
     <string name="downloads_actions">Действия загрузок</string>
 </resources>

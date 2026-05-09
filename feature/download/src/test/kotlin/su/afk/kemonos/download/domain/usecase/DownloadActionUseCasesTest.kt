@@ -107,6 +107,17 @@ internal class DownloadActionUseCasesTest {
         assertEquals(listOf(100L), repository.deletedIds)
         assertTrue(repository.runtimeUpdates.isEmpty())
     }
+
+    @Test
+    fun deleteAllDeletesEveryProvidedTrackedRow() = runBlocking {
+        val repository = FakeTrackedDownloadsRepository()
+        val useCase = DeleteDownloadsUseCase(repository)
+
+        useCase(listOf(100L, 101L))
+
+        assertEquals(listOf(100L, 101L), repository.deletedIds)
+        assertTrue(repository.runtimeUpdates.isEmpty())
+    }
 }
 
 private fun trackedDownload(id: Long): TrackedDownload =

@@ -1,7 +1,12 @@
 package su.afk.kemonos.preferences.ui
 
 import androidx.datastore.core.DataStore
-import androidx.datastore.preferences.core.*
+import androidx.datastore.preferences.core.Preferences
+import androidx.datastore.preferences.core.booleanPreferencesKey
+import androidx.datastore.preferences.core.edit
+import androidx.datastore.preferences.core.intPreferencesKey
+import androidx.datastore.preferences.core.longPreferencesKey
+import androidx.datastore.preferences.core.stringPreferencesKey
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import su.afk.kemonos.preferences.ui.UiSettingKey.ADD_SERVICE_NAME
@@ -44,6 +49,7 @@ import su.afk.kemonos.preferences.ui.UiSettingKey.TAGS_POSTS_VIEW_MODE
 import su.afk.kemonos.preferences.ui.UiSettingKey.TRANSLATE_LANGUAGE_TAG
 import su.afk.kemonos.preferences.ui.UiSettingKey.TRANSLATE_TARGET
 import su.afk.kemonos.preferences.ui.UiSettingKey.USE_EXTERNAL_METADATA
+import su.afk.kemonos.preferences.ui.UiSettingKey.USE_PREVIEW_ONLY_IN_IMAGE_VIEWER
 import su.afk.kemonos.preferences.ui.UiSettingKey.VIDEO_PREVIEW_ASPECT_RATIO
 import su.afk.kemonos.preferences.ui.UiSettingKey.VIDEO_PREVIEW_SERVER_URL
 import javax.inject.Inject
@@ -101,6 +107,8 @@ internal class UiSettingUseCase @Inject constructor(
             showImagePreviewShareAction = p[SHOW_IMAGE_PREVIEW_SHARE_ACTION]
                 ?: p[SHOW_IMAGE_PREVIEW_ACTION]
                 ?: UiSettingModel.DEFAULT_SHOW_IMAGE_PREVIEW_SHARE_ACTION,
+            usePreviewOnlyInImageViewer = p[USE_PREVIEW_ONLY_IN_IMAGE_VIEWER]
+                ?: UiSettingModel.DEFAULT_USE_PREVIEW_ONLY_IN_IMAGE_VIEWER,
             showCommentsInPost = p[SHOW_COMMENTS_IN_POST] ?: UiSettingModel.DEFAULT_SHOW_COMMENTS_IN_POST,
             experimentalCalendar = p[EXPERIMENTAL_CALENDAR] ?: UiSettingModel.DEFAULT_EXPERIMENTAL_CALENDAR,
 
@@ -272,6 +280,11 @@ internal class UiSettingUseCase @Inject constructor(
         dataStore.edit { it[SHOW_IMAGE_PREVIEW_SHARE_ACTION] = value }
     }
 
+    /** Показывать превью вместо полной картинки во фуллскрин-просмотрщике */
+    override suspend fun setUsePreviewOnlyInImageViewer(value: Boolean) {
+        dataStore.edit { it[USE_PREVIEW_ONLY_IN_IMAGE_VIEWER] = value }
+    }
+
     /** Показывать комментарии в посте */
     override suspend fun setShowCommentsInPost(value: Boolean) {
         dataStore.edit { it[SHOW_COMMENTS_IN_POST] = value }
@@ -361,6 +374,7 @@ object UiSettingKey {
     val SHOW_IMAGE_PREVIEW_ACTION = booleanPreferencesKey("SHOW_IMAGE_PREVIEW_ACTIONS")
     val SHOW_IMAGE_PREVIEW_DOWNLOAD_ACTION = booleanPreferencesKey("SHOW_IMAGE_PREVIEW_DOWNLOAD_ACTION")
     val SHOW_IMAGE_PREVIEW_SHARE_ACTION = booleanPreferencesKey("SHOW_IMAGE_PREVIEW_SHARE_ACTION")
+    val USE_PREVIEW_ONLY_IN_IMAGE_VIEWER = booleanPreferencesKey("USE_PREVIEW_ONLY_IN_IMAGE_VIEWER")
     val SHOW_COMMENTS_IN_POST = booleanPreferencesKey("SHOW_COMMENTS_IN_POST")
     val EXPERIMENTAL_CALENDAR = booleanPreferencesKey("EXPERIMENTAL_CALENDAR")
 

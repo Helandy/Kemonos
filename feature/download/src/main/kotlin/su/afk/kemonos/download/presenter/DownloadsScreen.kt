@@ -8,14 +8,45 @@ import android.net.Uri
 import android.provider.DocumentsContract
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.*
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material.icons.outlined.Delete
+import androidx.compose.material.icons.outlined.FolderOpen
+import androidx.compose.material.icons.outlined.Link
+import androidx.compose.material.icons.outlined.MoreVert
+import androidx.compose.material.icons.outlined.Refresh
+import androidx.compose.material3.AssistChip
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FilledTonalButton
+import androidx.compose.material3.FilterChip
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.LinearProgressIndicator
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -41,6 +72,7 @@ internal fun DownloadsScreen(
 ) {
     val filteredItems = state.items.filter { state.selectedFilter.matches(it.status) }
     val canRestartAll = state.items.any { it.isRestartable }
+    val canDeleteCompleted = state.items.any { it.status == DownloadManager.STATUS_SUCCESSFUL }
 
     BaseScreen(
         isScroll = false,
@@ -53,7 +85,9 @@ internal fun DownloadsScreen(
             ) {
                 DownloadsActionsMenu(
                     canRestartAll = canRestartAll,
+                    canDeleteCompleted = canDeleteCompleted,
                     onRestartAll = { onEvent(DownloadsState.Event.RestartAllDownloads) },
+                    onDeleteCompleted = { onEvent(DownloadsState.Event.DeleteCompletedDownloads) },
                 )
             }
         },
@@ -107,7 +141,9 @@ internal fun DownloadsScreen(
 @Composable
 private fun DownloadsActionsMenu(
     canRestartAll: Boolean,
+    canDeleteCompleted: Boolean,
     onRestartAll: () -> Unit,
+    onDeleteCompleted: () -> Unit,
 ) {
     var expanded by remember { mutableStateOf(false) }
 
@@ -134,6 +170,20 @@ private fun DownloadsActionsMenu(
                 onClick = {
                     expanded = false
                     onRestartAll()
+                },
+            )
+            DropdownMenuItem(
+                text = { Text(text = stringResource(R.string.downloads_action_delete_completed)) },
+                enabled = canDeleteCompleted,
+                leadingIcon = {
+                    Icon(
+                        imageVector = Icons.Outlined.Delete,
+                        contentDescription = null,
+                    )
+                },
+                onClick = {
+                    expanded = false
+                    onDeleteCompleted()
                 },
             )
         }

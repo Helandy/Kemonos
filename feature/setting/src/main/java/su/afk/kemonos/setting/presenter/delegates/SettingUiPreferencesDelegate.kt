@@ -140,6 +140,10 @@ class SettingUiPreferencesDelegate @Inject constructor(
             is SettingState.Event.ChangeViewSetting.ShowImagePreviewShareAction ->
                 scope.launch { uiSetting.setShowImagePreviewShareAction(event.value) }
 
+            /** Показывать превью вместо полной картинки во фуллскрин-просмотрщике */
+            is SettingState.Event.ChangeViewSetting.UsePreviewOnlyInImageViewer ->
+                scope.launch { uiSetting.setUsePreviewOnlyInImageViewer(event.value) }
+
             /** Показывать комментарии в посте */
             is SettingState.Event.ChangeViewSetting.ShowCommentsInPost ->
                 scope.launch { uiSetting.setShowCommentsInPost(event.value) }

@@ -40,5 +40,6 @@
     <string name="downloads_action_restart">Restart</string>
     <string name="downloads_action_restart_all">Restart all</string>
     <string name="downloads_action_delete">Delete</string>
+    <string name="downloads_action_delete_completed">Delete all completed downloads</string>
     <string name="downloads_actions">Download actions</string>
 </resources>

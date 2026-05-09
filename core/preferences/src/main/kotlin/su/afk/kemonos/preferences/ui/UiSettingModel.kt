@@ -4,7 +4,7 @@ import androidx.compose.ui.unit.dp
 import su.afk.kemonos.domain.SelectedSite
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
-import java.util.*
+import java.util.Locale
 
 enum class CreatorViewMode { LIST, GRID }
 enum class PostsViewMode { LIST, GRID }
@@ -201,6 +201,9 @@ data class UiSettingModel(
     /** Показывать кнопку шаринга на миниатюрах изображений в посте */
     val showImagePreviewShareAction: Boolean = DEFAULT_SHOW_IMAGE_PREVIEW_SHARE_ACTION,
 
+    /** Показывать превью вместо полной картинки во фуллскрин-просмотрщике */
+    val usePreviewOnlyInImageViewer: Boolean = DEFAULT_USE_PREVIEW_ONLY_IN_IMAGE_VIEWER,
+
     /** Показывать комментарии в посте */
     val showCommentsInPost: Boolean = DEFAULT_SHOW_COMMENTS_IN_POST,
 
@@ -262,6 +265,7 @@ data class UiSettingModel(
         const val DEFAULT_BLUR_PICTURE = false
         const val DEFAULT_SHOW_IMAGE_PREVIEW_DOWNLOAD_ACTION = true
         const val DEFAULT_SHOW_IMAGE_PREVIEW_SHARE_ACTION = false
+        const val DEFAULT_USE_PREVIEW_ONLY_IN_IMAGE_VIEWER = false
         const val DEFAULT_SHOW_COMMENTS_IN_POST = true
         const val DEFAULT_EXPERIMENTAL_CALENDAR = false
 

@@ -50,6 +50,13 @@ internal fun ViewSettingsSection(
     )
 
     SwitchRow(
+        title = stringResource(R.string.settings_use_preview_only_in_image_viewer_title),
+        subtitle = stringResource(R.string.settings_use_preview_only_in_image_viewer_subtitle),
+        checked = ui.usePreviewOnlyInImageViewer,
+        onCheckedChange = { onEvent(Event.ChangeViewSetting.UsePreviewOnlyInImageViewer(it)) },
+    )
+
+    SwitchRow(
         title = stringResource(R.string.settings_show_comments_in_post_title),
         checked = ui.showCommentsInPost,
         onCheckedChange = { onEvent(Event.ChangeViewSetting.ShowCommentsInPost(it)) },

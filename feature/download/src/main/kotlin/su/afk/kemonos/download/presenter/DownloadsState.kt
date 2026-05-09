@@ -23,6 +23,7 @@ internal class DownloadsState {
         data class RestartDownload(val downloadId: Long) : Event
         data object RestartAllDownloads : Event
         data class DeleteDownload(val downloadId: Long) : Event
+        data object DeleteCompletedDownloads : Event
     }
 }
 

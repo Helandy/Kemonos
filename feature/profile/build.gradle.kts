@@ -1,6 +1,7 @@
 plugins {
     id("kemonos.android.feature")
     alias(libs.plugins.kotlin.serialization)
+    alias(libs.plugins.kotlin.compose)
 }
 
 android {
