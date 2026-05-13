@@ -1,18 +1,31 @@
 package su.afk.kemonos.main.route.bottomBar
 
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBarsPadding
+import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Article
 import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.Groups
-import androidx.compose.material3.*
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.NavigationBar
+import androidx.compose.material3.NavigationBarDefaults
+import androidx.compose.material3.NavigationBarItem
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import su.afk.kemonos.navigation.tab.BottomTab
+import su.afk.kemonos.ui.motion.KemonosMotion
 
 private val BottomBarHeightGestures: Dp = 58.dp
 private val BottomBarIconGestures: Dp = 24.dp
@@ -61,6 +74,11 @@ internal fun BottomNavigationBar(
         ) {
             items.forEach { (tab, icon) ->
                 val selected = tab == currentTab
+                val iconScale by animateFloatAsState(
+                    targetValue = if (selected) 1.08f else 1f,
+                    animationSpec = KemonosMotion.pressScaleSpec,
+                    label = "bottomBarIconScale",
+                )
                 NavigationBarItem(
                     selected = selected,
                     onClick = { onTabClick(tab) },
@@ -68,7 +86,12 @@ internal fun BottomNavigationBar(
                         Icon(
                             imageVector = icon,
                             contentDescription = null,
-                            modifier = Modifier.size(bottomBarIconSize),
+                            modifier = Modifier
+                                .size(bottomBarIconSize)
+                                .graphicsLayer {
+                                    scaleX = iconScale
+                                    scaleY = iconScale
+                                },
                         )
                     },
                 )

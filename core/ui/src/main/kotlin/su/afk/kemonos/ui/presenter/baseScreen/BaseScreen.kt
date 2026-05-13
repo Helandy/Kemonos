@@ -1,10 +1,35 @@
 package su.afk.kemonos.ui.presenter.baseScreen
 
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.WindowInsetsSides
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.only
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeDrawing
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.*
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FabPosition
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.TopAppBarScrollBehavior
+import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.key
 import androidx.compose.ui.Alignment
@@ -20,6 +45,7 @@ import su.afk.kemonos.domain.models.ErrorItem
 import su.afk.kemonos.error.error.view.DefaultErrorContent
 import su.afk.kemonos.ui.R
 import su.afk.kemonos.ui.imageLoader.LocalAppImageLoader
+import su.afk.kemonos.ui.motion.KemonosMotion
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -124,42 +150,66 @@ fun BaseScreen(
 
             val bodyModifier = if (isScroll) base.verticalScroll(rememberScrollState()) else base
 
-            when {
-                error != null -> Box(modifier = base) {
-                    (errorContent ?: { e, retry ->
-                        DefaultErrorContent(
-                            errorItem = e,
-                            onRetry = retry,
-                            onBack = onBack,
-                        )
-                    })(error, onRetry)
-                }
+            val screenState = when {
+                error != null -> BaseScreenContentState.Error
+                isLoading -> BaseScreenContentState.Loading
+                isEmpty -> BaseScreenContentState.Empty
+                else -> BaseScreenContentState.Content
+            }
 
-                isLoading -> Box(modifier = base) {
-                    (loadingContent ?: { DefaultLoadingContent() })()
-                }
+            AnimatedContent(
+                targetState = screenState,
+                transitionSpec = {
+                    fadeIn(KemonosMotion.screenFadeSpec) togetherWith
+                            fadeOut(KemonosMotion.screenFadeSpec)
+                },
+                label = "baseScreenContent",
+            ) { targetState ->
+                when (targetState) {
+                    BaseScreenContentState.Error -> Box(modifier = base) {
+                        val currentError = error ?: return@Box
+                        (errorContent ?: { e, retry ->
+                            DefaultErrorContent(
+                                errorItem = e,
+                                onRetry = retry,
+                                onBack = onBack,
+                            )
+                        })(currentError, onRetry)
+                    }
 
-                isEmpty -> Box(
-                    modifier = base,
-                    contentAlignment = Alignment.Center
-                ) {
-                    (emptyContent ?: { DefaultEmptyContent() })()
-                }
+                    BaseScreenContentState.Loading -> Box(modifier = base) {
+                        (loadingContent ?: { DefaultLoadingContent() })()
+                    }
 
-                else -> {
-                    Box(
-                        modifier = bodyModifier,
-                        contentAlignment = contentAlignment
+                    BaseScreenContentState.Empty -> Box(
+                        modifier = base,
+                        contentAlignment = Alignment.Center
                     ) {
-                        Column(
-                            modifier = Modifier.fillMaxSize(),
-                            content = content
-                        )
+                        (emptyContent ?: { DefaultEmptyContent() })()
+                    }
+
+                    BaseScreenContentState.Content -> {
+                        Box(
+                            modifier = bodyModifier,
+                            contentAlignment = contentAlignment
+                        ) {
+                            Column(
+                                modifier = Modifier.fillMaxSize(),
+                                content = content
+                            )
+                        }
                     }
                 }
             }
         }
     }
+}
+
+private enum class BaseScreenContentState {
+    Loading,
+    Error,
+    Empty,
+    Content,
 }
 
 @Composable
@@ -187,7 +237,9 @@ fun DefaultEmptyContent() {
         ) {
             Text(
                 text = stringResource(R.string.empty_screen),
-                modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(bottom = 8.dp),
                 textAlign = TextAlign.Center,
                 style = MaterialTheme.typography.headlineSmall,
                 color = MaterialTheme.colorScheme.onBackground
@@ -207,7 +259,8 @@ fun DefaultEmptyContent() {
 fun EmptyContentCenter() {
     Box(
         modifier = Modifier
-            .fillMaxSize().padding(bottom = 12.dp),
+            .fillMaxSize()
+            .padding(bottom = 12.dp),
         contentAlignment = Alignment.Center
     ) {
         Column(
@@ -215,7 +268,9 @@ fun EmptyContentCenter() {
         ) {
             Text(
                 text = stringResource(R.string.empty_screen),
-                modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(bottom = 8.dp),
                 textAlign = TextAlign.Center,
                 style = MaterialTheme.typography.headlineSmall,
                 color = MaterialTheme.colorScheme.onBackground

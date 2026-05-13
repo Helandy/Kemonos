@@ -1,9 +1,19 @@
 package su.afk.kemonos.ui.components.posts.postCard
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.*
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -19,6 +29,8 @@ import su.afk.kemonos.preferences.ui.PostsSize.Companion.toPaddingInCornerBadge
 import su.afk.kemonos.preferences.ui.UiSettingModel
 import su.afk.kemonos.ui.components.posts.postCard.preview.PostPreview
 import su.afk.kemonos.ui.date.toUiDateTime
+import su.afk.kemonos.ui.motion.kemonosPressScale
+import su.afk.kemonos.ui.motion.rememberKemonosPressedScale
 import su.afk.kemonos.ui.preview.KemonosPreviewScreen
 
 @Composable
@@ -32,9 +44,13 @@ fun PostCard(
     val resolver = LocalDomainResolver.current
     val imgBaseUrl = remember(post.service) { resolver.imageBaseUrlByService(post.service) }
     val meta = rememberPostCardMeta(post)
+    val interactionSource = remember { MutableInteractionSource() }
+    val pressedScale = rememberKemonosPressedScale(interactionSource)
 
     Card(
         onClick = onClick,
+        modifier = Modifier.kemonosPressScale(pressedScale),
+        interactionSource = interactionSource,
         shape = RoundedCornerShape(4.dp),
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.surface,
@@ -66,7 +82,8 @@ fun PostCard(
             if (showFavCount && meta.favCount > 0) {
                 CornerBadge(
                     text = "❤ ${meta.favCount}",
-                    modifier = Modifier.align(Alignment.TopEnd)
+                    modifier = Modifier
+                        .align(Alignment.TopEnd)
                         .padding(postsSize.toPaddingInCornerBadge())
                 )
             }
@@ -75,7 +92,8 @@ fun PostCard(
             if (meta.videoCount > 0) {
                 CornerBadge(
                     text = "🎬 ${meta.videoCount}",
-                    modifier = Modifier.align(Alignment.BottomEnd)
+                    modifier = Modifier
+                        .align(Alignment.BottomEnd)
                         .padding(postsSize.toPaddingInCornerBadge())
                 )
             }
@@ -84,7 +102,8 @@ fun PostCard(
             if (post.attachments.isNotEmpty()) {
                 CornerBadge(
                     text = "\uD83D\uDCCE ${post.attachments.size}",
-                    modifier = Modifier.align(Alignment.BottomStart)
+                    modifier = Modifier
+                        .align(Alignment.BottomStart)
                         .padding(postsSize.toPaddingInCornerBadge())
                 )
             }

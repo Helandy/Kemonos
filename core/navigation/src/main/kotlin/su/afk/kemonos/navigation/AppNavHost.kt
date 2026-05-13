@@ -1,10 +1,28 @@
 package su.afk.kemonos.navigation
 
-import androidx.compose.runtime.*
+import androidx.compose.animation.core.EaseOutCubic
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideOutHorizontally
+import androidx.compose.animation.togetherWith
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.key
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.navigation3.rememberViewModelStoreNavEntryDecorator
-import androidx.navigation3.runtime.*
+import androidx.navigation3.runtime.NavEntry
+import androidx.navigation3.runtime.NavKey
+import androidx.navigation3.runtime.entryProvider
+import androidx.navigation3.runtime.rememberDecoratedNavEntries
+import androidx.navigation3.runtime.rememberNavBackStack
+import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
 import androidx.navigation3.ui.NavDisplay
 import su.afk.kemonos.navigation.tab.BottomTab
 
@@ -113,6 +131,32 @@ fun AppNavHost(
     NavDisplay(
         entries = entriesToShow,
         onBack = { navManager.back() },
-        modifier = modifier
+        modifier = modifier,
+        transitionSpec = {
+            fadeIn(animationSpec = tween(NavTransitionMillis, easing = EaseOutCubic)) +
+                    slideInHorizontally(
+                        animationSpec = tween(NavTransitionMillis, easing = EaseOutCubic),
+                        initialOffsetX = { it / 8 },
+                    ) togetherWith
+                    fadeOut(animationSpec = tween(NavTransitionMillis, easing = EaseOutCubic)) +
+                    slideOutHorizontally(
+                        animationSpec = tween(NavTransitionMillis, easing = EaseOutCubic),
+                        targetOffsetX = { -it / 12 },
+                    )
+        },
+        popTransitionSpec = {
+            fadeIn(animationSpec = tween(NavTransitionMillis, easing = EaseOutCubic)) +
+                    slideInHorizontally(
+                        animationSpec = tween(NavTransitionMillis, easing = EaseOutCubic),
+                        initialOffsetX = { -it / 8 },
+                    ) togetherWith
+                    fadeOut(animationSpec = tween(NavTransitionMillis, easing = EaseOutCubic)) +
+                    slideOutHorizontally(
+                        animationSpec = tween(NavTransitionMillis, easing = EaseOutCubic),
+                        targetOffsetX = { it / 12 },
+                    )
+        },
     )
 }
+
+private const val NavTransitionMillis = 200
