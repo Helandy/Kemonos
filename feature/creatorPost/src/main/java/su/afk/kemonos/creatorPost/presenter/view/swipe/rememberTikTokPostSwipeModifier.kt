@@ -7,14 +7,25 @@ import androidx.compose.foundation.gestures.awaitEachGesture
 import androidx.compose.foundation.gestures.awaitFirstDown
 import androidx.compose.foundation.gestures.waitForUpOrCancellation
 import androidx.compose.foundation.lazy.LazyListState
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.Stable
+import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.rememberUpdatedState
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
 import androidx.compose.ui.input.nestedscroll.NestedScrollSource
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.Velocity
 import androidx.compose.ui.unit.dp
@@ -55,6 +66,7 @@ fun rememberTikTokSwipeState(
     }
 
     val density = LocalDensity.current
+    val haptic = LocalHapticFeedback.current
     val thresholdPx = remember(threshold, density) { with(density) { threshold.toPx() } }
 
     // чтобы коллбеки не “застревали” старыми при рекомпозиции
@@ -64,6 +76,7 @@ fun rememberTikTokSwipeState(
     var dragDownPx by remember { mutableFloatStateOf(0f) }
     var dragUpPx by remember { mutableFloatStateOf(0f) }
     var direction by remember { mutableStateOf(SwipeHintDirection.NONE) }
+    var thresholdHapticDirection by remember { mutableStateOf(SwipeHintDirection.NONE) }
 
     var visualOffsetPx by remember { mutableFloatStateOf(0f) }
 
@@ -86,6 +99,7 @@ fun rememberTikTokSwipeState(
         dragDownPx = 0f
         dragUpPx = 0f
         direction = SwipeHintDirection.NONE
+        thresholdHapticDirection = SwipeHintDirection.NONE
     }
 
     fun updateVisual() {
@@ -121,11 +135,32 @@ fun rememberTikTokSwipeState(
         // если отменили во время анимации — оставим визуал как есть, дальше обновится жестом/пружинкой
     }
 
+    fun startDirection(newDirection: SwipeHintDirection) {
+        if (direction != newDirection) {
+            haptic.performHapticFeedback(HapticFeedbackType.SegmentTick)
+        }
+        direction = newDirection
+    }
+
+    fun maybePerformThresholdHaptic() {
+        val crossedThreshold = when (direction) {
+            SwipeHintDirection.DOWN -> dragDownPx >= thresholdPx
+            SwipeHintDirection.UP -> dragUpPx >= thresholdPx
+            SwipeHintDirection.NONE -> false
+        }
+
+        if (crossedThreshold && thresholdHapticDirection != direction) {
+            haptic.performHapticFeedback(HapticFeedbackType.GestureThresholdActivate)
+            thresholdHapticDirection = direction
+        }
+    }
+
     val connection = remember(
         thresholdPx,
         dragDamping,
         canSwipeDownAtTop,
         canSwipeUpAtBottom,
+        haptic,
     ) {
         object : NestedScrollConnection {
 
@@ -154,16 +189,18 @@ fun rememberTikTokSwipeState(
 
                 // ВНИЗ на верхней границе => prev
                 if (dy > 0 && atTop && canSwipeDownAtTop) {
-                    direction = SwipeHintDirection.DOWN
+                    startDirection(SwipeHintDirection.DOWN)
                     dragDownPx += dy
+                    maybePerformThresholdHaptic()
                     updateVisual()
                     return Offset(0f, dy * 0.85f)
                 }
 
                 // ВВЕРХ на нижней границе => next
                 if (dy < 0 && atBottom && canSwipeUpAtBottom) {
-                    direction = SwipeHintDirection.UP
+                    startDirection(SwipeHintDirection.UP)
                     dragUpPx += abs(dy)
+                    maybePerformThresholdHaptic()
                     updateVisual()
                     return Offset(0f, dy * 0.85f)
                 }
@@ -179,6 +216,7 @@ fun rememberTikTokSwipeState(
                 }
 
                 if (triggered) {
+                    haptic.performHapticFeedback(HapticFeedbackType.Confirm)
                     if (direction == SwipeHintDirection.DOWN) onPrev()
                     if (direction == SwipeHintDirection.UP) onNext()
                 }
@@ -217,7 +255,9 @@ fun rememberTikTokSwipeState(
     }
 
     return TikTokSwipeState(
-        modifier = Modifier.nestedScroll(connection).then(releaseModifier),
+        modifier = Modifier
+            .nestedScroll(connection)
+            .then(releaseModifier),
         dragOffsetPx = visualOffsetPx,
         progress = progress,
         direction = direction,
