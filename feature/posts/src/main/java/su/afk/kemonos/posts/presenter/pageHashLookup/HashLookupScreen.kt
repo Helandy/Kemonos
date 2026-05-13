@@ -3,9 +3,28 @@ package su.afk.kemonos.posts.presenter.pageHashLookup
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.*
+import androidx.compose.material3.Button
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ElevatedCard
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
@@ -25,10 +44,13 @@ import kotlinx.coroutines.withContext
 import su.afk.kemonos.domain.SelectedSite
 import su.afk.kemonos.posts.R
 import su.afk.kemonos.posts.domain.model.hashLookup.HashLookupDomain
-import su.afk.kemonos.posts.presenter.pageHashLookup.HashLookupState.*
+import su.afk.kemonos.posts.presenter.pageHashLookup.HashLookupState.Effect
+import su.afk.kemonos.posts.presenter.pageHashLookup.HashLookupState.Event
+import su.afk.kemonos.posts.presenter.pageHashLookup.HashLookupState.State
 import su.afk.kemonos.preferences.ui.shouldShowSiteToggleFab
 import su.afk.kemonos.ui.components.button.SiteToggleFab
 import su.afk.kemonos.ui.components.posts.PostsContentPaging
+import su.afk.kemonos.ui.haptic.rememberPullRefreshWithHaptic
 import su.afk.kemonos.ui.presenter.baseScreen.BaseScreen
 import su.afk.kemonos.ui.presenter.baseScreen.TopBarScroll
 import su.afk.kemonos.ui.uiUtils.file.resolveDisplayName
@@ -51,6 +73,9 @@ internal fun HashLookupScreen(
     val isEmptyResult = !isBusy && state.result?.posts?.isEmpty() == true
     val topBarScrollMode = if (isEmptyResult) TopBarScroll.Pinned else TopBarScroll.EnterAlways
     val pullState = rememberPullToRefreshState()
+    val onRefreshWithHaptic = rememberPullRefreshWithHaptic {
+        onEvent(Event.PullRefresh)
+    }
 
     val filePickerLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent()
@@ -108,7 +133,9 @@ internal fun HashLookupScreen(
             Spacer(modifier = Modifier.height(10.dp))
 
             ElevatedCard(
-                modifier = Modifier.fillMaxWidth().padding(bottom = 4.dp),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(bottom = 4.dp),
                 colors = CardDefaults.elevatedCardColors(
                     containerColor = MaterialTheme.colorScheme.surfaceContainerHigh
                 ),
@@ -191,7 +218,7 @@ internal fun HashLookupScreen(
                 .weight(1f),
             state = pullState,
             isRefreshing = isBusy,
-            onRefresh = { onEvent(Event.PullRefresh) },
+            onRefresh = onRefreshWithHaptic,
         ) {
             if (state.isLoading) {
                 Spacer(modifier = Modifier.height(12.dp))
@@ -291,7 +318,9 @@ internal fun HashLookupScreen(
 @Composable
 private fun HashLookupResultSummary(result: HashLookupDomain) {
     ElevatedCard(
-        modifier = Modifier.fillMaxWidth().padding(top = 12.dp),
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(top = 12.dp),
     ) {
         Column(
             modifier = Modifier

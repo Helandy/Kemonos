@@ -8,6 +8,7 @@ import androidx.compose.foundation.lazy.grid.LazyGridState
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.paging.LoadState
 import androidx.paging.compose.LazyPagingItems
@@ -19,6 +20,9 @@ import su.afk.kemonos.preferences.ui.PostsSize.Companion.toArrangement
 import su.afk.kemonos.preferences.ui.PostsSize.Companion.toDp
 import su.afk.kemonos.preferences.ui.UiSettingModel
 import su.afk.kemonos.ui.components.posts.postCard.PostCard
+import su.afk.kemonos.ui.haptic.PostGridScrollHapticEffect
+import su.afk.kemonos.ui.motion.KemonosLazyItemMotion
+import su.afk.kemonos.ui.motion.KemonosMotion
 import su.afk.kemonos.ui.paging.PagingAppendStateItem
 
 @Composable
@@ -34,6 +38,7 @@ internal fun PostsGridPaging(
     parseError: (Throwable) -> ErrorItem,
 ) {
     val gridState = rememberSaveable(saver = LazyGridState.Saver) { LazyGridState() }
+    PostGridScrollHapticEffect(gridState)
 
     LazyVerticalGrid(
         columns = GridCells.Adaptive(minSize = gridPostsSize.toDp()),
@@ -53,13 +58,21 @@ internal fun PostsGridPaging(
             key = { index -> posts.peek(index)?.stableKey() ?: "placeholder_$index" }
         ) { index ->
             val post = posts[index] ?: return@items
-            PostCard(
-                post = post,
-                onClick = { postClick(post) },
-                showFavCount = showFavCount,
-                uiSettingModel = uiSettingModel,
-                postsSize = gridPostsSize,
-            )
+            KemonosLazyItemMotion(
+                modifier = Modifier.animateItem(
+                    fadeInSpec = KemonosMotion.lazyItemFadeSpec,
+                    placementSpec = KemonosMotion.lazyItemPlacementSpec,
+                    fadeOutSpec = KemonosMotion.lazyItemFadeSpec,
+                )
+            ) {
+                PostCard(
+                    post = post,
+                    onClick = { postClick(post) },
+                    showFavCount = showFavCount,
+                    uiSettingModel = uiSettingModel,
+                    postsSize = gridPostsSize,
+                )
+            }
         }
 
         /** Loading + error retry button */

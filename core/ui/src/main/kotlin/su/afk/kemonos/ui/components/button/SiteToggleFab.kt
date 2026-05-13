@@ -1,5 +1,7 @@
 package su.afk.kemonos.ui.components.button
 
+import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -7,6 +9,7 @@ import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
@@ -14,6 +17,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import su.afk.kemonos.domain.SelectedSite
 import su.afk.kemonos.ui.R
+import su.afk.kemonos.ui.motion.KemonosMotion
 
 @Composable
 fun SiteToggleFab(
@@ -21,10 +25,18 @@ fun SiteToggleFab(
     selectedSite: SelectedSite,
     onToggleSite: () -> Unit,
 ) {
+    val alpha by animateFloatAsState(
+        targetValue = if (enable) 1f else 0.5f,
+        animationSpec = KemonosMotion.pressScaleSpec,
+        label = "siteToggleFabAlpha",
+    )
+
     FloatingActionButton(
         onClick = { if (enable) onToggleSite() },
-        modifier = Modifier.padding(horizontal = 8.dp)
-            .alpha(if (enable) 1f else 0.5f)
+        modifier = Modifier
+            .padding(horizontal = 8.dp)
+            .animateContentSize()
+            .alpha(alpha)
             .clickable(enabled = enable) {},
         containerColor = MaterialTheme.colorScheme.primary,
     ) {
@@ -43,4 +55,3 @@ fun SiteToggleFab(
         )
     }
 }
-

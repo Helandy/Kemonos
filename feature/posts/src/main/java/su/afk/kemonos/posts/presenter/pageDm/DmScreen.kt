@@ -1,15 +1,32 @@
 package su.afk.kemonos.posts.presenter.pageDm
 
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
-import androidx.compose.material3.*
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FilledTonalButton
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Text
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalFocusManager
@@ -22,7 +39,8 @@ import androidx.paging.compose.collectAsLazyPagingItems
 import kotlinx.coroutines.flow.Flow
 import su.afk.kemonos.domain.SelectedSite
 import su.afk.kemonos.posts.api.dms.DmDomain
-import su.afk.kemonos.posts.presenter.pageDm.DmState.*
+import su.afk.kemonos.posts.presenter.pageDm.DmState.Effect
+import su.afk.kemonos.posts.presenter.pageDm.DmState.Event
 import su.afk.kemonos.posts.presenter.pageDm.DmState.State
 import su.afk.kemonos.preferences.ui.shouldShowSiteToggleFab
 import su.afk.kemonos.ui.R
@@ -30,6 +48,7 @@ import su.afk.kemonos.ui.components.button.SiteToggleFab
 import su.afk.kemonos.ui.components.dm.DmCreatorUi
 import su.afk.kemonos.ui.components.dm.DmItem
 import su.afk.kemonos.ui.components.dm.DmUiItem
+import su.afk.kemonos.ui.haptic.rememberPullRefreshWithHaptic
 import su.afk.kemonos.ui.presenter.baseScreen.BaseScreen
 import su.afk.kemonos.ui.presenter.baseScreen.EmptyContentCenter
 import su.afk.kemonos.ui.presenter.baseScreen.TopBarScroll
@@ -46,6 +65,9 @@ internal fun DmScreen(
     val dms = state.dms.collectAsLazyPagingItems()
     val focusManager = LocalFocusManager.current
     val pullState = rememberPullToRefreshState()
+    val onRefreshWithHaptic = rememberPullRefreshWithHaptic {
+        onEvent(Event.PullRefresh)
+    }
 
     val isPageLoading = dms.loadState.refresh is LoadState.Loading
     val isBusy = isPageLoading || siteSwitching
@@ -63,7 +85,9 @@ internal fun DmScreen(
                 onValueChange = { onEvent(Event.SearchQueryChanged(it)) },
                 label = { Text(text = stringResource(R.string.search)) },
                 singleLine = true,
-                modifier = Modifier.fillMaxWidth().padding(bottom = 6.dp),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(bottom = 6.dp),
                 trailingIcon = {
                     if (state.searchQuery.isNotBlank()) {
                         IconButton(onClick = { onEvent(Event.SearchQueryChanged("")) }) {
@@ -100,7 +124,7 @@ internal fun DmScreen(
                 .weight(1f),
             state = pullState,
             isRefreshing = isBusy,
-            onRefresh = { onEvent(Event.PullRefresh) },
+            onRefresh = onRefreshWithHaptic,
         ) {
             DmContent(
                 dms = dms,

@@ -1,15 +1,31 @@
 package su.afk.kemonos.profile.presenter.favoritePosts
 
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.rememberLazyGridState
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Dashboard
 import androidx.compose.material.icons.filled.GroupWork
-import androidx.compose.material3.*
+import androidx.compose.material3.Button
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
@@ -37,6 +53,9 @@ import su.afk.kemonos.ui.components.creator.CreatorListItem
 import su.afk.kemonos.ui.components.posts.PostsContentPaging
 import su.afk.kemonos.ui.components.posts.postCard.PostCard
 import su.afk.kemonos.ui.components.searchBar.PostsSearchBarWithMediaFilters
+import su.afk.kemonos.ui.haptic.PostGridScrollHapticEffect
+import su.afk.kemonos.ui.haptic.PostListScrollHapticEffect
+import su.afk.kemonos.ui.haptic.rememberPullRefreshWithHaptic
 import su.afk.kemonos.ui.presenter.baseScreen.BaseScreen
 import su.afk.kemonos.ui.presenter.baseScreen.CenterBackTopBar
 import su.afk.kemonos.ui.presenter.baseScreen.TopBarScroll
@@ -52,6 +71,10 @@ internal fun FavoritePostsScreen(
     val focusManager = LocalFocusManager.current
     val posts = state.posts.collectAsLazyPagingItems()
     val pullState = rememberPullToRefreshState()
+    val onRefreshWithHaptic = rememberPullRefreshWithHaptic {
+        onEvent(Event.Load(refresh = true))
+        posts.refresh()
+    }
     val pagingIsEmpty = posts.loadState.refresh is LoadState.NotLoading && posts.itemCount == 0
 
     BaseScreen(
@@ -103,10 +126,7 @@ internal fun FavoritePostsScreen(
                 .weight(1f),
             state = pullState,
             isRefreshing = state.loading,
-            onRefresh = {
-                onEvent(Event.Load(refresh = true))
-                posts.refresh()
-            },
+            onRefresh = onRefreshWithHaptic,
         ) {
             if (state.groupByAuthorEnabled) {
                 FavoritePostsGroupedList(
@@ -149,7 +169,13 @@ private fun FavoritePostsGroupedList(
 
     when (postsViewMode) {
         PostsViewMode.LIST -> {
-            LazyColumn(contentPadding = PaddingValues(vertical = 8.dp)) {
+            val listState = rememberLazyListState()
+            PostListScrollHapticEffect(listState)
+
+            LazyColumn(
+                state = listState,
+                contentPadding = PaddingValues(vertical = 8.dp)
+            ) {
                 groups.forEachIndexed { groupIndex, group ->
                     item(key = "header:${group.service}:${group.userId}") {
                         Box(modifier = Modifier.padding(top = if (groupIndex == 0) 0.dp else 12.dp, bottom = 8.dp)) {
@@ -180,8 +206,12 @@ private fun FavoritePostsGroupedList(
         }
 
         PostsViewMode.GRID -> {
+            val gridState = rememberLazyGridState()
+            PostGridScrollHapticEffect(gridState)
+
             LazyVerticalGrid(
                 columns = GridCells.Adaptive(minSize = uiSettingModel.favoritePostsGridSize.toDp()),
+                state = gridState,
                 verticalArrangement = Arrangement.spacedBy(uiSettingModel.favoritePostsGridSize.toArrangement()),
                 horizontalArrangement = Arrangement.spacedBy(uiSettingModel.favoritePostsGridSize.toArrangement()),
                 contentPadding = PaddingValues(vertical = 8.dp),

@@ -3,7 +3,13 @@ package su.afk.kemonos.posts.presenter.pageTags
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -11,7 +17,12 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
-import androidx.compose.material3.*
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Text
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
@@ -25,10 +36,13 @@ import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.flow.Flow
 import su.afk.kemonos.domain.SelectedSite
 import su.afk.kemonos.posts.api.tags.Tags
-import su.afk.kemonos.posts.presenter.pageTags.TagsPageState.*
+import su.afk.kemonos.posts.presenter.pageTags.TagsPageState.Effect
+import su.afk.kemonos.posts.presenter.pageTags.TagsPageState.Event
+import su.afk.kemonos.posts.presenter.pageTags.TagsPageState.State
 import su.afk.kemonos.preferences.ui.shouldShowSiteToggleFab
 import su.afk.kemonos.ui.R
 import su.afk.kemonos.ui.components.button.SiteToggleFab
+import su.afk.kemonos.ui.haptic.rememberPullRefreshWithHaptic
 import su.afk.kemonos.ui.presenter.baseScreen.BaseScreen
 import su.afk.kemonos.ui.presenter.baseScreen.TopBarScroll
 
@@ -45,6 +59,9 @@ internal fun TagsPageScreen(
     val hasActiveSearch = state.searchQuery.trim().length >= 2
     val isEmptyResult = hasActiveSearch && state.filteredTags.isEmpty()
     val pullState = rememberPullToRefreshState()
+    val onRefreshWithHaptic = rememberPullRefreshWithHaptic {
+        onEvent(Event.PullRefresh)
+    }
 
     val chunkedTags = remember(state.filteredTags) {
         state.filteredTags.chunked(50)
@@ -62,7 +79,9 @@ internal fun TagsPageScreen(
                 onValueChange = { onEvent(Event.SearchQueryChanged(it)) },
                 label = { Text(stringResource(R.string.search)) },
                 singleLine = true,
-                modifier = Modifier.fillMaxWidth().padding(bottom = 6.dp),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(bottom = 6.dp),
                 trailingIcon = {
                     if (state.searchQuery.isNotBlank()) {
                         IconButton(onClick = { onEvent(Event.SearchQueryChanged("")) }) {
@@ -99,7 +118,7 @@ internal fun TagsPageScreen(
                 .weight(1f),
             state = pullState,
             isRefreshing = isPageLoading,
-            onRefresh = { onEvent(Event.PullRefresh) },
+            onRefresh = onRefreshWithHaptic,
         ) {
             LazyColumn(
                 verticalArrangement = Arrangement.spacedBy(8.dp),

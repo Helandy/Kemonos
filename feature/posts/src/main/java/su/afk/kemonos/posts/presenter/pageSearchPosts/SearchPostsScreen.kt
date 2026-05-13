@@ -1,13 +1,26 @@
 package su.afk.kemonos.posts.presenter.pageSearchPosts
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Casino
 import androidx.compose.material.icons.filled.Close
-import androidx.compose.material3.*
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.InputChip
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
@@ -20,7 +33,9 @@ import androidx.paging.LoadState
 import androidx.paging.compose.collectAsLazyPagingItems
 import kotlinx.coroutines.flow.Flow
 import su.afk.kemonos.domain.SelectedSite
-import su.afk.kemonos.posts.presenter.pageSearchPosts.SearchPostsState.*
+import su.afk.kemonos.posts.presenter.pageSearchPosts.SearchPostsState.Effect
+import su.afk.kemonos.posts.presenter.pageSearchPosts.SearchPostsState.Event
+import su.afk.kemonos.posts.presenter.pageSearchPosts.SearchPostsState.State
 import su.afk.kemonos.preferences.ui.RandomButtonPlacement
 import su.afk.kemonos.preferences.ui.shouldShowSiteToggleFab
 import su.afk.kemonos.ui.R
@@ -28,6 +43,8 @@ import su.afk.kemonos.ui.components.button.RandomButton
 import su.afk.kemonos.ui.components.button.SiteToggleFab
 import su.afk.kemonos.ui.components.posts.PostsContentPaging
 import su.afk.kemonos.ui.components.searchBar.PostsSearchBarWithMediaFilters
+import su.afk.kemonos.ui.haptic.rememberPullRefreshWithHaptic
+import su.afk.kemonos.ui.motion.KemonosMotion
 import su.afk.kemonos.ui.presenter.baseScreen.BaseScreen
 import su.afk.kemonos.ui.presenter.baseScreen.TopBarScroll
 
@@ -54,6 +71,9 @@ internal fun SearchPostsScreen(
     // during debounced search updates.
     val topBarScrollMode = TopBarScroll.EnterAlways
     val pullState = rememberPullToRefreshState()
+    val onRefreshWithHaptic = rememberPullRefreshWithHaptic {
+        onEvent(Event.PullRefresh)
+    }
 
     BaseScreen(
         topBarWindowInsets = WindowInsets(0),
@@ -92,9 +112,15 @@ internal fun SearchPostsScreen(
                     },
                     bottomPadding = 0
                 )
-                if (state.recentSearches.isNotEmpty()) {
+            AnimatedVisibility(
+                visible = state.recentSearches.isNotEmpty(),
+                enter = KemonosMotion.itemEnter,
+                exit = KemonosMotion.itemExit,
+            ) {
                     LazyRow(
-                        modifier = Modifier.fillMaxWidth(),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .animateContentSize(),
                         horizontalArrangement = Arrangement.spacedBy(8.dp),
                     ) {
                         itemsIndexed(
@@ -102,6 +128,11 @@ internal fun SearchPostsScreen(
                             key = { index, query -> "$query-$index" }
                         ) { _, query ->
                             InputChip(
+                                modifier = Modifier.animateItem(
+                                    fadeInSpec = KemonosMotion.lazyItemFadeSpec,
+                                    placementSpec = KemonosMotion.lazyItemPlacementSpec,
+                                    fadeOutSpec = KemonosMotion.lazyItemFadeSpec,
+                                ),
                                 selected = false,
                                 onClick = {
                                     focusManager.clearFocus()
@@ -153,7 +184,7 @@ internal fun SearchPostsScreen(
                 .weight(1f),
             state = pullState,
             isRefreshing = isBusy,
-            onRefresh = { onEvent(Event.PullRefresh) },
+            onRefresh = onRefreshWithHaptic,
         ) {
             PostsContentPaging(
                 postsViewMode = state.uiSettingModel.searchPostsViewMode,

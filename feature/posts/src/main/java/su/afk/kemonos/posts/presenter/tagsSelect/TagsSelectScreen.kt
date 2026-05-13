@@ -14,10 +14,13 @@ import androidx.compose.ui.unit.dp
 import androidx.paging.LoadState
 import androidx.paging.compose.collectAsLazyPagingItems
 import kotlinx.coroutines.flow.Flow
-import su.afk.kemonos.posts.presenter.tagsSelect.TagsSelectState.*
+import su.afk.kemonos.posts.presenter.tagsSelect.TagsSelectState.Effect
+import su.afk.kemonos.posts.presenter.tagsSelect.TagsSelectState.Event
+import su.afk.kemonos.posts.presenter.tagsSelect.TagsSelectState.State
 import su.afk.kemonos.ui.R
 import su.afk.kemonos.ui.components.posts.PostsContentPaging
 import su.afk.kemonos.ui.components.posts.filter.PostMediaFilterChips
+import su.afk.kemonos.ui.haptic.rememberPullRefreshWithHaptic
 import su.afk.kemonos.ui.presenter.baseScreen.BaseScreen
 import su.afk.kemonos.ui.presenter.baseScreen.CenterBackTopBar
 import su.afk.kemonos.ui.presenter.baseScreen.TopBarScroll
@@ -31,6 +34,9 @@ internal fun TagsPostsScreen(
 ) {
     val posts = state.posts.collectAsLazyPagingItems()
     val pullState = rememberPullToRefreshState()
+    val onRefreshWithHaptic = rememberPullRefreshWithHaptic {
+        onEvent(Event.PullRefresh)
+    }
     val isRefreshing = posts.loadState.refresh is LoadState.Loading
     val isEmptyResult = posts.itemCount == 0 && posts.loadState.refresh !is LoadState.Loading
     val topBarScrollMode = if (isEmptyResult) TopBarScroll.Pinned else TopBarScroll.EnterAlways
@@ -52,7 +58,7 @@ internal fun TagsPostsScreen(
                 .fillMaxSize(),
             state = pullState,
             isRefreshing = isRefreshing,
-            onRefresh = { onEvent(Event.PullRefresh) },
+            onRefresh = onRefreshWithHaptic,
         ) {
             PostsContentPaging(
                 postsViewMode = state.uiSettingModel.tagsPostsViewMode,
