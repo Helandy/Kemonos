@@ -53,8 +53,6 @@ import su.afk.kemonos.ui.components.creator.CreatorListItem
 import su.afk.kemonos.ui.components.posts.PostsContentPaging
 import su.afk.kemonos.ui.components.posts.postCard.PostCard
 import su.afk.kemonos.ui.components.searchBar.PostsSearchBarWithMediaFilters
-import su.afk.kemonos.ui.haptic.PostGridScrollHapticEffect
-import su.afk.kemonos.ui.haptic.PostListScrollHapticEffect
 import su.afk.kemonos.ui.haptic.rememberPullRefreshWithHaptic
 import su.afk.kemonos.ui.presenter.baseScreen.BaseScreen
 import su.afk.kemonos.ui.presenter.baseScreen.CenterBackTopBar
@@ -170,7 +168,6 @@ private fun FavoritePostsGroupedList(
     when (postsViewMode) {
         PostsViewMode.LIST -> {
             val listState = rememberLazyListState()
-            PostListScrollHapticEffect(listState)
 
             LazyColumn(
                 state = listState,
@@ -207,7 +204,6 @@ private fun FavoritePostsGroupedList(
 
         PostsViewMode.GRID -> {
             val gridState = rememberLazyGridState()
-            PostGridScrollHapticEffect(gridState)
 
             LazyVerticalGrid(
                 columns = GridCells.Adaptive(minSize = uiSettingModel.favoritePostsGridSize.toDp()),

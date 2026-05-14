@@ -20,7 +20,6 @@ import su.afk.kemonos.preferences.ui.PostsSize.Companion.toArrangement
 import su.afk.kemonos.preferences.ui.PostsSize.Companion.toDp
 import su.afk.kemonos.preferences.ui.UiSettingModel
 import su.afk.kemonos.ui.components.posts.postCard.PostCard
-import su.afk.kemonos.ui.haptic.PostGridScrollHapticEffect
 import su.afk.kemonos.ui.motion.KemonosLazyItemMotion
 import su.afk.kemonos.ui.motion.KemonosMotion
 import su.afk.kemonos.ui.paging.PagingAppendStateItem
@@ -38,7 +37,6 @@ internal fun PostsGridPaging(
     parseError: (Throwable) -> ErrorItem,
 ) {
     val gridState = rememberSaveable(saver = LazyGridState.Saver) { LazyGridState() }
-    PostGridScrollHapticEffect(gridState)
 
     LazyVerticalGrid(
         columns = GridCells.Adaptive(minSize = gridPostsSize.toDp()),
