@@ -63,6 +63,7 @@
     </string>
     <string name="show_preview_file_names">Show file names</string>
     <string name="hide_preview_file_names">Hide file names</string>
+    <string name="show_attachments_block">Show attachments block</string>
     <string name="profile_community_messages_refreshed_at">Updated: %1$s</string>
 
     <string name="next">Next</string>

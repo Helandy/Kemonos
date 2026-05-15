@@ -1,17 +1,31 @@
 package su.afk.kemonos.creatorPost.presenter.view.header
 
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.outlined.Label
 import androidx.compose.material.icons.automirrored.outlined.TextSnippet
+import androidx.compose.material.icons.filled.AttachFile
 import androidx.compose.material.icons.filled.Download
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Share
 import androidx.compose.material.icons.outlined.AccountBox
 import androidx.compose.material.icons.outlined.ContentCopy
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -25,6 +39,8 @@ internal fun PostTitleBlock(
     title: String?,
     showPreviewNames: Boolean,
     onTogglePreviewNames: () -> Unit,
+    showAttachmentsAction: Boolean,
+    onShowAttachmentsClick: () -> Unit,
     onDownloadAllClick: () -> Unit,
     onShareClick: () -> Unit,
     onCopyOriginalClick: () -> Unit,
@@ -35,7 +51,8 @@ internal fun PostTitleBlock(
     var menuExpanded by remember { mutableStateOf(false) }
 
     Row(
-        modifier = Modifier.fillMaxWidth()
+        modifier = Modifier
+            .fillMaxWidth()
             .padding(vertical = 6.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
@@ -125,6 +142,22 @@ internal fun PostTitleBlock(
                         onClick = {
                             menuExpanded = false
                             onShowCreatorBannerClick()
+                        }
+                    )
+                }
+
+                if (showAttachmentsAction) {
+                    DropdownMenuItem(
+                        text = { Text(stringResource(R.string.show_attachments_block)) },
+                        leadingIcon = {
+                            Icon(
+                                imageVector = Icons.Default.AttachFile,
+                                contentDescription = null
+                            )
+                        },
+                        onClick = {
+                            menuExpanded = false
+                            onShowAttachmentsClick()
                         }
                     )
                 }

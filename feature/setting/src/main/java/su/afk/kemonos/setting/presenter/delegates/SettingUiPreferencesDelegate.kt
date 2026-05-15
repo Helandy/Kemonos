@@ -92,6 +92,10 @@ class SettingUiPreferencesDelegate @Inject constructor(
             is SettingState.Event.ChangeViewSetting.EventAppThemeMode ->
                 scope.launch { uiSetting.setAppThemeMode(event.value) }
 
+            /** Виброотклик в приложении */
+            is SettingState.Event.ChangeViewSetting.HapticFeedbackEnabled ->
+                scope.launch { uiSetting.setHapticFeedbackEnabled(event.value) }
+
             /** Формат даты в приложении */
             is SettingState.Event.ChangeViewSetting.EventDateFormatMode ->
                 scope.launch { uiSetting.setDateFormatMode(event.value) }
@@ -147,6 +151,10 @@ class SettingUiPreferencesDelegate @Inject constructor(
             /** Показывать комментарии в посте */
             is SettingState.Event.ChangeViewSetting.ShowCommentsInPost ->
                 scope.launch { uiSetting.setShowCommentsInPost(event.value) }
+
+            /** Скрывать блок вложений в посте */
+            is SettingState.Event.ChangeViewSetting.HideAttachmentsBlockInPost ->
+                scope.launch { uiSetting.setHideAttachmentsBlockInPost(event.value) }
 
             /** Вид папок для скачивания */
             is SettingState.Event.ChangeViewSetting.EditDownloadFolderMode ->

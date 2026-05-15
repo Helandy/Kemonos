@@ -69,7 +69,9 @@ internal fun FavoritePostsScreen(
     val focusManager = LocalFocusManager.current
     val posts = state.posts.collectAsLazyPagingItems()
     val pullState = rememberPullToRefreshState()
-    val onRefreshWithHaptic = rememberPullRefreshWithHaptic {
+    val onRefreshWithHaptic = rememberPullRefreshWithHaptic(
+        enabled = state.uiSettingModel.hapticFeedbackEnabled,
+    ) {
         onEvent(Event.Load(refresh = true))
         posts.refresh()
     }

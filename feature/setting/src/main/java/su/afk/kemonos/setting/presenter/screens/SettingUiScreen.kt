@@ -72,6 +72,8 @@ internal fun SettingUiScreen(
             onSiteDisplayModeChanged = { onEvent(Event.ChangeViewSetting.SiteDisplayModeChanged(it)) },
             appThemeMode = ui.appThemeMode,
             onAppThemeMode = { onEvent(Event.ChangeViewSetting.EventAppThemeMode(it)) },
+            hapticFeedbackEnabled = ui.hapticFeedbackEnabled,
+            onHapticFeedbackEnabled = { onEvent(Event.ChangeViewSetting.HapticFeedbackEnabled(it)) },
             dateFormatMode = ui.dateFormatMode,
             onDateFormatMode = { onEvent(Event.ChangeViewSetting.EventDateFormatMode(it)) },
             randomButtonPlace = ui.randomButtonPlacement,

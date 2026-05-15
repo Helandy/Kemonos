@@ -51,6 +51,7 @@ fun rememberTikTokSwipeState(
 
     canSwipeDownAtTop: Boolean,
     canSwipeUpAtBottom: Boolean,
+    hapticFeedbackEnabled: Boolean = true,
 
     onSwipeDownAtTop: () -> Unit,
     onSwipeUpAtBottom: () -> Unit,
@@ -136,7 +137,7 @@ fun rememberTikTokSwipeState(
     }
 
     fun startDirection(newDirection: SwipeHintDirection) {
-        if (direction != newDirection) {
+        if (hapticFeedbackEnabled && direction != newDirection) {
             haptic.performHapticFeedback(HapticFeedbackType.SegmentTick)
         }
         direction = newDirection
@@ -149,7 +150,7 @@ fun rememberTikTokSwipeState(
             SwipeHintDirection.NONE -> false
         }
 
-        if (crossedThreshold && thresholdHapticDirection != direction) {
+        if (hapticFeedbackEnabled && crossedThreshold && thresholdHapticDirection != direction) {
             haptic.performHapticFeedback(HapticFeedbackType.GestureThresholdActivate)
             thresholdHapticDirection = direction
         }
@@ -160,6 +161,7 @@ fun rememberTikTokSwipeState(
         dragDamping,
         canSwipeDownAtTop,
         canSwipeUpAtBottom,
+        hapticFeedbackEnabled,
         haptic,
     ) {
         object : NestedScrollConnection {
@@ -215,8 +217,11 @@ fun rememberTikTokSwipeState(
                     else -> false
                 }
 
-                if (triggered) {
+                if (triggered && hapticFeedbackEnabled) {
                     haptic.performHapticFeedback(HapticFeedbackType.Confirm)
+                }
+
+                if (triggered) {
                     if (direction == SwipeHintDirection.DOWN) onPrev()
                     if (direction == SwipeHintDirection.UP) onNext()
                 }

@@ -7,12 +7,15 @@ import androidx.compose.ui.platform.LocalHapticFeedback
 
 @Composable
 fun rememberPullRefreshWithHaptic(
+    enabled: Boolean = true,
     onRefresh: () -> Unit,
 ): () -> Unit {
     val haptic = LocalHapticFeedback.current
-    return remember(haptic, onRefresh) {
+    return remember(enabled, haptic, onRefresh) {
         {
-            haptic.performHapticFeedback(HapticFeedbackType.GestureThresholdActivate)
+            if (enabled) {
+                haptic.performHapticFeedback(HapticFeedbackType.GestureThresholdActivate)
+            }
             onRefresh()
         }
     }

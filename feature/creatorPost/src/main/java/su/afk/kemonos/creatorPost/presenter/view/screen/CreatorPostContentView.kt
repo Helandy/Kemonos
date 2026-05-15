@@ -1,6 +1,10 @@
 package su.afk.kemonos.creatorPost.presenter.view.screen
 
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.runtime.Composable
@@ -47,7 +51,9 @@ internal fun CreatorPostContentView(
     onEvent: (Event) -> Unit,
     sectionState: CreatorPostSectionState,
     showPreviewFileNames: Boolean,
+    showHiddenAttachmentsBlock: Boolean,
     onTogglePreviewFileNames: () -> Unit,
+    onShowHiddenAttachmentsBlock: () -> Unit,
     onCopyOriginalText: (String) -> Unit,
     onShareRemote: (url: String, fileName: String?, mime: String) -> Unit,
     shareInProgress: Boolean,
@@ -76,6 +82,9 @@ internal fun CreatorPostContentView(
             state.commentDomains.firstOrNull()?.id?.isNotBlank() == true
     val hasTags = !post.tags.isNullOrEmpty()
     val hasAttachments = resolvedPost.attachments.isNotEmpty()
+    val shouldHideAttachmentsBlock =
+        state.uiSettingModel.hideAttachmentsBlockInPost && !showHiddenAttachmentsBlock
+    val showAttachmentsBlock = hasAttachments && !shouldHideAttachmentsBlock
 
     val canPrevPost = post.prevId != null
     val canNextPost = post.nextId != null
@@ -95,6 +104,7 @@ internal fun CreatorPostContentView(
         dragDamping = 0.55f,
         canSwipeDownAtTop = canPrevPost,
         canSwipeUpAtBottom = canNextPost,
+        hapticFeedbackEnabled = state.uiSettingModel.hapticFeedbackEnabled,
         onSwipeDownAtTop = { onEvent(Event.OpenPrevPost) },
         onSwipeUpAtBottom = { onEvent(Event.OpenNextPost) },
     )
@@ -128,6 +138,8 @@ internal fun CreatorPostContentView(
                     title = post.title,
                     showPreviewNames = showPreviewFileNames,
                     onTogglePreviewNames = onTogglePreviewFileNames,
+                    showAttachmentsAction = hasAttachments && shouldHideAttachmentsBlock,
+                    onShowAttachmentsClick = onShowHiddenAttachmentsBlock,
                     onDownloadAllClick = { onEvent(Event.DownloadAllClicked) },
                     onShareClick = { onEvent(Event.CopyPostLinkClicked) },
                     onCopyOriginalClick = { onCopyOriginalText(post.content.orEmpty()) },
@@ -303,7 +315,7 @@ internal fun CreatorPostContentView(
                 }
             }
 
-            if (hasAttachments) {
+            if (showAttachmentsBlock) {
                 item(key = "attachments_toggle") {
                     CollapsibleSectionHeader(
                         title = stringResource(

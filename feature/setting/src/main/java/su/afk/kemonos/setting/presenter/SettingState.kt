@@ -105,6 +105,7 @@ class SettingState {
             data class EventRandomButtonPlacement(val value: RandomButtonPlacement) : ChangeViewSetting
             data class TranslateLanguageTag(val value: String) : ChangeViewSetting
             data class EventAppThemeMode(val value: AppThemeMode) : ChangeViewSetting
+            data class HapticFeedbackEnabled(val value: Boolean) : ChangeViewSetting
             data class EventDateFormatMode(val value: DateFormatMode) : ChangeViewSetting
 
             data class CoilCacheSizeMb(val value: Int) : ChangeViewSetting
@@ -121,6 +122,7 @@ class SettingState {
             data class ShowImagePreviewShareAction(val value: Boolean) : ChangeViewSetting
             data class UsePreviewOnlyInImageViewer(val value: Boolean) : ChangeViewSetting
             data class ShowCommentsInPost(val value: Boolean) : ChangeViewSetting
+            data class HideAttachmentsBlockInPost(val value: Boolean) : ChangeViewSetting
 
             data class EditDownloadFolderMode(val value: DownloadFolderMode) : ChangeViewSetting
             data class AddServiceName(val value: Boolean) : ChangeViewSetting

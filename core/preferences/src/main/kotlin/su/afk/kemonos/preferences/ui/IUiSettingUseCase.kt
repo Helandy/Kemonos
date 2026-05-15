@@ -41,6 +41,9 @@ interface IUiSettingUseCase {
     /** Тема приложения */
     suspend fun setAppThemeMode(value: AppThemeMode)
 
+    /** Виброотклик в приложении */
+    suspend fun setHapticFeedbackEnabled(value: Boolean)
+
     /** Формат даты в приложении */
     suspend fun setDateFormatMode(value: DateFormatMode)
 
@@ -88,6 +91,9 @@ interface IUiSettingUseCase {
 
     /** Показывать комментарии в посте */
     suspend fun setShowCommentsInPost(value: Boolean)
+
+    /** Скрывать блок вложений в посте */
+    suspend fun setHideAttachmentsBlockInPost(value: Boolean)
 
     /** Экспериментальный календарь поиска популярных постов */
     suspend fun setExperimentalCalendar(value: Boolean)

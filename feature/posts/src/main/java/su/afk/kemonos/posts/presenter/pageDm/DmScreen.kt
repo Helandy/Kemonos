@@ -65,7 +65,9 @@ internal fun DmScreen(
     val dms = state.dms.collectAsLazyPagingItems()
     val focusManager = LocalFocusManager.current
     val pullState = rememberPullToRefreshState()
-    val onRefreshWithHaptic = rememberPullRefreshWithHaptic {
+    val onRefreshWithHaptic = rememberPullRefreshWithHaptic(
+        enabled = state.uiSettingModel.hapticFeedbackEnabled,
+    ) {
         onEvent(Event.PullRefresh)
     }
 
