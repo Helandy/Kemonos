@@ -35,7 +35,9 @@ internal fun PopularPostsScreen(
 ) {
     val posts = state.posts.collectAsLazyPagingItems()
     val pullState = rememberPullToRefreshState()
-    val onRefreshWithHaptic = rememberPullRefreshWithHaptic {
+    val onRefreshWithHaptic = rememberPullRefreshWithHaptic(
+        enabled = state.uiSettingModel.hapticFeedbackEnabled,
+    ) {
         onEvent(Event.PullRefresh)
     }
 

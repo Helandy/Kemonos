@@ -28,6 +28,8 @@ import su.afk.kemonos.preferences.ui.UiSettingKey.DOWNLOAD_FOLDER_MODE
 import su.afk.kemonos.preferences.ui.UiSettingKey.EXPERIMENTAL_CALENDAR
 import su.afk.kemonos.preferences.ui.UiSettingKey.FAVORITE_POSTS_GRID_SIZE
 import su.afk.kemonos.preferences.ui.UiSettingKey.FAVORITE_POSTS_VIEW_MODE
+import su.afk.kemonos.preferences.ui.UiSettingKey.HAPTIC_FEEDBACK_ENABLED
+import su.afk.kemonos.preferences.ui.UiSettingKey.HIDE_ATTACHMENTS_BLOCK_IN_POST
 import su.afk.kemonos.preferences.ui.UiSettingKey.POPULAR_POSTS_GRID_SIZE
 import su.afk.kemonos.preferences.ui.UiSettingKey.POPULAR_POSTS_VIEW_MODE
 import su.afk.kemonos.preferences.ui.UiSettingKey.POSTS_SIZE
@@ -84,6 +86,8 @@ internal class UiSettingUseCase @Inject constructor(
             randomButtonPlacement = p.readEnum(RANDOM_BUTTON_PLACEMENT, UiSettingModel.DEFAULT_RANDOM_BUTTON_PLACEMENT),
             translateLanguageTag = p[TRANSLATE_LANGUAGE_TAG] ?: UiSettingModel.DEFAULT_TRANSLATE_LANGUAGE_TAG,
             appThemeMode = p.readEnum(APP_THEME_MODE, UiSettingModel.DEFAULT_APP_THEME_MODE),
+            hapticFeedbackEnabled = p[HAPTIC_FEEDBACK_ENABLED]
+                ?: UiSettingModel.DEFAULT_HAPTIC_FEEDBACK_ENABLED,
 
             dateFormatMode = p.readEnum(DATE_FORMAT_MODE, UiSettingModel.DEFAULT_DATE_FORMAT_MODE),
 
@@ -110,6 +114,8 @@ internal class UiSettingUseCase @Inject constructor(
             usePreviewOnlyInImageViewer = p[USE_PREVIEW_ONLY_IN_IMAGE_VIEWER]
                 ?: UiSettingModel.DEFAULT_USE_PREVIEW_ONLY_IN_IMAGE_VIEWER,
             showCommentsInPost = p[SHOW_COMMENTS_IN_POST] ?: UiSettingModel.DEFAULT_SHOW_COMMENTS_IN_POST,
+            hideAttachmentsBlockInPost = p[HIDE_ATTACHMENTS_BLOCK_IN_POST]
+                ?: UiSettingModel.DEFAULT_HIDE_ATTACHMENTS_BLOCK_IN_POST,
             experimentalCalendar = p[EXPERIMENTAL_CALENDAR] ?: UiSettingModel.DEFAULT_EXPERIMENTAL_CALENDAR,
 
             downloadFolderMode = p.readEnum(DOWNLOAD_FOLDER_MODE, UiSettingModel.DEFAULT_DOWNLOAD_FOLDER_MODE),
@@ -215,6 +221,11 @@ internal class UiSettingUseCase @Inject constructor(
         dataStore.edit { it[APP_THEME_MODE] = value.name }
     }
 
+    /** Виброотклик в приложении */
+    override suspend fun setHapticFeedbackEnabled(value: Boolean) {
+        dataStore.edit { it[HAPTIC_FEEDBACK_ENABLED] = value }
+    }
+
     /** Формат даты в приложении */
     override suspend fun setDateFormatMode(value: DateFormatMode) {
         dataStore.edit { it[DATE_FORMAT_MODE] = value.name }
@@ -290,6 +301,11 @@ internal class UiSettingUseCase @Inject constructor(
         dataStore.edit { it[SHOW_COMMENTS_IN_POST] = value }
     }
 
+    /** Скрывать блок вложений в посте */
+    override suspend fun setHideAttachmentsBlockInPost(value: Boolean) {
+        dataStore.edit { it[HIDE_ATTACHMENTS_BLOCK_IN_POST] = value }
+    }
+
     /** Экспериментальный календарь */
     override suspend fun setExperimentalCalendar(value: Boolean) {
         dataStore.edit { it[EXPERIMENTAL_CALENDAR] = value }
@@ -356,6 +372,7 @@ object UiSettingKey {
     val RANDOM_BUTTON_PLACEMENT = stringPreferencesKey("RANDOM_BUTTON_PLACEMENT")
     val TRANSLATE_LANGUAGE_TAG = stringPreferencesKey("TRANSLATE_LANGUAGE")
     val APP_THEME_MODE = stringPreferencesKey("APP_THEME_MODE")
+    val HAPTIC_FEEDBACK_ENABLED = booleanPreferencesKey("HAPTIC_FEEDBACK_ENABLED")
 
     val DATE_FORMAT_MODE = stringPreferencesKey("DATE_FORMAT_MODE")
 
@@ -376,6 +393,7 @@ object UiSettingKey {
     val SHOW_IMAGE_PREVIEW_SHARE_ACTION = booleanPreferencesKey("SHOW_IMAGE_PREVIEW_SHARE_ACTION")
     val USE_PREVIEW_ONLY_IN_IMAGE_VIEWER = booleanPreferencesKey("USE_PREVIEW_ONLY_IN_IMAGE_VIEWER")
     val SHOW_COMMENTS_IN_POST = booleanPreferencesKey("SHOW_COMMENTS_IN_POST")
+    val HIDE_ATTACHMENTS_BLOCK_IN_POST = booleanPreferencesKey("HIDE_ATTACHMENTS_BLOCK_IN_POST")
     val EXPERIMENTAL_CALENDAR = booleanPreferencesKey("EXPERIMENTAL_CALENDAR")
 
     val DOWNLOAD_FOLDER_MODE = stringPreferencesKey("DOWNLOAD_FOLDER_MODE")

@@ -140,6 +140,8 @@
     <string name="settings_theme_system">Системная</string>
     <string name="settings_theme_light">Светлая</string>
     <string name="settings_theme_dark">Темная</string>
+    <string name="settings_haptic_feedback_title">Виброотклик</string>
+    <string name="settings_haptic_feedback_subtitle">Вибрация при pull-to-refresh и свайпах между постами</string>
 
     <string name="settings_translate_language_title">Язык перевода</string>
     <string name="settings_translate_language_system">Системный</string>
@@ -214,6 +216,8 @@
     <string name="settings_use_preview_only_in_image_viewer_title">Показывать превью во фуллскрине</string>
     <string name="settings_use_preview_only_in_image_viewer_subtitle">Показывать превью, не загружая полное изображение при просмотре</string>
     <string name="settings_show_comments_in_post_title">Показывать комментарии в посте</string>
+    <string name="settings_hide_attachments_block_in_post_title">Скрывать блок вложений в посте</string>
+    <string name="settings_hide_attachments_block_in_post_subtitle">В меню поста его можно показать для текущего поста</string>
 
     <string name="settings_downloads_title">Скачивание</string>
 

@@ -63,6 +63,7 @@
     </string>
     <string name="show_preview_file_names">Показывать имена файлов</string>
     <string name="hide_preview_file_names">Скрыть имена файлов</string>
+    <string name="show_attachments_block">Показать блок вложений</string>
     <string name="profile_community_messages_refreshed_at">Обновлено: %1$s</string>
 
     <string name="next">Вперед</string>

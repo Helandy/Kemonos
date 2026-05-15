@@ -71,7 +71,9 @@ internal fun SearchPostsScreen(
     // during debounced search updates.
     val topBarScrollMode = TopBarScroll.EnterAlways
     val pullState = rememberPullToRefreshState()
-    val onRefreshWithHaptic = rememberPullRefreshWithHaptic {
+    val onRefreshWithHaptic = rememberPullRefreshWithHaptic(
+        enabled = state.uiSettingModel.hapticFeedbackEnabled,
+    ) {
         onEvent(Event.PullRefresh)
     }
 

@@ -62,6 +62,13 @@ internal fun ViewSettingsSection(
         onCheckedChange = { onEvent(Event.ChangeViewSetting.ShowCommentsInPost(it)) },
     )
 
+    SwitchRow(
+        title = stringResource(R.string.settings_hide_attachments_block_in_post_title),
+        subtitle = stringResource(R.string.settings_hide_attachments_block_in_post_subtitle),
+        checked = ui.hideAttachmentsBlockInPost,
+        onCheckedChange = { onEvent(Event.ChangeViewSetting.HideAttachmentsBlockInPost(it)) },
+    )
+
     SectionSpacer()
     SettingsSectionTitle(text = stringResource(R.string.settings_view_modes_section_title))
     ViewModesSection(

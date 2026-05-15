@@ -59,7 +59,9 @@ internal fun TagsPageScreen(
     val hasActiveSearch = state.searchQuery.trim().length >= 2
     val isEmptyResult = hasActiveSearch && state.filteredTags.isEmpty()
     val pullState = rememberPullToRefreshState()
-    val onRefreshWithHaptic = rememberPullRefreshWithHaptic {
+    val onRefreshWithHaptic = rememberPullRefreshWithHaptic(
+        enabled = state.uiSettingModel.hapticFeedbackEnabled,
+    ) {
         onEvent(Event.PullRefresh)
     }
 

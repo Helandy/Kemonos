@@ -134,6 +134,8 @@
     <string name="settings_theme_system">System</string>
     <string name="settings_theme_light">Light</string>
     <string name="settings_theme_dark">Dark</string>
+    <string name="settings_haptic_feedback_title">Haptic feedback</string>
+    <string name="settings_haptic_feedback_subtitle">Vibrate on pull-to-refresh and post swipe gestures</string>
 
     <string name="settings_translate_language_title">Translation language</string>
     <string name="settings_translate_language_system">System</string>
@@ -208,6 +210,8 @@
     <string name="settings_use_preview_only_in_image_viewer_title">Use previews in fullscreen image viewer</string>
     <string name="settings_use_preview_only_in_image_viewer_subtitle">Open the preview instead of loading the full image when available</string>
     <string name="settings_show_comments_in_post_title">Show comments in post</string>
+    <string name="settings_hide_attachments_block_in_post_title">Hide attachment block in post</string>
+    <string name="settings_hide_attachments_block_in_post_subtitle">The post menu can show it for the current post</string>
 
     <string name="settings_downloads_title">Downloads</string>
 

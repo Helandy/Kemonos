@@ -166,6 +166,9 @@ data class UiSettingModel(
     /** Тема приложения */
     val appThemeMode: AppThemeMode = DEFAULT_APP_THEME_MODE,
 
+    /** Виброотклик в приложении */
+    val hapticFeedbackEnabled: Boolean = DEFAULT_HAPTIC_FEEDBACK_ENABLED,
+
     /** Формат даты в приложении */
     val dateFormatMode: DateFormatMode = DEFAULT_DATE_FORMAT_MODE,
 
@@ -206,6 +209,9 @@ data class UiSettingModel(
 
     /** Показывать комментарии в посте */
     val showCommentsInPost: Boolean = DEFAULT_SHOW_COMMENTS_IN_POST,
+
+    /** Скрывать блок вложений в посте */
+    val hideAttachmentsBlockInPost: Boolean = DEFAULT_HIDE_ATTACHMENTS_BLOCK_IN_POST,
 
     /** Эксперементальный календарь поиска популярных постов */
     val experimentalCalendar: Boolean = DEFAULT_EXPERIMENTAL_CALENDAR,
@@ -257,6 +263,7 @@ data class UiSettingModel(
         val DEFAULT_RANDOM_BUTTON_PLACEMENT = RandomButtonPlacement.SEARCH_BAR
         const val DEFAULT_TRANSLATE_LANGUAGE_TAG = "" // системный
         val DEFAULT_APP_THEME_MODE = AppThemeMode.SYSTEM
+        const val DEFAULT_HAPTIC_FEEDBACK_ENABLED = true
         val DEFAULT_DATE_FORMAT_MODE = DateFormatMode.DD_MM_YYYY
         const val DEFAULT_COIL_CACHE_SIZE = 300
         const val DEFAULT_SHOW_VIDEO_PREVIEW = true
@@ -267,6 +274,7 @@ data class UiSettingModel(
         const val DEFAULT_SHOW_IMAGE_PREVIEW_SHARE_ACTION = false
         const val DEFAULT_USE_PREVIEW_ONLY_IN_IMAGE_VIEWER = false
         const val DEFAULT_SHOW_COMMENTS_IN_POST = true
+        const val DEFAULT_HIDE_ATTACHMENTS_BLOCK_IN_POST = false
         const val DEFAULT_EXPERIMENTAL_CALENDAR = false
 
         val DEFAULT_DOWNLOAD_FOLDER_MODE = DownloadFolderMode.CREATOR_POST_TITLE_ID

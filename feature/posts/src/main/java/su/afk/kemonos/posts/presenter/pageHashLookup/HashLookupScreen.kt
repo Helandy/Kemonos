@@ -73,7 +73,9 @@ internal fun HashLookupScreen(
     val isEmptyResult = !isBusy && state.result?.posts?.isEmpty() == true
     val topBarScrollMode = if (isEmptyResult) TopBarScroll.Pinned else TopBarScroll.EnterAlways
     val pullState = rememberPullToRefreshState()
-    val onRefreshWithHaptic = rememberPullRefreshWithHaptic {
+    val onRefreshWithHaptic = rememberPullRefreshWithHaptic(
+        enabled = state.uiSettingModel.hapticFeedbackEnabled,
+    ) {
         onEvent(Event.PullRefresh)
     }
 
