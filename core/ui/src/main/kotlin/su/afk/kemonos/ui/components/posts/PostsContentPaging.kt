@@ -24,6 +24,7 @@ fun PostsContentPaging(
     header: (@Composable () -> Unit)? = null,
     showFavCount: Boolean = false,
     gridPostsSize: PostsSize = uiSettingModel.postsSize,
+    scrollStateKey: String = "posts",
 ) {
     val errorMapper = LocalErrorMapper.current
 
@@ -38,7 +39,8 @@ fun PostsContentPaging(
                 appendLoadState = posts.loadState.append,
                 onRetryAppend = { posts.retry() },
                 header = header,
-                parseError = errorMapper::map
+                parseError = errorMapper::map,
+                scrollStateKey = scrollStateKey,
             )
         }
 
@@ -51,7 +53,8 @@ fun PostsContentPaging(
                 appendLoadState = posts.loadState.append,
                 onRetryAppend = { posts.retry() },
                 header = header,
-                parseError = errorMapper::map
+                parseError = errorMapper::map,
+                scrollStateKey = scrollStateKey,
             )
         }
     }

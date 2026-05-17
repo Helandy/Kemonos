@@ -196,6 +196,7 @@ internal fun SearchPostsScreen(
                 currentTag = null,
                 onPostClick = { onEvent(Event.NavigateToPost(it)) },
                 onRetry = { posts.retry() },
+                scrollStateKey = "search:$site:${state.searchQuery.trim()}:${state.mediaFilter}:${state.uiSettingModel.searchPostsViewMode}:${state.uiSettingModel.searchPostsGridSize}",
             )
         }
     }

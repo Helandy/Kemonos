@@ -86,7 +86,8 @@ internal fun PopularPostsScreen(
                 currentTag = null,
                 onPostClick = { onEvent(Event.NavigateToPost(it)) },
                 onRetry = { posts.retry() },
-                showFavCount = true
+                showFavCount = true,
+                scrollStateKey = "popular:$site:${state.popularPeriod}:${state.popularDateForPopular}:${state.uiSettingModel.popularPostsViewMode}:${state.uiSettingModel.popularPostsGridSize}",
             )
         }
     }

@@ -303,6 +303,7 @@ internal fun HashLookupScreen(
                         currentTag = null,
                         onPostClick = { onEvent(Event.NavigateToPost(it)) },
                         onRetry = { onEvent(Event.Submit) },
+                        scrollStateKey = "hash:$site:${result.hash}:${state.uiSettingModel.searchPostsViewMode}:${state.uiSettingModel.searchPostsGridSize}",
                         header = {
                             Spacer(modifier = Modifier.height(12.dp))
                             HashLookupResultSummary(result = result)

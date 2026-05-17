@@ -21,7 +21,13 @@ import su.afk.kemonos.creatorProfile.api.domain.models.profileLinks.ProfileLink.
 import su.afk.kemonos.creatorProfile.presenter.creatorProfile.CreatorProfileState.Event
 import su.afk.kemonos.creatorProfile.presenter.creatorProfile.CreatorProfileState.State
 import su.afk.kemonos.creatorProfile.presenter.creatorProfile.model.ProfileTab
-import su.afk.kemonos.creatorProfile.presenter.creatorProfile.view.*
+import su.afk.kemonos.creatorProfile.presenter.creatorProfile.view.AnnouncementsScreen
+import su.afk.kemonos.creatorProfile.presenter.creatorProfile.view.CommunityScreen
+import su.afk.kemonos.creatorProfile.presenter.creatorProfile.view.FanCardGridScreen
+import su.afk.kemonos.creatorProfile.presenter.creatorProfile.view.ProfileLinksScreen
+import su.afk.kemonos.creatorProfile.presenter.creatorProfile.view.SearchBar
+import su.afk.kemonos.creatorProfile.presenter.creatorProfile.view.SimilarCreatorsScreen
+import su.afk.kemonos.creatorProfile.presenter.creatorProfile.view.TagsScreen
 import su.afk.kemonos.creatorProfile.presenter.creatorProfile.view.discordProfile.DiscordProfilePlaceholder
 import su.afk.kemonos.creatorProfile.presenter.creatorProfile.view.header.CreatorScreenTopBar
 import su.afk.kemonos.creatorProfile.presenter.creatorProfile.view.header.ProfileTabsBar
@@ -198,6 +204,7 @@ private fun SelectedTab(
                     onEvent(Event.OpenPost(it))
                 },
                 onRetry = { postsItems.retry() },
+                scrollStateKey = "profile-posts:${state.profile?.service}:${state.profile?.id}:${state.currentTag}:${state.searchText.trim()}:${state.mediaFilter}:${state.uiSettingModel.profilePostsViewMode}:${state.uiSettingModel.profilePostsGridSize}",
             )
         }
 

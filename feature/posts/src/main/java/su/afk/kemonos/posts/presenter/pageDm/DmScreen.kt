@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
@@ -26,6 +27,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -135,6 +137,7 @@ internal fun DmScreen(
                     onEvent(Event.NavigateToProfile(service, id))
                 },
                 onRetry = { dms.retry() },
+                scrollStateKey = "dm:$site:${state.searchQuery.trim()}",
                 modifier = Modifier.fillMaxSize(),
             )
         }
@@ -147,10 +150,14 @@ private fun DmContent(
     dateMode: su.afk.kemonos.preferences.ui.DateFormatMode,
     onProfileClick: (service: String, id: String) -> Unit,
     onRetry: () -> Unit,
+    scrollStateKey: String,
     modifier: Modifier = Modifier,
 ) {
     var expandedDmHash by remember { mutableStateOf<String?>(null) }
     val isEmpty = dms.itemCount == 0 && dms.loadState.refresh !is LoadState.Loading
+    val listState = rememberSaveable(scrollStateKey, saver = LazyListState.Saver) {
+        LazyListState()
+    }
 
     if (isEmpty) {
         EmptyContentCenter()
@@ -159,6 +166,7 @@ private fun DmContent(
 
     LazyColumn(
         modifier = modifier,
+        state = listState,
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
         items(

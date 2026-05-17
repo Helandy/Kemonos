@@ -4,9 +4,12 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
-import androidx.compose.foundation.lazy.grid.*
-import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.GridItemSpan
+import androidx.compose.foundation.lazy.grid.LazyGridState
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.paging.compose.LazyPagingItems
@@ -30,8 +33,19 @@ fun CreatorsContentPaging(
     isFreshProvider: ((FavoriteArtist) -> Boolean)? = null,
     expanded: Boolean? = null,
     onClickRandomHeader: (() -> Unit)? = null,
-    listState: LazyListState = rememberLazyListState(),
-    gridState: LazyGridState = rememberLazyGridState(),
+    scrollStateKey: String = "creators",
+    listState: LazyListState = rememberSaveable(
+        "$scrollStateKey:list",
+        saver = LazyListState.Saver
+    ) {
+        LazyListState()
+    },
+    gridState: LazyGridState = rememberSaveable(
+        "$scrollStateKey:grid",
+        saver = LazyGridState.Saver
+    ) {
+        LazyGridState()
+    },
 ) {
     fun updatedFor(item: FavoriteArtist): String? = updatedProvider?.invoke(item)
     fun freshFor(item: FavoriteArtist): Boolean = isFreshProvider?.invoke(item) ?: false

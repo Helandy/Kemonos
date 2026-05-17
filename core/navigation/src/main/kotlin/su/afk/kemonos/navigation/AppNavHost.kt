@@ -1,12 +1,5 @@
 package su.afk.kemonos.navigation
 
-import androidx.compose.animation.core.EaseOutCubic
-import androidx.compose.animation.core.tween
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.animation.slideInHorizontally
-import androidx.compose.animation.slideOutHorizontally
-import androidx.compose.animation.togetherWith
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -131,32 +124,6 @@ fun AppNavHost(
     NavDisplay(
         entries = entriesToShow,
         onBack = { navManager.back() },
-        modifier = modifier,
-        transitionSpec = {
-            fadeIn(animationSpec = tween(NavTransitionMillis, easing = EaseOutCubic)) +
-                    slideInHorizontally(
-                        animationSpec = tween(NavTransitionMillis, easing = EaseOutCubic),
-                        initialOffsetX = { it / 8 },
-                    ) togetherWith
-                    fadeOut(animationSpec = tween(NavTransitionMillis, easing = EaseOutCubic)) +
-                    slideOutHorizontally(
-                        animationSpec = tween(NavTransitionMillis, easing = EaseOutCubic),
-                        targetOffsetX = { -it / 12 },
-                    )
-        },
-        popTransitionSpec = {
-            fadeIn(animationSpec = tween(NavTransitionMillis, easing = EaseOutCubic)) +
-                    slideInHorizontally(
-                        animationSpec = tween(NavTransitionMillis, easing = EaseOutCubic),
-                        initialOffsetX = { -it / 8 },
-                    ) togetherWith
-                    fadeOut(animationSpec = tween(NavTransitionMillis, easing = EaseOutCubic)) +
-                    slideOutHorizontally(
-                        animationSpec = tween(NavTransitionMillis, easing = EaseOutCubic),
-                        targetOffsetX = { it / 12 },
-                    )
-        },
+        modifier = modifier
     )
 }
-
-private const val NavTransitionMillis = 200

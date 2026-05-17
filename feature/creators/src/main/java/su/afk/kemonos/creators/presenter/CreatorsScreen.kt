@@ -2,11 +2,12 @@ package su.afk.kemonos.creators.presenter
 
 import android.content.Intent
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.grid.rememberLazyGridState
-import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.lazy.LazyListState
+import androidx.compose.foundation.lazy.grid.LazyGridState
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalInspectionMode
@@ -19,7 +20,9 @@ import androidx.paging.compose.collectAsLazyPagingItems
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.flowOf
-import su.afk.kemonos.creators.presenter.CreatorsState.*
+import su.afk.kemonos.creators.presenter.CreatorsState.Effect
+import su.afk.kemonos.creators.presenter.CreatorsState.Event
+import su.afk.kemonos.creators.presenter.CreatorsState.State
 import su.afk.kemonos.creators.presenter.model.creatorsSortOptions
 import su.afk.kemonos.creators.presenter.view.CreatorsGithubRateBanner
 import su.afk.kemonos.creators.presenter.view.CreatorsVideoInfoDomainBanner
@@ -67,8 +70,17 @@ internal fun CreatorsScreen(
     val topBarScrollMode = if (isEmptyResult) TopBarScroll.Pinned else TopBarScroll.EnterAlways
 
 
-    val listState = rememberLazyListState()
-    val gridState = rememberLazyGridState()
+    val randomSectionKey = visibleRandomItems
+        .joinToString("|") { "${it.service}:${it.id}:${it.relationId}:${it.favedSeq}" }
+        .hashCode()
+    val scrollStateKey =
+        "creators:$site:${state.searchQuery.trim()}:${state.selectedService}:${state.sortedType}:${state.sortAscending}:${state.uiSettingModel.creatorsViewMode}:${state.uiSettingModel.suggestRandomAuthors}:${state.randomExpanded}:$randomSectionKey"
+    val listState = rememberSaveable("$scrollStateKey:list", saver = LazyListState.Saver) {
+        LazyListState()
+    }
+    val gridState = rememberSaveable("$scrollStateKey:grid", saver = LazyGridState.Saver) {
+        LazyGridState()
+    }
     LaunchedEffect(Unit) {
         effect.collect { item ->
             when (item) {

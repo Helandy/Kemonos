@@ -9,11 +9,11 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.GridItemSpan
+import androidx.compose.foundation.lazy.grid.LazyGridState
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.rememberLazyGridState
-import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Dashboard
@@ -29,6 +29,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
@@ -149,6 +150,7 @@ internal fun FavoritePostsScreen(
                     showFavCount = false,
                     currentTag = null,
                     onRetry = { posts.refresh() },
+                    scrollStateKey = "favorite-posts:${state.searchQuery.trim()}:${state.mediaFilter}:${state.uiSettingModel.favoritePostsViewMode}:${state.uiSettingModel.favoritePostsGridSize}",
                 )
             }
         }
@@ -166,10 +168,16 @@ private fun FavoritePostsGroupedList(
     onProfileClick: (service: String, creatorId: String) -> Unit,
 ) {
     val groups = buildAuthorGroups(posts, authorNamesByKey)
+    val groupedPostsKey =
+        posts.joinToString("|") { "${it.service}:${it.userId}:${it.id}" }.hashCode()
+    val scrollStateKey =
+        "favorite-posts-grouped:$postsViewMode:${uiSettingModel.favoritePostsGridSize}:$groupedPostsKey"
 
     when (postsViewMode) {
         PostsViewMode.LIST -> {
-            val listState = rememberLazyListState()
+            val listState = rememberSaveable("$scrollStateKey:list", saver = LazyListState.Saver) {
+                LazyListState()
+            }
 
             LazyColumn(
                 state = listState,
@@ -205,7 +213,9 @@ private fun FavoritePostsGroupedList(
         }
 
         PostsViewMode.GRID -> {
-            val gridState = rememberLazyGridState()
+            val gridState = rememberSaveable("$scrollStateKey:grid", saver = LazyGridState.Saver) {
+                LazyGridState()
+            }
 
             LazyVerticalGrid(
                 columns = GridCells.Adaptive(minSize = uiSettingModel.favoritePostsGridSize.toDp()),
