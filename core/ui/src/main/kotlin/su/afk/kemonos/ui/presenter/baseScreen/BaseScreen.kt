@@ -1,9 +1,5 @@
 package su.afk.kemonos.ui.presenter.baseScreen
 
-import androidx.compose.animation.AnimatedContent
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -45,7 +41,6 @@ import su.afk.kemonos.domain.models.ErrorItem
 import su.afk.kemonos.error.error.view.DefaultErrorContent
 import su.afk.kemonos.ui.R
 import su.afk.kemonos.ui.imageLoader.LocalAppImageLoader
-import su.afk.kemonos.ui.motion.KemonosMotion
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -83,133 +78,109 @@ fun BaseScreen(
 
     content: @Composable ColumnScope.() -> Unit,
 ) {
-    key(topBarScroll) {
-        val topAppBarState = rememberTopAppBarState()
+    val topAppBarState = key(topBarScroll) {
+        rememberTopAppBarState()
+    }
 
-        val scrollBehavior = when (topBarScroll) {
-            TopBarScroll.None -> null
-            TopBarScroll.EnterAlways ->
-                TopAppBarDefaults.enterAlwaysScrollBehavior(topAppBarState)
+    val scrollBehavior = when (topBarScroll) {
+        TopBarScroll.None -> null
+        TopBarScroll.EnterAlways ->
+            TopAppBarDefaults.enterAlwaysScrollBehavior(topAppBarState)
 
-            TopBarScroll.ExitUntilCollapsed ->
-                TopAppBarDefaults.exitUntilCollapsedScrollBehavior(topAppBarState)
+        TopBarScroll.ExitUntilCollapsed ->
+            TopAppBarDefaults.exitUntilCollapsedScrollBehavior(topAppBarState)
 
-            TopBarScroll.Pinned ->
-                TopAppBarDefaults.pinnedScrollBehavior(topAppBarState)
-        }
+        TopBarScroll.Pinned ->
+            TopAppBarDefaults.pinnedScrollBehavior(topAppBarState)
+    }
 
-        Scaffold(
-            contentWindowInsets = WindowInsets.safeDrawing.only(
-                WindowInsetsSides.Top + WindowInsetsSides.Horizontal
-            ),
-            modifier = Modifier
-                .fillMaxSize()
-                .let {
-                    if (scrollBehavior != null)
-                        it.nestedScroll(scrollBehavior.nestedScrollConnection)
-                    else it
-                },
-            topBar = {
-                if (customTopBar != null) {
-                    customTopBar(scrollBehavior)
-                } else {
-                    topBar?.let { slot ->
-                        StandardTopBar(
-                            content = { slot() },
-                            scrollBehavior = scrollBehavior,
-                            topBarWindowInsets = topBarWindowInsets
-                        )
-                    }
-                }
+    Scaffold(
+        contentWindowInsets = WindowInsets.safeDrawing.only(
+            WindowInsetsSides.Top + WindowInsetsSides.Horizontal
+        ),
+        modifier = Modifier
+            .fillMaxSize()
+            .let {
+                if (scrollBehavior != null)
+                    it.nestedScroll(scrollBehavior.nestedScrollConnection)
+                else it
             },
-
-            floatingActionButton = {
-                if (floatingActionButtonStart != null || floatingActionButtonEnd != null) {
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(
-                                start = 4.dp,
-                                end = 4.dp,
-                                bottom = floatingActionButtonBottomPadding
-                            ),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.Bottom
-                    ) {
-                        Box { floatingActionButtonStart?.invoke() }
-                        Box { floatingActionButtonEnd?.invoke() }
-                    }
+        topBar = {
+            if (customTopBar != null) {
+                customTopBar(scrollBehavior)
+            } else {
+                topBar?.let { slot ->
+                    StandardTopBar(
+                        content = { slot() },
+                        scrollBehavior = scrollBehavior,
+                        topBarWindowInsets = topBarWindowInsets
+                    )
                 }
-            },
-            floatingActionButtonPosition = FabPosition.Center,
-        ) { innerPadding ->
-            val base = contentModifier
-                .fillMaxSize()
-                .padding(innerPadding)
-                .padding(contentPadding)
+            }
+        },
 
-            val bodyModifier = if (isScroll) base.verticalScroll(rememberScrollState()) else base
+        floatingActionButton = {
+            if (floatingActionButtonStart != null || floatingActionButtonEnd != null) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(
+                            start = 4.dp,
+                            end = 4.dp,
+                            bottom = floatingActionButtonBottomPadding
+                        ),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.Bottom
+                ) {
+                    Box { floatingActionButtonStart?.invoke() }
+                    Box { floatingActionButtonEnd?.invoke() }
+                }
+            }
+        },
+        floatingActionButtonPosition = FabPosition.Center,
+    ) { innerPadding ->
+        val base = contentModifier
+            .fillMaxSize()
+            .padding(innerPadding)
+            .padding(contentPadding)
 
-            val screenState = when {
-                error != null -> BaseScreenContentState.Error
-                isLoading -> BaseScreenContentState.Loading
-                isEmpty -> BaseScreenContentState.Empty
-                else -> BaseScreenContentState.Content
+        val bodyModifier = if (isScroll) base.verticalScroll(rememberScrollState()) else base
+
+        Box(modifier = Modifier.fillMaxSize()) {
+            Box(
+                modifier = bodyModifier,
+                contentAlignment = contentAlignment
+            ) {
+                Column(
+                    modifier = Modifier.fillMaxSize(),
+                    content = content
+                )
             }
 
-            AnimatedContent(
-                targetState = screenState,
-                transitionSpec = {
-                    fadeIn(KemonosMotion.screenFadeSpec) togetherWith
-                            fadeOut(KemonosMotion.screenFadeSpec)
-                },
-                label = "baseScreenContent",
-            ) { targetState ->
-                when (targetState) {
-                    BaseScreenContentState.Error -> Box(modifier = base) {
-                        val currentError = error ?: return@Box
-                        (errorContent ?: { e, retry ->
-                            DefaultErrorContent(
-                                errorItem = e,
-                                onRetry = retry,
-                                onBack = onBack,
-                            )
-                        })(currentError, onRetry)
-                    }
+            when {
+                error != null -> Box(modifier = base) {
+                    (errorContent ?: { e, retry ->
+                        DefaultErrorContent(
+                            errorItem = e,
+                            onRetry = retry,
+                            onBack = onBack,
+                        )
+                    })(error, onRetry)
+                }
 
-                    BaseScreenContentState.Loading -> Box(modifier = base) {
-                        (loadingContent ?: { DefaultLoadingContent() })()
-                    }
+                isLoading -> Box(modifier = base) {
+                    (loadingContent ?: { DefaultLoadingContent() })()
+                }
 
-                    BaseScreenContentState.Empty -> Box(
-                        modifier = base,
-                        contentAlignment = Alignment.Center
-                    ) {
-                        (emptyContent ?: { DefaultEmptyContent() })()
-                    }
-
-                    BaseScreenContentState.Content -> {
-                        Box(
-                            modifier = bodyModifier,
-                            contentAlignment = contentAlignment
-                        ) {
-                            Column(
-                                modifier = Modifier.fillMaxSize(),
-                                content = content
-                            )
-                        }
-                    }
+                isEmpty -> Box(
+                    modifier = base,
+                    contentAlignment = Alignment.Center
+                ) {
+                    (emptyContent ?: { DefaultEmptyContent() })()
                 }
             }
         }
     }
-}
-
-private enum class BaseScreenContentState {
-    Loading,
-    Error,
-    Empty,
-    Content,
 }
 
 @Composable

@@ -70,6 +70,7 @@ internal fun TagsPostsScreen(
                 currentTag = null,
                 onPostClick = { onEvent(Event.NavigateToPost(it)) },
                 onRetry = { posts.retry() },
+                scrollStateKey = "tag-posts:${state.selectedTag}:${state.mediaFilter}:${state.uiSettingModel.tagsPostsViewMode}:${state.uiSettingModel.tagsPostsGridSize}",
                 header = {
                     PostMediaFilterChips(
                         filter = state.mediaFilter,

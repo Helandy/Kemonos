@@ -102,6 +102,7 @@ internal fun FavoriteProfilesScreen(state: State, onEvent: (Event) -> Unit) {
                         )
                     )
                 },
+                scrollStateKey = "favorite-profiles:${state.searchQuery.trim()}:${state.selectedService}:${state.sortedType}:${state.sortAscending}:${state.uiSettingModel.creatorsFavoriteViewMode}",
             )
         }
     }

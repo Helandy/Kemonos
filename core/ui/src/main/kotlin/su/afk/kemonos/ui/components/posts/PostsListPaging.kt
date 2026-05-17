@@ -3,8 +3,9 @@ package su.afk.kemonos.ui.components.posts
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.unit.dp
 import androidx.paging.LoadState
 import androidx.paging.compose.LazyPagingItems
@@ -13,8 +14,6 @@ import su.afk.kemonos.domain.models.PostDomain
 import su.afk.kemonos.domain.models.PostDomain.Companion.stableKey
 import su.afk.kemonos.preferences.ui.UiSettingModel
 import su.afk.kemonos.ui.components.posts.postCard.PostCard
-import su.afk.kemonos.ui.motion.KemonosLazyItemMotion
-import su.afk.kemonos.ui.motion.KemonosMotion
 import su.afk.kemonos.ui.paging.PagingAppendStateItem
 
 @Composable
@@ -27,8 +26,14 @@ internal fun PostsListPaging(
     onRetryAppend: () -> Unit,
     header: (@Composable () -> Unit)? = null,
     parseError: (Throwable) -> ErrorItem,
+    scrollStateKey: String,
 ) {
+    val listState = rememberSaveable(scrollStateKey, saver = LazyListState.Saver) {
+        LazyListState()
+    }
+
     LazyColumn(
+        state = listState,
         contentPadding = PaddingValues(bottom = 72.dp),
         verticalArrangement = Arrangement.spacedBy(8.dp),
     ) {
@@ -43,20 +48,12 @@ internal fun PostsListPaging(
             key = { index -> posts.peek(index)?.stableKey() ?: "placeholder_$index" }
         ) { index ->
             val post = posts[index] ?: return@items
-            KemonosLazyItemMotion(
-                modifier = Modifier.animateItem(
-                    fadeInSpec = KemonosMotion.lazyItemFadeSpec,
-                    placementSpec = KemonosMotion.lazyItemPlacementSpec,
-                    fadeOutSpec = KemonosMotion.lazyItemFadeSpec,
-                )
-            ) {
-                PostCard(
-                    post = post,
-                    onClick = { onPostClick(post) },
-                    showFavCount = showFavCount,
-                    uiSettingModel = uiSettingModel
-                )
-            }
+            PostCard(
+                post = post,
+                onClick = { onPostClick(post) },
+                showFavCount = showFavCount,
+                uiSettingModel = uiSettingModel
+            )
         }
 
         /** Loading + error retry button */
