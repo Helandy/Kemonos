@@ -6,20 +6,8 @@
 -keepattributes Signature,InnerClasses,EnclosingMethod
 -keepattributes RuntimeVisibleAnnotations,RuntimeVisibleParameterAnnotations,AnnotationDefault
 
-# Preserve Gson-annotated fields while still allowing class/field obfuscation.
--keepclassmembers,allowobfuscation class * {
-    @com.google.gson.annotations.SerializedName <fields>;
-}
-
--keepclassmembers,allowobfuscation class * {
-    @com.google.gson.annotations.Expose <fields>;
-}
-
-# DTO payload models parsed reflectively by Gson.
--keep class su.afk.kemonos.**.dto.** {
-    <fields>;
-}
-
--keep class su.afk.kemonos.common.data.** {
+# DTO payload fields parsed reflectively by Gson. Class retention is driven by
+# Retrofit signatures and direct type references, so only field names need help.
+-keepclassmembers class su.afk.kemonos.**.dto.** {
     <fields>;
 }
