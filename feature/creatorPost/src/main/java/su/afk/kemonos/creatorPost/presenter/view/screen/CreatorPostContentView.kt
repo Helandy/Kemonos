@@ -100,8 +100,8 @@ internal fun CreatorPostContentView(
 
     val swipe = rememberTikTokSwipeState(
         listState = listState,
-        threshold = 300.dp,
-        dragDamping = 0.55f,
+        postSwipeAxis = state.uiSettingModel.postSwipeAxis,
+        postSwipeFeel = state.uiSettingModel.postSwipeFeel,
         canSwipeDownAtTop = canPrevPost,
         canSwipeUpAtBottom = canNextPost,
         hapticFeedbackEnabled = state.uiSettingModel.hapticFeedbackEnabled,
@@ -120,7 +120,12 @@ internal fun CreatorPostContentView(
             state = listState,
             modifier = Modifier
                 .fillMaxSize()
-                .offset { IntOffset(0, swipe.dragOffsetPx.roundToInt()) },
+                .offset {
+                    IntOffset(
+                        swipe.dragOffsetPx.x.roundToInt(),
+                        swipe.dragOffsetPx.y.roundToInt()
+                    )
+                },
         ) {
             item(key = "HeaderBlock") {
                 if (showCreatorHeader) {
@@ -372,13 +377,25 @@ internal fun CreatorPostContentView(
             SwipeArrowHint(
                 modifier = Modifier.align(Alignment.TopCenter),
                 progress = swipe.progress,
-                isDown = true
+                direction = swipe.direction,
             )
         } else if (swipe.direction == SwipeHintDirection.UP && canNextPost) {
             SwipeArrowHint(
                 modifier = Modifier.align(Alignment.BottomCenter),
                 progress = swipe.progress,
-                isDown = false
+                direction = swipe.direction,
+            )
+        } else if (swipe.direction == SwipeHintDirection.LEFT && canNextPost) {
+            SwipeArrowHint(
+                modifier = Modifier.align(Alignment.CenterEnd),
+                progress = swipe.progress,
+                direction = swipe.direction,
+            )
+        } else if (swipe.direction == SwipeHintDirection.RIGHT && canPrevPost) {
+            SwipeArrowHint(
+                modifier = Modifier.align(Alignment.CenterStart),
+                progress = swipe.progress,
+                direction = swipe.direction,
             )
         }
     }

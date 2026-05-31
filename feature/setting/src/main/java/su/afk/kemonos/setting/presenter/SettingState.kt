@@ -8,6 +8,8 @@ import su.afk.kemonos.preferences.ui.CreatorViewMode
 import su.afk.kemonos.preferences.ui.DateFormatMode
 import su.afk.kemonos.preferences.ui.DownloadFolderMode
 import su.afk.kemonos.preferences.ui.PostsSize
+import su.afk.kemonos.preferences.ui.PostSwipeAxis
+import su.afk.kemonos.preferences.ui.PostSwipeFeel
 import su.afk.kemonos.preferences.ui.PostsViewMode
 import su.afk.kemonos.preferences.ui.RandomButtonPlacement
 import su.afk.kemonos.preferences.ui.SiteDisplayMode
@@ -103,6 +105,8 @@ class SettingState {
 
             data class EventTranslateTarget(val value: TranslateTarget) : ChangeViewSetting
             data class EventRandomButtonPlacement(val value: RandomButtonPlacement) : ChangeViewSetting
+            data class PostSwipeAxisChanged(val value: PostSwipeAxis) : ChangeViewSetting
+            data class PostSwipeFeelChanged(val value: PostSwipeFeel) : ChangeViewSetting
             data class TranslateLanguageTag(val value: String) : ChangeViewSetting
             data class EventAppThemeMode(val value: AppThemeMode) : ChangeViewSetting
             data class HapticFeedbackEnabled(val value: Boolean) : ChangeViewSetting

@@ -35,6 +35,12 @@ interface IUiSettingUseCase {
     /** Где показывать кнопку "рандом" */
     suspend fun setRandomButtonPlacement(value: RandomButtonPlacement)
 
+    /** Направление свайпа между постами автора */
+    suspend fun setPostSwipeAxis(value: PostSwipeAxis)
+
+    /** Жесткость свайпа между постами автора */
+    suspend fun setPostSwipeFeel(value: PostSwipeFeel)
+
     /** Язык, на который переводим ("" = системный) */
     suspend fun setTranslateLanguageTag(value: String)
 
