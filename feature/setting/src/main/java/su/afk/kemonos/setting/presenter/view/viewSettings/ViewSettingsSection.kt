@@ -9,6 +9,7 @@ import androidx.compose.ui.unit.dp
 import su.afk.kemonos.preferences.ui.UiSettingModel
 import su.afk.kemonos.setting.R
 import su.afk.kemonos.setting.presenter.SettingState.Event
+import su.afk.kemonos.setting.presenter.view.PostSwipeAxisRow
 import su.afk.kemonos.setting.presenter.view.SwitchRow
 import su.afk.kemonos.setting.presenter.view.common.SectionSpacer
 import su.afk.kemonos.setting.presenter.view.common.SectionSpacerSmall
@@ -22,6 +23,13 @@ internal fun ViewSettingsSection(
     SectionSpacerSmall()
     SettingsSectionTitle(text = stringResource(R.string.settings_posts_appearance_title))
     Spacer(Modifier.height(6.dp))
+
+    PostSwipeAxisRow(
+        value = ui.postSwipeAxis,
+        feel = ui.postSwipeFeel,
+        onChange = { onEvent(Event.ChangeViewSetting.PostSwipeAxisChanged(it)) },
+        onFeelChange = { onEvent(Event.ChangeViewSetting.PostSwipeFeelChanged(it)) },
+    )
 
     SwitchRow(
         title = stringResource(R.string.settings_discord_reverse_default_title),

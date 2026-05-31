@@ -215,6 +215,14 @@
     <string name="settings_show_image_preview_share_action_title">Показывать поделиться на превью изображений</string>
     <string name="settings_use_preview_only_in_image_viewer_title">Показывать превью во фуллскрине</string>
     <string name="settings_use_preview_only_in_image_viewer_subtitle">Показывать превью, не загружая полное изображение при просмотре</string>
+    <string name="settings_post_swipe_title">Свайп между постами</string>
+    <string name="settings_post_swipe_vertical">Вертикальный</string>
+    <string name="settings_post_swipe_horizontal">Горизонтальный</string>
+    <string name="settings_post_swipe_feel_title">Жесткость свайпа</string>
+    <string name="settings_post_swipe_feel_effortless">Без усилий</string>
+    <string name="settings_post_swipe_feel_light">Легкий</string>
+    <string name="settings_post_swipe_feel_normal">Обычный</string>
+    <string name="settings_post_swipe_feel_firm">Жесткий</string>
     <string name="settings_show_comments_in_post_title">Показывать комментарии в посте</string>
     <string name="settings_hide_attachments_block_in_post_title">Скрывать блок вложений в посте</string>
     <string name="settings_hide_attachments_block_in_post_subtitle">В меню поста его можно показать для текущего поста</string>

@@ -32,6 +32,8 @@ import su.afk.kemonos.preferences.ui.UiSettingKey.HAPTIC_FEEDBACK_ENABLED
 import su.afk.kemonos.preferences.ui.UiSettingKey.HIDE_ATTACHMENTS_BLOCK_IN_POST
 import su.afk.kemonos.preferences.ui.UiSettingKey.POPULAR_POSTS_GRID_SIZE
 import su.afk.kemonos.preferences.ui.UiSettingKey.POPULAR_POSTS_VIEW_MODE
+import su.afk.kemonos.preferences.ui.UiSettingKey.POST_SWIPE_AXIS
+import su.afk.kemonos.preferences.ui.UiSettingKey.POST_SWIPE_FEEL
 import su.afk.kemonos.preferences.ui.UiSettingKey.POSTS_SIZE
 import su.afk.kemonos.preferences.ui.UiSettingKey.PROFILE_POSTS_GRID_SIZE
 import su.afk.kemonos.preferences.ui.UiSettingKey.PROFILE_POSTS_VIEW_MODE
@@ -84,6 +86,8 @@ internal class UiSettingUseCase @Inject constructor(
             suggestRandomAuthors = p[SUGGEST_RANDOM_AUTHORS] ?: UiSettingModel.DEFAULT_SUGGEST_RANDOM_AUTHORS,
             translateTarget = p.readEnum(TRANSLATE_TARGET, UiSettingModel.DEFAULT_TRANSLATE_TARGET),
             randomButtonPlacement = p.readEnum(RANDOM_BUTTON_PLACEMENT, UiSettingModel.DEFAULT_RANDOM_BUTTON_PLACEMENT),
+            postSwipeAxis = p.readEnum(POST_SWIPE_AXIS, UiSettingModel.DEFAULT_POST_SWIPE_AXIS),
+            postSwipeFeel = p.readEnum(POST_SWIPE_FEEL, UiSettingModel.DEFAULT_POST_SWIPE_FEEL),
             translateLanguageTag = p[TRANSLATE_LANGUAGE_TAG] ?: UiSettingModel.DEFAULT_TRANSLATE_LANGUAGE_TAG,
             appThemeMode = p.readEnum(APP_THEME_MODE, UiSettingModel.DEFAULT_APP_THEME_MODE),
             hapticFeedbackEnabled = p[HAPTIC_FEEDBACK_ENABLED]
@@ -209,6 +213,16 @@ internal class UiSettingUseCase @Inject constructor(
     /** Где показывать кнопку "рандом" */
     override suspend fun setRandomButtonPlacement(value: RandomButtonPlacement) {
         dataStore.edit { it[RANDOM_BUTTON_PLACEMENT] = value.name }
+    }
+
+    /** Направление свайпа между постами автора */
+    override suspend fun setPostSwipeAxis(value: PostSwipeAxis) {
+        dataStore.edit { it[POST_SWIPE_AXIS] = value.name }
+    }
+
+    /** Жесткость свайпа между постами автора */
+    override suspend fun setPostSwipeFeel(value: PostSwipeFeel) {
+        dataStore.edit { it[POST_SWIPE_FEEL] = value.name }
     }
 
     /** Язык, на который переводим */
@@ -370,6 +384,8 @@ object UiSettingKey {
     val SUGGEST_RANDOM_AUTHORS = booleanPreferencesKey("SUGGEST_RANDOM_AUTHORS")
     val TRANSLATE_TARGET = stringPreferencesKey("TRANSLATE_TARGET")
     val RANDOM_BUTTON_PLACEMENT = stringPreferencesKey("RANDOM_BUTTON_PLACEMENT")
+    val POST_SWIPE_AXIS = stringPreferencesKey("POST_SWIPE_AXIS")
+    val POST_SWIPE_FEEL = stringPreferencesKey("POST_SWIPE_FEEL")
     val TRANSLATE_LANGUAGE_TAG = stringPreferencesKey("TRANSLATE_LANGUAGE")
     val APP_THEME_MODE = stringPreferencesKey("APP_THEME_MODE")
     val HAPTIC_FEEDBACK_ENABLED = booleanPreferencesKey("HAPTIC_FEEDBACK_ENABLED")

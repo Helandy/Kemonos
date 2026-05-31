@@ -84,6 +84,14 @@ class SettingUiPreferencesDelegate @Inject constructor(
             is SettingState.Event.ChangeViewSetting.EventRandomButtonPlacement ->
                 scope.launch { uiSetting.setRandomButtonPlacement(event.value) }
 
+            /** Направление свайпа между постами автора */
+            is SettingState.Event.ChangeViewSetting.PostSwipeAxisChanged ->
+                scope.launch { uiSetting.setPostSwipeAxis(event.value) }
+
+            /** Жесткость свайпа между постами автора */
+            is SettingState.Event.ChangeViewSetting.PostSwipeFeelChanged ->
+                scope.launch { uiSetting.setPostSwipeFeel(event.value) }
+
             /** Язык, на который переводим */
             is SettingState.Event.ChangeViewSetting.TranslateLanguageTag ->
                 scope.launch { uiSetting.setTranslateLanguageTag(event.value) }

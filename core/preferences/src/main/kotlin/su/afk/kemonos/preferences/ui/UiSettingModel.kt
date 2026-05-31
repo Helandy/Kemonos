@@ -26,6 +26,20 @@ enum class RandomButtonPlacement {
     SEARCH_BAR  // иконка в строке поиска
 }
 
+/** Направление свайпа между постами автора */
+enum class PostSwipeAxis {
+    VERTICAL,
+    HORIZONTAL,
+}
+
+/** Жесткость свайпа между постами автора */
+enum class PostSwipeFeel {
+    EFFORTLESS,
+    LIGHT,
+    NORMAL,
+    FIRM,
+}
+
 enum class DateFormatMode(val pattern: String) {
     /** 20.01.2026 */
     DD_MM_YYYY("dd.MM.yyyy"),
@@ -160,6 +174,12 @@ data class UiSettingModel(
     /** Где показывать кнопку "рандом" */
     val randomButtonPlacement: RandomButtonPlacement = DEFAULT_RANDOM_BUTTON_PLACEMENT,
 
+    /** Направление свайпа между постами автора */
+    val postSwipeAxis: PostSwipeAxis = DEFAULT_POST_SWIPE_AXIS,
+
+    /** Жесткость свайпа между постами автора */
+    val postSwipeFeel: PostSwipeFeel = DEFAULT_POST_SWIPE_FEEL,
+
     /** Язык, на который переводим ("" = системный) */
     val translateLanguageTag: String = DEFAULT_TRANSLATE_LANGUAGE_TAG,
 
@@ -261,6 +281,8 @@ data class UiSettingModel(
         const val DEFAULT_SUGGEST_RANDOM_AUTHORS = false
         val DEFAULT_TRANSLATE_TARGET = TranslateTarget.APP
         val DEFAULT_RANDOM_BUTTON_PLACEMENT = RandomButtonPlacement.SEARCH_BAR
+        val DEFAULT_POST_SWIPE_AXIS = PostSwipeAxis.VERTICAL
+        val DEFAULT_POST_SWIPE_FEEL = PostSwipeFeel.NORMAL
         const val DEFAULT_TRANSLATE_LANGUAGE_TAG = "" // системный
         val DEFAULT_APP_THEME_MODE = AppThemeMode.SYSTEM
         const val DEFAULT_HAPTIC_FEEDBACK_ENABLED = true

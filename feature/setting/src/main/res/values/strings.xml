@@ -209,6 +209,14 @@
     <string name="settings_show_image_preview_share_action_title">Show share on image previews</string>
     <string name="settings_use_preview_only_in_image_viewer_title">Use previews in fullscreen image viewer</string>
     <string name="settings_use_preview_only_in_image_viewer_subtitle">Open the preview instead of loading the full image when available</string>
+    <string name="settings_post_swipe_title">Post swipe</string>
+    <string name="settings_post_swipe_vertical">Vertical</string>
+    <string name="settings_post_swipe_horizontal">Horizontal</string>
+    <string name="settings_post_swipe_feel_title">Swipe feel</string>
+    <string name="settings_post_swipe_feel_effortless">Effortless</string>
+    <string name="settings_post_swipe_feel_light">Light</string>
+    <string name="settings_post_swipe_feel_normal">Normal</string>
+    <string name="settings_post_swipe_feel_firm">Firm</string>
     <string name="settings_show_comments_in_post_title">Show comments in post</string>
     <string name="settings_hide_attachments_block_in_post_title">Hide attachment block in post</string>
     <string name="settings_hide_attachments_block_in_post_subtitle">The post menu can show it for the current post</string>

@@ -24,6 +24,7 @@ import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
 import androidx.compose.ui.input.nestedscroll.NestedScrollSource
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.input.pointer.positionChange
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.unit.Dp
@@ -31,14 +32,16 @@ import androidx.compose.ui.unit.Velocity
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
+import su.afk.kemonos.preferences.ui.PostSwipeAxis
+import su.afk.kemonos.preferences.ui.PostSwipeFeel
 import kotlin.math.abs
 
-enum class SwipeHintDirection { NONE, DOWN, UP }
+enum class SwipeHintDirection { NONE, DOWN, UP, LEFT, RIGHT }
 
 @Stable
 data class TikTokSwipeState(
     val modifier: Modifier,
-    val dragOffsetPx: Float,
+    val dragOffsetPx: Offset,
     val progress: Float,
     val direction: SwipeHintDirection,
 )
@@ -46,8 +49,8 @@ data class TikTokSwipeState(
 @Composable
 fun rememberTikTokSwipeState(
     listState: LazyListState,
-    threshold: Dp = 300.dp,
-    dragDamping: Float = 0.55f,
+    postSwipeAxis: PostSwipeAxis,
+    postSwipeFeel: PostSwipeFeel,
 
     canSwipeDownAtTop: Boolean,
     canSwipeUpAtBottom: Boolean,
@@ -60,7 +63,7 @@ fun rememberTikTokSwipeState(
     if (!canSwipeDownAtTop && !canSwipeUpAtBottom) {
         return TikTokSwipeState(
             modifier = Modifier,
-            dragOffsetPx = 0f,
+            dragOffsetPx = Offset.Zero,
             progress = 0f,
             direction = SwipeHintDirection.NONE,
         )
@@ -68,6 +71,11 @@ fun rememberTikTokSwipeState(
 
     val density = LocalDensity.current
     val haptic = LocalHapticFeedback.current
+    val feelConfig = remember(postSwipeFeel, postSwipeAxis) {
+        postSwipeFeel.toSwipeFeelConfig(postSwipeAxis)
+    }
+    val threshold = feelConfig.threshold
+    val dragDamping = feelConfig.dragDamping
     val thresholdPx = remember(threshold, density) { with(density) { threshold.toPx() } }
 
     // чтобы коллбеки не “застревали” старыми при рекомпозиции
@@ -76,6 +84,8 @@ fun rememberTikTokSwipeState(
 
     var dragDownPx by remember { mutableFloatStateOf(0f) }
     var dragUpPx by remember { mutableFloatStateOf(0f) }
+    var dragLeftPx by remember { mutableFloatStateOf(0f) }
+    var dragRightPx by remember { mutableFloatStateOf(0f) }
     var direction by remember { mutableStateOf(SwipeHintDirection.NONE) }
     var thresholdHapticDirection by remember { mutableStateOf(SwipeHintDirection.NONE) }
 
@@ -99,6 +109,8 @@ fun rememberTikTokSwipeState(
     fun resetCounters() {
         dragDownPx = 0f
         dragUpPx = 0f
+        dragLeftPx = 0f
+        dragRightPx = 0f
         direction = SwipeHintDirection.NONE
         thresholdHapticDirection = SwipeHintDirection.NONE
     }
@@ -107,6 +119,8 @@ fun rememberTikTokSwipeState(
         visualOffsetPx = when (direction) {
             SwipeHintDirection.DOWN -> (dragDownPx * dragDamping).coerceAtLeast(0f)
             SwipeHintDirection.UP -> -(dragUpPx * dragDamping).coerceAtLeast(0f)
+            SwipeHintDirection.LEFT -> -(dragLeftPx * dragDamping).coerceAtLeast(0f)
+            SwipeHintDirection.RIGHT -> (dragRightPx * dragDamping).coerceAtLeast(0f)
             SwipeHintDirection.NONE -> 0f
         }
     }
@@ -114,19 +128,28 @@ fun rememberTikTokSwipeState(
     fun startSpringBack() {
         springJob?.cancel()
         springJob = scope.launch {
-            // стартуем из текущего положения
-            springAnim.snapTo(visualOffsetPx)
-            springAnim.animateTo(
-                targetValue = 0f,
-                animationSpec = spring(
-                    stiffness = Spring.StiffnessMediumLow,
-                    dampingRatio = Spring.DampingRatioMediumBouncy
-                )
-            ) {
-                // this.value — текущее значение анимации на кадре
-                visualOffsetPx = value
+            when (val springBack = feelConfig.springBack) {
+                SwipeSpringBack.Snap -> {
+                    springAnim.snapTo(0f)
+                    visualOffsetPx = 0f
+                }
+
+                is SwipeSpringBack.Spring -> {
+                    // стартуем из текущего положения
+                    springAnim.snapTo(visualOffsetPx)
+                    springAnim.animateTo(
+                        targetValue = 0f,
+                        animationSpec = spring(
+                            stiffness = springBack.stiffness,
+                            dampingRatio = springBack.dampingRatio
+                        )
+                    ) {
+                        // this.value — текущее значение анимации на кадре
+                        visualOffsetPx = value
+                    }
+                    visualOffsetPx = 0f
+                }
             }
-            visualOffsetPx = 0f
         }
     }
 
@@ -147,6 +170,8 @@ fun rememberTikTokSwipeState(
         val crossedThreshold = when (direction) {
             SwipeHintDirection.DOWN -> dragDownPx >= thresholdPx
             SwipeHintDirection.UP -> dragUpPx >= thresholdPx
+            SwipeHintDirection.LEFT -> dragLeftPx >= thresholdPx
+            SwipeHintDirection.RIGHT -> dragRightPx >= thresholdPx
             SwipeHintDirection.NONE -> false
         }
 
@@ -154,6 +179,113 @@ fun rememberTikTokSwipeState(
             haptic.performHapticFeedback(HapticFeedbackType.GestureThresholdActivate)
             thresholdHapticDirection = direction
         }
+    }
+
+    if (postSwipeAxis == PostSwipeAxis.HORIZONTAL) {
+        val horizontalModifier = Modifier.pointerInput(
+            thresholdPx,
+            dragDamping,
+            canSwipeDownAtTop,
+            canSwipeUpAtBottom,
+            hapticFeedbackEnabled,
+            postSwipeFeel,
+            postSwipeAxis,
+        ) {
+            awaitEachGesture {
+                awaitFirstDown(requireUnconsumed = false)
+                cancelSpringIfAny()
+
+                var totalX = 0f
+                var totalY = 0f
+                var lockedHorizontal = false
+                var pressed = true
+
+                do {
+                    val event = awaitPointerEvent()
+                    pressed = event.changes.any { it.pressed }
+                    val change = event.changes.firstOrNull() ?: continue
+                    val dx = change.positionChange().x
+                    val dy = change.positionChange().y
+
+                    totalX += dx
+                    totalY += dy
+
+                    if (!lockedHorizontal) {
+                        val horizontalIntent = abs(totalX) > viewConfiguration.touchSlop &&
+                                abs(totalX) > abs(totalY)
+                        if (!horizontalIntent) continue
+
+                        val canStartLeft = totalX < 0 && canSwipeUpAtBottom
+                        val canStartRight = totalX > 0 && canSwipeDownAtTop
+                        if (!canStartLeft && !canStartRight) continue
+
+                        lockedHorizontal = true
+                        startDirection(
+                            if (totalX < 0) SwipeHintDirection.LEFT else SwipeHintDirection.RIGHT
+                        )
+                    }
+
+                    if (lockedHorizontal) {
+                        when {
+                            direction == SwipeHintDirection.LEFT && dx > 0 -> {
+                                dragLeftPx = (dragLeftPx - dx).coerceAtLeast(0f)
+                                if (dragLeftPx == 0f) direction = SwipeHintDirection.NONE
+                            }
+
+                            direction == SwipeHintDirection.RIGHT && dx < 0 -> {
+                                dragRightPx = (dragRightPx - abs(dx)).coerceAtLeast(0f)
+                                if (dragRightPx == 0f) direction = SwipeHintDirection.NONE
+                            }
+
+                            dx < 0 && canSwipeUpAtBottom -> {
+                                startDirection(SwipeHintDirection.LEFT)
+                                dragLeftPx += abs(dx)
+                            }
+
+                            dx > 0 && canSwipeDownAtTop -> {
+                                startDirection(SwipeHintDirection.RIGHT)
+                                dragRightPx += dx
+                            }
+                        }
+
+                        maybePerformThresholdHaptic()
+                        updateVisual()
+                        change.consume()
+                    }
+                } while (pressed)
+
+                val triggered = when (direction) {
+                    SwipeHintDirection.LEFT -> dragLeftPx >= thresholdPx && canSwipeUpAtBottom
+                    SwipeHintDirection.RIGHT -> dragRightPx >= thresholdPx && canSwipeDownAtTop
+                    else -> false
+                }
+
+                if (triggered && hapticFeedbackEnabled) {
+                    haptic.performHapticFeedback(HapticFeedbackType.Confirm)
+                }
+
+                if (triggered) {
+                    if (direction == SwipeHintDirection.LEFT) onNext()
+                    if (direction == SwipeHintDirection.RIGHT) onPrev()
+                }
+
+                resetCounters()
+                startSpringBack()
+            }
+        }
+
+        val progress = when (direction) {
+            SwipeHintDirection.LEFT -> (dragLeftPx / thresholdPx).coerceIn(0f, 1f)
+            SwipeHintDirection.RIGHT -> (dragRightPx / thresholdPx).coerceIn(0f, 1f)
+            else -> 0f
+        }
+
+        return TikTokSwipeState(
+            modifier = horizontalModifier,
+            dragOffsetPx = Offset(visualOffsetPx, 0f),
+            progress = progress,
+            direction = direction,
+        )
     }
 
     val connection = remember(
@@ -241,7 +373,7 @@ fun rememberTikTokSwipeState(
     }
 
     // отпуск пальца БЕЗ fling (иначе может оставаться “пол экрана занятым”)
-    val releaseModifier = Modifier.pointerInput(canSwipeDownAtTop, canSwipeUpAtBottom) {
+    val releaseModifier = Modifier.pointerInput(canSwipeDownAtTop, canSwipeUpAtBottom, postSwipeFeel, postSwipeAxis) {
         awaitEachGesture {
             awaitFirstDown(requireUnconsumed = false)
             waitForUpOrCancellation()
@@ -263,8 +395,101 @@ fun rememberTikTokSwipeState(
         modifier = Modifier
             .nestedScroll(connection)
             .then(releaseModifier),
-        dragOffsetPx = visualOffsetPx,
+        dragOffsetPx = Offset(0f, visualOffsetPx),
         progress = progress,
         direction = direction,
     )
 }
+
+private data class SwipeFeelConfig(
+    val threshold: Dp,
+    val dragDamping: Float,
+    val springBack: SwipeSpringBack,
+)
+
+private sealed interface SwipeSpringBack {
+    data object Snap : SwipeSpringBack
+
+    data class Spring(
+        val stiffness: Float,
+        val dampingRatio: Float,
+    ) : SwipeSpringBack
+}
+
+private fun PostSwipeFeel.toSwipeFeelConfig(axis: PostSwipeAxis): SwipeFeelConfig =
+    when (axis) {
+        PostSwipeAxis.VERTICAL -> toVerticalSwipeFeelConfig()
+        PostSwipeAxis.HORIZONTAL -> toHorizontalSwipeFeelConfig()
+    }
+
+private fun PostSwipeFeel.toVerticalSwipeFeelConfig(): SwipeFeelConfig =
+    when (this) {
+        PostSwipeFeel.EFFORTLESS -> SwipeFeelConfig(
+            threshold = 96.dp,
+            dragDamping = 1.0f,
+            springBack = SwipeSpringBack.Snap,
+        )
+
+        PostSwipeFeel.LIGHT -> SwipeFeelConfig(
+            threshold = 180.dp,
+            dragDamping = 0.75f,
+            springBack = SwipeSpringBack.Spring(
+                stiffness = Spring.StiffnessLow,
+                dampingRatio = Spring.DampingRatioNoBouncy,
+            ),
+        )
+
+        PostSwipeFeel.NORMAL -> SwipeFeelConfig(
+            threshold = 300.dp,
+            dragDamping = 0.55f,
+            springBack = SwipeSpringBack.Spring(
+                stiffness = Spring.StiffnessMediumLow,
+                dampingRatio = Spring.DampingRatioMediumBouncy,
+            ),
+        )
+
+        PostSwipeFeel.FIRM -> SwipeFeelConfig(
+            threshold = 420.dp,
+            dragDamping = 0.4f,
+            springBack = SwipeSpringBack.Spring(
+                stiffness = Spring.StiffnessMedium,
+                dampingRatio = Spring.DampingRatioNoBouncy,
+            ),
+        )
+    }
+
+private fun PostSwipeFeel.toHorizontalSwipeFeelConfig(): SwipeFeelConfig =
+    when (this) {
+        PostSwipeFeel.EFFORTLESS -> SwipeFeelConfig(
+            threshold = 72.dp,
+            dragDamping = 1.0f,
+            springBack = SwipeSpringBack.Snap,
+        )
+
+        PostSwipeFeel.LIGHT -> SwipeFeelConfig(
+            threshold = 128.dp,
+            dragDamping = 0.85f,
+            springBack = SwipeSpringBack.Spring(
+                stiffness = Spring.StiffnessLow,
+                dampingRatio = Spring.DampingRatioNoBouncy,
+            ),
+        )
+
+        PostSwipeFeel.NORMAL -> SwipeFeelConfig(
+            threshold = 180.dp,
+            dragDamping = 0.75f,
+            springBack = SwipeSpringBack.Spring(
+                stiffness = Spring.StiffnessLow,
+                dampingRatio = Spring.DampingRatioNoBouncy,
+            ),
+        )
+
+        PostSwipeFeel.FIRM -> SwipeFeelConfig(
+            threshold = 300.dp,
+            dragDamping = 0.55f,
+            springBack = SwipeSpringBack.Spring(
+                stiffness = Spring.StiffnessMediumLow,
+                dampingRatio = Spring.DampingRatioMediumBouncy,
+            ),
+        )
+    }
