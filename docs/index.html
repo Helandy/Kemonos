@@ -1,0 +1,181 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Kemonos - Android client for Kemono and Coomer</title>
+    <meta
+      name="description"
+      content="Kemonos is an unofficial Android client for browsing Kemono and Coomer creators, posts, media, favorites, and downloads."
+    >
+    <meta name="theme-color" content="#111614">
+    <link rel="icon" href="assets/brand/app-icon.png">
+    <link rel="stylesheet" href="styles.css">
+  </head>
+  <body>
+    <header class="site-header" aria-label="Kemonos navigation">
+      <a class="brand" href="#top" aria-label="Kemonos home">
+        <img src="assets/brand/kemonos-logo.png" width="36" height="35" alt="">
+        <span>Kemonos</span>
+      </a>
+      <nav class="nav-links" aria-label="Primary">
+        <a href="#features">Features</a>
+        <a href="#screenshots">Screenshots</a>
+        <a href="#download">Download</a>
+      </nav>
+    </header>
+
+    <main id="top">
+      <section class="hero-section">
+        <div class="hero-copy">
+          <p class="eyebrow">Unofficial Android app</p>
+          <h1>Browse Kemono and Coomer in a native mobile app.</h1>
+          <p class="hero-text">
+            Kemonos brings creator profiles, post feeds, media previews, search,
+            favorites, and downloads into a fast Kotlin + Jetpack Compose experience.
+          </p>
+          <div class="hero-actions" aria-label="Project links">
+            <a class="button button-primary" href="https://github.com/Helandy/Kemonos/releases">
+              Download APK
+            </a>
+            <a class="button button-secondary" href="https://github.com/Helandy/Kemonos">
+              View on GitHub
+            </a>
+          </div>
+          <dl class="hero-stats" aria-label="Project highlights">
+            <div>
+              <dt>Native</dt>
+              <dd>Android UI</dd>
+            </div>
+            <div>
+              <dt>Fast</dt>
+              <dd>Feeds and search</dd>
+            </div>
+            <div>
+              <dt>Focused</dt>
+              <dd>Daily browsing</dd>
+            </div>
+          </dl>
+        </div>
+
+        <div class="hero-visual" aria-label="Kemonos app screenshots">
+          <figure class="phone-frame phone-frame-left">
+            <img
+              src="assets/screenshots/creators.webp"
+              width="1080"
+              height="2424"
+              alt="Kemonos creators list screen"
+            >
+          </figure>
+          <figure class="phone-frame phone-frame-main">
+            <img
+              src="assets/screenshots/creator-profile.webp"
+              width="1080"
+              height="2424"
+              alt="Kemonos creator profile screen"
+            >
+          </figure>
+          <figure class="phone-frame phone-frame-right">
+            <img
+              src="assets/screenshots/creator-post.webp"
+              width="1080"
+              height="2424"
+              alt="Kemonos post detail screen"
+            >
+          </figure>
+        </div>
+      </section>
+
+      <section class="feature-band" id="features">
+        <div class="section-heading">
+          <p class="eyebrow">Made for everyday browsing</p>
+          <h2>Everything close to hand.</h2>
+        </div>
+        <div class="feature-grid">
+          <article class="feature-card">
+            <h3>Creator profiles</h3>
+            <p>Open profiles with stats, tabs, similar creators, and quick access to creator content.</p>
+          </article>
+          <article class="feature-card">
+            <h3>Posts and media</h3>
+            <p>Read posts comfortably, preview images and videos, and move through paginated feeds.</p>
+          </article>
+          <article class="feature-card">
+            <h3>Search and filters</h3>
+            <p>Find posts with queries, tags, popular feeds, and sorting built around mobile use.</p>
+          </article>
+          <article class="feature-card">
+            <h3>Favorites and downloads</h3>
+            <p>Keep favorite creators and posts nearby, manage downloads, and move favorites between devices.</p>
+          </article>
+        </div>
+      </section>
+
+      <section class="showcase-section" id="screenshots">
+        <div class="section-heading">
+          <p class="eyebrow">Screens from the app</p>
+          <h2>Designed for phone and tablet screens.</h2>
+        </div>
+        <div class="screenshot-grid">
+          <figure>
+            <img src="assets/screenshots/posts-popular.webp" width="1080" height="2424" alt="Popular posts screen">
+            <figcaption>Popular posts</figcaption>
+          </figure>
+          <figure>
+            <img src="assets/screenshots/posts-search.webp" width="1080" height="2424" alt="Post search screen">
+            <figcaption>Post search</figcaption>
+          </figure>
+          <figure>
+            <img src="assets/screenshots/similar-creators.webp" width="1080" height="2424" alt="Similar creators screen">
+            <figcaption>Similar creators</figcaption>
+          </figure>
+          <figure>
+            <img src="assets/screenshots/profile.webp" width="1080" height="2424" alt="Profile screen">
+            <figcaption>Profile tools</figcaption>
+          </figure>
+          <figure>
+            <img src="assets/screenshots/downloads.webp" width="1080" height="2424" alt="Download settings screen">
+            <figcaption>Downloads</figcaption>
+          </figure>
+          <figure>
+            <img src="assets/screenshots/interface.webp" width="1080" height="2424" alt="Interface settings screen">
+            <figcaption>Interface settings</figcaption>
+          </figure>
+        </div>
+      </section>
+
+      <section class="download-band" id="download">
+        <div class="download-copy">
+          <p class="eyebrow">Get the app</p>
+          <h2>Install the latest APK from GitHub Releases.</h2>
+          <p>
+            Kemonos is open source and distributed through release builds.
+            Star the project, report bugs, or suggest improvements on GitHub.
+          </p>
+        </div>
+        <div class="download-actions">
+          <a class="button button-primary" href="https://github.com/Helandy/Kemonos/releases">
+            Download APK
+          </a>
+          <a class="button button-secondary" href="https://github.com/Helandy/Kemonos/issues">
+            Report an Issue
+          </a>
+        </div>
+      </section>
+
+      <section class="disclaimer-section" aria-labelledby="disclaimer-title">
+        <h2 id="disclaimer-title">Unofficial client</h2>
+        <p>
+          Kemonos does not host content and does not bypass paywalls. All rights belong to
+          their respective content owners.
+        </p>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <span>Kemonos</span>
+      <a href="https://github.com/Helandy/Kemonos">GitHub</a>
+      <a href="https://github.com/Helandy/Kemonos/releases">Releases</a>
+    </footer>
+  </body>
+</html>
