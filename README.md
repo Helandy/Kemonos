@@ -49,15 +49,15 @@ Kemonos is focused on everyday mobile usage: quick browsing, comfortable reading
 
 | Creators | Profile | Similar |
 |:---:|:---:|:---:|
-| <img src="dock/screenshots/Creators.webp" width="220"/> | <img src="dock/screenshots/CreatorProfile.webp" width="220"/> | <img src="dock/screenshots/CreatorProfileSimilar.webp" width="220"/> |
+| <img src="docs/screenshots/Creators.webp" width="220"/> | <img src="docs/screenshots/CreatorProfile.webp" width="220"/> | <img src="docs/screenshots/CreatorProfileSimilar.webp" width="220"/> |
 
 | Post | Popular | Search |
 |:---:|:---:|:---:|
-| <img src="dock/screenshots/CreatorPost.webp" width="220"/> | <img src="dock/screenshots/PostsPopular.webp" width="220"/> | <img src="dock/screenshots/PostsSearch.webp" width="220"/> |
+| <img src="docs/screenshots/CreatorPost.webp" width="220"/> | <img src="docs/screenshots/PostsPopular.webp" width="220"/> | <img src="docs/screenshots/PostsSearch.webp" width="220"/> |
 
 | Profile | Settings | Interface |
 |:---:|:---:|:---:|
-| <img src="dock/screenshots/Profile.webp" width="220"/> | <img src="dock/screenshots/Setting.webp" width="220"/> | <img src="dock/screenshots/SettingInterface.webp" width="220"/> |
+| <img src="docs/screenshots/Profile.webp" width="220"/> | <img src="docs/screenshots/Setting.webp" width="220"/> | <img src="docs/screenshots/SettingInterface.webp" width="220"/> |
 
 ## Download
 
