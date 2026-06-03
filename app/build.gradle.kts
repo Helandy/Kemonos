@@ -56,6 +56,18 @@ android {
     }
 }
 
+androidComponents {
+    onVariants(selector().all()) { variant ->
+        variant.outputs.forEach { output ->
+            output.outputFileName.set(
+                output.versionName.orElse(libs.versions.appVersionName.get()).map { versionName ->
+                    "Kemonos-$versionName-${variant.buildType}.apk"
+                }
+            )
+        }
+    }
+}
+
 dependencies {
     debugImplementation(libs.leakcanary.android)
 
@@ -115,14 +127,12 @@ dependencies {
     implementation(project(":feature:main"))
 }
 
-val releaseApkName = "kemonos-${libs.versions.appVersionName.get()}-release.apk"
+val releaseApkName = "Kemonos-${libs.versions.appVersionName.get()}-release.apk"
 
 tasks.register<Sync>("exportReleaseApkForGithub") {
     val releaseDir = layout.buildDirectory.dir("outputs/apk/release")
     from(releaseDir.map { it.file(releaseApkName) })
-    from(releaseDir.map { it.file("app-release.apk") })
     into(layout.buildDirectory.dir("outputs/apk/githubRelease"))
-    rename("app-release.apk", releaseApkName)
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
     dependsOn("assembleRelease")
 }
