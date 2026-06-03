@@ -113,7 +113,7 @@ internal fun ImageViewScreen(
     val canGoPrev = state.selectedIndex > 0
     val canGoNext = state.selectedIndex < state.imageUrls.lastIndex
 
-    collectImageViewEffects(effect = effect, context = context)
+    ImageViewEffects(effect = effect, context = context)
 
     val request = rememberImageRequest(
         context = context,
@@ -415,7 +415,7 @@ private fun ImageLoadingContent(state: ImageViewState.State) {
 }
 
 @Composable
-private fun collectImageViewEffects(
+private fun ImageViewEffects(
     effect: Flow<Effect>,
     context: Context,
 ) {

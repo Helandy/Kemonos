@@ -1,6 +1,6 @@
 package su.afk.kemonos.creatorProfile.presenter.communityChat.view
 
-import android.net.Uri
+import androidx.core.net.toUri
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -182,7 +182,7 @@ private fun isKemonoCoomerDataVideoPath(pathOrUrl: String): Boolean {
     val cleanPath = pathOrUrl.substringBefore('#').substringBefore('?')
     if (KEMONO_COOMER_VIDEO_PATH_REGEX.matches(cleanPath)) return true
 
-    val urlPath = runCatching { Uri.parse(pathOrUrl).path.orEmpty() }
+    val urlPath = runCatching { pathOrUrl.toUri().path.orEmpty() }
         .getOrDefault("")
     if (urlPath.isBlank()) return false
 

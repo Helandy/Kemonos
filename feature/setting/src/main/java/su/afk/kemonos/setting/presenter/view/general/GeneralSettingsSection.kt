@@ -1,5 +1,6 @@
 package su.afk.kemonos.setting.presenter.view.general
 
+import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -190,6 +191,7 @@ private fun ThemeModeSetting(
     }
 }
 
+@SuppressLint("NonObservableLocale")
 @Composable
 private fun DateFormatSetting(
     value: DateFormatMode,

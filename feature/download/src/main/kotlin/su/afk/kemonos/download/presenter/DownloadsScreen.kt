@@ -1,5 +1,6 @@
 package su.afk.kemonos.download.presenter
 
+import android.annotation.SuppressLint
 import android.app.DownloadManager
 import android.content.ActivityNotFoundException
 import android.content.Context
@@ -53,6 +54,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.core.net.toUri
 import su.afk.kemonos.download.R
 import su.afk.kemonos.download.presenter.model.DownloadUiItem
 import su.afk.kemonos.preferences.ui.DateFormatMode
@@ -457,7 +459,7 @@ private fun Context.tryOpenUri(
     error !is ActivityNotFoundException && false
 }
 
-private fun String.toUriOrNull(): Uri? = runCatching { Uri.parse(this) }.getOrNull()
+private fun String.toUriOrNull(): Uri? = runCatching { toUri() }.getOrNull()
 
 private fun Uri.parentFolderUri(): Uri? = when (scheme?.lowercase()) {
     "file" -> {
@@ -556,6 +558,7 @@ private fun Int.toReasonLabel(reason: Int?): String? {
 private fun formatSpeed(bytesPerSec: Long): String =
     if (bytesPerSec <= 0L) "0 B/s" else "${formatBytes(bytesPerSec)}/s"
 
+@SuppressLint("DefaultLocale")
 private fun formatBytes(bytes: Long): String {
     if (bytes <= 0L) return "0 B"
     val units = arrayOf("B", "KB", "MB", "GB", "TB")

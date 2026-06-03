@@ -1,5 +1,6 @@
 package su.afk.kemonos.setting.presenter.screens
 
+import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -18,6 +19,7 @@ private const val DAY_IN_MS = 24 * 60 * 60 * 1000L
 private const val PREVIEW_NOW_MS = 1_767_312_000_000L
 
 @OptIn(ExperimentalMaterial3Api::class)
+@SuppressLint("ModifierParameter")
 @Composable
 internal fun SettingsScreenScaffold(
     title: String,

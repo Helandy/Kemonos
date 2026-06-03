@@ -12,9 +12,9 @@ fun openGoogleTranslate(context: Context, text: String, targetLangTag: String) {
 
     val tl = (if (targetLangTag.isBlank()) Locale.getDefault().language else targetLangTag).trim()
 
-    val deepLink = Uri.parse(
+    val deepLink = (
         "googletranslate://translate?sl=auto&tl=${Uri.encode(tl)}&text=${Uri.encode(cleaned)}"
-    )
+    ).toUri()
     val deepIntent = Intent(Intent.ACTION_VIEW, deepLink).apply {
         addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
     }

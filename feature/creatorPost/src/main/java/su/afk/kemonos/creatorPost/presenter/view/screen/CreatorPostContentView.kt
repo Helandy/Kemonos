@@ -24,7 +24,7 @@ import su.afk.kemonos.creatorPost.presenter.view.audio.postAudioSection
 import su.afk.kemonos.creatorPost.presenter.view.comments.postCommentsSection
 import su.afk.kemonos.creatorPost.presenter.view.content.postContentSection
 import su.afk.kemonos.creatorPost.presenter.view.header.PostTitleBlock
-import su.afk.kemonos.creatorPost.presenter.view.incompleteRewards.incompleteRewardsBlock
+import su.afk.kemonos.creatorPost.presenter.view.incompleteRewards.IncompleteRewardsBlock
 import su.afk.kemonos.creatorPost.presenter.view.poll.PollBlock
 import su.afk.kemonos.creatorPost.presenter.view.preview.postPreviewsSection
 import su.afk.kemonos.creatorPost.presenter.view.preview.previewKey
@@ -190,7 +190,7 @@ internal fun CreatorPostContentView(
 
             item(key = "incompleteRewards") {
                 val rewards = resolvedPost.post.incompleteRewards ?: return@item
-                incompleteRewardsBlock(rewards)
+                IncompleteRewardsBlock(rewards)
             }
 
             item(key = "poll") {

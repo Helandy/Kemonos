@@ -24,8 +24,8 @@ internal fun ProfileTabsBar(
     hiddenTabs: Set<CreatorProfileTabKey>,
     onTabSelected: (ProfileTab) -> Unit,
     currentTag: Tag?,
+    modifier: Modifier = Modifier,
     onTagClear: (() -> Unit)? = null,
-    modifier: Modifier = Modifier
 ) {
     val scrollState = rememberScrollState()
 

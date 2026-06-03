@@ -20,6 +20,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.text.HtmlCompat
+import androidx.core.text.parseAsHtml
 import su.afk.kemonos.creatorProfile.api.domain.models.profileAnnouncements.ProfileAnnouncement
 import su.afk.kemonos.preferences.ui.DateFormatMode
 import su.afk.kemonos.ui.R
@@ -109,11 +110,10 @@ fun AnnouncementCard(
                             isScrolling = isScrolling,
                         )
 
-                        tv.text = HtmlCompat.fromHtml(
-                            announcement.content,
-                            HtmlCompat.FROM_HTML_MODE_COMPACT,
-                            getter,
-                            null
+                        tv.text = announcement.content.parseAsHtml(
+                            flags = HtmlCompat.FROM_HTML_MODE_COMPACT,
+                            imageGetter = getter,
+                            tagHandler = null,
                         )
                     }
                 },

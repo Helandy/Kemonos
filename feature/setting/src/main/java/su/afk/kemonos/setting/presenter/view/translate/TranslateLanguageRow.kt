@@ -1,5 +1,6 @@
 package su.afk.kemonos.setting.presenter.view.translate
 
+import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -54,6 +55,7 @@ private val TOP_30_LANGUAGES = listOf(
 )
 
 @OptIn(ExperimentalMaterial3Api::class)
+@SuppressLint("NonObservableLocale")
 @Composable
 internal fun TranslateLanguageRow(
     title: String,
