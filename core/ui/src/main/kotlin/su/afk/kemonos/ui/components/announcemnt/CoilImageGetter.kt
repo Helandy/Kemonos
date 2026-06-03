@@ -1,11 +1,12 @@
 package su.afk.kemonos.ui.components.announcemnt
 
 import android.graphics.*
-import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.Drawable
 import android.text.Html
 import android.view.ViewTreeObserver
 import android.widget.TextView
+import androidx.core.graphics.drawable.toDrawable
+import androidx.core.graphics.withTranslation
 import coil3.Image
 import coil3.ImageLoader
 import coil3.request.CachePolicy
@@ -65,7 +66,7 @@ class CoilImageGetter(
      */
     override fun getDrawable(source: String?): Drawable {
         val raw = source.orEmpty().trim()
-        if (raw.isBlank()) return ColorDrawable(Color.TRANSPARENT)
+        if (raw.isBlank()) return Color.TRANSPARENT.toDrawable()
 
         /** Нормализуем url */
         val url = if (raw.startsWith("//")) "https:$raw" else raw
@@ -74,7 +75,7 @@ class CoilImageGetter(
         placeholders[url]?.let { return it }
 
         /** Создаём прозрачный placeholder минимального размера */
-        val placeholder = ResizableDrawable(ColorDrawable(Color.TRANSPARENT)).apply {
+        val placeholder = ResizableDrawable(Color.TRANSPARENT.toDrawable()).apply {
             setBounds(0, 0, 1, dp(textView, 1))
         }
 
@@ -245,14 +246,13 @@ private class CoilImageDrawable(
         val iw = image.width.coerceAtLeast(1)
         val ih = image.height.coerceAtLeast(1)
 
-        val save = canvas.save()
-        canvas.translate(b.left.toFloat(), b.top.toFloat())
-        canvas.scale(
-            b.width().toFloat() / iw.toFloat(),
-            b.height().toFloat() / ih.toFloat()
-        )
-        image.draw(canvas)
-        canvas.restoreToCount(save)
+        canvas.withTranslation(b.left.toFloat(), b.top.toFloat()) {
+            scale(
+                b.width().toFloat() / iw.toFloat(),
+                b.height().toFloat() / ih.toFloat()
+            )
+            image.draw(this)
+        }
     }
 
     override fun setAlpha(alpha: Int) = Unit

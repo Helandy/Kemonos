@@ -1,5 +1,6 @@
 package su.afk.kemonos.setting.presenter.screens
 
+import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -109,6 +110,7 @@ internal fun SettingDebugStorageScreen(
 }
 
 @Preview(name = "Setting Debug Storage", showBackground = true)
+@SuppressLint("SdCardPath")
 @Composable
 private fun PreviewSettingDebugStorageScreen() {
     SettingsPreview {

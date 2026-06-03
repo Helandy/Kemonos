@@ -16,9 +16,9 @@ import su.afk.kemonos.ui.uiUtils.size.formatBytes
 @Composable
 fun ShareLoadingOverlay(
     visible: Boolean,
+    modifier: Modifier = Modifier,
     bytesRead: Long = 0L,
     totalBytes: Long = 0L,
-    modifier: Modifier = Modifier,
 ) {
     if (!visible) return
 

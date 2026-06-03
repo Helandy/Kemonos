@@ -44,9 +44,16 @@ internal fun CommunityChatScreen(
     onEvent: (Event) -> Unit,
     effect: Flow<Effect>
 ) {
+    val downloadNamePlaceholder = "\u0000"
     val context = LocalContext.current
     val resolver = LocalDomainResolver.current
     val fallbackBaseUrl = resolver.baseUrlByService(state.service)
+    val copyLinkLabel = stringResource(R.string.copy_link)
+    val downloadStarted = stringResource(R.string.download_started)
+    val downloadStartedNamedTemplate = stringResource(
+        R.string.download_started_named,
+        downloadNamePlaceholder,
+    )
     val listState = remember(state.channelId) { LazyListState() }
     var menuExpanded by rememberSaveable(state.channelId) { mutableStateOf(false) }
     var searchEffectInitialized by rememberSaveable(state.channelId) { mutableStateOf(false) }
@@ -111,7 +118,7 @@ internal fun CommunityChatScreen(
                 is Effect.OpenUrl -> openUrlInBrowser(context, it.url)
                 is Effect.CopyChatLink -> ShareActions.copyToClipboard(
                     context,
-                    context.getString(R.string.copy_link),
+                    copyLinkLabel,
                     it.message
                 )
                 is Effect.OpenVideo -> openVideoExternally(context, it.url, it.fileName)
@@ -119,9 +126,9 @@ internal fun CommunityChatScreen(
                 is Effect.DownloadToast -> {
                     val safeName = it.fileName.trim().takeIf { name -> name.isNotBlank() }
                     val message = if (safeName != null) {
-                        context.getString(R.string.download_started_named, safeName)
+                        downloadStartedNamedTemplate.replace(downloadNamePlaceholder, safeName)
                     } else {
-                        context.getString(R.string.download_started)
+                        downloadStarted
                     }
                     context.toast(message)
                 }

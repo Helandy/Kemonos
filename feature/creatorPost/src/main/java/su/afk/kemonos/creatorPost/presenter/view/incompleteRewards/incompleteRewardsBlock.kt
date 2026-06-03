@@ -11,7 +11,7 @@ import androidx.compose.ui.unit.dp
 import su.afk.kemonos.domain.models.IncompleteRewards
 
 @Composable
-internal fun incompleteRewardsBlock(rewards: IncompleteRewards) {
+internal fun IncompleteRewardsBlock(rewards: IncompleteRewards) {
 
     val missingParts = listOfNotNull(
         rewards.mediaCount?.let { "$it media" },

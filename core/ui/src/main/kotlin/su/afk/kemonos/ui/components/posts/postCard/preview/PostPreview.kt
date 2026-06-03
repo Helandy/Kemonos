@@ -53,7 +53,7 @@ internal fun PostPreview(
                     previewServerUrl = uiSettingModel.videoPreviewServerUrl,
                     cropVideoPreview = uiSettingModel.cropPostPreviewVideo,
                     title = title,
-                    imageModifier = imageModifier,
+                    modifier = imageModifier,
                 )
             } else {
                 PreviewPlaceholder(text = stringResource(R.string.video_section))
@@ -80,7 +80,7 @@ private fun RemoteVideoPostPreview(
     previewServerUrl: String,
     cropVideoPreview: Boolean,
     title: String?,
-    imageModifier: Modifier,
+    modifier: Modifier,
 ) {
     val context = LocalContext.current
     val videoPreviewUrl = remember(videoPath, previewServerUrl) {
@@ -119,12 +119,12 @@ private fun RemoteVideoPostPreview(
                     contentScale = ContentScale.Crop,
                 )
             }
-            Image(
-                painter = painter,
-                contentDescription = title,
-                modifier = imageModifier,
-                contentScale = if (cropVideoPreview) ContentScale.Crop else ContentScale.Fit,
-            )
+                Image(
+                    painter = painter,
+                    contentDescription = title,
+                    modifier = modifier,
+                    contentScale = if (cropVideoPreview) ContentScale.Crop else ContentScale.Fit,
+                )
         }
 
         is AsyncImagePainter.State.Loading,

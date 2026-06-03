@@ -35,8 +35,9 @@
                 <category android:name="android.intent.category.BROWSABLE"/>
 
                 <!-- Hosts -->
-                <data android:scheme="https" android:host="kemono.cr"/>
-                <data android:scheme="https" android:host="coomer.st"/>
+                <data android:scheme="https"/>
+                <data android:host="kemono.cr"/>
+                <data android:host="coomer.st"/>
 
                 <!-- Sections -->
                 <data android:path="/artists"/>

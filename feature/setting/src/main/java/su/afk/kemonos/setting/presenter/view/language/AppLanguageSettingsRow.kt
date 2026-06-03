@@ -1,5 +1,6 @@
 package su.afk.kemonos.setting.presenter.view.language
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
@@ -55,6 +56,7 @@ internal fun AppLanguageSettingsRow(
     HorizontalDivider()
 }
 
+@SuppressLint("QueryPermissionsNeeded")
 internal fun Context.openAppLanguageSettingsSafely() {
     val candidates = buildList {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
@@ -81,6 +83,7 @@ internal fun Context.openAppLanguageSettingsSafely() {
     }
 }
 
+@SuppressLint("QueryPermissionsNeeded")
 internal fun Context.openAppDeepLinksSettingsSafely() {
     val candidates = buildList {
         add(

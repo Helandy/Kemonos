@@ -1,6 +1,7 @@
 package su.afk.kemonos.preferences.domainResolver
 
 import android.net.Uri
+import androidx.core.net.toUri
 import su.afk.kemonos.domain.SelectedSite
 import su.afk.kemonos.preferences.GetCoomerRootUrlUseCase
 import su.afk.kemonos.preferences.GetKemonoRootUrlUseCase
@@ -39,7 +40,7 @@ class DomainResolver @Inject constructor(
 /** "https://kemono.cr" -> "https://img.kemono.cr" */
 private fun String.toImgBaseUrl(): String {
     return runCatching {
-        val uri = Uri.parse(this)
+        val uri = toUri()
         val scheme = uri.scheme ?: "https"
         val host = uri.host ?: return this
 

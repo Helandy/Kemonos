@@ -1,5 +1,6 @@
 package su.afk.kemonos.ui.presenter.baseScreen
 
+import android.annotation.SuppressLint
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -43,6 +44,7 @@ import su.afk.kemonos.ui.R
 import su.afk.kemonos.ui.imageLoader.LocalAppImageLoader
 
 @OptIn(ExperimentalMaterial3Api::class)
+@SuppressLint("ModifierParameter")
 @Composable
 fun BaseScreen(
     /** content */

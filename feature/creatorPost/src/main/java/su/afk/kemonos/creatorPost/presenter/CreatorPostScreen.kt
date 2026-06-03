@@ -49,7 +49,7 @@ internal fun CreatorPostScreen(
     var showHiddenAttachmentsBlock by rememberSaveable(state.postId) { mutableStateOf(false) }
     val sectionState = rememberCreatorPostSectionState(postId = state.postId)
 
-    collectCreatorPostEffects(
+    CreatorPostEffects(
         effect = effect,
         context = context,
     )
@@ -106,7 +106,7 @@ internal fun CreatorPostScreen(
 }
 
 @Composable
-private fun collectCreatorPostEffects(
+private fun CreatorPostEffects(
     effect: Flow<Effect>,
     context: android.content.Context,
 ) {

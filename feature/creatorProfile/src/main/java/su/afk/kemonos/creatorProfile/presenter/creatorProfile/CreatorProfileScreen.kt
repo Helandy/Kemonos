@@ -10,6 +10,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.paging.LoadState
@@ -54,6 +55,10 @@ internal fun CreatorScreen(
 ) {
     val profile = state.profile
     val context = LocalContext.current
+    val copyLinkLabel = stringResource(R.string.copy_link)
+    val authorBlacklistAdded = stringResource(R.string.author_blacklist_added)
+    val authorBlacklistRemoved = stringResource(R.string.author_blacklist_removed)
+    val authorBlacklistAlreadyExists = stringResource(R.string.author_blacklist_already_exists)
     val posts = if (state.selectedTab == ProfileTab.POSTS) {
         state.profilePosts.collectAsLazyPagingItems()
     } else {
@@ -70,13 +75,13 @@ internal fun CreatorScreen(
                 is CreatorProfileState.Effect.ShowToast -> context.toast(effect.message)
                 is CreatorProfileState.Effect.CopyPostLink -> ShareActions.copyToClipboard(
                     context,
-                    context.getString(R.string.copy_link),
+                    copyLinkLabel,
                     effect.message
                 )
 
-                CreatorProfileState.Effect.AddedToBlacklist -> context.toast(context.getString(R.string.author_blacklist_added))
-                CreatorProfileState.Effect.RemovedFromBlacklist -> context.toast(context.getString(R.string.author_blacklist_removed))
-                CreatorProfileState.Effect.AlreadyInBlacklist -> context.toast(context.getString(R.string.author_blacklist_already_exists))
+                CreatorProfileState.Effect.AddedToBlacklist -> context.toast(authorBlacklistAdded)
+                CreatorProfileState.Effect.RemovedFromBlacklist -> context.toast(authorBlacklistRemoved)
+                CreatorProfileState.Effect.AlreadyInBlacklist -> context.toast(authorBlacklistAlreadyExists)
             }
         }
     }

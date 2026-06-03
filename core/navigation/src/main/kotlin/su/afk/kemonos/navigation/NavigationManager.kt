@@ -1,5 +1,6 @@
 package su.afk.kemonos.navigation
 
+import android.annotation.SuppressLint
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
@@ -8,6 +9,7 @@ import androidx.navigation3.runtime.NavBackStack
 import androidx.navigation3.runtime.NavKey
 import su.afk.kemonos.navigation.tab.BottomTab
 
+@SuppressLint("MutableCollectionMutableState")
 class NavigationManager(
     val roots: Map<BottomTab, NavKey>,
     val mainDest: NavKey,

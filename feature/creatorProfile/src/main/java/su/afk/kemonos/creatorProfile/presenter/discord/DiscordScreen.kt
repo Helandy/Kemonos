@@ -36,6 +36,7 @@ internal fun DiscordScreen(
 ) {
     val context = LocalContext.current
     val focusManager = LocalFocusManager.current
+    val copyLinkLabel = stringResource(R.string.copy_link)
     val title = state.serverName.ifBlank {
         if (state.service.equals("discord", ignoreCase = true)) {
             "Discord"
@@ -60,7 +61,7 @@ internal fun DiscordScreen(
             when (it) {
                 is Effect.CopyPostLink -> ShareActions.copyToClipboard(
                     context,
-                    context.getString(R.string.copy_link),
+                    copyLinkLabel,
                     it.message
                 )
             }
