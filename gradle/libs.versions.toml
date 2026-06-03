@@ -5,8 +5,8 @@ minSdk = "29"
 jvmVersion = "21"
 
 # --- App versioning
-appVersionName = "1.14"
-appVersionCode = "88"
+appVersionName = "1.14.1"
+appVersionCode = "89"
 
 agp = "9.2.1"
 kotlin = "2.3.21"

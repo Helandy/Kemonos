@@ -43,3 +43,4 @@ local.properties
 /navigation-api/build/*
 /storage-api/build/*
 /core-domain/build/*
+/app/release/*
