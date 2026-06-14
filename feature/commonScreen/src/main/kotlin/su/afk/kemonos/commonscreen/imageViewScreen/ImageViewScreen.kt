@@ -88,7 +88,7 @@ import kotlin.math.roundToInt
 private const val MIN_SCALE = 1f
 private const val MAX_SCALE = 4f
 private const val DOUBLE_TAP_SCALE = 3f
-private const val MAX_REQUEST_SIDE = 4096
+private const val MAX_IMAGE_REQUEST_SIDE = 3072
 
 @Composable
 internal fun ImageViewScreen(
@@ -121,6 +121,7 @@ internal fun ImageViewScreen(
         requestId = state.requestId,
         reloadKey = state.reloadKey,
         container = gestureState.container,
+        useMemoryCache = displayImageUrl != state.imageUrl,
     )
 
     Box(
@@ -461,6 +462,7 @@ private fun rememberImageRequest(
     requestId: String,
     reloadKey: Int,
     container: IntSize,
+    useMemoryCache: Boolean,
 ): ImageRequest {
     val headers = remember(requestId, reloadKey) {
         NetworkHeaders.Builder()
@@ -469,13 +471,13 @@ private fun rememberImageRequest(
             .build()
     }
 
-    return remember(imageUrl, reloadKey, container, headers, context) {
+    return remember(imageUrl, reloadKey, container, headers, context, useMemoryCache) {
         val requestSize = calculateRequestSize(container)
         ImageRequest.Builder(context)
             .data(imageUrl)
             .size(requestSize.width, requestSize.height)
             .precision(Precision.EXACT)
-            .memoryCachePolicy(CachePolicy.ENABLED)
+            .memoryCachePolicy(if (useMemoryCache) CachePolicy.ENABLED else CachePolicy.DISABLED)
             .diskCachePolicy(CachePolicy.ENABLED)
             .httpHeaders(headers)
             .build()
@@ -486,7 +488,7 @@ private fun calculateRequestSize(container: IntSize): IntSize {
     val w = (container.width * MAX_SCALE).roundToInt().coerceAtLeast(1)
     val h = (container.height * MAX_SCALE).roundToInt().coerceAtLeast(1)
 
-    val scaleDown = maxOf(w.toFloat() / MAX_REQUEST_SIDE, h.toFloat() / MAX_REQUEST_SIDE, 1f)
+    val scaleDown = maxOf(w.toFloat() / MAX_IMAGE_REQUEST_SIDE, h.toFloat() / MAX_IMAGE_REQUEST_SIDE, 1f)
     val rw = (w / scaleDown).roundToInt()
     val rh = (h / scaleDown).roundToInt()
 
