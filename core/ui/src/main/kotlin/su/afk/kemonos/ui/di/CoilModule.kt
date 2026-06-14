@@ -125,7 +125,7 @@ object CoilModule {
         .crossfade(true)
         .memoryCache {
             MemoryCache.Builder()
-                .maxSizePercent(appContext, 0.20)
+                .maxSizePercent(appContext, IMAGE_VIEW_MEMORY_CACHE_PERCENT)
                 .build()
         }
         .memoryCachePolicy(CachePolicy.ENABLED)
@@ -144,6 +144,7 @@ object CoilModule {
     private const val MAX_COIL_CACHE_MB = 800
 
     /** 100 mb DISK */
+    private const val IMAGE_VIEW_MEMORY_CACHE_PERCENT = 0.10
     private const val IMAGE_VIEW_DISK_CACHE_BYTES = 100L * 1024L * 1024L
     private const val IMAGE_VIEW_COIL_DISK_DIR_NAME = "${COIL_DISK_DIR_NAME}_image_view"
 }
