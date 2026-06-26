@@ -39,7 +39,7 @@ fun CreatorListItem(
 
     val accent = getColorForFavorites(service)
     val resolver = LocalDomainResolver.current
-    val imgBaseUrl = remember(service) { resolver.imageBaseUrlByService(service) }
+    val imgBaseUrl = remember(resolver, service) { resolver.creatorImageBaseUrlByService(service) }
 
     Box(
         modifier = Modifier

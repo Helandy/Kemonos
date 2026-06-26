@@ -13,7 +13,9 @@ data class SiteAuthState(
 data class AuthState(
     val kemono: SiteAuthState = SiteAuthState(null, null),
     val coomer: SiteAuthState = SiteAuthState(null, null),
+    val pawchive: SiteAuthState = SiteAuthState(null, null),
 ) {
     val isKemonoAuthorized: Boolean get() = kemono.isAuthorized
     val isCoomerAuthorized: Boolean get() = coomer.isAuthorized
+    val isPawchiveAuthorized: Boolean get() = pawchive.isAuthorized
 }

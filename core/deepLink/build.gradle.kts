@@ -26,7 +26,9 @@ dependencies {
 
     implementation(libs.bundles.navigation3)
 
+    implementation(project(":core:model"))
     implementation(project(":core:navigation"))
+    implementation(project(":core:preferences"))
 
     implementation(project(":feature:creatorProfile-api"))
     implementation(project(":feature:creatorPost-api"))

@@ -3,6 +3,7 @@ package su.afk.kemonos.creatorProfile.presenter.creatorProfile.delegates
 import kotlinx.coroutines.flow.first
 import su.afk.kemonos.auth.IsAuthCoomerUseCase
 import su.afk.kemonos.auth.IsAuthKemonoUseCase
+import su.afk.kemonos.auth.IsAuthPawchiveUseCase
 import su.afk.kemonos.creatorProfile.domain.FavoritesCreatorUseCase
 import su.afk.kemonos.domain.SelectedSite
 import su.afk.kemonos.preferences.site.ISelectedSiteUseCase
@@ -12,6 +13,7 @@ internal class LikeDelegate @Inject constructor(
     private val selectedSiteUseCase: ISelectedSiteUseCase,
     private val isAuthKemonoUseCase: IsAuthKemonoUseCase,
     private val isAuthCoomerUseCase: IsAuthCoomerUseCase,
+    private val isAuthPawchiveUseCase: IsAuthPawchiveUseCase,
     private val favoritesCreatorUseCase: FavoritesCreatorUseCase,
 ) {
 
@@ -20,6 +22,7 @@ internal class LikeDelegate @Inject constructor(
         return when (selectedSiteUseCase.getSite()) {
             SelectedSite.C -> isAuthCoomerUseCase().first()
             SelectedSite.K -> isAuthKemonoUseCase().first()
+            SelectedSite.P -> isAuthPawchiveUseCase().first()
         }
     }
 

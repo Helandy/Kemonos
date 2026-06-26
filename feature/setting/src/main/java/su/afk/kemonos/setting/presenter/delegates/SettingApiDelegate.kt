@@ -30,8 +30,19 @@ class SettingApiDelegate @Inject constructor(
             is SettingState.Event.ApiSetting.InputCoomerDomainChanged ->
                 setState { copy(inputCoomerDomain = normalizeDomain(event.value)) }
 
+            is SettingState.Event.ApiSetting.InputPawchiveDomainChanged ->
+                setState { copy(inputPawchiveDomain = normalizeDomain(event.value)) }
+
             is SettingState.Event.ApiSetting.InputVideoPreviewServerDomainChanged ->
                 setState { copy(inputVideoPreviewServerDomain = normalizeDomain(event.value)) }
+
+            is SettingState.Event.ApiSetting.ToggleApiSite -> scope.launch {
+                val current = getState().uiSettingModel.enabledSites
+                val next = if (event.enabled) current + event.site else current - event.site
+                if (next.isNotEmpty()) {
+                    uiSetting.setEnabledSites(next)
+                }
+            }
 
             SettingState.Event.ApiSetting.SaveUrls -> scope.launch {
                 setState { copy(isSaving = true, saveSuccess = false) }
@@ -39,13 +50,15 @@ class SettingApiDelegate @Inject constructor(
                 val s = getState()
                 val kemono = buildBaseUrl(s.inputKemonoDomain)
                 val coomer = buildBaseUrl(s.inputCoomerDomain)
+                val pawchive = buildBaseUrl(s.inputPawchiveDomain)
                 val previewDomain = s.inputVideoPreviewServerDomain.ifBlank {
                     normalizeDomain(UiSettingModel.DEFAULT_VIDEO_PREVIEW_SERVER_URL)
                 }
                 val previewServerUrl = "https://${previewDomain.trim().trim('/')}"
 
                 runCatching {
-                    setBaseUrlsUseCase(kemonoUrl = kemono, coomerUrl = coomer)
+                    setBaseUrlsUseCase(kemonoUrl = kemono, coomerUrl = coomer, pawchiveUrl = pawchive)
+                    uiSetting.setEnabledSites(s.uiSettingModel.enabledSites)
                     uiSetting.setVideoPreviewServerUrl(previewServerUrl)
                 }.onSuccess {
                     setState {
@@ -54,6 +67,7 @@ class SettingApiDelegate @Inject constructor(
                             saveSuccess = true,
                             kemonoUrl = kemono.toRootUrl(),
                             coomerUrl = coomer.toRootUrl(),
+                            pawchiveUrl = pawchive.toRootUrl(),
                             inputVideoPreviewServerDomain = previewDomain,
                         )
                     }

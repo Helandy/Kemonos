@@ -5,6 +5,8 @@ import androidx.navigation3.runtime.NavKey
 import su.afk.kemonos.creatorPost.api.ICreatorPostNavigator
 import su.afk.kemonos.creatorProfile.api.ICreatorProfileNavigator
 import su.afk.kemonos.deepLink.data.Domains
+import su.afk.kemonos.domain.SelectedSite
+import su.afk.kemonos.preferences.site.ISelectedSiteUseCase
 import javax.inject.Inject
 
 // todo продумать функциональность на каждый модуль
@@ -12,11 +14,14 @@ import javax.inject.Inject
 internal class KemonosDeepLinkResolver @Inject constructor(
     private val creatorProfileNavigator: ICreatorProfileNavigator,
     private val creatorPostNavigator: ICreatorPostNavigator,
+    private val selectedSiteUseCase: ISelectedSiteUseCase,
 ) : DeepLinkResolver {
 
     override suspend fun resolve(uri: Uri): NavKey? {
-        val hostOk = uri.host == Domains.KEMONO || uri.host == Domains.COOMER
+        val hostOk = uri.host == Domains.KEMONO || uri.host == Domains.COOMER || uri.host == Domains.PAWCHIVE
         if (!hostOk) return null
+
+        selectedSiteUseCase.setSite(siteByHost(uri.host))
 
         val s = uri.pathSegments
         if (s.isEmpty()) return null
@@ -73,4 +78,11 @@ internal class KemonosDeepLinkResolver @Inject constructor(
             )
         }
     }
+
+    private fun siteByHost(host: String?): SelectedSite =
+        when (host) {
+            Domains.COOMER -> SelectedSite.C
+            Domains.PAWCHIVE -> SelectedSite.P
+            else -> SelectedSite.K
+        }
 }

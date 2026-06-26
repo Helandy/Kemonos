@@ -121,6 +121,8 @@ internal fun StartCheckScreen(
                     state = state,
                     onInputKemonoChanged = { onEvent(Event.InputKemonoDomainChanged(it)) },
                     onInputCoomerChanged = { onEvent(Event.InputCoomerDomainChanged(it)) },
+                    onInputPawchiveChanged = { onEvent(Event.InputPawchiveDomainChanged(it)) },
+                    onToggleApiSite = { site, enabled -> onEvent(Event.ToggleApiSite(site, enabled)) },
                 )
 
                 Spacer(Modifier.height(96.dp))
@@ -174,8 +176,10 @@ private fun StartCheckScreenPreview_Update() = PreviewHost {
             isLoading = false,
             kemonoUrl = "https://kemono.cr",
             coomerUrl = "https://coomer.st",
+            pawchiveUrl = "https://pawchive.st",
             inputKemonoDomain = "kemono.cr",
             inputCoomerDomain = "coomer.st",
+            inputPawchiveDomain = "pawchive.st",
             updateInfo = AppUpdateInfo(
                 latestVersionName = "1.0.0",
                 releaseUrl = "url",
@@ -194,8 +198,10 @@ private fun StartCheckScreenPreview_Loading() = PreviewHost {
         state = StartCheckState.State(
             kemonoUrl = "https://kemono.cr",
             coomerUrl = "https://coomer.st",
+            pawchiveUrl = "https://pawchive.st",
             inputKemonoDomain = "kemono.cr",
             inputCoomerDomain = "coomer.st",
+            inputPawchiveDomain = "pawchive.st",
         ),
         onEvent = {},
         effect = emptyFlow()
@@ -211,8 +217,10 @@ private fun StartCheckScreenPreview_Success() = PreviewHost {
             apiSuccess = true,
             kemonoUrl = "https://kemono.cr",
             coomerUrl = "https://coomer.st",
+            pawchiveUrl = "https://pawchive.st",
             inputKemonoDomain = "kemono.cr",
             inputCoomerDomain = "coomer.st",
+            inputPawchiveDomain = "pawchive.st",
         ),
         onEvent = {},
         effect = emptyFlow()
@@ -238,8 +246,10 @@ private fun StartCheckScreenPreview_Error() = PreviewHost {
             apiSuccess = false,
             kemonoUrl = "https://kemono.cr",
             coomerUrl = "https://coomer.st",
+            pawchiveUrl = "https://pawchive.st",
             inputKemonoDomain = "kemono.cr",
             inputCoomerDomain = "coomer.st",
+            inputPawchiveDomain = "pawchive.st",
         ),
         onEvent = {},
         effect = emptyFlow()

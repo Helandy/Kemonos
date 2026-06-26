@@ -14,6 +14,7 @@ internal class DmState {
     data class State(
         val searchQuery: String = "",
         val dms: Flow<PagingData<DmDomain>> = emptyFlow(),
+        val dmUnsupported: Boolean = false,
         val uiSettingModel: UiSettingModel = UiSettingModel(),
     ) : UiState
 

@@ -4,6 +4,7 @@ import retrofit2.Response
 import retrofit2.http.GET
 import retrofit2.http.Path
 import retrofit2.http.Query
+import su.afk.kemonos.data.dto.PostUnifiedDto
 import su.afk.kemonos.network.textInterceptor.HeaderText
 import su.afk.kemonos.posts.data.dto.PostsDto
 import su.afk.kemonos.posts.data.dto.dms.DmsPageDto
@@ -22,6 +23,14 @@ internal interface PostsApi {
         @Query("q") search: String? = null,
         @Query("tag") tag: String? = null,
     ): Response<PostsDto>
+
+    @GET("v1/posts")
+    @HeaderText
+    suspend fun getPawchivePosts(
+        @Query("o") offset: Int? = null,
+        @Query("q") search: String? = null,
+        @Query("tag") tag: String? = null,
+    ): Response<List<PostUnifiedDto>>
 
     @GET("v1/dms")
     @HeaderText

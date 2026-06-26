@@ -19,6 +19,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
@@ -34,6 +35,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.paging.LoadState
 import androidx.paging.compose.LazyPagingItems
@@ -44,6 +46,7 @@ import su.afk.kemonos.posts.api.dms.DmDomain
 import su.afk.kemonos.posts.presenter.pageDm.DmState.Effect
 import su.afk.kemonos.posts.presenter.pageDm.DmState.Event
 import su.afk.kemonos.posts.presenter.pageDm.DmState.State
+import su.afk.kemonos.posts.R as PostsR
 import su.afk.kemonos.preferences.ui.shouldShowSiteToggleFab
 import su.afk.kemonos.ui.R
 import su.afk.kemonos.ui.components.button.SiteToggleFab
@@ -73,9 +76,10 @@ internal fun DmScreen(
         onEvent(Event.PullRefresh)
     }
 
-    val isPageLoading = dms.loadState.refresh is LoadState.Loading
+    val isPageLoading = !state.dmUnsupported && dms.loadState.refresh is LoadState.Loading
     val isBusy = isPageLoading || siteSwitching
-    val isEmptyResult = dms.itemCount == 0 && dms.loadState.refresh !is LoadState.Loading
+    val isEmptyResult = state.dmUnsupported ||
+            dms.itemCount == 0 && dms.loadState.refresh !is LoadState.Loading
     val topBarScrollMode = if (isEmptyResult) TopBarScroll.Pinned else TopBarScroll.EnterAlways
 
     BaseScreen(
@@ -84,32 +88,34 @@ internal fun DmScreen(
         contentPadding = PaddingValues(horizontal = 8.dp),
         isScroll = false,
         topBar = {
-            OutlinedTextField(
-                value = state.searchQuery,
-                onValueChange = { onEvent(Event.SearchQueryChanged(it)) },
-                label = { Text(text = stringResource(R.string.search)) },
-                singleLine = true,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(bottom = 6.dp),
-                trailingIcon = {
-                    if (state.searchQuery.isNotBlank()) {
-                        IconButton(onClick = { onEvent(Event.SearchQueryChanged("")) }) {
-                            Icon(
-                                imageVector = Icons.Default.Close,
-                                contentDescription = stringResource(R.string.close),
-                            )
+            if (!state.dmUnsupported) {
+                OutlinedTextField(
+                    value = state.searchQuery,
+                    onValueChange = { onEvent(Event.SearchQueryChanged(it)) },
+                    label = { Text(text = stringResource(R.string.search)) },
+                    singleLine = true,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(bottom = 6.dp),
+                    trailingIcon = {
+                        if (state.searchQuery.isNotBlank()) {
+                            IconButton(onClick = { onEvent(Event.SearchQueryChanged("")) }) {
+                                Icon(
+                                    imageVector = Icons.Default.Close,
+                                    contentDescription = stringResource(R.string.close),
+                                )
+                            }
                         }
-                    }
-                },
-                keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
-                keyboardActions = KeyboardActions(
-                    onSearch = {
-                        focusManager.clearFocus()
-                        onEvent(Event.SearchSubmitted)
-                    }
+                    },
+                    keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
+                    keyboardActions = KeyboardActions(
+                        onSearch = {
+                            focusManager.clearFocus()
+                            onEvent(Event.SearchSubmitted)
+                        }
+                    )
                 )
-            )
+            }
         },
         floatingActionButtonStart = {
             if (state.uiSettingModel.shouldShowSiteToggleFab()) {
@@ -122,6 +128,15 @@ internal fun DmScreen(
         },
         isLoading = isPageLoading && dms.itemCount == 0,
     ) {
+        if (state.dmUnsupported) {
+            DmUnsupportedContent(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .weight(1f),
+            )
+            return@BaseScreen
+        }
+
         PullToRefreshBox(
             modifier = Modifier
                 .fillMaxSize()
@@ -141,6 +156,24 @@ internal fun DmScreen(
                 modifier = Modifier.fillMaxSize(),
             )
         }
+    }
+}
+
+@Composable
+private fun DmUnsupportedContent(
+    modifier: Modifier = Modifier,
+) {
+    Box(
+        modifier = modifier.padding(16.dp),
+        contentAlignment = Alignment.Center,
+    ) {
+        Text(
+            text = stringResource(PostsR.string.dm_pawchive_unsupported),
+            modifier = Modifier.fillMaxWidth(),
+            textAlign = TextAlign.Center,
+            style = MaterialTheme.typography.headlineSmall,
+            color = MaterialTheme.colorScheme.onBackground,
+        )
     }
 }
 

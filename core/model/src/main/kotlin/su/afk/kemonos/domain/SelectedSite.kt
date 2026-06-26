@@ -4,4 +4,4 @@ import kotlinx.serialization.Serializable
 
 /** site api */
 @Serializable
-enum class SelectedSite { C, K }
+enum class SelectedSite { C, K, P }

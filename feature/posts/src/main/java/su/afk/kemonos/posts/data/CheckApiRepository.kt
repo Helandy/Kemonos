@@ -24,13 +24,20 @@ internal class CheckApiRepository @Inject constructor(
         val coomer = if (SelectedSite.C in sitesToCheck) checkSite(SelectedSite.C)
         else SingleSiteCheck(site = SelectedSite.C, success = true)
 
-        return ApiCheckForAllSitesResult(kemono = kemono, coomer = coomer)
+        val pawchive = if (SelectedSite.P in sitesToCheck) checkSite(SelectedSite.P)
+        else SingleSiteCheck(site = SelectedSite.P, success = true)
+
+        return ApiCheckForAllSitesResult(kemono = kemono, coomer = coomer, pawchive = pawchive)
     }
 
     private suspend fun checkSite(site: SelectedSite): SingleSiteCheck {
         return try {
             val response = selectedSite.withSite(site) {
-                api.getPosts()
+                if (site == SelectedSite.P) {
+                    api.getPawchivePosts()
+                } else {
+                    api.getPosts()
+                }
             }
 
             if (response.isSuccessful) {

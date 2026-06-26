@@ -40,7 +40,7 @@ fun CreatorHeader(
     val avatarSize = 54.dp
 
     val resolver = LocalDomainResolver.current
-    val imgBaseUrl = remember(service) { resolver.imageBaseUrlByService(service) }
+    val imgBaseUrl = remember(resolver, service) { resolver.creatorImageBaseUrlByService(service) }
     val accent = getColorForFavorites(service)
 
     Box(

@@ -110,11 +110,13 @@ class SettingCacheDelegate @Inject constructor(
     private suspend fun clearPostsSearch() {
         postsSearchRepository.clearAll(SelectedSite.K)
         postsSearchRepository.clearAll(SelectedSite.C)
+        postsSearchRepository.clearAll(SelectedSite.P)
     }
 
     private suspend fun clearDms() {
         dmsRepository.clearAll(SelectedSite.K)
         dmsRepository.clearAll(SelectedSite.C)
+        dmsRepository.clearAll(SelectedSite.P)
     }
 
     private suspend fun clearVideoInfo() {
@@ -124,15 +126,18 @@ class SettingCacheDelegate @Inject constructor(
     private suspend fun clearPopularPosts() {
         storagePopularPostsCacheUseCase.clearAll(SelectedSite.K)
         storagePopularPostsCacheUseCase.clearAll(SelectedSite.C)
+        storagePopularPostsCacheUseCase.clearAll(SelectedSite.P)
     }
 
     private suspend fun clearFavoritesArtists() {
         storeFavoriteArtistsUseCase.clear(SelectedSite.K)
         storeFavoriteArtistsUseCase.clear(SelectedSite.C)
+        storeFavoriteArtistsUseCase.clear(SelectedSite.P)
     }
 
     private suspend fun clearFavoritesPosts() {
         storeFavoritePostsUseCase.clear(SelectedSite.K)
         storeFavoritePostsUseCase.clear(SelectedSite.C)
+        storeFavoritePostsUseCase.clear(SelectedSite.P)
     }
 }

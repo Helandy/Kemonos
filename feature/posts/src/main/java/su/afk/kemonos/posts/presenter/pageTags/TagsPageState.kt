@@ -13,6 +13,7 @@ internal class TagsPageState {
         /** Все тэги */
         val allTags: List<Tags> = emptyList(),
         val filteredTags: List<Tags> = emptyList(),
+        val tagsUnsupported: Boolean = false,
 
         val searchQuery: String = "",
         val uiSettingModel: UiSettingModel = UiSettingModel(),

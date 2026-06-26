@@ -20,6 +20,7 @@ internal fun SwitchRow(
     checked: Boolean,
     onCheckedChange: (Boolean) -> Unit,
     subtitle: String? = null,
+    enabled: Boolean = true,
 ) {
     Row(
         modifier = Modifier
@@ -41,6 +42,7 @@ internal fun SwitchRow(
 
         Switch(
             checked = checked,
+            enabled = enabled,
             onCheckedChange = onCheckedChange,
             colors = settingsSwitchColors(),
         )

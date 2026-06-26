@@ -50,12 +50,13 @@ internal class HashLookupViewModel @Inject constructor(
             Event.Submit -> submit()
             Event.PullRefresh -> onPullRefresh()
             is Event.NavigateToPost -> navigateToPost(event.post)
-            Event.SwitchSite -> switchSite()
+            Event.SwitchSite -> switchSite(currentState.uiSettingModel.enabledSiteList)
         }
     }
 
     private fun observeUiSetting() {
         uiSetting.observeDistinct(viewModelScope) { model ->
+            ensureSiteEnabled(model.enabledSiteList)
             setState { copy(uiSettingModel = model) }
         }
     }

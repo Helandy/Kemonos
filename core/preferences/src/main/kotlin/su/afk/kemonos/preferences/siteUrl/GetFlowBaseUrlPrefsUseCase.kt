@@ -10,4 +10,5 @@ internal class GetFlowBaseUrlPrefsUseCase @Inject constructor(
 
     override val kemonoUrl: StateFlow<String> = urlPrefs.kemonoUrl
     override val coomerUrl: StateFlow<String> = urlPrefs.coomerUrl
+    override val pawchiveUrl: StateFlow<String> = urlPrefs.pawchiveUrl
 }

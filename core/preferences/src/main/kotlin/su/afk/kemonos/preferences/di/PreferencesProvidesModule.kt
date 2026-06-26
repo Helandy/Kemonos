@@ -6,8 +6,10 @@ import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import su.afk.kemonos.preferences.GetCoomerRootUrlUseCase
 import su.afk.kemonos.preferences.GetKemonoRootUrlUseCase
+import su.afk.kemonos.preferences.GetPawchiveRootUrlUseCase
 import su.afk.kemonos.preferences.domainResolver.DomainResolver
 import su.afk.kemonos.preferences.domainResolver.IDomainResolver
+import su.afk.kemonos.preferences.site.ISelectedSiteUseCase
 import javax.inject.Singleton
 
 @Module
@@ -19,5 +21,12 @@ object PreferencesProvidesModule {
     fun provideDomainResolver(
         getKemonoRootUrl: GetKemonoRootUrlUseCase,
         getCoomerRootUrl: GetCoomerRootUrlUseCase,
-    ): IDomainResolver = DomainResolver(getKemonoRootUrl, getCoomerRootUrl)
+        getPawchiveRootUrl: GetPawchiveRootUrlUseCase,
+        selectedSiteUseCase: ISelectedSiteUseCase,
+    ): IDomainResolver = DomainResolver(
+        getKemonoRootUrl,
+        getCoomerRootUrl,
+        getPawchiveRootUrl,
+        selectedSiteUseCase,
+    )
 }

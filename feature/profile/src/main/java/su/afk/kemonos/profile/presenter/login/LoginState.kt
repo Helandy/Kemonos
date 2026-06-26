@@ -41,5 +41,6 @@ internal class LoginState {
         data object PickPassword : Effect
         data class SavePasswordAndNavigate(val username: String, val password: String) : Effect
         data object NavigateToProfile : Effect
+        data class ShowMessage(val message: String) : Effect
     }
 }

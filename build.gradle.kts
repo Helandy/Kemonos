@@ -8,3 +8,9 @@ plugins {
     alias(libs.plugins.android.library) apply false
     alias(libs.plugins.kotlin.jvm) apply false
 }
+
+subprojects {
+    configurations.configureEach {
+        resolutionStrategy.force("org.jetbrains.kotlin:kotlin-metadata-jvm:${libs.versions.kotlin.get()}")
+    }
+}

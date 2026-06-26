@@ -29,6 +29,16 @@ internal interface CreatorProfileApi {
         @Query("tag") tag: String? = null
     ): Response<List<PostUnifiedDto>>
 
+    @HeaderText
+    @GET("v1/{service}/user/{id}")
+    suspend fun getPawchiveProfilePosts(
+        @Path("service") service: String,
+        @Path("id") id: String,
+        @Query("o") offset: Int? = null,
+        @Query("q") search: String? = null,
+        @Query("tag") tag: String? = null
+    ): Response<List<PostUnifiedDto>>
+
     /** DMs */
     @HeaderText
     @GET("v1/{service}/user/{id}/dms")

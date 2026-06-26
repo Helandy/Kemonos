@@ -106,7 +106,7 @@ internal class CreatorsViewModel @Inject constructor(
     }
 
     override suspend fun loadInitialSite(site: SelectedSite) {
-        setState { copy(selectedSite = site) }
+        setState { copy(selectedSite = site, error = null) }
         updateCreatorsFiltersFromState()
         initAndReloadSite()
     }
@@ -120,6 +120,7 @@ internal class CreatorsViewModel @Inject constructor(
                 sortedType = CreatorsSort.POPULARITY,
                 sortAscending = false,
                 selectedSite = site,
+                error = null,
             )
         }
 
@@ -134,6 +135,7 @@ internal class CreatorsViewModel @Inject constructor(
                 uiSetting.setCreatorsGithubRateBannerInstallTsMs(now)
 
                 val modelWithInstallTs = model.copy(creatorsGithubRateBannerInstallTsMs = now)
+                ensureSiteEnabled(modelWithInstallTs.enabledSiteList)
                 setState {
                     copy(
                         uiSettingModel = modelWithInstallTs,
@@ -147,6 +149,7 @@ internal class CreatorsViewModel @Inject constructor(
                 return@onEach
             }
 
+            ensureSiteEnabled(model.enabledSiteList)
             setState {
                 copy(
                     uiSettingModel = model,
@@ -193,7 +196,7 @@ internal class CreatorsViewModel @Inject constructor(
     }
 
     private suspend fun initAndReloadSite() {
-        setState { copy(loading = true) }
+        setState { copy(loading = true, error = null) }
         try {
             /** Проверка свежий ли кэш (если нет загружаем с сети) */
             getCreatorsPagedUseCase.checkFreshCache()
@@ -207,6 +210,8 @@ internal class CreatorsViewModel @Inject constructor(
 
             /** Подгрузка рандомных авторов */
             randomListDelegate.loadRandom(currentState, ::setState)
+        } catch (t: Throwable) {
+            setState { copy(error = errorHandler.parse(t, navigate = false)) }
         } finally {
             setState { copy(loading = false) }
         }
@@ -263,7 +268,8 @@ internal class CreatorsViewModel @Inject constructor(
 
             is Event.CreatorClicked -> onCreatorClick(event.creator)
             Event.RandomClicked -> randomCreator()
-            Event.SwitchSiteClicked -> switchSite()
+            Event.SwitchSiteClicked -> switchSite(currentState.uiSettingModel.enabledSiteList)
+            Event.RetryClicked -> onRetry()
             Event.HeaderRandomExpanded -> setState { copy(randomExpanded = !randomExpanded) }
             Event.GithubRateClick -> onGithubRateClick()
             Event.HideGithubRateBanner -> onHideGithubRateBanner()

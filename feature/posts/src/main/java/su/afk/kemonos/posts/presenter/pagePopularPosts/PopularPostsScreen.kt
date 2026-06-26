@@ -1,18 +1,27 @@
 package su.afk.kemonos.posts.presenter.pagePopularPosts
 
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.paging.LoadState
 import androidx.paging.compose.collectAsLazyPagingItems
 import kotlinx.coroutines.flow.Flow
 import su.afk.kemonos.domain.SelectedSite
+import su.afk.kemonos.posts.R
 import su.afk.kemonos.posts.presenter.pagePopularPosts.PopularPostsState.Effect
 import su.afk.kemonos.posts.presenter.pagePopularPosts.PopularPostsState.Event
 import su.afk.kemonos.posts.presenter.pagePopularPosts.PopularPostsState.State
@@ -41,9 +50,10 @@ internal fun PopularPostsScreen(
         onEvent(Event.PullRefresh)
     }
 
-    val isPageLoading = posts.loadState.refresh is LoadState.Loading
+    val isPageLoading = !state.popularUnsupported && posts.loadState.refresh is LoadState.Loading
     val isBusy = isPageLoading || siteSwitching
-    val isEmptyResult = posts.itemCount == 0 && posts.loadState.refresh !is LoadState.Loading
+    val isEmptyResult = state.popularUnsupported ||
+            posts.itemCount == 0 && posts.loadState.refresh !is LoadState.Loading
     val topBarScrollMode = if (isEmptyResult) TopBarScroll.Pinned else TopBarScroll.EnterAlways
 
     BaseScreen(
@@ -70,6 +80,15 @@ internal fun PopularPostsScreen(
         },
         isLoading = isPageLoading && posts.itemCount == 0,
     ) {
+        if (state.popularUnsupported) {
+            PopularUnsupportedContent(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .weight(1f),
+            )
+            return@BaseScreen
+        }
+
         PullToRefreshBox(
             modifier = Modifier
                 .fillMaxSize()
@@ -90,5 +109,23 @@ internal fun PopularPostsScreen(
                 scrollStateKey = "popular:$site:${state.popularPeriod}:${state.popularDateForPopular}:${state.uiSettingModel.popularPostsViewMode}:${state.uiSettingModel.popularPostsGridSize}",
             )
         }
+    }
+}
+
+@Composable
+private fun PopularUnsupportedContent(
+    modifier: Modifier = Modifier,
+) {
+    Box(
+        modifier = modifier.padding(16.dp),
+        contentAlignment = Alignment.Center,
+    ) {
+        Text(
+            text = stringResource(R.string.popular_pawchive_unsupported),
+            modifier = Modifier.fillMaxWidth(),
+            textAlign = TextAlign.Center,
+            style = MaterialTheme.typography.headlineSmall,
+            color = MaterialTheme.colorScheme.onBackground,
+        )
     }
 }

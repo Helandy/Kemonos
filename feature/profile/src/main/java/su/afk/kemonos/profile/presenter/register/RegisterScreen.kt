@@ -103,6 +103,7 @@ private fun RegisterLogo(selectSite: SelectedSite) {
     val logoRes = when (selectSite) {
         SelectedSite.K -> drawable.kemono_logo
         SelectedSite.C -> drawable.coomer_logo
+        SelectedSite.P -> drawable.pawchive_logo
     }
     Image(
         painter = painterResource(id = logoRes),

@@ -74,7 +74,7 @@ internal fun CreatorsScreen(
         .joinToString("|") { "${it.service}:${it.id}:${it.relationId}:${it.favedSeq}" }
         .hashCode()
     val scrollStateKey =
-        "creators:$site:${state.searchQuery.trim()}:${state.selectedService}:${state.sortedType}:${state.sortAscending}:${state.uiSettingModel.creatorsViewMode}:${state.uiSettingModel.suggestRandomAuthors}:${state.randomExpanded}:$randomSectionKey"
+        "creators:${state.selectedSite}:${state.searchQuery.trim()}:${state.selectedService}:${state.sortedType}:${state.sortAscending}:${state.uiSettingModel.creatorsViewMode}:${state.uiSettingModel.suggestRandomAuthors}:${state.randomExpanded}:$randomSectionKey"
     val listState = rememberSaveable("$scrollStateKey:list", saver = LazyListState.Saver) {
         LazyListState()
     }
@@ -122,7 +122,7 @@ internal fun CreatorsScreen(
             if (state.uiSettingModel.shouldShowSiteToggleFab()) {
                 SiteToggleFab(
                     enable = !isScreenLoading,
-                    selectedSite = site,
+                    selectedSite = state.selectedSite,
                     onToggleSite = { onEvent(Event.SwitchSiteClicked) },
                 )
             }
@@ -136,7 +136,9 @@ internal fun CreatorsScreen(
             }
         },
         isLoading = isScreenLoading,
-        isEmpty = isEmptyResult
+        isEmpty = isEmptyResult,
+        error = state.error,
+        onRetry = { onEvent(Event.RetryClicked) },
     ) {
         CreatorsContentPaging(
             dateMode = state.uiSettingModel.dateFormatMode,

@@ -82,12 +82,13 @@ internal class PopularPostsViewModel @Inject constructor(
             Event.PullRefresh -> onPullRefresh()
             is Event.PeriodSlotClick -> onPeriodSlotClick(event.period, event.slot)
             is Event.NavigateToPost -> navigateToPost(event.post)
-            Event.SwitchSite -> switchSite()
+            Event.SwitchSite -> switchSite(currentState.uiSettingModel.enabledSiteList)
         }
     }
 
     private fun observeUiSetting() {
         uiSetting.observeDistinct(viewModelScope) { model ->
+            ensureSiteEnabled(model.enabledSiteList)
             setState { copy(uiSettingModel = model) }
         }
     }
@@ -118,6 +119,8 @@ internal class PopularPostsViewModel @Inject constructor(
     }
 
     private fun submitCurrentRequest(forceRefresh: Boolean) {
+        if (currentState.popularUnsupported) return
+
         val refreshCounter = nextRefreshCounter(forceRefresh)
         val request = popularRequestFlow.value ?: PopularRequest(
             site = site.value,
@@ -150,6 +153,20 @@ internal class PopularPostsViewModel @Inject constructor(
         blacklistedKeys: Set<String>,
         forceRefresh: Boolean,
     ) {
+        if (site == SelectedSite.P) {
+            setState {
+                copy(
+                    posts = emptyFlow(),
+                    popularPostsInfo = null,
+                    popularProps = null,
+                    popularDateForPopular = null,
+                    popularPeriod = Period.RECENT,
+                    popularUnsupported = true,
+                )
+            }
+            return
+        }
+
         setState { copy(popularDateForPopular = date, popularPeriod = period) }
 
         val flow = getPopularPostsUseCase(
@@ -181,7 +198,12 @@ internal class PopularPostsViewModel @Inject constructor(
             }
         }
 
-        setState { copy(posts = flow) }
+        setState {
+            copy(
+                posts = flow,
+                popularUnsupported = false,
+            )
+        }
     }
 
     private fun onPullRefresh() {

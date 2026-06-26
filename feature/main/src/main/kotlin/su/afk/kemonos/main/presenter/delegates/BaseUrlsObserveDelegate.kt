@@ -9,13 +9,14 @@ import javax.inject.Inject
 internal class BaseUrlsObserveDelegate @Inject constructor(
     private val getBaseUrlsUseCase: IGetBaseUrlsUseCase,
 ) {
-    fun observe(scope: CoroutineScope, onUrls: (kemono: String, coomer: String) -> Unit) {
+    fun observe(scope: CoroutineScope, onUrls: (kemono: String, coomer: String, pawchive: String) -> Unit) {
         scope.launch {
             combine(
                 getBaseUrlsUseCase.kemonoUrl,
                 getBaseUrlsUseCase.coomerUrl,
-            ) { kemono, coomer -> kemono to coomer }
-                .collect { (k, c) -> onUrls(k, c) }
+                getBaseUrlsUseCase.pawchiveUrl,
+            ) { kemono, coomer, pawchive -> Triple(kemono, coomer, pawchive) }
+                .collect { (k, c, p) -> onUrls(k, c, p) }
         }
     }
 }

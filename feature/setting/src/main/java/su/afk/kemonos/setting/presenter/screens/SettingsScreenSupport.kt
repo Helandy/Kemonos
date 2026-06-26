@@ -63,8 +63,10 @@ internal fun previewSettingState(
         appVersion = "preview-1.0.0",
         kemonoUrl = "https://kemono.su",
         coomerUrl = "https://coomer.su",
+        pawchiveUrl = "https://pawchive.st",
         inputKemonoDomain = "kemono.su",
         inputCoomerDomain = "coomer.su",
+        inputPawchiveDomain = "pawchive.st",
         inputVideoPreviewServerDomain = "kemonos.afk.su",
         saveSuccess = true,
         uiSettingModel = UiSettingModel(
@@ -88,6 +90,11 @@ internal fun previewSettingState(
             nextMs = PREVIEW_NOW_MS + 29 * DAY_IN_MS,
             isFresh = true,
         ),
+        tagsPawchiveCache = CacheTimeUi(
+            lastMs = PREVIEW_NOW_MS - DAY_IN_MS,
+            nextMs = PREVIEW_NOW_MS + 29 * DAY_IN_MS,
+            isFresh = true,
+        ),
         creatorsKemonoCache = CacheTimeUi(
             lastMs = PREVIEW_NOW_MS - 2 * DAY_IN_MS,
             nextMs = PREVIEW_NOW_MS + 5 * DAY_IN_MS,
@@ -97,6 +104,11 @@ internal fun previewSettingState(
             lastMs = PREVIEW_NOW_MS - 5 * DAY_IN_MS,
             nextMs = PREVIEW_NOW_MS + 2 * DAY_IN_MS,
             isFresh = false,
+        ),
+        creatorsPawchiveCache = CacheTimeUi(
+            lastMs = PREVIEW_NOW_MS - 2 * DAY_IN_MS,
+            nextMs = PREVIEW_NOW_MS + 5 * DAY_IN_MS,
+            isFresh = true,
         ),
         communityCache = CacheTimeUi(
             lastMs = PREVIEW_NOW_MS - 2 * DAY_IN_MS,

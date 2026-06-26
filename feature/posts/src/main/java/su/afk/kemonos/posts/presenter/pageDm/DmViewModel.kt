@@ -1,6 +1,7 @@
 package su.afk.kemonos.posts.presenter.pageDm
 
 import androidx.lifecycle.SavedStateHandle
+import androidx.paging.PagingData
 import androidx.paging.cachedIn
 import androidx.paging.filter
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -80,12 +81,13 @@ internal class DmViewModel @Inject constructor(
             DmState.Event.SearchSubmitted -> onSearchSubmitted()
             DmState.Event.PullRefresh -> onPullRefresh()
             is DmState.Event.NavigateToProfile -> navigateToProfile(event.service, event.id)
-            DmState.Event.SwitchSite -> switchSite()
+            DmState.Event.SwitchSite -> switchSite(currentState.uiSettingModel.enabledSiteList)
         }
     }
 
     private fun observeUiSetting() {
         uiSetting.observeDistinct(viewModelScope) { model ->
+            ensureSiteEnabled(model.enabledSiteList)
             setState { copy(uiSettingModel = model) }
         }
     }
@@ -110,7 +112,23 @@ internal class DmViewModel @Inject constructor(
             )
         }
         val basePagingFlow = loadRequestFlow
+            .onEach { request ->
+                if (request.site == SelectedSite.P) {
+                    setState {
+                        copy(
+                            dmUnsupported = true,
+                            dms = flowOf(PagingData.empty()),
+                        )
+                    }
+                } else {
+                    setState { copy(dmUnsupported = false) }
+                }
+            }
             .map { request ->
+                if (request.site == SelectedSite.P) {
+                    return@map flowOf(PagingData.empty())
+                }
+
                 val forceRefresh = request.manualRefreshCounter != lastManualRefreshCounter
                 lastManualRefreshCounter = request.manualRefreshCounter
 

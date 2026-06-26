@@ -55,10 +55,11 @@ internal fun SitePage(
         )
 
         FavoritesCard(
-            titleId = if (site == SelectedSite.C)
-                R.string.profile_favorites_title_coomer
-            else
-                R.string.profile_favorites_title_kemono,
+            titleId = when (site) {
+                SelectedSite.C -> R.string.profile_favorites_title_coomer
+                SelectedSite.K -> R.string.profile_favorites_title_kemono
+                SelectedSite.P -> R.string.profile_favorites_title_pawchive
+            },
             enabled = isLoggedIn,
             onFavoriteProfiles = onFavoriteProfiles,
             onFavoritePosts = onFavoritePosts,

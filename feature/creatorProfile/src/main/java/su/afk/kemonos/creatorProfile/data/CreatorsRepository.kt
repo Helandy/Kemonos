@@ -20,10 +20,12 @@ import su.afk.kemonos.creatorProfile.data.dto.profileTags.TagDto.Companion.toDom
 import su.afk.kemonos.creatorProfile.domain.repository.ICreatorsRepository
 import su.afk.kemonos.creatorProfile.util.Utils.queryKey
 import su.afk.kemonos.data.dto.PostUnifiedDto.Companion.toDomain
+import su.afk.kemonos.domain.SelectedSite
 import su.afk.kemonos.domain.models.PostDomain
 import su.afk.kemonos.domain.models.Tag
 import su.afk.kemonos.network.util.call
 import su.afk.kemonos.network.util.safeCallOrNull
+import su.afk.kemonos.preferences.site.ISelectedSiteUseCase
 import su.afk.kemonos.storage.api.repository.community.CommunityCacheType
 import su.afk.kemonos.storage.api.repository.community.IStoreCommunityRepository
 import su.afk.kemonos.storage.api.repository.creatorProfile.CreatorProfileCacheType
@@ -37,6 +39,7 @@ internal class CreatorsRepository @Inject constructor(
     private val communityCacheStore: IStoreCommunityRepository,
     private val cacheJson: CreatorProfileCacheJson,
     private val postsCache: IStorageCreatorPostsRepository,
+    private val selectedSiteUseCase: ISelectedSiteUseCase,
 ) : ICreatorsRepository {
     companion object {
         private const val COMMUNITY_PAGE_SIZE = 150
@@ -52,28 +55,42 @@ internal class CreatorsRepository @Inject constructor(
         offset: Int,
     ): List<PostDomain> {
         val qk = queryKey(service, id, search, tag)
+        val site = selectedSiteUseCase.getSite()
 
-        postsCache.getFreshPageOrNull(qk, offset)?.let { return it }
+        postsCache.getFreshPageOrNull(site, qk, offset)?.let { return it }
 
         val apiOffset = if (offset == 0) null else offset
 
-        val net = api.getProfilePosts(
-            service = service,
-            id = id,
-            search = search,
-            tag = tag,
-            offset = apiOffset,
-        ).call { list ->
+        val response = if (site == SelectedSite.P) {
+            api.getPawchiveProfilePosts(
+                service = service,
+                id = id,
+                search = search,
+                tag = tag,
+                offset = apiOffset,
+            )
+        } else {
+            api.getProfilePosts(
+                service = service,
+                id = id,
+                search = search,
+                tag = tag,
+                offset = apiOffset,
+            )
+        }
+
+        val net = response.call { list ->
             list.map { it.toDomain() }
         }
 
-        postsCache.putPage(qk, offset, net)
+        postsCache.putPage(site, qk, offset, net)
         return net
     }
 
     /** ЛС профиля (кэш 7 дней) */
     override suspend fun getProfileDms(service: String, id: String): List<Dm> {
-        cacheStore.getFreshJsonOrNull(service, id, CreatorProfileCacheType.DMS)
+        val site = selectedSiteUseCase.getSite()
+        cacheStore.getFreshJsonOrNull(site, service, id, CreatorProfileCacheType.DMS)
             ?.let { return cacheJson.dmsFromJson(it) }
 
         val fromNet = safeCallOrNull(
@@ -83,6 +100,7 @@ internal class CreatorsRepository @Inject constructor(
 
         if (fromNet != null) {
             cacheStore.putJson(
+                site,
                 service,
                 id,
                 CreatorProfileCacheType.DMS,
@@ -95,7 +113,8 @@ internal class CreatorsRepository @Inject constructor(
 
     /** Tags профиля (кэш 7 дней) */
     override suspend fun getProfileTags(service: String, id: String): List<Tag> {
-        cacheStore.getFreshJsonOrNull(service, id, CreatorProfileCacheType.TAGS)
+        val site = selectedSiteUseCase.getSite()
+        cacheStore.getFreshJsonOrNull(site, service, id, CreatorProfileCacheType.TAGS)
             ?.let { return cacheJson.tagsFromJson(it) }
 
         val fromNet = safeCallOrNull(
@@ -105,6 +124,7 @@ internal class CreatorsRepository @Inject constructor(
 
         if (fromNet != null) {
             cacheStore.putJson(
+                site,
                 service,
                 id,
                 CreatorProfileCacheType.TAGS,
@@ -117,7 +137,8 @@ internal class CreatorsRepository @Inject constructor(
 
     /** Announcements профиля (кэш 7 дней) */
     override suspend fun getProfileAnnouncements(service: String, id: String): List<ProfileAnnouncement> {
-        cacheStore.getFreshJsonOrNull(service, id, CreatorProfileCacheType.ANNOUNCEMENTS)
+        val site = selectedSiteUseCase.getSite()
+        cacheStore.getFreshJsonOrNull(site, service, id, CreatorProfileCacheType.ANNOUNCEMENTS)
             ?.let { return cacheJson.announcementsFromJson(it) }
 
         val fromNet = safeCallOrNull(
@@ -127,6 +148,7 @@ internal class CreatorsRepository @Inject constructor(
 
         if (fromNet != null) {
             cacheStore.putJson(
+                site,
                 service,
                 id,
                 CreatorProfileCacheType.ANNOUNCEMENTS,
@@ -139,7 +161,8 @@ internal class CreatorsRepository @Inject constructor(
 
     /** FanCards профиля (кэш 7 дней) */
     override suspend fun getProfileFanCards(service: String, id: String): List<ProfileFanCard> {
-        cacheStore.getFreshJsonOrNull(service, id, CreatorProfileCacheType.FANCARDS)
+        val site = selectedSiteUseCase.getSite()
+        cacheStore.getFreshJsonOrNull(site, service, id, CreatorProfileCacheType.FANCARDS)
             ?.let { return cacheJson.fanCardsFromJson(it) }
 
         val fromNet = safeCallOrNull(
@@ -149,6 +172,7 @@ internal class CreatorsRepository @Inject constructor(
 
         if (fromNet != null) {
             cacheStore.putJson(
+                site,
                 service,
                 id,
                 CreatorProfileCacheType.FANCARDS,
@@ -161,7 +185,8 @@ internal class CreatorsRepository @Inject constructor(
 
     /** Links профиля (кэш 7 дней) */
     override suspend fun getProfileLinks(service: String, id: String): List<ProfileLink> {
-        cacheStore.getFreshJsonOrNull(service, id, CreatorProfileCacheType.LINKS)
+        val site = selectedSiteUseCase.getSite()
+        cacheStore.getFreshJsonOrNull(site, service, id, CreatorProfileCacheType.LINKS)
             ?.let { return cacheJson.linksFromJson(it) }
 
         val fromNet = safeCallOrNull(
@@ -171,6 +196,7 @@ internal class CreatorsRepository @Inject constructor(
 
         if (fromNet != null) {
             cacheStore.putJson(
+                site,
                 service,
                 id,
                 CreatorProfileCacheType.LINKS,
@@ -183,7 +209,8 @@ internal class CreatorsRepository @Inject constructor(
 
     /** Similar creators */
     override suspend fun getProfileSimilar(service: String, id: String): List<SimilarCreator> {
-        cacheStore.getFreshJsonOrNull(service, id, CreatorProfileCacheType.SIMILAR)
+        val site = selectedSiteUseCase.getSite()
+        cacheStore.getFreshJsonOrNull(site, service, id, CreatorProfileCacheType.SIMILAR)
             ?.let { return cacheJson.similarFromJson(it) }
 
         val fromNet = safeCallOrNull(
@@ -193,6 +220,7 @@ internal class CreatorsRepository @Inject constructor(
 
         if (fromNet != null) {
             cacheStore.putJson(
+                site = site,
                 service = service,
                 id = id,
                 type = CreatorProfileCacheType.SIMILAR,

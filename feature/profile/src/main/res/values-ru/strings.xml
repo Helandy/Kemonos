@@ -28,6 +28,7 @@
     <string name="login_error_network">Проблемы с интернетом. Попробуйте позже.</string>
     <string name="login_error_server">Ошибка сервера. Попробуйте позже.</string>
     <string name="login_error_unknown">Произошла неизвестная ошибка.</string>
+    <string name="login_pawchive_unsupported">Вход в Pawchive недоступен.</string>
 
     <string name="register_button_login">Уже есть аккаунт? Войти</string>
 
@@ -38,6 +39,7 @@
 
     <string name="profile_favorites_title_coomer">Избранное Coomer</string>
     <string name="profile_favorites_title_kemono">Избранное Kemono</string>
+    <string name="profile_favorites_title_pawchive">Избранное Pawchive</string>
     <string name="profile_favorites_profiles">Профили</string>
     <string name="profile_favorites_posts">Посты</string>
     <string name="favorite_profiles_title">Избранные профили</string>
@@ -104,6 +106,7 @@
     <!--  ProfileScreen  -->
     <string name="profile_kemono_account_title">Аккаунт Kemono</string>
     <string name="profile_coomer_account_title">Аккаунт Coomer</string>
+    <string name="profile_pawchive_account_title">Аккаунт Pawchive</string>
 
     <string name="profile_account_logged_in_name">Вы вошли как %1$s</string>
     <string name="profile_account_logged_in_date">Присоединился: %1$s</string>
@@ -146,6 +149,7 @@
 
     <string name="kemono">Kemono</string>
     <string name="coomer">Coomer</string>
+    <string name="pawchive">Pawchive</string>
 
     <string name="profile_settings_button">Настройки</string>
 

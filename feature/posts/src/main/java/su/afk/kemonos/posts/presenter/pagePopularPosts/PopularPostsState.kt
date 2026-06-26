@@ -24,6 +24,7 @@ internal class PopularPostsState {
 
         val popularPeriod: Period = Period.RECENT,
         val popularDateForPopular: String? = null,
+        val popularUnsupported: Boolean = false,
 
         val uiSettingModel: UiSettingModel = UiSettingModel(),
     ) : UiState

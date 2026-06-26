@@ -54,6 +54,7 @@ internal class ClearCacheStorageUseCase @Inject constructor(
                     async {
                         popularPostsCacheRepository.clearCache(SelectedSite.K)
                         popularPostsCacheRepository.clearCache(SelectedSite.C)
+                        popularPostsCacheRepository.clearCache(SelectedSite.P)
                     },
                     /** Чистка сохраненного поста */
                     async { postStorageRepository.clearCache() },
@@ -61,11 +62,13 @@ internal class ClearCacheStorageUseCase @Inject constructor(
                     async {
                         postsSearchCacheRepository.clearCache(SelectedSite.K)
                         postsSearchCacheRepository.clearCache(SelectedSite.C)
+                        postsSearchCacheRepository.clearCache(SelectedSite.P)
                     },
                     /** Чистка dms */
                     async {
                         dmsCacheRepository.clearCache(SelectedSite.K)
                         dmsCacheRepository.clearCache(SelectedSite.C)
+                        dmsCacheRepository.clearCache(SelectedSite.P)
                     },
                     /** Чистка истории загрузок старше 60 дней */
                     async { trackedDownloadsRepository.clearCache() },
@@ -77,6 +80,7 @@ internal class ClearCacheStorageUseCase @Inject constructor(
                     async {
                         storeTagsRepository.clearIfExpired(SelectedSite.K)
                         storeTagsRepository.clearIfExpired(SelectedSite.C)
+                        storeTagsRepository.clearIfExpired(SelectedSite.P)
                     },
                     /** Чистка кэша информации о видео */
                     async { storeVideoInfoRepository.clearCache() },

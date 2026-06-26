@@ -255,10 +255,14 @@ private fun SiteDisplayModeSetting(
 ) {
     var expanded by remember { mutableStateOf(false) }
     val displayModes = listOf(
+        SiteDisplayMode.ALL_DEFAULT_COOMER,
+        SiteDisplayMode.ALL_DEFAULT_KEMONO,
+        SiteDisplayMode.ALL_DEFAULT_PAWCHIVE,
         SiteDisplayMode.BOTH_DEFAULT_COOMER,
         SiteDisplayMode.BOTH_DEFAULT_KEMONO,
         SiteDisplayMode.ONLY_COOMER,
         SiteDisplayMode.ONLY_KEMONO,
+        SiteDisplayMode.ONLY_PAWCHIVE,
     )
 
     Column(
@@ -279,12 +283,7 @@ private fun SiteDisplayModeSetting(
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Text(
-                    text = when (siteDisplayMode) {
-                        SiteDisplayMode.BOTH_DEFAULT_KEMONO -> stringResource(R.string.settings_site_display_both_default_kemono)
-                        SiteDisplayMode.BOTH_DEFAULT_COOMER -> stringResource(R.string.settings_site_display_both_default_coomer)
-                        SiteDisplayMode.ONLY_KEMONO -> stringResource(R.string.settings_site_display_only_kemono)
-                        SiteDisplayMode.ONLY_COOMER -> stringResource(R.string.settings_site_display_only_coomer)
-                    },
+                    text = siteDisplayMode.label(),
                     style = MaterialTheme.typography.bodyMedium,
                 )
             }
@@ -298,12 +297,7 @@ private fun SiteDisplayModeSetting(
                     DropdownMenuItem(
                         text = {
                             Text(
-                                text = when (mode) {
-                                    SiteDisplayMode.BOTH_DEFAULT_KEMONO -> stringResource(R.string.settings_site_display_both_default_kemono)
-                                    SiteDisplayMode.BOTH_DEFAULT_COOMER -> stringResource(R.string.settings_site_display_both_default_coomer)
-                                    SiteDisplayMode.ONLY_KEMONO -> stringResource(R.string.settings_site_display_only_kemono)
-                                    SiteDisplayMode.ONLY_COOMER -> stringResource(R.string.settings_site_display_only_coomer)
-                                }
+                                text = mode.label()
                             )
                         },
                         onClick = {
@@ -315,6 +309,18 @@ private fun SiteDisplayModeSetting(
             }
         }
     }
+}
+
+@Composable
+private fun SiteDisplayMode.label(): String = when (this) {
+    SiteDisplayMode.BOTH_DEFAULT_KEMONO -> stringResource(R.string.settings_site_display_both_default_kemono)
+    SiteDisplayMode.BOTH_DEFAULT_COOMER -> stringResource(R.string.settings_site_display_both_default_coomer)
+    SiteDisplayMode.ONLY_KEMONO -> stringResource(R.string.settings_site_display_only_kemono)
+    SiteDisplayMode.ONLY_COOMER -> stringResource(R.string.settings_site_display_only_coomer)
+    SiteDisplayMode.ALL_DEFAULT_KEMONO -> stringResource(R.string.settings_site_display_all_default_kemono)
+    SiteDisplayMode.ALL_DEFAULT_COOMER -> stringResource(R.string.settings_site_display_all_default_coomer)
+    SiteDisplayMode.ALL_DEFAULT_PAWCHIVE -> stringResource(R.string.settings_site_display_all_default_pawchive)
+    SiteDisplayMode.ONLY_PAWCHIVE -> stringResource(R.string.settings_site_display_only_pawchive)
 }
 
 @OptIn(ExperimentalMaterial3Api::class)

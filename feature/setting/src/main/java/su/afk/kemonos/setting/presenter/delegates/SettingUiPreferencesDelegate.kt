@@ -17,7 +17,10 @@ class SettingUiPreferencesDelegate @Inject constructor(
 
             /** Режим отображения сайта */
             is SettingState.Event.ChangeViewSetting.SiteDisplayModeChanged ->
-                scope.launch { uiSetting.setSiteDisplayMode(event.value) }
+                scope.launch {
+                    uiSetting.setSiteDisplayMode(event.value)
+                    uiSetting.setEnabledSites(event.value.visibleSites.toSet())
+                }
 
             /** Предлагать рандомных авторов */
             is SettingState.Event.ChangeViewSetting.SuggestRandomAuthors ->

@@ -15,6 +15,7 @@ internal class ApiCheckDelegate @Inject constructor(
         else ApiCheckUiResult.Failure(
             kemonoError = result.kemono.error,
             coomerError = result.coomer.error,
+            pawchiveError = result.pawchive.error,
         )
     }
 
@@ -24,6 +25,7 @@ internal class ApiCheckDelegate @Inject constructor(
         data class Failure(
             val kemonoError: ErrorItem?,
             val coomerError: ErrorItem?,
+            val pawchiveError: ErrorItem?,
         ) : ApiCheckUiResult
     }
 }

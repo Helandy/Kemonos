@@ -3,6 +3,7 @@ package su.afk.kemonos.creatorPost.presenter.delegates
 import kotlinx.coroutines.flow.first
 import su.afk.kemonos.auth.IsAuthCoomerUseCase
 import su.afk.kemonos.auth.IsAuthKemonoUseCase
+import su.afk.kemonos.auth.IsAuthPawchiveUseCase
 import su.afk.kemonos.creatorPost.api.domain.model.PostContentDomain
 import su.afk.kemonos.creatorPost.domain.useCase.FavoritesPostUseCase
 import su.afk.kemonos.domain.SelectedSite
@@ -14,6 +15,7 @@ internal class LikeDelegate @Inject constructor(
     private val selectedSiteUseCase: ISelectedSiteUseCase,
     private val isAuthKemonoUseCase: IsAuthKemonoUseCase,
     private val isAuthCoomerUseCase: IsAuthCoomerUseCase,
+    private val isAuthPawchiveUseCase: IsAuthPawchiveUseCase,
 ) {
 
     /** Проверка можно ли лайкнуть */
@@ -21,6 +23,7 @@ internal class LikeDelegate @Inject constructor(
         return when (selectedSiteUseCase.getSite()) {
             SelectedSite.C -> isAuthCoomerUseCase().first()
             SelectedSite.K -> isAuthKemonoUseCase().first()
+            SelectedSite.P -> isAuthPawchiveUseCase().first()
         }
     }
 

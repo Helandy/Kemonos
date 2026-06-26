@@ -9,9 +9,11 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import su.afk.kemonos.domain.SelectedSite
 import su.afk.kemonos.setting.R
 import su.afk.kemonos.setting.presenter.SettingState.Event
 import su.afk.kemonos.setting.presenter.SettingState.State
+import su.afk.kemonos.setting.presenter.view.SwitchRow
 import su.afk.kemonos.ui.components.input.BaseUrlDomainField
 import su.afk.kemonos.ui.presenter.baseScreen.TopBarScroll
 
@@ -44,6 +46,20 @@ internal fun SettingNetworkScreen(
 
             Spacer(Modifier.height(14.dp))
 
+            Text(
+                text = stringResource(R.string.settings_api_enabled_title),
+                style = MaterialTheme.typography.titleMedium
+            )
+
+            Spacer(Modifier.height(8.dp))
+
+            EnabledApiSwitches(
+                enabledSites = state.uiSettingModel.enabledSites,
+                onToggle = { site, enabled -> onEvent(Event.ApiSetting.ToggleApiSite(site, enabled)) },
+            )
+
+            Spacer(Modifier.height(14.dp))
+
             /** Текущие URL — отдельной плашкой */
             Surface(
                 modifier = Modifier.fillMaxWidth(),
@@ -54,16 +70,15 @@ internal fun SettingNetworkScreen(
                     modifier = Modifier.padding(8.dp),
                     verticalArrangement = Arrangement.spacedBy(6.dp)
                 ) {
-                    Text(
-                        text = "Kemono: ${state.kemonoUrl}",
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.onSurface
-                    )
-                    Text(
-                        text = "Coomer: ${state.coomerUrl}",
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.onSurface
-                    )
+                    if (SelectedSite.K in state.uiSettingModel.enabledSites) {
+                        CurrentUrlText("Kemono: ${state.kemonoUrl}")
+                    }
+                    if (SelectedSite.C in state.uiSettingModel.enabledSites) {
+                        CurrentUrlText("Coomer: ${state.coomerUrl}")
+                    }
+                    if (SelectedSite.P in state.uiSettingModel.enabledSites) {
+                        CurrentUrlText("Pawchive: ${state.pawchiveUrl}")
+                    }
                 }
             }
 
@@ -76,19 +91,39 @@ internal fun SettingNetworkScreen(
 
             Spacer(Modifier.height(10.dp))
 
-            BaseUrlDomainField(
-                value = state.inputKemonoDomain,
-                onValueChange = { onEvent(Event.ApiSetting.InputKemonoDomainChanged(it)) },
-                label = { Text(stringResource(su.afk.kemonos.ui.R.string.main_api_kemono_url_label)) }
-            )
+            if (SelectedSite.K in state.uiSettingModel.enabledSites) {
+                BaseUrlDomainField(
+                    value = state.inputKemonoDomain,
+                    onValueChange = { onEvent(Event.ApiSetting.InputKemonoDomainChanged(it)) },
+                    label = { Text(stringResource(su.afk.kemonos.ui.R.string.main_api_kemono_url_label)) }
+                )
+            }
 
-            Spacer(Modifier.height(10.dp))
+            if (SelectedSite.K in state.uiSettingModel.enabledSites && SelectedSite.C in state.uiSettingModel.enabledSites) {
+                Spacer(Modifier.height(10.dp))
+            }
 
-            BaseUrlDomainField(
-                value = state.inputCoomerDomain,
-                onValueChange = { onEvent(Event.ApiSetting.InputCoomerDomainChanged(it)) },
-                label = { Text(stringResource(su.afk.kemonos.ui.R.string.main_api_coomer_url_label)) }
-            )
+            if (SelectedSite.C in state.uiSettingModel.enabledSites) {
+                BaseUrlDomainField(
+                    value = state.inputCoomerDomain,
+                    onValueChange = { onEvent(Event.ApiSetting.InputCoomerDomainChanged(it)) },
+                    label = { Text(stringResource(su.afk.kemonos.ui.R.string.main_api_coomer_url_label)) }
+                )
+            }
+
+            if ((SelectedSite.K in state.uiSettingModel.enabledSites || SelectedSite.C in state.uiSettingModel.enabledSites) &&
+                SelectedSite.P in state.uiSettingModel.enabledSites
+            ) {
+                Spacer(Modifier.height(16.dp))
+            }
+
+            if (SelectedSite.P in state.uiSettingModel.enabledSites) {
+                BaseUrlDomainField(
+                    value = state.inputPawchiveDomain,
+                    onValueChange = { onEvent(Event.ApiSetting.InputPawchiveDomainChanged(it)) },
+                    label = { Text(stringResource(su.afk.kemonos.ui.R.string.main_api_pawchive_url_label)) }
+                )
+            }
 
             Spacer(Modifier.height(16.dp))
 
@@ -120,6 +155,39 @@ internal fun SettingNetworkScreen(
         }
     }
 }
+
+@Composable
+private fun CurrentUrlText(text: String) {
+    Text(
+        text = text,
+        style = MaterialTheme.typography.bodyMedium,
+        color = MaterialTheme.colorScheme.onSurface
+    )
+}
+
+@Composable
+private fun EnabledApiSwitches(
+    enabledSites: Set<SelectedSite>,
+    onToggle: (SelectedSite, Boolean) -> Unit,
+) {
+    SelectedSite.entries.forEach { site ->
+        val checked = site in enabledSites
+        SwitchRow(
+            title = site.settingsLabel(),
+            checked = checked,
+            enabled = enabledSites.size > 1 || !checked,
+            onCheckedChange = { onToggle(site, it) },
+        )
+    }
+}
+
+@Composable
+private fun SelectedSite.settingsLabel(): String =
+    when (this) {
+        SelectedSite.K -> stringResource(su.afk.kemonos.ui.R.string.main_api_kemono_label)
+        SelectedSite.C -> stringResource(su.afk.kemonos.ui.R.string.main_api_coomer_label)
+        SelectedSite.P -> stringResource(su.afk.kemonos.ui.R.string.main_api_pawchive_label)
+    }
 
 @Preview(name = "Setting Network", showBackground = true)
 @Composable

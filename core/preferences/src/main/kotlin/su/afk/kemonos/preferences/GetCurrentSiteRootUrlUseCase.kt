@@ -12,10 +12,12 @@ internal class GetCurrentSiteRootUrlUseCase @Inject constructor(
     private val selectedSiteUseCase: ISelectedSiteUseCase,
     private val getKemonoRootUrlUseCase: GetKemonoRootUrlUseCase,
     private val getCoomerRootUrlUseCase: GetCoomerRootUrlUseCase,
+    private val getPawchiveRootUrlUseCase: GetPawchiveRootUrlUseCase,
 ) : IGetCurrentSiteRootUrlUseCase {
 
     override fun invoke(): String = when (selectedSiteUseCase.getSite()) {
         SelectedSite.K -> getKemonoRootUrlUseCase()
         SelectedSite.C -> getCoomerRootUrlUseCase()
+        SelectedSite.P -> getPawchiveRootUrlUseCase()
     }
 }

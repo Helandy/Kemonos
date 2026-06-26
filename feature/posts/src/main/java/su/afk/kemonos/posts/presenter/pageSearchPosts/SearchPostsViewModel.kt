@@ -99,7 +99,7 @@ internal class SearchPostsViewModel @Inject constructor(
             Event.ToggleHasImages -> toggleHasImages()
             is Event.NavigateToPost -> navigateToPost(event.post)
             Event.RandomPost -> randomPost()
-            Event.SwitchSite -> switchSite()
+            Event.SwitchSite -> switchSite(currentState.uiSettingModel.enabledSiteList)
         }
     }
 
@@ -184,6 +184,7 @@ internal class SearchPostsViewModel @Inject constructor(
 
     private fun observeUiSetting() {
         uiSetting.observeDistinct(viewModelScope) { model ->
+            ensureSiteEnabled(model.enabledSiteList)
             setState { copy(uiSettingModel = model) }
         }
     }

@@ -8,7 +8,7 @@ data class AttachmentDto(
     @SerializedName("name")
     val name: String?,
     @SerializedName("path")
-    val path: String,
+    val path: String?,
     @SerializedName("server")
     val server: String?,
 ) {
@@ -16,8 +16,18 @@ data class AttachmentDto(
         fun AttachmentDto.toDomain(): AttachmentDomain =
             AttachmentDomain(
                 name = this.name,
-                path = this.path,
+                path = this.path.orEmpty(),
                 server = this.server
             )
+
+        fun AttachmentDto.toDomainOrNull(): AttachmentDomain? {
+            val normalizedPath = path?.takeIf { it.isNotBlank() } ?: return null
+
+            return AttachmentDomain(
+                name = this.name,
+                path = normalizedPath,
+                server = this.server,
+            )
+        }
     }
 }

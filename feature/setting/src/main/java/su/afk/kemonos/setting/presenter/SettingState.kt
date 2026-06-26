@@ -29,9 +29,11 @@ class SettingState {
 
         val kemonoUrl: String = "",
         val coomerUrl: String = "",
+        val pawchiveUrl: String = "",
 
         val inputKemonoDomain: String = "",
         val inputCoomerDomain: String = "",
+        val inputPawchiveDomain: String = "",
         val inputVideoPreviewServerDomain: String = "",
 
         val isSaving: Boolean = false,
@@ -42,11 +44,13 @@ class SettingState {
         /** cache */
         val tagsKemonoCache: CacheTimeUi = CacheTimeUi(null, null, false),
         val tagsCoomerCache: CacheTimeUi = CacheTimeUi(null, null, false),
+        val tagsPawchiveCache: CacheTimeUi = CacheTimeUi(null, null, false),
         val communityCache: CacheTimeUi = CacheTimeUi(null, null, false),
         val discordCache: CacheTimeUi = CacheTimeUi(null, null, false),
 
         val creatorsKemonoCache: CacheTimeUi = CacheTimeUi(null, null, false),
         val creatorsCoomerCache: CacheTimeUi = CacheTimeUi(null, null, false),
+        val creatorsPawchiveCache: CacheTimeUi = CacheTimeUi(null, null, false),
 
         val postContentsCache: CacheTimeUi = CacheTimeUi(null, null, false),
         val postsSearchCache: CacheTimeUi = CacheTimeUi(null, null, false),
@@ -138,7 +142,9 @@ class SettingState {
         sealed interface ApiSetting : Event {
             data class InputKemonoDomainChanged(val value: String) : ApiSetting
             data class InputCoomerDomainChanged(val value: String) : ApiSetting
+            data class InputPawchiveDomainChanged(val value: String) : ApiSetting
             data class InputVideoPreviewServerDomainChanged(val value: String) : ApiSetting
+            data class ToggleApiSite(val site: SelectedSite, val enabled: Boolean) : ApiSetting
             data object SaveUrls : ApiSetting
         }
 

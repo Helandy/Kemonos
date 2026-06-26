@@ -6,6 +6,7 @@ import retrofit2.http.Path
 import su.afk.kemonos.creatorPost.data.dto.comments.ProfilePostCommentsDto
 import su.afk.kemonos.creatorPost.data.dto.discord.DiscordChannelMessageDto
 import su.afk.kemonos.creatorPost.data.dto.discord.DiscordServerResponseDto
+import su.afk.kemonos.creatorPost.data.dto.profilePost.PawchivePostResponseDto
 import su.afk.kemonos.creatorPost.data.dto.profilePost.PostResponseDto
 import su.afk.kemonos.network.textInterceptor.HeaderText
 
@@ -29,6 +30,15 @@ internal interface PostsApi {
         @Path("postId") postId: String,
     ): Response<PostResponseDto>
 
+    /** Пост Pawchive */
+    @HeaderText
+    @GET("v1/{service}/user/{id}/post/{postId}")
+    suspend fun getPawchiveProfilePost(
+        @Path("service") service: String,
+        @Path("id") id: String,
+        @Path("postId") postId: String,
+    ): Response<PawchivePostResponseDto>
+
     @HeaderText
     @GET("v1/{service}/user/{id}/post/{postId}/revision/{revisionId}")
     suspend fun getProfilePostRevision(
@@ -37,6 +47,15 @@ internal interface PostsApi {
         @Path("postId") postId: String,
         @Path("revisionId") revisionId: Long,
     ): Response<PostResponseDto>
+
+    @HeaderText
+    @GET("v1/{service}/user/{id}/post/{postId}/revision/{revisionId}")
+    suspend fun getPawchiveProfilePostRevision(
+        @Path("service") service: String,
+        @Path("id") id: String,
+        @Path("postId") postId: String,
+        @Path("revisionId") revisionId: Long,
+    ): Response<PawchivePostResponseDto>
 
     @HeaderText
     @GET("v1/discord/server/{serverId}")

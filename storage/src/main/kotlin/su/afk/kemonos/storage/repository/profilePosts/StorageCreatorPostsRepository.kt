@@ -1,5 +1,6 @@
 package su.afk.kemonos.storage.repository.profilePosts
 
+import su.afk.kemonos.domain.SelectedSite
 import su.afk.kemonos.domain.models.PostDomain
 import su.afk.kemonos.preferences.useCase.CacheTimes.TTL_1_HOURS
 import su.afk.kemonos.preferences.useCase.CacheTimes.TTL_3_DAYS
@@ -13,11 +14,12 @@ internal class StorageCreatorPostsRepository @Inject constructor(
     private val mapper: CreatorPostCacheMapper,
 ) : IStorageCreatorPostsRepository {
 
-    override suspend fun getFreshPageOrNull(queryKey: String, offset: Int): List<PostDomain>? {
+    override suspend fun getFreshPageOrNull(site: SelectedSite, queryKey: String, offset: Int): List<PostDomain>? {
+        val siteQueryKey = queryKey.cacheKey(site)
         val minTs = System.currentTimeMillis() - ttlFor(queryKey)
 
         val rows = dao.getFreshPage(
-            queryKey = queryKey,
+            queryKey = siteQueryKey,
             offset = offset,
             minUpdatedAt = minTs
         )
@@ -25,11 +27,12 @@ internal class StorageCreatorPostsRepository @Inject constructor(
         return rows.takeIf { it.isNotEmpty() }?.map(mapper::toDomain)
     }
 
-    override suspend fun getStalePageOrEmpty(queryKey: String, offset: Int): List<PostDomain> =
-        dao.getPage(queryKey, offset).map(mapper::toDomain)
+    override suspend fun getStalePageOrEmpty(site: SelectedSite, queryKey: String, offset: Int): List<PostDomain> =
+        dao.getPage(queryKey.cacheKey(site), offset).map(mapper::toDomain)
 
-    override suspend fun putPage(queryKey: String, offset: Int, items: List<PostDomain>) {
-        dao.deletePage(queryKey, offset)
+    override suspend fun putPage(site: SelectedSite, queryKey: String, offset: Int, items: List<PostDomain>) {
+        val siteQueryKey = queryKey.cacheKey(site)
+        dao.deletePage(siteQueryKey, offset)
 
         if (items.isEmpty()) return
 
@@ -37,7 +40,7 @@ internal class StorageCreatorPostsRepository @Inject constructor(
         val entities = items.mapIndexed { index, post ->
             mapper.toEntity(
                 post = post,
-                queryKey = queryKey,
+                queryKey = siteQueryKey,
                 offset = offset,
                 indexInPage = index,
                 updatedAt = now
@@ -47,12 +50,12 @@ internal class StorageCreatorPostsRepository @Inject constructor(
         dao.upsertAll(entities)
     }
 
-    override suspend fun clearPage(queryKey: String, offset: Int) {
-        dao.deletePage(queryKey, offset)
+    override suspend fun clearPage(site: SelectedSite, queryKey: String, offset: Int) {
+        dao.deletePage(queryKey.cacheKey(site), offset)
     }
 
-    override suspend fun clearQuery(queryKey: String) {
-        dao.deleteByQueryKey(queryKey)
+    override suspend fun clearQuery(site: SelectedSite, queryKey: String) {
+        dao.deleteByQueryKey(queryKey.cacheKey(site))
     }
 
     override suspend fun clearCache() {
@@ -75,9 +78,14 @@ internal class StorageCreatorPostsRepository @Inject constructor(
      * search/tag считаем активным, если хоть одно не пустое.
      */
     private fun isSearchOrTag(queryKey: String): Boolean {
-        val parts = queryKey.split('|')
+        val parts = queryKey.removeSitePrefix().split('|')
         val search = parts.getOrNull(2).orEmpty()
         val tag = parts.getOrNull(3).orEmpty()
         return search.isNotBlank() || tag.isNotBlank()
     }
+
+    private fun String.cacheKey(site: SelectedSite): String = "${site.name}|$this"
+
+    private fun String.removeSitePrefix(): String =
+        substringAfter('|', missingDelimiterValue = this)
 }

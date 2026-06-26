@@ -55,12 +55,22 @@ internal class PostsRepository @Inject constructor(
         return try {
             val apiOffset = if (offset == 0) null else offset
 
-            val net = postsApi.getPosts(
-                search = normalizedQuery,
-                offset = apiOffset,
-                tag = normalizedTag,
-            ).call { dto ->
-                dto.posts.orEmpty().map { it.toDomain() }
+            val net = if (site == SelectedSite.P) {
+                postsApi.getPawchivePosts(
+                    search = normalizedQuery,
+                    offset = apiOffset,
+                    tag = normalizedTag,
+                ).call { list ->
+                    list.map { it.toDomain() }
+                }
+            } else {
+                postsApi.getPosts(
+                    search = normalizedQuery,
+                    offset = apiOffset,
+                    tag = normalizedTag,
+                ).call { dto ->
+                    dto.posts.orEmpty().map { it.toDomain() }
+                }
             }
 
             postsSearchCache.putPage(site, qk, offset, net)

@@ -41,15 +41,18 @@ class SwitchingBaseUrlProvider(
     initialUrl = when (prefs.selectedSite.value) {
         SelectedSite.K -> prefs.kemonoUrl.value
         SelectedSite.C -> prefs.coomerUrl.value
+        SelectedSite.P -> prefs.pawchiveUrl.value
     },
     urlFlow = combine(
         prefs.selectedSite,
         prefs.kemonoUrl,
-        prefs.coomerUrl
-    ) { site, kUrl, cUrl ->
+        prefs.coomerUrl,
+        prefs.pawchiveUrl
+    ) { site, kUrl, cUrl, pUrl ->
         when (site) {
             SelectedSite.K -> kUrl
             SelectedSite.C -> cUrl
+            SelectedSite.P -> pUrl
         }
     }.distinctUntilChanged(),
 )
