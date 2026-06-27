@@ -87,7 +87,7 @@ data class PostUnifiedDto(
     }
 }
 
-private class PostTagsDtoAdapter : JsonDeserializer<List<String?>> {
+class PostTagsDtoAdapter : JsonDeserializer<List<String?>> {
     override fun deserialize(
         json: JsonElement?,
         typeOfT: Type?,

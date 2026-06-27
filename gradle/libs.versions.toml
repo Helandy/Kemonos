@@ -5,8 +5,8 @@ minSdk = "29"
 jvmVersion = "21"
 
 # --- App versioning
-appVersionName = "1.14.1"
-appVersionCode = "89"
+appVersionName = "1.15"
+appVersionCode = "90"
 
 agp = "9.2.1"
 kotlin = "2.4.0"
@@ -54,6 +54,7 @@ material3AdaptiveNav3 = "1.0.0-alpha03"
 
 # --- Play Services
 playServicesCast = "22.3.1"
+appmetrica = "8.3.0"
 
 # --- Translate
 translate = "17.0.3"
@@ -148,6 +149,7 @@ multiplatform-markdown-renderer-m3 = { module = "com.mikepenz:multiplatform-mark
 
 # --- Play services
 play-services-cast = { module = "com.google.android.gms:play-services-cast", version.ref = "playServicesCast" }
+appmetrica-analytics = { module = "io.appmetrica.analytics:analytics", version.ref = "appmetrica" }
 
 # --- Tests
 junit = { module = "junit:junit", version.ref = "junit4" }

@@ -5,21 +5,21 @@ import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import kotlinx.coroutines.flow.Flow
 import su.afk.kemonos.creators.domain.repository.ICreatorsRepository
+import su.afk.kemonos.domain.SelectedSite
 import su.afk.kemonos.domain.models.creator.Creators
 import su.afk.kemonos.domain.models.creator.CreatorsSort
-import su.afk.kemonos.preferences.site.ISelectedSiteUseCase
 import su.afk.kemonos.storage.api.repository.creators.IStoreCreatorsRepository
 import javax.inject.Inject
 
 internal class GetCreatorsPagedUseCase @Inject constructor(
-    private val selectedSite: ISelectedSiteUseCase,
     private val store: IStoreCreatorsRepository,
     private val repository: ICreatorsRepository
 ) {
     /** Проверка свежий ли кэш */
-    suspend fun checkFreshCache(): Boolean = repository.refreshCreatorsIfNeeded()
+    suspend fun checkFreshCache(site: SelectedSite): Boolean = repository.refreshCreatorsIfNeeded(site)
 
     fun paging(
+        site: SelectedSite,
         service: String?,
         query: String,
         sort: CreatorsSort,
@@ -34,7 +34,7 @@ internal class GetCreatorsPagedUseCase @Inject constructor(
             ),
             pagingSourceFactory = {
                 CreatorsPagingSource(
-                    site = selectedSite.getSite(),
+                    site = site,
                     store = store,
                     service = service,
                     query = query,
@@ -44,11 +44,11 @@ internal class GetCreatorsPagedUseCase @Inject constructor(
             }
         ).flow
 
-    suspend fun getServices(): List<String> = store.getDistinctServices(site = selectedSite.getSite())
+    suspend fun getServices(site: SelectedSite): List<String> = store.getDistinctServices(site = site)
 
-    suspend fun getRandomCreatorsFromStorage(service: String?, limit: Int): List<Creators> {
+    suspend fun getRandomCreatorsFromStorage(site: SelectedSite, service: String?, limit: Int): List<Creators> {
         return store.randomCreators(
-            site = selectedSite.getSite(),
+            site = site,
             service = service,
             limit = limit,
         )

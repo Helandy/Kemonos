@@ -2,6 +2,7 @@ package su.afk.kemonos.creatorPost.data.dto.profilePost
 
 import com.google.gson.Gson
 import com.google.gson.JsonElement
+import com.google.gson.annotations.JsonAdapter
 import com.google.gson.annotations.SerializedName
 import su.afk.kemonos.creatorPost.api.domain.model.PostContentDomain
 import su.afk.kemonos.creatorPost.api.domain.model.PostContentRevisionDomain
@@ -17,6 +18,7 @@ import su.afk.kemonos.data.dto.PollDto
 import su.afk.kemonos.data.dto.PollDto.Companion.toDomain
 import su.afk.kemonos.data.dto.PostUnifiedDto
 import su.afk.kemonos.data.dto.PostUnifiedDto.Companion.toDomain
+import su.afk.kemonos.data.dto.PostTagsDtoAdapter
 import su.afk.kemonos.domain.models.PostDomain
 import su.afk.kemonos.domain.models.PreviewDomain
 import su.afk.kemonos.domain.models.VideoDomain
@@ -78,6 +80,7 @@ internal data class PawchivePostResponseDto(
     @SerializedName("edited")
     val edited: String?,
     @SerializedName("tags")
+    @JsonAdapter(PostTagsDtoAdapter::class)
     val tags: List<String?>?,
     @SerializedName("file")
     val file: FileDto?,
