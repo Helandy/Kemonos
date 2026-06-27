@@ -6,8 +6,9 @@ import su.afk.kemonos.domain.models.ErrorItem
 data class ApiCheckForAllSitesResult(
     val kemono: SingleSiteCheck,
     val coomer: SingleSiteCheck,
+    val pawchive: SingleSiteCheck,
 ) {
-    val allOk: Boolean get() = kemono.success && coomer.success
+    val allOk: Boolean get() = kemono.success && coomer.success && pawchive.success
 }
 
 data class SingleSiteCheck(

@@ -8,6 +8,7 @@
     <string name="settings_hub_translate_subtitle">Translation mode and target language.</string>
     <string name="settings_hub_network_title">Network</string>
     <string name="settings_hub_network_subtitle">API domains and connection-related options.</string>
+    <string name="settings_api_enabled_title">Enabled APIs</string>
     <string name="settings_hub_database_title">Database &amp; cache</string>
     <string name="settings_hub_database_subtitle">Cache size limits and cached data cleanup.</string>
     <string name="settings_hub_downloads_subtitle">How downloaded files are named and organized.</string>
@@ -35,14 +36,19 @@
     <!-- Cache categories -->
     <string name="settings_cache_tags_kemono">Tags (Kemono)</string>
     <string name="settings_cache_tags_coomer">Tags (Coomer)</string>
+    <string name="settings_cache_tags_pawchive">Tags (Pawchive)</string>
     <string name="settings_cache_tags_kemono_description">Cached tag lists and tag pages for Kemono.</string>
     <string name="settings_cache_tags_coomer_description">Cached tag lists and tag pages for Coomer.</string>
+    <string name="settings_cache_tags_pawchive_description">Cached tag lists and tag pages for Pawchive.</string>
 
     <string name="settings_cache_creators_kemono">Creators (Kemono)</string>
     <string name="settings_cache_creators_coomer">Creators (Coomer)</string>
+    <string name="settings_cache_creators_pawchive">Creators (Pawchive)</string>
     <string name="settings_cache_creators_kemono_description">Cached creator lists and creator cards from Kemono.
     </string>
     <string name="settings_cache_creators_coomer_description">Cached creator lists and creator cards from Coomer.
+    </string>
+    <string name="settings_cache_creators_pawchive_description">Cached creator lists and creator cards from Pawchive.
     </string>
 
     <string name="settings_cache_creator_posts_pages">Creator profile posts</string>
@@ -85,6 +91,10 @@
     <string name="settings_site_display_both_default_coomer">Both (Default: Coomer)</string>
     <string name="settings_site_display_only_kemono">Only Kemono</string>
     <string name="settings_site_display_only_coomer">Only Coomer</string>
+    <string name="settings_site_display_all_default_kemono">All (Default: Kemono)</string>
+    <string name="settings_site_display_all_default_coomer">All (Default: Coomer)</string>
+    <string name="settings_site_display_all_default_pawchive">All (Default: Pawchive)</string>
+    <string name="settings_site_display_only_pawchive">Only Pawchive</string>
 
     <!-- UI settings -->
     <string name="settings_ui_creators_view_mode">Creators view</string>

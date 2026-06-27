@@ -14,16 +14,19 @@ internal class ProfileState {
 
         val isLoginKemono: Boolean = false,
         val isLoginCoomer: Boolean = false,
+        val isLoginPawchive: Boolean = false,
         val isLogin: Boolean = false,
 
         val kemonoLogin: Login? = null,
         val coomerLogin: Login? = null,
+        val pawchiveLogin: Login? = null,
 
         val showLogoutConfirm: Boolean = false,
         val logoutSite: SelectedSite? = null,
 
         val kemonoUpdatedFavoritesCount: Int = 0,
         val coomerUpdatedFavoritesCount: Int = 0,
+        val pawchiveUpdatedFavoritesCount: Int = 0,
 
         val isExportInProgress: Boolean = false,
         val isImportInProgress: Boolean = false,

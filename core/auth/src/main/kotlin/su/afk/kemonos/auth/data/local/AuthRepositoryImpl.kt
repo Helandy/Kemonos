@@ -31,11 +31,13 @@ internal class AuthRepositoryImpl @Inject constructor(
     private object DsKeys {
         val K_USER_JSON = stringPreferencesKey("k_user_json")
         val C_USER_JSON = stringPreferencesKey("c_user_json")
+        val P_USER_JSON = stringPreferencesKey("p_user_json")
     }
 
     private object SpKeys {
         const val K_SESSION = "k_session"
         const val C_SESSION = "c_session"
+        const val P_SESSION = "p_session"
     }
 
     private val refresh = MutableStateFlow(0)
@@ -52,6 +54,7 @@ internal class AuthRepositoryImpl @Inject constructor(
 
             val kUser = readUser(DsKeys.K_USER_JSON)
             val cUser = readUser(DsKeys.C_USER_JSON)
+            val pUser = readUser(DsKeys.P_USER_JSON)
 
             AuthState(
                 kemono = SiteAuthState(
@@ -62,6 +65,10 @@ internal class AuthRepositoryImpl @Inject constructor(
                     session = readSession(SelectedSite.C),
                     user = cUser,
                 ),
+                pawchive = SiteAuthState(
+                    session = readSession(SelectedSite.P),
+                    user = pUser,
+                ),
             )
         }
 
@@ -70,6 +77,7 @@ internal class AuthRepositoryImpl @Inject constructor(
             when (site) {
                 SelectedSite.K -> putString(SpKeys.K_SESSION, session)
                 SelectedSite.C -> putString(SpKeys.C_SESSION, session)
+                SelectedSite.P -> putString(SpKeys.P_SESSION, session)
             }
         }
 
@@ -78,6 +86,7 @@ internal class AuthRepositoryImpl @Inject constructor(
             when (site) {
                 SelectedSite.K -> prefs[DsKeys.K_USER_JSON] = userJson
                 SelectedSite.C -> prefs[DsKeys.C_USER_JSON] = userJson
+                SelectedSite.P -> prefs[DsKeys.P_USER_JSON] = userJson
             }
         }
 
@@ -89,6 +98,7 @@ internal class AuthRepositoryImpl @Inject constructor(
             when (site) {
                 SelectedSite.K -> remove(SpKeys.K_SESSION)
                 SelectedSite.C -> remove(SpKeys.C_SESSION)
+                SelectedSite.P -> remove(SpKeys.P_SESSION)
             }
         }
 
@@ -96,6 +106,7 @@ internal class AuthRepositoryImpl @Inject constructor(
             when (site) {
                 SelectedSite.K -> prefs.remove(DsKeys.K_USER_JSON)
                 SelectedSite.C -> prefs.remove(DsKeys.C_USER_JSON)
+                SelectedSite.P -> prefs.remove(DsKeys.P_USER_JSON)
             }
         }
 
@@ -114,5 +125,6 @@ internal class AuthRepositoryImpl @Inject constructor(
         when (site) {
             SelectedSite.K -> securePrefs.getString(SpKeys.K_SESSION, null)
             SelectedSite.C -> securePrefs.getString(SpKeys.C_SESSION, null)
+            SelectedSite.P -> securePrefs.getString(SpKeys.P_SESSION, null)
         }
 }

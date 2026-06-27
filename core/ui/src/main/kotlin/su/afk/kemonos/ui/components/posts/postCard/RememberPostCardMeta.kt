@@ -8,19 +8,23 @@ import su.afk.kemonos.ui.components.posts.postCard.model.PreviewState
 import su.afk.kemonos.ui.uiUtils.format.*
 
 @Composable
-internal fun rememberPostCardMeta(post: PostDomain): PostCardMeta {
+internal fun rememberPostCardMeta(
+    post: PostDomain,
+    allowVideoPreview: Boolean = true,
+): PostCardMeta {
     return remember(
         post.id,
         post.file?.path,
         post.attachments,
-        post.favCount
+        post.favCount,
+        allowVideoPreview,
     ) {
         val imagePath = findFirstImagePath(post)
 
         val preview = when {
             imagePath != null -> PreviewState.Image(imagePath)
 
-            isVideoFile(post.file?.path) || post.attachments.any { isVideoFile(it.path) } ->
+            allowVideoPreview && (isVideoFile(post.file?.path) || post.attachments.any { isVideoFile(it.path) }) ->
                 PreviewState.Video(path = findFirstVideoPath(post))
 
             isAudioFile(post.file?.path) || post.attachments.any { isAudioFile(it.path) } ->

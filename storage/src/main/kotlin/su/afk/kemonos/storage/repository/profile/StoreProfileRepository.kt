@@ -1,5 +1,6 @@
 package su.afk.kemonos.storage.repository.profile
 
+import su.afk.kemonos.domain.SelectedSite
 import su.afk.kemonos.domain.models.Profile
 import su.afk.kemonos.preferences.useCase.CacheTimes.TTL_3_DAYS
 import su.afk.kemonos.storage.api.repository.profile.IStoreProfileRepository
@@ -12,18 +13,18 @@ internal class StoreProfileRepository @Inject constructor(
     private val dao: ProfileDao,
 ) : IStoreProfileRepository {
 
-    override suspend fun getProfileFreshOrNull(service: String, id: String): Profile? {
+    override suspend fun getProfileFreshOrNull(site: SelectedSite, service: String, id: String): Profile? {
         val minTs = System.currentTimeMillis() - TTL_3_DAYS
 
         return dao.getFreshProfile(
             id = id,
-            service = service,
+            service = service.cacheKey(site),
             minCachedAt = minTs
-        )?.toDomain()
+        )?.toDomain()?.copy(service = service)
     }
 
-    override suspend fun updateProfile(profile: Profile) {
-        dao.insert(profile.toEntity())
+    override suspend fun updateProfile(site: SelectedSite, profile: Profile) {
+        dao.insert(profile.toEntity().copy(service = profile.service.cacheKey(site)))
     }
 
     override suspend fun clear() {
@@ -34,4 +35,6 @@ internal class StoreProfileRepository @Inject constructor(
         val minTs = System.currentTimeMillis() - TTL_3_DAYS
         dao.deleteOlderThan(minTs)
     }
+
+    private fun String.cacheKey(site: SelectedSite): String = "${site.name}:$this"
 }

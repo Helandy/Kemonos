@@ -30,6 +30,8 @@ internal fun PopularPeriodsPanel(
     state: State,
     onSlotClick: (Period, PopularNavSlot) -> Unit,
 ) {
+    if (state.popularUnsupported) return
+
     val info = state.popularPostsInfo
     val nav = info?.navigationDates
     val propsToday = state.popularProps?.today

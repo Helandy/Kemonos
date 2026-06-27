@@ -1,7 +1,9 @@
 package su.afk.kemonos.main.presenter
 
 import su.afk.kemonos.app.update.api.model.AppUpdateInfo
+import su.afk.kemonos.domain.SelectedSite
 import su.afk.kemonos.domain.models.ErrorItem
+import su.afk.kemonos.preferences.ui.UiSettingModel
 import su.afk.kemonos.ui.presenter.baseViewModel.UiEffect
 import su.afk.kemonos.ui.presenter.baseViewModel.UiEvent
 import su.afk.kemonos.ui.presenter.baseViewModel.UiState
@@ -10,18 +12,22 @@ internal class StartCheckState {
 
     data class State(
         val isLoading: Boolean = true,
+        val enabledSites: Set<SelectedSite> = UiSettingModel.DEFAULT_ENABLED_SITES,
 
         val kemonoError: ErrorItem? = null,
         val coomerError: ErrorItem? = null,
+        val pawchiveError: ErrorItem? = null,
 
         val apiSuccess: Boolean? = null,
 
         /** Значения из Prefs (текущие, «истинные») */
         val kemonoUrl: String = "",
         val coomerUrl: String = "",
+        val pawchiveUrl: String = "",
 
         val inputKemonoDomain: String = "",
         val inputCoomerDomain: String = "",
+        val inputPawchiveDomain: String = "",
 
         val updateInfo: AppUpdateInfo? = null,
         val pendingCrashPath: String? = null,
@@ -34,6 +40,8 @@ internal class StartCheckState {
         data object SkipCheck : Event
         data class InputKemonoDomainChanged(val value: String) : Event
         data class InputCoomerDomainChanged(val value: String) : Event
+        data class InputPawchiveDomainChanged(val value: String) : Event
+        data class ToggleApiSite(val site: SelectedSite, val enabled: Boolean) : Event
         data object CrashReportDelete : Event
         data object CrashReportSaveToDevice : Event
         data class CrashReportShared(val path: String) : Event

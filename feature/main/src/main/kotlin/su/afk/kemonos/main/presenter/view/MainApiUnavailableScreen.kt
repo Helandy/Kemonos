@@ -8,6 +8,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import su.afk.kemonos.domain.SelectedSite
 import su.afk.kemonos.domain.models.ErrorItem
 import su.afk.kemonos.main.presenter.StartCheckState.State
 import su.afk.kemonos.ui.R
@@ -18,6 +19,8 @@ internal fun MainApiUnavailableContent(
     state: State,
     onInputKemonoChanged: (String) -> Unit,
     onInputCoomerChanged: (String) -> Unit,
+    onInputPawchiveChanged: (String) -> Unit,
+    onToggleApiSite: (SelectedSite, Boolean) -> Unit,
 ) {
     Column(
         modifier = Modifier.fillMaxWidth().widthIn(max = 600.dp),
@@ -26,26 +29,40 @@ internal fun MainApiUnavailableContent(
     ) {
         MainApiUnavailableHeader()
 
+        MainSectionCard(title = stringResource(R.string.main_api_enabled_sites_title)) {
+            MainEnabledSitesBlock(
+                enabledSites = state.enabledSites,
+                onToggleApiSite = onToggleApiSite,
+            )
+        }
+
         MainSectionCard(title = stringResource(R.string.main_api_site_status_title)) {
             MainSiteErrorsBlock(
+                enabledSites = state.enabledSites,
                 kemonoError = state.kemonoError,
                 coomerError = state.coomerError,
+                pawchiveError = state.pawchiveError,
             )
         }
 
         MainSectionCard(title = stringResource(R.string.main_api_section_domains_title)) {
             MainDomainFields(
+                enabledSites = state.enabledSites,
                 inputKemonoDomain = state.inputKemonoDomain,
                 inputCoomerDomain = state.inputCoomerDomain,
+                inputPawchiveDomain = state.inputPawchiveDomain,
                 onInputKemonoChanged = onInputKemonoChanged,
                 onInputCoomerChanged = onInputCoomerChanged,
+                onInputPawchiveChanged = onInputPawchiveChanged,
             )
         }
 
         MainSectionCard(title = stringResource(R.string.main_api_current_urls_title)) {
             MainCurrentUrls(
+                enabledSites = state.enabledSites,
                 kemonoUrl = state.kemonoUrl,
-                coomerUrl = state.coomerUrl
+                coomerUrl = state.coomerUrl,
+                pawchiveUrl = state.pawchiveUrl,
             )
         }
     }
@@ -86,20 +103,25 @@ private fun MainSectionCard(
 
 @Composable
 internal fun MainSiteErrorsBlock(
+    enabledSites: Set<SelectedSite>,
     kemonoError: ErrorItem?,
     coomerError: ErrorItem?,
+    pawchiveError: ErrorItem?,
 ) {
-    MainSiteStatusRow(
-        siteLabel = stringResource(R.string.main_api_kemono_label),
-        error = kemonoError
-    )
+    val enabledList = enabledSites.orderedSites()
 
-    HorizontalDivider()
+    enabledList.forEachIndexed { index, site ->
+        if (index > 0) HorizontalDivider()
 
-    MainSiteStatusRow(
-        siteLabel = stringResource(R.string.main_api_coomer_label),
-        error = coomerError
-    )
+        MainSiteStatusRow(
+            siteLabel = site.label(),
+            error = when (site) {
+                SelectedSite.K -> kemonoError
+                SelectedSite.C -> coomerError
+                SelectedSite.P -> pawchiveError
+            }
+        )
+    }
 }
 
 @Composable
@@ -247,38 +269,100 @@ internal fun MainErrorDebugDetails(error: ErrorItem) {
 /** ========== URL + Fields + Actions ========== */
 
 @Composable
-internal fun MainCurrentUrls(kemonoUrl: String, coomerUrl: String) {
-    Text(
-        text = stringResource(
-            R.string.main_api_current_urls_value,
-            kemonoUrl,
-            coomerUrl
-        ),
-        style = MaterialTheme.typography.bodySmall,
-        textAlign = TextAlign.Center
-    )
+internal fun MainCurrentUrls(
+    enabledSites: Set<SelectedSite>,
+    kemonoUrl: String,
+    coomerUrl: String,
+    pawchiveUrl: String,
+) {
+    Column(
+        modifier = Modifier.fillMaxWidth(),
+        verticalArrangement = Arrangement.spacedBy(4.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+    ) {
+        enabledSites.orderedSites().forEach { site ->
+            Text(
+                text = when (site) {
+                    SelectedSite.K -> "Kemono: $kemonoUrl"
+                    SelectedSite.C -> "Coomer: $coomerUrl"
+                    SelectedSite.P -> "Pawchive: $pawchiveUrl"
+                },
+                style = MaterialTheme.typography.bodySmall,
+                textAlign = TextAlign.Center
+            )
+        }
+    }
+}
+
+@Composable
+internal fun MainEnabledSitesBlock(
+    enabledSites: Set<SelectedSite>,
+    onToggleApiSite: (SelectedSite, Boolean) -> Unit,
+) {
+    SelectedSite.entries.forEach { site ->
+        val checked = site in enabledSites
+        val canToggle = enabledSites.size > 1 || !checked
+
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Text(
+                modifier = Modifier.weight(1f),
+                text = site.label(),
+                style = MaterialTheme.typography.bodyLarge,
+            )
+
+            Switch(
+                checked = checked,
+                enabled = canToggle,
+                onCheckedChange = { onToggleApiSite(site, it) },
+            )
+        }
+    }
 }
 
 @Composable
 internal fun MainDomainFields(
+    enabledSites: Set<SelectedSite>,
     inputKemonoDomain: String,
     inputCoomerDomain: String,
+    inputPawchiveDomain: String,
     onInputKemonoChanged: (String) -> Unit,
     onInputCoomerChanged: (String) -> Unit,
+    onInputPawchiveChanged: (String) -> Unit,
 ) {
-    BaseUrlDomainField(
-        value = inputKemonoDomain,
-        onValueChange = onInputKemonoChanged,
-        label = { Text(stringResource(R.string.main_api_kemono_url_label)) },
-    )
+    if (SelectedSite.K in enabledSites) {
+        BaseUrlDomainField(
+            value = inputKemonoDomain,
+            onValueChange = onInputKemonoChanged,
+            label = { Text(stringResource(R.string.main_api_kemono_url_label)) },
+        )
+    }
 
-    Spacer(Modifier.height(8.dp))
+    if (SelectedSite.K in enabledSites && SelectedSite.C in enabledSites) {
+        Spacer(Modifier.height(8.dp))
+    }
 
-    BaseUrlDomainField(
-        value = inputCoomerDomain,
-        onValueChange = onInputCoomerChanged,
-        label = { Text(stringResource(R.string.main_api_coomer_url_label)) },
-    )
+    if (SelectedSite.C in enabledSites) {
+        BaseUrlDomainField(
+            value = inputCoomerDomain,
+            onValueChange = onInputCoomerChanged,
+            label = { Text(stringResource(R.string.main_api_coomer_url_label)) },
+        )
+    }
+
+    if ((SelectedSite.K in enabledSites || SelectedSite.C in enabledSites) && SelectedSite.P in enabledSites) {
+        Spacer(Modifier.height(8.dp))
+    }
+
+    if (SelectedSite.P in enabledSites) {
+        BaseUrlDomainField(
+            value = inputPawchiveDomain,
+            onValueChange = onInputPawchiveChanged,
+            label = { Text(stringResource(R.string.main_api_pawchive_url_label)) },
+        )
+    }
 }
 
 @Composable
@@ -344,3 +428,14 @@ internal fun ErrorItem.toUiMeta(): ErrorUiMeta {
 
 internal fun ErrorItem.hasDebugDetails(): Boolean =
     !body.isNullOrBlank() || !cause.isNullOrBlank()
+
+@Composable
+private fun SelectedSite.label(): String =
+    when (this) {
+        SelectedSite.K -> stringResource(R.string.main_api_kemono_label)
+        SelectedSite.C -> stringResource(R.string.main_api_coomer_label)
+        SelectedSite.P -> stringResource(R.string.main_api_pawchive_label)
+    }
+
+private fun Set<SelectedSite>.orderedSites(): List<SelectedSite> =
+    listOf(SelectedSite.K, SelectedSite.C, SelectedSite.P).filter { it in this }

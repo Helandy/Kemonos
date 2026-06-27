@@ -5,6 +5,7 @@ import su.afk.kemonos.domain.models.creator.Creators
 import su.afk.kemonos.domain.models.creator.CreatorsSort
 import su.afk.kemonos.preferences.useCase.CacheKeys.CREATORS_COOMER
 import su.afk.kemonos.preferences.useCase.CacheKeys.CREATORS_KEMONO
+import su.afk.kemonos.preferences.useCase.CacheKeys.CREATORS_PAWCHIVE
 import su.afk.kemonos.preferences.useCase.CacheTimes.TTL_7_DAYS
 import su.afk.kemonos.preferences.useCase.ICacheTimestampUseCase
 import su.afk.kemonos.storage.api.repository.creators.IStoreCreatorsRepository
@@ -13,11 +14,13 @@ import su.afk.kemonos.storage.entity.creators.CreatorsEntity.Companion.toDomain
 import su.afk.kemonos.storage.entity.creators.CreatorsEntity.Companion.toEntity
 import su.afk.kemonos.storage.entity.creators.dao.CoomerCreatorsDao
 import su.afk.kemonos.storage.entity.creators.dao.KemonoCreatorsDao
+import su.afk.kemonos.storage.entity.creators.dao.PawchiveCreatorsDao
 import javax.inject.Inject
 
 internal class StoreCreatorsRepository @Inject constructor(
     private val kemonoDao: KemonoCreatorsDao,
     private val coomerDao: CoomerCreatorsDao,
+    private val pawchiveDao: PawchiveCreatorsDao,
     private val cacheTimestamps: ICacheTimestampUseCase
 ) : IStoreCreatorsRepository {
 
@@ -35,6 +38,9 @@ internal class StoreCreatorsRepository @Inject constructor(
             SelectedSite.C -> {
                 coomerDao.replaceAllChunked(entities)
             }
+            SelectedSite.P -> {
+                pawchiveDao.replaceAllChunked(entities)
+            }
         }
         updateCacheTimestamp(site)
     }
@@ -43,6 +49,7 @@ internal class StoreCreatorsRepository @Inject constructor(
         when (site) {
             SelectedSite.K -> kemonoDao.clear()
             SelectedSite.C -> coomerDao.clear()
+            SelectedSite.P -> pawchiveDao.clear()
         }
         cacheTimestamps.clearCacheTimestamp(keyPref = key(site))
     }
@@ -53,6 +60,7 @@ internal class StoreCreatorsRepository @Inject constructor(
         when (site) {
             SelectedSite.K -> kemonoDao.getDistinctServices()
             SelectedSite.C -> coomerDao.getDistinctServices()
+            SelectedSite.P -> pawchiveDao.getDistinctServices()
         }
 
     override suspend fun searchCreators(
@@ -69,6 +77,7 @@ internal class StoreCreatorsRepository @Inject constructor(
         return when (site) {
             SelectedSite.K -> searchKemono(service, q, sort, ascending, limit, offset).map { it.toDomain() }
             SelectedSite.C -> searchCoomer(service, q, sort, ascending, limit, offset).map { it.toDomain() }
+            SelectedSite.P -> searchPawchive(service, q, sort, ascending, limit, offset).map { it.toDomain() }
         }
     }
 
@@ -122,6 +131,31 @@ internal class StoreCreatorsRepository @Inject constructor(
             else coomerDao.searchNameDesc(service, q, limit, offset)
     }
 
+    private suspend fun searchPawchive(
+        service: String?,
+        q: String,
+        sort: CreatorsSort,
+        ascending: Boolean,
+        limit: Int,
+        offset: Int
+    ): List<CreatorsEntity> = when (sort) {
+        CreatorsSort.POPULARITY ->
+            if (ascending) pawchiveDao.searchPopularityAsc(service, q, limit, offset)
+            else pawchiveDao.searchPopularityDesc(service, q, limit, offset)
+
+        CreatorsSort.INDEX ->
+            if (ascending) pawchiveDao.searchIndexAsc(service, q, limit, offset)
+            else pawchiveDao.searchIndexDesc(service, q, limit, offset)
+
+        CreatorsSort.UPDATE ->
+            if (ascending) pawchiveDao.searchUpdateAsc(service, q, limit, offset)
+            else pawchiveDao.searchUpdateDesc(service, q, limit, offset)
+
+        CreatorsSort.NAME ->
+            if (ascending) pawchiveDao.searchNameAsc(service, q, limit, offset)
+            else pawchiveDao.searchNameDesc(service, q, limit, offset)
+    }
+
     override suspend fun randomCreators(
         site: SelectedSite,
         service: String?,
@@ -129,6 +163,7 @@ internal class StoreCreatorsRepository @Inject constructor(
     ): List<Creators> = when (site) {
         SelectedSite.K -> kemonoDao.randomCreators(service, limit).map { it.toDomain() }
         SelectedSite.C -> coomerDao.randomCreators(service, limit).map { it.toDomain() }
+        SelectedSite.P -> pawchiveDao.randomCreators(service, limit).map { it.toDomain() }
     }
 
     override suspend fun getNamesByCompositeKeys(
@@ -139,12 +174,16 @@ internal class StoreCreatorsRepository @Inject constructor(
         val items = when (site) {
             SelectedSite.K -> kemonoDao.findByCompositeKeys(compositeKeys)
             SelectedSite.C -> coomerDao.findByCompositeKeys(compositeKeys)
+            SelectedSite.P -> pawchiveDao.findByCompositeKeys(compositeKeys)
         }
         return items.associate { "${it.service}:${it.id}" to it.name }
     }
 
-    private fun key(site: SelectedSite): String =
-        if (site == SelectedSite.K) CREATORS_KEMONO else CREATORS_COOMER
+    private fun key(site: SelectedSite): String = when (site) {
+        SelectedSite.K -> CREATORS_KEMONO
+        SelectedSite.C -> CREATORS_COOMER
+        SelectedSite.P -> CREATORS_PAWCHIVE
+    }
 
     private fun getCacheTimestamp(site: SelectedSite): Long = cacheTimestamps.getCacheTimestamp(keyPref = key(site))
 

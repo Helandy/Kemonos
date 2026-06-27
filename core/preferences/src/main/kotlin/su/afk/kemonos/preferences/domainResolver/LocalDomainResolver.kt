@@ -8,11 +8,17 @@ val LocalDomainResolver = staticCompositionLocalOf<IDomainResolver> {
 
 /** Для превью */
 object PreviewDomainResolver : IDomainResolver {
+    override fun selectedSite() = su.afk.kemonos.domain.SelectedSite.K
+
     override fun baseUrlByService(service: String): String {
         return "https://example.com"
     }
 
     override fun imageBaseUrlByService(service: String): String {
         return "https://img.example.com"
+    }
+
+    override fun creatorImageBaseUrlByService(service: String): String {
+        return "https://example.com"
     }
 }

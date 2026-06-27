@@ -466,7 +466,7 @@ internal class CreatorPostViewModel @AssistedInject constructor(
     /** Массовая загрузка всех доступных вложений/медиа поста */
     private fun downloadAll() {
         val post = currentState.post ?: return
-        val fallbackBaseUrl = domainResolver.baseUrlByService(currentState.service)
+        val fallbackBaseUrl = domainResolver.fileBaseUrlByService(currentState.service)
         val allItems = post.collectDownloadAllItems(fallbackBaseUrl = fallbackBaseUrl)
         if (allItems.isEmpty()) return
 

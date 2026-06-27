@@ -21,3 +21,12 @@ class GetCoomerRootUrlUseCase @Inject constructor(
         return urlPrefs.coomerUrl.value.toRootUrl()
     }
 }
+
+@Singleton
+class GetPawchiveRootUrlUseCase @Inject constructor(
+    private val urlPrefs: UrlPrefs,
+) {
+    operator fun invoke(): String {
+        return urlPrefs.pawchiveUrl.value.toRootUrl()
+    }
+}

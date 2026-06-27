@@ -9,11 +9,13 @@ import su.afk.kemonos.storage.api.repository.popular.IStoragePopularPostsReposit
 import su.afk.kemonos.storage.entity.popular.PostsPopularCacheEntity
 import su.afk.kemonos.storage.entity.popular.dao.CoomerPostsPopularCacheDao
 import su.afk.kemonos.storage.entity.popular.dao.KemonoPostsPopularCacheDao
+import su.afk.kemonos.storage.entity.popular.dao.PawchivePostsPopularCacheDao
 import javax.inject.Inject
 
 internal class StoragePopularPostsRepository @Inject constructor(
     private val kemonoDao: KemonoPostsPopularCacheDao,
     private val coomerDao: CoomerPostsPopularCacheDao,
+    private val pawchiveDao: PawchivePostsPopularCacheDao,
     private val json: Json,
 ) : IStoragePopularPostsRepository {
 
@@ -21,6 +23,7 @@ internal class StoragePopularPostsRepository @Inject constructor(
         val row = when (site) {
             SelectedSite.K -> kemonoDao.get(queryKey, offset)
             SelectedSite.C -> coomerDao.get(queryKey, offset)
+            SelectedSite.P -> pawchiveDao.get(queryKey, offset)
         } ?: return null
 
         if (!isFresh(row.updatedAt, row.queryKey)) return null
@@ -31,6 +34,7 @@ internal class StoragePopularPostsRepository @Inject constructor(
         val row = when (site) {
             SelectedSite.K -> kemonoDao.get(queryKey, offset)
             SelectedSite.C -> coomerDao.get(queryKey, offset)
+            SelectedSite.P -> pawchiveDao.get(queryKey, offset)
         } ?: return null
 
         return decode(row.payloadJson)
@@ -47,6 +51,7 @@ internal class StoragePopularPostsRepository @Inject constructor(
         when (site) {
             SelectedSite.K -> kemonoDao.upsert(entity)
             SelectedSite.C -> coomerDao.upsert(entity)
+            SelectedSite.P -> pawchiveDao.upsert(entity)
         }
     }
 
@@ -54,6 +59,7 @@ internal class StoragePopularPostsRepository @Inject constructor(
         when (site) {
             SelectedSite.K -> kemonoDao.delete(queryKey, offset)
             SelectedSite.C -> coomerDao.delete(queryKey, offset)
+            SelectedSite.P -> pawchiveDao.delete(queryKey, offset)
         }
     }
 
@@ -61,6 +67,7 @@ internal class StoragePopularPostsRepository @Inject constructor(
         when (site) {
             SelectedSite.K -> kemonoDao.clearAll()
             SelectedSite.C -> coomerDao.clearAll()
+            SelectedSite.P -> pawchiveDao.clearAll()
         }
     }
 
@@ -77,6 +84,10 @@ internal class StoragePopularPostsRepository @Inject constructor(
             SelectedSite.C -> {
                 coomerDao.deleteExpiredByPeriods(shortMinTs, SHORT_PERIODS)
                 coomerDao.deleteExpiredByPeriods(longMinTs, LONG_PERIODS)
+            }
+            SelectedSite.P -> {
+                pawchiveDao.deleteExpiredByPeriods(shortMinTs, SHORT_PERIODS)
+                pawchiveDao.deleteExpiredByPeriods(longMinTs, LONG_PERIODS)
             }
         }
     }

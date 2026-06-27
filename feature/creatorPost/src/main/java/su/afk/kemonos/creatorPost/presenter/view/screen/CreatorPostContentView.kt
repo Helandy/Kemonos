@@ -67,7 +67,7 @@ internal fun CreatorPostContentView(
     val resolver = LocalDomainResolver.current
 
     val imgBaseUrl = remember(post.service) { resolver.imageBaseUrlByService(post.service) }
-    val fallbackBaseUrl = remember(post.service) { resolver.baseUrlByService(post.service) }
+    val fallbackBaseUrl = remember(post.service) { resolver.fileBaseUrlByService(post.service) }
     val uniquePreviews = remember(resolvedPost.previews) {
         resolvedPost.previews.distinctBy { it.previewKey() }
     }

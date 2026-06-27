@@ -1,5 +1,6 @@
 package su.afk.kemonos.creators.presenter.delegates
 
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.flow.first
 import su.afk.kemonos.creators.domain.GetCreatorsPagedUseCase
 import su.afk.kemonos.creators.presenter.CreatorsState.State
@@ -33,7 +34,11 @@ internal class RandomListDelegate @Inject constructor(
             setState { copy(randomSuggestionsLoading = true) }
 
             runCatching {
-                getCreatorsPagedUseCase.getRandomCreatorsFromStorage(service = service, limit = 50)
+                getCreatorsPagedUseCase.getRandomCreatorsFromStorage(
+                    site = state.selectedSite,
+                    service = service,
+                    limit = 50,
+                )
             }.onSuccess { list ->
                 val blacklistedAuthorKeys = blacklistedAuthorsRepository.observeAll()
                     .first()
@@ -52,6 +57,7 @@ internal class RandomListDelegate @Inject constructor(
                     )
                 }
             }.onFailure {
+                if (it is CancellationException) throw it
                 setState { copy(randomSuggestionsLoading = false) }
             }
         }

@@ -18,6 +18,7 @@ internal fun LogoutDialog(
     val siteName = when (site) {
         SelectedSite.K -> stringResource(R.string.kemono)
         SelectedSite.C -> stringResource(R.string.coomer)
+        SelectedSite.P -> stringResource(R.string.pawchive)
         null -> ""
     }
 

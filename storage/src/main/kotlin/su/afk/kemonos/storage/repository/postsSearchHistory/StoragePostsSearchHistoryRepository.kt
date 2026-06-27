@@ -6,11 +6,13 @@ import su.afk.kemonos.storage.api.repository.postsSearchHistory.IStoragePostsSea
 import su.afk.kemonos.storage.entity.postsSearch.history.PostsSearchHistoryEntity
 import su.afk.kemonos.storage.entity.postsSearch.history.dao.CoomerPostsSearchHistoryDao
 import su.afk.kemonos.storage.entity.postsSearch.history.dao.KemonoPostsSearchHistoryDao
+import su.afk.kemonos.storage.entity.postsSearch.history.dao.PawchivePostsSearchHistoryDao
 import javax.inject.Inject
 
 internal class StoragePostsSearchHistoryRepository @Inject constructor(
     private val kemonoDao: KemonoPostsSearchHistoryDao,
     private val coomerDao: CoomerPostsSearchHistoryDao,
+    private val pawchiveDao: PawchivePostsSearchHistoryDao,
 ) : IStoragePostsSearchHistoryRepository {
     private companion object {
         const val MAX_HISTORY_LIMIT = 25
@@ -20,6 +22,7 @@ internal class StoragePostsSearchHistoryRepository @Inject constructor(
         when (site) {
             SelectedSite.K -> kemonoDao.observeRecent(limit.coerceAtMost(MAX_HISTORY_LIMIT))
             SelectedSite.C -> coomerDao.observeRecent(limit.coerceAtMost(MAX_HISTORY_LIMIT))
+            SelectedSite.P -> pawchiveDao.observeRecent(limit.coerceAtMost(MAX_HISTORY_LIMIT))
         }
 
     override suspend fun save(site: SelectedSite, query: String, limit: Int) {
@@ -34,6 +37,7 @@ internal class StoragePostsSearchHistoryRepository @Inject constructor(
         when (site) {
             SelectedSite.K -> kemonoDao.saveAndTrim(item, appliedLimit)
             SelectedSite.C -> coomerDao.saveAndTrim(item, appliedLimit)
+            SelectedSite.P -> pawchiveDao.saveAndTrim(item, appliedLimit)
         }
     }
 
@@ -43,6 +47,7 @@ internal class StoragePostsSearchHistoryRepository @Inject constructor(
         when (site) {
             SelectedSite.K -> kemonoDao.delete(normalized)
             SelectedSite.C -> coomerDao.delete(normalized)
+            SelectedSite.P -> pawchiveDao.delete(normalized)
         }
     }
 }

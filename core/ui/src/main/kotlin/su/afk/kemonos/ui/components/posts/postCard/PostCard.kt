@@ -22,6 +22,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import su.afk.kemonos.domain.SelectedSite
 import su.afk.kemonos.domain.models.PostDomain
 import su.afk.kemonos.preferences.domainResolver.LocalDomainResolver
 import su.afk.kemonos.preferences.ui.PostsSize
@@ -43,7 +44,10 @@ fun PostCard(
 ) {
     val resolver = LocalDomainResolver.current
     val imgBaseUrl = remember(post.service) { resolver.imageBaseUrlByService(post.service) }
-    val meta = rememberPostCardMeta(post)
+    val meta = rememberPostCardMeta(
+        post = post,
+        allowVideoPreview = resolver.selectedSite() != SelectedSite.P,
+    )
     val interactionSource = remember { MutableInteractionSource() }
     val pressedScale = rememberKemonosPressedScale(interactionSource)
 

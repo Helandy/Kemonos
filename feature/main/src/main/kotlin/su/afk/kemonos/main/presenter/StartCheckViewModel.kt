@@ -75,6 +75,12 @@ internal class StartCheckViewModel @Inject constructor(
                 setState { copy(inputCoomerDomain = event.value) }
             }
 
+            is Event.InputPawchiveDomainChanged -> {
+                setState { copy(inputPawchiveDomain = event.value) }
+            }
+
+            is Event.ToggleApiSite -> onToggleApiSite(event.site, event.enabled)
+
             Event.CrashReportDelete -> onCrashReportDelete()
             Event.CrashReportSaveToDevice -> onCrashReportSaveToDevice()
             is Event.CrashReportShared -> {
@@ -93,6 +99,7 @@ internal class StartCheckViewModel @Inject constructor(
 
         viewModelScope.launch {
             val uiSettings = uiSetting.prefs.first()
+            setState { copy(enabledSites = uiSettings.enabledSites) }
 
             if (uiSettings.skipApiCheckOnLogin.not()) {
                 startApiInitIfNeeded()
@@ -134,15 +141,18 @@ internal class StartCheckViewModel @Inject constructor(
     }
 
     private fun observeBaseUrls() {
-        baseUrlsObserveDelegate.observe(viewModelScope) { kemono, coomer ->
+        baseUrlsObserveDelegate.observe(viewModelScope) { kemono, coomer, pawchive ->
             setState {
                 copy(
                     kemonoUrl = kemono,
                     coomerUrl = coomer,
+                    pawchiveUrl = pawchive,
                     inputKemonoDomain = currentState.inputKemonoDomain
                         .ifEmpty { normalizeDomain(kemono) },
                     inputCoomerDomain = currentState.inputCoomerDomain
                         .ifEmpty { normalizeDomain(coomer) },
+                    inputPawchiveDomain = currentState.inputPawchiveDomain
+                        .ifEmpty { normalizeDomain(pawchive) },
                 )
             }
         }
@@ -169,7 +179,9 @@ internal class StartCheckViewModel @Inject constructor(
             setBaseUrlsUseCase(
                 kemonoUrl = buildBaseUrl(currentState.inputKemonoDomain),
                 coomerUrl = buildBaseUrl(currentState.inputCoomerDomain),
+                pawchiveUrl = buildBaseUrl(currentState.inputPawchiveDomain),
             )
+            uiSetting.setEnabledSites(currentState.enabledSites)
             runApiCheck()
         }
     }
@@ -178,11 +190,11 @@ internal class StartCheckViewModel @Inject constructor(
         if (apiCheckJob?.isActive == true) return
 
         apiCheckJob = viewModelScope.launch {
-            setState { copy(isLoading = true, kemonoError = null, coomerError = null) }
+            setState { copy(isLoading = true, kemonoError = null, coomerError = null, pawchiveError = null) }
 
             // 1) если есть cookie — дернем избранное, а если 4xx — cookie очистится
             //    и сайт попадёт в sitesToApiCheck
-            val sitesToApiCheck: Set<SelectedSite> = checkAuthForAllSitesUseCase()
+            val sitesToApiCheck: Set<SelectedSite> = checkAuthForAllSitesUseCase(currentState.enabledSites)
 
             // 2) /posts дергаем только для сайтов, где авторизации нет (или она слетела)
             pendingApiCheckResult = apiCheckDelegate.check(sitesToApiCheck)
@@ -211,6 +223,7 @@ internal class StartCheckViewModel @Inject constructor(
                         apiSuccess = false,
                         kemonoError = result.kemonoError,
                         coomerError = result.coomerError,
+                        pawchiveError = result.pawchiveError,
                     )
                 }
             }
@@ -218,8 +231,34 @@ internal class StartCheckViewModel @Inject constructor(
     }
 
     private fun onSkipCheck() {
-        setState { copy(isLoading = false, apiSuccess = true, kemonoError = null, coomerError = null) }
+        setState {
+            copy(
+                isLoading = false,
+                apiSuccess = true,
+                kemonoError = null,
+                coomerError = null,
+                pawchiveError = null,
+            )
+        }
         navManager.enterTabs()
+    }
+
+    private fun onToggleApiSite(site: SelectedSite, enabled: Boolean) {
+        val next = if (enabled) {
+            currentState.enabledSites + site
+        } else {
+            currentState.enabledSites - site
+        }
+        if (next.isEmpty()) return
+
+        setState {
+            copy(
+                enabledSites = next,
+                kemonoError = kemonoError.takeIf { SelectedSite.K in next },
+                coomerError = coomerError.takeIf { SelectedSite.C in next },
+                pawchiveError = pawchiveError.takeIf { SelectedSite.P in next },
+            )
+        }
     }
 
     private fun onCrashReportDelete() {

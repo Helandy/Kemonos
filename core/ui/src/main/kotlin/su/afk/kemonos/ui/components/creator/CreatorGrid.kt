@@ -38,7 +38,7 @@ internal fun CreatorGridItem(
     onClick: () -> Unit,
 ) {
     val resolver = LocalDomainResolver.current
-    val imgBaseUrl = remember(service) { resolver.imageBaseUrlByService(service) }
+    val imgBaseUrl = remember(resolver, service) { resolver.creatorImageBaseUrlByService(service) }
 
     val accent = getColorForFavorites(service)
     val shape = RoundedCornerShape(4.dp)

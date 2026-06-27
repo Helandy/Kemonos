@@ -1,7 +1,12 @@
 package su.afk.kemonos.data.dto
 
+import com.google.gson.JsonDeserializationContext
+import com.google.gson.JsonDeserializer
+import com.google.gson.JsonElement
+import com.google.gson.annotations.JsonAdapter
 import com.google.gson.annotations.SerializedName
-import su.afk.kemonos.data.dto.AttachmentDto.Companion.toDomain
+import java.lang.reflect.Type
+import su.afk.kemonos.data.dto.AttachmentDto.Companion.toDomainOrNull
 import su.afk.kemonos.data.dto.FileDto.Companion.toDomain
 import su.afk.kemonos.data.dto.IncompleteRewardsDto.Companion.toDomain
 import su.afk.kemonos.data.dto.PollDto.Companion.toDomain
@@ -34,6 +39,7 @@ data class PostUnifiedDto(
     val edited: String?,
 
     @SerializedName("tags")
+    @JsonAdapter(PostTagsDtoAdapter::class)
     val tags: List<String?>?,
 
     @SerializedName("attachments")
@@ -71,12 +77,38 @@ data class PostUnifiedDto(
             file = file?.toDomain(),
             incompleteRewards = incompleteRewards?.toDomain(),
             poll = poll?.toDomain(),
-            attachments = attachments.orEmpty().map { it.toDomain() },
+            attachments = attachments.orEmpty().mapNotNull { it.toDomainOrNull() },
             tags = tags.orEmpty().filterNotNull(),
             nextId = next,
             prevId = prev,
             favedSeq = favedSeq,
             favCount = favCount,
         )
+    }
+}
+
+class PostTagsDtoAdapter : JsonDeserializer<List<String?>> {
+    override fun deserialize(
+        json: JsonElement?,
+        typeOfT: Type?,
+        context: JsonDeserializationContext?,
+    ): List<String?> {
+        if (json == null || json.isJsonNull) return emptyList()
+
+        if (json.isJsonArray) {
+            return json.asJsonArray.map { element ->
+                if (element.isJsonNull) null else element.asString
+            }
+        }
+
+        if (json.isJsonPrimitive && json.asJsonPrimitive.isString) {
+            return json.asString
+                .trim()
+                .takeIf { it.isNotEmpty() }
+                ?.let { listOf(it) }
+                .orEmpty()
+        }
+
+        return emptyList()
     }
 }

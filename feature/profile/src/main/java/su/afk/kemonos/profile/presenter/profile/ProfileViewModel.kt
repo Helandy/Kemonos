@@ -22,8 +22,6 @@ import su.afk.kemonos.error.error.IErrorHandlerUseCase
 import su.afk.kemonos.error.error.storage.RetryStorage
 import su.afk.kemonos.navigation.NavigationManager
 import su.afk.kemonos.navigation.storage.NavigationStorage
-import su.afk.kemonos.preferences.domainResolver.IDomainResolver
-import su.afk.kemonos.preferences.domainResolver.selectedSiteByService
 import su.afk.kemonos.preferences.site.ISelectedSiteUseCase
 import su.afk.kemonos.preferences.site.setSiteAndAwait
 import su.afk.kemonos.preferences.ui.IUiSettingUseCase
@@ -52,7 +50,6 @@ internal class ProfileViewModel @Inject constructor(
     private val observeAuthStateUseCase: ObserveAuthStateUseCase,
     private val navigationManager: NavigationManager,
     private val navigationStorage: NavigationStorage,
-    private val domainResolver: IDomainResolver,
     private val selectedSiteUseCase: ISelectedSiteUseCase,
     private val downloadNavigator: IDownloadNavigator,
     private val getSettingDestinationUseCase: IGetSettingDestinationUseCase,
@@ -120,10 +117,13 @@ internal class ProfileViewModel @Inject constructor(
                 AuthSnapshot(
                     isKemonoAuthorized = auth.isKemonoAuthorized,
                     isCoomerAuthorized = auth.isCoomerAuthorized,
+                    isPawchiveAuthorized = auth.isPawchiveAuthorized,
                     kemonoLogin = auth.kemono.user?.toLogin(),
                     coomerLogin = auth.coomer.user?.toLogin(),
+                    pawchiveLogin = auth.pawchive.user?.toLogin(),
                     kemonoUpdatedFavoritesCount = freshUpdatesUseCase.get(SelectedSite.K).size,
                     coomerUpdatedFavoritesCount = freshUpdatesUseCase.get(SelectedSite.C).size,
+                    pawchiveUpdatedFavoritesCount = freshUpdatesUseCase.get(SelectedSite.P).size,
                 )
             }
             .distinctUntilChanged()
@@ -133,11 +133,16 @@ internal class ProfileViewModel @Inject constructor(
                         isLoading = false,
                         isLoginKemono = snapshot.isKemonoAuthorized,
                         isLoginCoomer = snapshot.isCoomerAuthorized,
-                        isLogin = snapshot.isKemonoAuthorized || snapshot.isCoomerAuthorized,
+                        isLoginPawchive = snapshot.isPawchiveAuthorized,
+                        isLogin = snapshot.isKemonoAuthorized ||
+                                snapshot.isCoomerAuthorized ||
+                                snapshot.isPawchiveAuthorized,
                         kemonoLogin = snapshot.kemonoLogin,
                         coomerLogin = snapshot.coomerLogin,
+                        pawchiveLogin = snapshot.pawchiveLogin,
                         kemonoUpdatedFavoritesCount = snapshot.kemonoUpdatedFavoritesCount,
                         coomerUpdatedFavoritesCount = snapshot.coomerUpdatedFavoritesCount,
+                        pawchiveUpdatedFavoritesCount = snapshot.pawchiveUpdatedFavoritesCount,
                     )
                 }
             }
@@ -169,6 +174,11 @@ internal class ProfileViewModel @Inject constructor(
 
     /** Логин */
     private fun onLoginClick(site: SelectedSite) {
+        if (site == SelectedSite.P) {
+            setEffect(Effect.ShowMessage(appContext.getString(R.string.login_pawchive_unsupported)))
+            return
+        }
+
         navigateWithSelectedSite(site = site, destination = AuthDestination.Login)
     }
 
@@ -291,10 +301,10 @@ internal class ProfileViewModel @Inject constructor(
         setState { copy(isImportInProgress = false) }
 
         importResult.onSuccess { result ->
-            val siteName = if (import.site == SelectedSite.K) {
-                appContext.getString(R.string.kemono)
-            } else {
-                appContext.getString(R.string.coomer)
+            val siteName = when (import.site) {
+                SelectedSite.K -> appContext.getString(R.string.kemono)
+                SelectedSite.C -> appContext.getString(R.string.coomer)
+                SelectedSite.P -> appContext.getString(R.string.pawchive)
             }
             val importTypeName = when (import.type) {
                 FavoritesImportType.ARTISTS -> appContext.getString(R.string.profile_export_authors)
@@ -367,12 +377,7 @@ internal class ProfileViewModel @Inject constructor(
 
     /** Keeps selected site aligned with operation target site before API/local work. */
     private suspend fun syncSelectedSite(site: SelectedSite) {
-        val service = when (site) {
-            SelectedSite.K -> KEMONO_REFERENCE_SERVICE
-            SelectedSite.C -> COOMER_REFERENCE_SERVICE
-        }
-        val targetSite = domainResolver.selectedSiteByService(service)
-        selectedSiteUseCase.setSiteAndAwait(targetSite)
+        selectedSiteUseCase.setSiteAndAwait(site)
     }
 
     /** Настройки */
@@ -400,12 +405,9 @@ internal class ProfileViewModel @Inject constructor(
                 isLoading = false,
                 kemonoUpdatedFavoritesCount = freshUpdatesUseCase.get(SelectedSite.K).size,
                 coomerUpdatedFavoritesCount = freshUpdatesUseCase.get(SelectedSite.C).size,
+                pawchiveUpdatedFavoritesCount = freshUpdatesUseCase.get(SelectedSite.P).size,
             )
         }
     }
 
-    private companion object {
-        const val KEMONO_REFERENCE_SERVICE = "patreon"
-        const val COOMER_REFERENCE_SERVICE = "onlyfans"
-    }
 }

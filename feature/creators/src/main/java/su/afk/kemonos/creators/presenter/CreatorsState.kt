@@ -5,6 +5,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.serialization.Serializable
 import su.afk.kemonos.domain.SelectedSite
+import su.afk.kemonos.domain.models.ErrorItem
 import su.afk.kemonos.domain.models.creator.CreatorsSort
 import su.afk.kemonos.domain.models.creator.FavoriteArtist
 import su.afk.kemonos.preferences.ui.UiSettingModel
@@ -19,6 +20,7 @@ internal class CreatorsState {
 
     data class State(
         val loading: Boolean = true,
+        val error: ErrorItem? = null,
 
         /** Список сервисов для фильтра. */
         val services: List<String> = listOf(ALL_SERVICES_LABEL),
@@ -56,6 +58,7 @@ internal class CreatorsState {
         data class CreatorClicked(val creator: FavoriteArtist) : Event
         data object RandomClicked : Event
         data object SwitchSiteClicked : Event
+        data object RetryClicked : Event
 
         data object HeaderRandomExpanded : Event
         data object GithubRateClick : Event

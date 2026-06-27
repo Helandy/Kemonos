@@ -148,13 +148,14 @@
     <string name="main_api_error_code">Код: %1$d</string>
 
     <string name="main_api_current_urls_title">Текущие адреса в настройках:</string>
-    <string name="main_api_current_urls_value">Kemono: %1$s\nCoomer: %2$s</string>
+    <string name="main_api_current_urls_value">Kemono: %1$s\nCoomer: %2$s\nPawchive: %3$s</string>
 
     <string name="settings_api_subtitle">Можно указать другой домен API, если основной недоступен.</string>
     <string name="settings_api_fields_title">Новые домены</string>
 
     <string name="main_api_kemono_url_label">Адрес API Kemono</string>
     <string name="main_api_coomer_url_label">Адрес API Coomer</string>
+    <string name="main_api_pawchive_url_label">Адрес API Pawchive</string>
 
     <string name="main_api_check_button">Проверить</string>
 
@@ -191,9 +192,11 @@
 
     <!-- Главный экран / Проверка API (статус сайтов) -->
     <string name="main_api_site_status_title">Статус API</string>
+    <string name="main_api_enabled_sites_title">Включенные API</string>
 
     <string name="main_api_kemono_label">Kemono</string>
     <string name="main_api_coomer_label">Coomer</string>
+    <string name="main_api_pawchive_label">Pawchive</string>
 
     <string name="main_api_site_available">API %1$s доступен</string>
     <string name="main_api_site_unavailable">API %1$s недоступен</string>

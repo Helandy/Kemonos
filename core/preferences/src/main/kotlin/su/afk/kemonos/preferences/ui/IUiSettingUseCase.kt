@@ -1,12 +1,16 @@
 package su.afk.kemonos.preferences.ui
 
 import kotlinx.coroutines.flow.Flow
+import su.afk.kemonos.domain.SelectedSite
 
 interface IUiSettingUseCase {
     val prefs: Flow<UiSettingModel>
 
     /** Debug: пропустить проверку API при входе */
     suspend fun setSkipApiCheckOnLogin(value: Boolean)
+
+    /** Включенные сайты/API */
+    suspend fun setEnabledSites(value: Set<SelectedSite>)
 
     /** Режим отображения сайта */
     suspend fun setSiteDisplayMode(value: SiteDisplayMode)

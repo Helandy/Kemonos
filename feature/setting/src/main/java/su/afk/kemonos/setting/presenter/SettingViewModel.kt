@@ -11,6 +11,7 @@ import su.afk.kemonos.error.error.storage.RetryStorage
 import su.afk.kemonos.navigation.NavigationManager
 import su.afk.kemonos.preferences.GetCoomerRootUrlUseCase
 import su.afk.kemonos.preferences.GetKemonoRootUrlUseCase
+import su.afk.kemonos.preferences.GetPawchiveRootUrlUseCase
 import su.afk.kemonos.preferences.ui.IUiSettingUseCase
 import su.afk.kemonos.preferences.useCase.CacheKeys
 import su.afk.kemonos.preferences.useCase.CacheTimes
@@ -30,6 +31,7 @@ import javax.inject.Inject
 class SettingViewModel @Inject constructor(
     private val getCoomerRootUrlUseCase: GetCoomerRootUrlUseCase,
     private val getKemonoRootUrlUseCase: GetKemonoRootUrlUseCase,
+    private val getPawchiveRootUrlUseCase: GetPawchiveRootUrlUseCase,
     private val cacheTimestamps: ICacheTimestampUseCase,
     private val uiSetting: IUiSettingUseCase,
     private val uiPrefsDelegate: SettingUiPreferencesDelegate,
@@ -101,13 +103,16 @@ class SettingViewModel @Inject constructor(
     private fun observeUrls() {
         val kemono = getKemonoRootUrlUseCase()
         val coomer = getCoomerRootUrlUseCase()
+        val pawchive = getPawchiveRootUrlUseCase()
 
         setState {
             copy(
                 kemonoUrl = kemono,
                 coomerUrl = coomer,
+                pawchiveUrl = pawchive,
                 inputKemonoDomain = state.value.inputKemonoDomain.ifEmpty { normalizeDomain(kemono) },
                 inputCoomerDomain = state.value.inputCoomerDomain.ifEmpty { normalizeDomain(coomer) },
+                inputPawchiveDomain = state.value.inputPawchiveDomain.ifEmpty { normalizeDomain(pawchive) },
                 inputVideoPreviewServerDomain = state.value.inputVideoPreviewServerDomain.ifEmpty {
                     normalizeDomain(state.value.uiSettingModel.videoPreviewServerUrl)
                 },
@@ -121,9 +126,11 @@ class SettingViewModel @Inject constructor(
             copy(
                 creatorsKemonoCache = cacheTimestamps.cacheTimeUi(CacheKeys.CREATORS_KEMONO, CacheTimes.TTL_7_DAYS),
                 creatorsCoomerCache = cacheTimestamps.cacheTimeUi(CacheKeys.CREATORS_COOMER, CacheTimes.TTL_7_DAYS),
+                creatorsPawchiveCache = cacheTimestamps.cacheTimeUi(CacheKeys.CREATORS_PAWCHIVE, CacheTimes.TTL_7_DAYS),
 
                 tagsKemonoCache = cacheTimestamps.cacheTimeUi(CacheKeys.TAGS_KEMONO, CacheTimes.TTL_30_DAYS),
                 tagsCoomerCache = cacheTimestamps.cacheTimeUi(CacheKeys.TAGS_COOMER, CacheTimes.TTL_30_DAYS),
+                tagsPawchiveCache = cacheTimestamps.cacheTimeUi(CacheKeys.TAGS_PAWCHIVE, CacheTimes.TTL_30_DAYS),
             )
         }
     }

@@ -3,6 +3,7 @@ package su.afk.kemonos.creators.presenter
 import androidx.lifecycle.SavedStateHandle
 import androidx.paging.cachedIn
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -54,6 +55,7 @@ internal class CreatorsViewModel @Inject constructor(
     /** Обновить фильтры в creatorsFilters */
     private fun updateCreatorsFiltersFromState() {
         creatorsFilters.value = CreatorsFilters(
+            site = currentState.selectedSite,
             service = currentState.selectedServiceFilter,
             query = currentState.searchQuery,
             sort = currentState.sortedType,
@@ -76,9 +78,10 @@ internal class CreatorsViewModel @Inject constructor(
             creatorsFilters,
             site,
             creatorsPagingRefresh,
-        ) { filters, _, _ -> filters }
+        ) { filters, site, _ -> filters.copy(site = site) }
             .flatMapLatest { filters ->
                 listDelegate.creatorsPagedFlow(
+                    site = filters.site,
                     service = filters.service,
                     searchQuery = filters.query,
                     sortedType = filters.sort,
@@ -102,28 +105,33 @@ internal class CreatorsViewModel @Inject constructor(
     }
 
     override fun onRetry() {
-        viewModelScope.launch { initAndReloadSite() }
+        viewModelScope.launch { initAndReloadSite(currentState.selectedSite) }
     }
 
     override suspend fun loadInitialSite(site: SelectedSite) {
-        setState { copy(selectedSite = site) }
+        setState { copy(selectedSite = site, error = null) }
         updateCreatorsFiltersFromState()
-        initAndReloadSite()
+        initAndReloadSite(site)
     }
 
     override suspend fun reloadSite(site: SelectedSite) {
         setState {
             copy(
+                services = listOf(CreatorsState.ALL_SERVICES_LABEL),
                 selectedService = CreatorsState.ALL_SERVICES_LABEL,
                 selectedServiceFilter = null,
                 searchQuery = "",
                 sortedType = CreatorsSort.POPULARITY,
                 sortAscending = false,
+                randomSuggestions = emptyList(),
+                randomSuggestionsFiltered = emptyList(),
+                randomSuggestionsLoading = false,
                 selectedSite = site,
+                error = null,
             )
         }
 
-        initAndReloadSite()
+        initAndReloadSite(site)
     }
 
     /** UI настройки */
@@ -134,6 +142,7 @@ internal class CreatorsViewModel @Inject constructor(
                 uiSetting.setCreatorsGithubRateBannerInstallTsMs(now)
 
                 val modelWithInstallTs = model.copy(creatorsGithubRateBannerInstallTsMs = now)
+                ensureSiteEnabled(modelWithInstallTs.enabledSiteList)
                 setState {
                     copy(
                         uiSettingModel = modelWithInstallTs,
@@ -147,6 +156,7 @@ internal class CreatorsViewModel @Inject constructor(
                 return@onEach
             }
 
+            ensureSiteEnabled(model.enabledSiteList)
             setState {
                 copy(
                     uiSettingModel = model,
@@ -192,14 +202,14 @@ internal class CreatorsViewModel @Inject constructor(
         initSiteAware()
     }
 
-    private suspend fun initAndReloadSite() {
-        setState { copy(loading = true) }
+    private suspend fun initAndReloadSite(site: SelectedSite) {
+        setState { copy(loading = true, error = null) }
         try {
             /** Проверка свежий ли кэш (если нет загружаем с сети) */
-            getCreatorsPagedUseCase.checkFreshCache()
+            getCreatorsPagedUseCase.checkFreshCache(site)
 
             /** Получение доступных сервисов из бд для фильтра */
-            getAvailableServicesFilter()
+            getAvailableServicesFilter(site)
 
             /** Список авторов */
             updateCreatorsFiltersFromState()
@@ -207,6 +217,9 @@ internal class CreatorsViewModel @Inject constructor(
 
             /** Подгрузка рандомных авторов */
             randomListDelegate.loadRandom(currentState, ::setState)
+        } catch (t: Throwable) {
+            if (t is CancellationException) throw t
+            setState { copy(error = errorHandler.parse(t, navigate = false)) }
         } finally {
             setState { copy(loading = false) }
         }
@@ -263,7 +276,8 @@ internal class CreatorsViewModel @Inject constructor(
 
             is Event.CreatorClicked -> onCreatorClick(event.creator)
             Event.RandomClicked -> randomCreator()
-            Event.SwitchSiteClicked -> switchSite()
+            Event.SwitchSiteClicked -> switchSite(currentState.uiSettingModel.enabledSiteList)
+            Event.RetryClicked -> onRetry()
             Event.HeaderRandomExpanded -> setState { copy(randomExpanded = !randomExpanded) }
             Event.GithubRateClick -> onGithubRateClick()
             Event.HideGithubRateBanner -> onHideGithubRateBanner()
@@ -272,8 +286,8 @@ internal class CreatorsViewModel @Inject constructor(
     }
 
     /** Получение доступных сервисов из бд для фильтра */
-    private suspend fun getAvailableServicesFilter() {
-        val services = getCreatorsPagedUseCase.getServices()
+    private suspend fun getAvailableServicesFilter(site: SelectedSite) {
+        val services = getCreatorsPagedUseCase.getServices(site)
         val list = listOf(CreatorsState.ALL_SERVICES_LABEL) + services
 
         setState {
@@ -298,7 +312,7 @@ internal class CreatorsViewModel @Inject constructor(
         setState { copy(randomExpanded = true) }
 
         try {
-            val creator = randomCreatorUseCase()
+            val creator = randomCreatorUseCase(currentState.selectedSite)
 
             navManager.navigate(
                 creatorProfileNavigator.getCreatorProfileDest(
@@ -341,6 +355,7 @@ internal class CreatorsViewModel @Inject constructor(
 
 private fun State.toCreatorsFilters(): CreatorsFilters =
     CreatorsFilters(
+        site = selectedSite,
         service = selectedServiceFilter,
         query = searchQuery,
         sort = sortedType,

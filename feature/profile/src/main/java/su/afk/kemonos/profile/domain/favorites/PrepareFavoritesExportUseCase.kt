@@ -36,7 +36,11 @@ internal class PrepareFavoritesExportUseCase @Inject constructor(
 
         val count = extractCount(rawJson)
         val datePart = LocalDate.now().format(exportDateFormatter)
-        val sitePart = if (site == SelectedSite.K) "Kemono" else "Coomer"
+        val sitePart = when (site) {
+            SelectedSite.K -> "Kemono"
+            SelectedSite.C -> "Coomer"
+            SelectedSite.P -> "Pawchive"
+        }
         val typePart = when (type) {
             FavoritesExportType.ARTISTS -> "Artist"
             FavoritesExportType.POSTS -> "Post"

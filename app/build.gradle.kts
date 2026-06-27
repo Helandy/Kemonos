@@ -79,6 +79,7 @@ dependencies {
     implementation(libs.bundles.navigation3)
     implementation(libs.bundles.coil)
     implementation(libs.bundles.lifecycle)
+    implementation(libs.appmetrica.analytics)
 
     implementation(project(":core:navigation"))
 

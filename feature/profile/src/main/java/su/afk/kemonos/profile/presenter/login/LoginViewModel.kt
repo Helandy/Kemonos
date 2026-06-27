@@ -1,7 +1,9 @@
 package su.afk.kemonos.profile.presenter.login
 
+import android.content.Context
 import androidx.lifecycle.SavedStateHandle
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.launch
 import su.afk.kemonos.domain.SelectedSite
 import su.afk.kemonos.domain.models.ErrorItem
@@ -13,6 +15,7 @@ import su.afk.kemonos.preferences.site.ISelectedSiteUseCase
 import su.afk.kemonos.profile.domain.login.LoginResult
 import su.afk.kemonos.profile.domain.login.LoginUseCase
 import su.afk.kemonos.profile.navigation.AuthDestination
+import su.afk.kemonos.profile.R
 import su.afk.kemonos.profile.presenter.login.LoginState.*
 import su.afk.kemonos.profile.utils.Const.KEY_SELECT_SITE
 import su.afk.kemonos.ui.presenter.baseViewModel.BaseViewModelNew
@@ -24,6 +27,7 @@ internal class LoginViewModel @Inject constructor(
     private val navigationManager: NavigationManager,
     private val navigationStorage: NavigationStorage,
     private val selectedSiteProvider: ISelectedSiteUseCase,
+    @param:ApplicationContext private val appContext: Context,
     savedStateHandle: SavedStateHandle,
     override val errorHandler: IErrorHandlerUseCase,
     override val retryStorage: RetryStorage,
@@ -99,6 +103,10 @@ internal class LoginViewModel @Inject constructor(
     /** Запускает логин: валидация, сетевой запрос и дальнейшая навигация/сохранение credentials. */
     private fun onLoginClick() = viewModelScope.launch {
         if (currentState.isLoading) return@launch
+        if (currentState.selectSite == SelectedSite.P) {
+            showPawchiveUnsupported()
+            return@launch
+        }
 
         setState { copy(isLoading = true, error = null) }
 
@@ -159,6 +167,11 @@ internal class LoginViewModel @Inject constructor(
 
     /** Принимает выбранные системным credential manager данные и инициирует повторный вход. */
     private fun onCredentialsPicked(username: String, password: String) {
+        if (currentState.selectSite == SelectedSite.P) {
+            showPawchiveUnsupported()
+            return
+        }
+
         setState {
             copy(
                 username = username,
@@ -181,9 +194,14 @@ internal class LoginViewModel @Inject constructor(
 
     /** Однократно запрашивает подсказку сохраненных credentials для пустой формы. */
     private fun requestSavedCredentials() {
+        if (currentState.selectSite == SelectedSite.P) return
         if (credentialsRequested) return
         if (currentState.username.isNotBlank() || currentState.password.isNotBlank()) return
         credentialsRequested = true
         setEffect(Effect.PickPassword)
+    }
+
+    private fun showPawchiveUnsupported() {
+        setEffect(Effect.ShowMessage(appContext.getString(R.string.login_pawchive_unsupported)))
     }
 }

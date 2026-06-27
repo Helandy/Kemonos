@@ -49,6 +49,7 @@ internal class TagsPageViewModel @Inject constructor(
     private fun observeUiSetting() {
         uiSetting.prefs.distinctUntilChanged()
             .onEach { model ->
+                ensureSiteEnabled(model.enabledSiteList)
                 setState { copy(uiSettingModel = model) }
             }
             .launchIn(viewModelScope)
@@ -59,12 +60,16 @@ internal class TagsPageViewModel @Inject constructor(
             is Event.SearchQueryChanged -> onSearchQueryChanged(event.value)
             Event.PullRefresh -> onPullRefresh()
             is Event.SelectTag -> navigateToSelectTag(event.tag)
-            Event.SwitchSite -> switchSite()
+            Event.SwitchSite -> switchSite(currentState.uiSettingModel.enabledSiteList)
         }
     }
 
     override suspend fun reloadSite(site: SelectedSite) {
         setState { copy(searchQuery = "") }
+        load(site = site, forceRefresh = false)
+    }
+
+    override suspend fun loadInitialSite(site: SelectedSite) {
         load(site = site, forceRefresh = false)
     }
 
@@ -79,6 +84,18 @@ internal class TagsPageViewModel @Inject constructor(
     }
 
     private suspend fun load(site: SelectedSite, forceRefresh: Boolean) {
+        if (site == SelectedSite.P) {
+            setState {
+                copy(
+                    loading = false,
+                    allTags = emptyList(),
+                    filteredTags = emptyList(),
+                    tagsUnsupported = true,
+                )
+            }
+            return
+        }
+
         setState { copy(loading = true) }
 
         val loadedTags = try {
@@ -91,6 +108,7 @@ internal class TagsPageViewModel @Inject constructor(
             copy(
                 allTags = loadedTags,
                 filteredTags = filterTags(all = loadedTags, query = searchQuery),
+                tagsUnsupported = false,
             )
         }
     }

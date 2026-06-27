@@ -30,6 +30,7 @@ import su.afk.kemonos.error.error.toFavoriteToastBar
 import su.afk.kemonos.navigation.NavigationManager
 import su.afk.kemonos.preferences.GetKemonoRootUrlUseCase
 import su.afk.kemonos.preferences.IGetCurrentSiteRootUrlUseCase
+import su.afk.kemonos.preferences.site.ISelectedSiteUseCase
 import su.afk.kemonos.preferences.ui.CreatorProfileTabKey
 import su.afk.kemonos.preferences.ui.IUiSettingUseCase
 import su.afk.kemonos.storage.api.repository.blacklist.BlacklistedAuthor
@@ -54,6 +55,7 @@ internal class CreatorProfileViewModel @AssistedInject constructor(
     private val navManager: NavigationManager,
     private val postsCache: IStorageCreatorPostsRepository,
     private val blacklistedAuthorsRepository: IStoreBlacklistedAuthorsRepository,
+    private val selectedSiteUseCase: ISelectedSiteUseCase,
     private val uiSetting: IUiSettingUseCase,
     @Assisted savedStateHandle: SavedStateHandle,
     override val errorHandler: IErrorHandlerUseCase,
@@ -425,7 +427,7 @@ internal class CreatorProfileViewModel @AssistedInject constructor(
             search = currentState.searchText,
             tag = currentState.currentTag?.tag,
         )
-        postsCache.clearQuery(qk)
+        postsCache.clearQuery(selectedSiteUseCase.getSite(), qk)
 
         loadAllInternal()
     }

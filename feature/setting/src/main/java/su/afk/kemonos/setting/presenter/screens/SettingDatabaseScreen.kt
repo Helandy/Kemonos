@@ -79,6 +79,14 @@ internal fun SettingDatabaseScreen(
                 onClear = { onEvent(Event.CacheClearAction.Tags(SelectedSite.C)) },
                 busy = state.clearInProgress
             )
+            CacheRow(
+                title = stringResource(R.string.settings_cache_tags_pawchive),
+                description = stringResource(R.string.settings_cache_tags_pawchive_description),
+                time = state.tagsPawchiveCache,
+                dateFormatMode = state.uiSettingModel.dateFormatMode,
+                onClear = { onEvent(Event.CacheClearAction.Tags(SelectedSite.P)) },
+                busy = state.clearInProgress
+            )
 
             CacheRow(
                 title = stringResource(R.string.settings_cache_creators_kemono),
@@ -94,6 +102,14 @@ internal fun SettingDatabaseScreen(
                 time = state.creatorsCoomerCache,
                 dateFormatMode = state.uiSettingModel.dateFormatMode,
                 onClear = { onEvent(Event.CacheClearAction.Creators(SelectedSite.C)) },
+                busy = state.clearInProgress
+            )
+            CacheRow(
+                title = stringResource(R.string.settings_cache_creators_pawchive),
+                description = stringResource(R.string.settings_cache_creators_pawchive_description),
+                time = state.creatorsPawchiveCache,
+                dateFormatMode = state.uiSettingModel.dateFormatMode,
+                onClear = { onEvent(Event.CacheClearAction.Creators(SelectedSite.P)) },
                 busy = state.clearInProgress
             )
 

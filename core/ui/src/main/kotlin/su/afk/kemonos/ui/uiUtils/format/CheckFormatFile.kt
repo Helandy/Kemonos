@@ -4,6 +4,8 @@ import android.content.Context
 import android.content.Intent
 import androidx.core.net.toUri
 import su.afk.kemonos.domain.models.PostDomain
+import su.afk.kemonos.utils.file.isImageFile as isImageFileShared
+import su.afk.kemonos.utils.file.isVideoFile as isVideoFileShared
 
 private val AUDIO_EXTENSIONS = setOf(
     "mp3", "m4a", "aac", "wav", "ogg", "flac", "opus", "wma"
@@ -41,16 +43,9 @@ fun isBinFile(path: String?): Boolean {
     return path.endsWith(".bin", ignoreCase = true)
 }
 
-private val VIDEO_EXTENSIONS = setOf(
-    "mp4", "m4v", "mov", "webm", "avi",
-    "wmv", "flv", "mpeg", "mpg", "3gp", "mkv"
-)
+fun isVideoFile(path: String?): Boolean = isVideoFileShared(path)
 
-fun isVideoFile(path: String?): Boolean {
-    if (path.isNullOrBlank()) return false
-    val ext = path.substringAfterLast('.', "")
-    return ext.lowercase() in VIDEO_EXTENSIONS
-}
+fun isImageFile(path: String?): Boolean = isImageFileShared(path)
 
 fun countVideoFiles(post: PostDomain): Int {
     var count = 0
@@ -66,16 +61,6 @@ fun countVideoFiles(post: PostDomain): Int {
     }
 
     return count
-}
-
-private val IMAGE_EXTENSIONS = setOf(
-    "jpg", "jpeg", "png", "webp", "gif", "bmp", "heic", "heif", "avif"
-)
-
-fun isImageFile(path: String?): Boolean {
-    if (path.isNullOrBlank()) return false
-    val ext = path.substringAfterLast('.', "")
-    return ext.isNotBlank() && ext.lowercase() in IMAGE_EXTENSIONS
 }
 
 fun findFirstImagePath(post: PostDomain): String? {

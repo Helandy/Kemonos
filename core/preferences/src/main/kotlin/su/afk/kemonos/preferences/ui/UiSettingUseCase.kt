@@ -9,6 +9,7 @@ import androidx.datastore.preferences.core.longPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import su.afk.kemonos.domain.SelectedSite
 import su.afk.kemonos.preferences.ui.UiSettingKey.ADD_SERVICE_NAME
 import su.afk.kemonos.preferences.ui.UiSettingKey.APP_THEME_MODE
 import su.afk.kemonos.preferences.ui.UiSettingKey.AUTOPLAY_COMMUNITY_VIDEO
@@ -25,6 +26,7 @@ import su.afk.kemonos.preferences.ui.UiSettingKey.CROP_VIDEO_PREVIEW
 import su.afk.kemonos.preferences.ui.UiSettingKey.DATE_FORMAT_MODE
 import su.afk.kemonos.preferences.ui.UiSettingKey.DISCORD_COMMUNITY_REVERSE_ORDER_DEFAULT
 import su.afk.kemonos.preferences.ui.UiSettingKey.DOWNLOAD_FOLDER_MODE
+import su.afk.kemonos.preferences.ui.UiSettingKey.ENABLED_SITES
 import su.afk.kemonos.preferences.ui.UiSettingKey.EXPERIMENTAL_CALENDAR
 import su.afk.kemonos.preferences.ui.UiSettingKey.FAVORITE_POSTS_GRID_SIZE
 import su.afk.kemonos.preferences.ui.UiSettingKey.FAVORITE_POSTS_VIEW_MODE
@@ -65,9 +67,13 @@ internal class UiSettingUseCase @Inject constructor(
     override val prefs: Flow<UiSettingModel> = dataStore.data.map { p ->
         val legacyPostsSize = p.readEnum(POSTS_SIZE, UiSettingModel.DEFAULT_POSTS_SIZE)
         val siteDisplayMode = p.readEnum(SITE_DISPLAY_MODE, UiSettingModel.DEFAULT_SITE_DISPLAY_MODE)
+            .withPawchiveDefault()
+        val enabledSites = p.readSelectedSites(ENABLED_SITES)
+            ?: siteDisplayMode.visibleSites.toSet().normalizedEnabledSites()
 
         UiSettingModel(
             skipApiCheckOnLogin = p[SKIP_API_CHECK_ON_LOGIN] ?: false,
+            enabledSites = enabledSites,
             siteDisplayMode = siteDisplayMode,
             creatorsViewMode = p.readEnum(CREATORS_VIEW_MODE, UiSettingModel.DEFAULT_CREATORS_VIEW_MODE),
             creatorsFavoriteViewMode = p.readEnum(
@@ -141,6 +147,13 @@ internal class UiSettingUseCase @Inject constructor(
     override suspend fun setSkipApiCheckOnLogin(value: Boolean) {
         dataStore.edit {
             it[SKIP_API_CHECK_ON_LOGIN] = value
+        }
+    }
+
+    /** Включенные сайты/API */
+    override suspend fun setEnabledSites(value: Set<SelectedSite>) {
+        dataStore.edit {
+            it[ENABLED_SITES] = value.normalizedEnabledSites().joinToString(",") { site -> site.name }
         }
     }
 
@@ -369,6 +382,7 @@ internal class UiSettingUseCase @Inject constructor(
 
 object UiSettingKey {
     val SKIP_API_CHECK_ON_LOGIN = booleanPreferencesKey("SKIP_API_CHECK_ON_LOGIN")
+    val ENABLED_SITES = stringPreferencesKey("ENABLED_SITES")
     val SITE_DISPLAY_MODE = stringPreferencesKey("SITE_DISPLAY_MODE")
     val CREATORS_VIEW_MODE = stringPreferencesKey("CREATORS_VIEW_MODE")
     val CREATORS_FAVORITE_VIEW_MODE = stringPreferencesKey("CREATORS_FAVORITE_VIEW_MODE")
@@ -434,6 +448,29 @@ private inline fun <reified T : Enum<T>> Preferences.readEnum(
 ): T {
     val raw = this[key] ?: return default
     return runCatching { enumValueOf<T>(raw) }.getOrDefault(default)
+}
+
+private fun SiteDisplayMode.withPawchiveDefault(): SiteDisplayMode =
+    when (this) {
+        SiteDisplayMode.BOTH_DEFAULT_KEMONO -> SiteDisplayMode.ALL_DEFAULT_KEMONO
+        SiteDisplayMode.BOTH_DEFAULT_COOMER -> SiteDisplayMode.ALL_DEFAULT_COOMER
+        else -> this
+    }
+
+private fun Preferences.readSelectedSites(key: Preferences.Key<String>): Set<SelectedSite>? {
+    val raw = this[key] ?: return null
+    return raw.split(',')
+        .asSequence()
+        .map { it.trim() }
+        .filter { it.isNotEmpty() }
+        .mapNotNull { name -> runCatching { enumValueOf<SelectedSite>(name) }.getOrNull() }
+        .toSet()
+        .normalizedEnabledSites()
+}
+
+private fun Set<SelectedSite>.normalizedEnabledSites(): Set<SelectedSite> {
+    val normalized = UiSettingModel.SELECTED_SITE_ORDER.filter { it in this }.toSet()
+    return normalized.ifEmpty { UiSettingModel.DEFAULT_ENABLED_SITES }
 }
 
 private fun Preferences.readTabOrder(key: Preferences.Key<String>): List<CreatorProfileTabKey> {

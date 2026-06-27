@@ -28,6 +28,10 @@ class UrlPrefs @Inject constructor(
         .map { it[KEY_C]?.normalizeBaseUrl() ?: DEFAULT_C }
         .stateIn(appScope, SharingStarted.Eagerly, DEFAULT_C)
 
+    val pawchiveUrl: StateFlow<String> = dataStore.data
+        .map { it[KEY_P]?.normalizeBaseUrl() ?: DEFAULT_P }
+        .stateIn(appScope, SharingStarted.Eagerly, DEFAULT_P)
+
     val selectedSite: StateFlow<SelectedSite> = dataStore.data
         .map { it[KEY_SELECTED]?.let(SelectedSite::valueOf) ?: SelectedSite.K }
         .stateIn(appScope, SharingStarted.Eagerly, SelectedSite.K)
@@ -38,14 +42,19 @@ class UrlPrefs @Inject constructor(
     suspend fun setCoomerUrl(url: String) =
         dataStore.edit { it[KEY_C] = url.normalizeBaseUrl() }
 
+    suspend fun setPawchiveUrl(url: String) =
+        dataStore.edit { it[KEY_P] = url.normalizeBaseUrl() }
+
     suspend fun setSelectedSite(site: SelectedSite) =
         dataStore.edit { it[KEY_SELECTED] = site.name }
 
     companion object {
         private val KEY_K = stringPreferencesKey("kemono_url")
         private val KEY_C = stringPreferencesKey("coomer_url")
+        private val KEY_P = stringPreferencesKey("pawchive_url")
         private val KEY_SELECTED = stringPreferencesKey("selected_site")
         private const val DEFAULT_K = "https://kemono.cr/api/"
         private const val DEFAULT_C = "https://coomer.st/api/"
+        private const val DEFAULT_P = "https://pawchive.st/api/"
     }
 }

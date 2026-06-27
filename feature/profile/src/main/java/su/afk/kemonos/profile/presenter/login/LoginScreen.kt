@@ -1,6 +1,7 @@
 package su.afk.kemonos.profile.presenter.login
 
 import android.app.Activity
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
@@ -29,6 +30,7 @@ import su.afk.kemonos.profile.presenter.login.util.loginPasswordErrorRes
 import su.afk.kemonos.profile.presenter.login.util.loginUsernameErrorRes
 import su.afk.kemonos.ui.R.drawable.coomer_logo
 import su.afk.kemonos.ui.R.drawable.kemono_logo
+import su.afk.kemonos.ui.R.drawable.pawchive_logo
 import su.afk.kemonos.ui.presenter.baseScreen.BaseScreen
 import su.afk.kemonos.ui.presenter.baseScreen.CenterBackTopBar
 import su.afk.kemonos.ui.preview.KemonosPreviewScreen
@@ -44,13 +46,16 @@ internal fun LoginScreen(
     val context = LocalContext.current
     val activity = remember(context) { context.findActivity() }
 
-    LaunchedEffect(activity) {
-        if (activity != null) onEvent(Event.RequestSavedCredentials)
+    LaunchedEffect(activity, state.selectSite) {
+        if (activity != null && state.selectSite != SelectedSite.P) {
+            onEvent(Event.RequestSavedCredentials)
+        }
     }
 
     HandleLoginEffects(
         effect = effect,
         activity = activity,
+        showMessage = { Toast.makeText(context, it, Toast.LENGTH_SHORT).show() },
         onEvent = onEvent,
     )
 
@@ -92,6 +97,7 @@ internal fun LoginScreen(
 private fun HandleLoginEffects(
     effect: Flow<Effect>,
     activity: Activity?,
+    showMessage: (String) -> Unit,
     onEvent: (Event) -> Unit,
 ) {
     LaunchedEffect(effect, activity) {
@@ -110,6 +116,7 @@ private fun HandleLoginEffects(
                 }
 
                 Effect.NavigateToProfile -> onEvent(Event.NavigateToProfile)
+                is Effect.ShowMessage -> showMessage(item.message)
             }
         }
     }
@@ -120,6 +127,7 @@ private fun AuthLogo(selectSite: SelectedSite) {
     val logoRes = when (selectSite) {
         SelectedSite.C -> coomer_logo
         SelectedSite.K -> kemono_logo
+        SelectedSite.P -> pawchive_logo
     }
     Image(
         painter = painterResource(id = logoRes),

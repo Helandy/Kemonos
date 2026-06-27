@@ -39,21 +39,11 @@ internal fun ProfileScreen(
 ) {
     val context = LocalContext.current
     val ui = state.uiSettingModel
-    val showCoomer = ui.siteDisplayMode.showCoomer
-    val showKemono = ui.siteDisplayMode.showKemono
-    val defaultSite = ui.siteDisplayMode.defaultSite
-
-    val pageCount = when {
-        showCoomer && showKemono -> 2
-        showCoomer || showKemono -> 1
-        else -> 1
-    }
-
-    val initialPage = when {
-        pageCount == 1 -> 0
-        defaultSite == SelectedSite.K -> 1
-        else -> 0
-    }
+    val visibleSites = ui.enabledSiteList
+    val pageCount = visibleSites.size
+    val initialPage = visibleSites.indexOf(ui.siteDisplayMode.defaultSite)
+        .takeIf { it >= 0 }
+        ?: 0
 
     var savedPage by rememberSaveable(pageCount) {
         mutableIntStateOf(initialPage.coerceIn(0, pageCount - 1))
@@ -114,18 +104,11 @@ internal fun ProfileScreen(
                         selectedTabIndex = pagerState.currentPage.coerceIn(0, pageCount - 1),
                         containerColor = MaterialTheme.colorScheme.surfaceContainerLow,
                     ) {
-                        if (showCoomer) {
+                        visibleSites.forEachIndexed { index, site ->
                             Tab(
-                                selected = pagerState.currentPage == 0,
-                                onClick = { scope.launch { pagerState.animateScrollToPage(0) } },
-                                text = { Text(text = stringResource(R.string.coomer), fontWeight = FontWeight.Medium) },
-                            )
-                        }
-                        if (showKemono) {
-                            Tab(
-                                selected = pagerState.currentPage == if (showCoomer) 1 else 0,
-                                onClick = { scope.launch { pagerState.animateScrollToPage(if (showCoomer) 1 else 0) } },
-                                text = { Text(text = stringResource(R.string.kemono), fontWeight = FontWeight.Medium) },
+                                selected = pagerState.currentPage == index,
+                                onClick = { scope.launch { pagerState.animateScrollToPage(index) } },
+                                text = { Text(text = site.tabTitle(), fontWeight = FontWeight.Medium) },
                             )
                         }
                     }
@@ -136,69 +119,33 @@ internal fun ProfileScreen(
                         contentPadding = PaddingValues(horizontal = 12.dp, vertical = 4.dp),
                         pageSpacing = 12.dp,
                     ) { page ->
-                        when {
-                            showCoomer && page == 0 -> SitePage(
-                                dateMode = state.uiSettingModel.dateFormatMode,
-                                title = stringResource(R.string.profile_coomer_account_title),
-                                isLoggedIn = state.isLoginCoomer,
-                                login = state.coomerLogin,
-                                site = SelectedSite.C,
-                                updatedFavoritesCount = state.coomerUpdatedFavoritesCount,
-                                onLoginClick = { onEvent(Event.LoginClick(SelectedSite.C)) },
-                                onLogoutClick = { onEvent(Event.LogoutClick(SelectedSite.C)) },
-                                onFavoriteProfiles = {
-                                    onEvent(Event.FavoriteProfilesNavigate(SelectedSite.C))
-                                },
-                                onFavoritePosts = {
-                                    onEvent(Event.FavoritePostNavigate(SelectedSite.C))
-                                },
-                                isExportInProgress = state.isExportInProgress,
-                                isImportInProgress = state.isImportInProgress,
-                                onExportFavoriteArtists = {
-                                    onEvent(Event.ExportFavorites(SelectedSite.C, ProfileState.ExportType.ARTISTS))
-                                },
-                                onExportFavoritePosts = {
-                                    onEvent(Event.ExportFavorites(SelectedSite.C, ProfileState.ExportType.POSTS))
-                                },
-                                onImportFavoriteArtists = {
-                                    onEvent(Event.ImportFavorites(SelectedSite.C, ProfileState.ExportType.ARTISTS))
-                                },
-                                onImportFavoritePosts = {
-                                    onEvent(Event.ImportFavorites(SelectedSite.C, ProfileState.ExportType.POSTS))
-                                },
-                            )
-
-                            showKemono && page == if (showCoomer) 1 else 0 -> SitePage(
-                                dateMode = state.uiSettingModel.dateFormatMode,
-                                title = stringResource(R.string.profile_kemono_account_title),
-                                isLoggedIn = state.isLoginKemono,
-                                login = state.kemonoLogin,
-                                site = SelectedSite.K,
-                                updatedFavoritesCount = state.kemonoUpdatedFavoritesCount,
-                                onLoginClick = { onEvent(Event.LoginClick(SelectedSite.K)) },
-                                onLogoutClick = { onEvent(Event.LogoutClick(SelectedSite.K)) },
-                                onFavoriteProfiles = {
-                                    onEvent(Event.FavoriteProfilesNavigate(SelectedSite.K))
-                                },
-                                onFavoritePosts = {
-                                    onEvent(Event.FavoritePostNavigate(SelectedSite.K))
-                                },
-                                isExportInProgress = state.isExportInProgress,
-                                isImportInProgress = state.isImportInProgress,
-                                onExportFavoriteArtists = {
-                                    onEvent(Event.ExportFavorites(SelectedSite.K, ProfileState.ExportType.ARTISTS))
-                                },
-                                onExportFavoritePosts = {
-                                    onEvent(Event.ExportFavorites(SelectedSite.K, ProfileState.ExportType.POSTS))
-                                },
-                                onImportFavoriteArtists = {
-                                    onEvent(Event.ImportFavorites(SelectedSite.K, ProfileState.ExportType.ARTISTS))
-                                },
-                                onImportFavoritePosts = {
-                                    onEvent(Event.ImportFavorites(SelectedSite.K, ProfileState.ExportType.POSTS))
-                                },
-                            )
-                        }
+                        val site = visibleSites[page]
+                        SitePage(
+                            dateMode = state.uiSettingModel.dateFormatMode,
+                            title = site.accountTitle(),
+                            isLoggedIn = state.isLoggedIn(site),
+                            login = state.login(site),
+                            site = site,
+                            updatedFavoritesCount = state.updatedFavoritesCount(site),
+                            onLoginClick = { onEvent(Event.LoginClick(site)) },
+                            onLogoutClick = { onEvent(Event.LogoutClick(site)) },
+                            onFavoriteProfiles = { onEvent(Event.FavoriteProfilesNavigate(site)) },
+                            onFavoritePosts = { onEvent(Event.FavoritePostNavigate(site)) },
+                            isExportInProgress = state.isExportInProgress,
+                            isImportInProgress = state.isImportInProgress,
+                            onExportFavoriteArtists = {
+                                onEvent(Event.ExportFavorites(site, ProfileState.ExportType.ARTISTS))
+                            },
+                            onExportFavoritePosts = {
+                                onEvent(Event.ExportFavorites(site, ProfileState.ExportType.POSTS))
+                            },
+                            onImportFavoriteArtists = {
+                                onEvent(Event.ImportFavorites(site, ProfileState.ExportType.ARTISTS))
+                            },
+                            onImportFavoritePosts = {
+                                onEvent(Event.ImportFavorites(site, ProfileState.ExportType.POSTS))
+                            },
+                        )
                     }
                 }
             }
@@ -228,6 +175,7 @@ private fun ProfileSummaryCard(
     val selectedLogin = when (selectedSite) {
         SelectedSite.K -> state.kemonoLogin
         SelectedSite.C -> state.coomerLogin
+        SelectedSite.P -> state.pawchiveLogin
     }
     val selectedName = selectedLogin?.username
     val joinedText = selectedLogin?.createdAt
@@ -294,6 +242,38 @@ private fun ProfileSummaryCard(
     }
 }
 
+@Composable
+private fun SelectedSite.tabTitle(): String = when (this) {
+    SelectedSite.K -> stringResource(R.string.kemono)
+    SelectedSite.C -> stringResource(R.string.coomer)
+    SelectedSite.P -> stringResource(R.string.pawchive)
+}
+
+@Composable
+private fun SelectedSite.accountTitle(): String = when (this) {
+    SelectedSite.K -> stringResource(R.string.profile_kemono_account_title)
+    SelectedSite.C -> stringResource(R.string.profile_coomer_account_title)
+    SelectedSite.P -> stringResource(R.string.profile_pawchive_account_title)
+}
+
+private fun State.isLoggedIn(site: SelectedSite): Boolean = when (site) {
+    SelectedSite.K -> isLoginKemono
+    SelectedSite.C -> isLoginCoomer
+    SelectedSite.P -> isLoginPawchive
+}
+
+private fun State.login(site: SelectedSite): Login? = when (site) {
+    SelectedSite.K -> kemonoLogin
+    SelectedSite.C -> coomerLogin
+    SelectedSite.P -> pawchiveLogin
+}
+
+private fun State.updatedFavoritesCount(site: SelectedSite): Int = when (site) {
+    SelectedSite.K -> kemonoUpdatedFavoritesCount
+    SelectedSite.C -> coomerUpdatedFavoritesCount
+    SelectedSite.P -> pawchiveUpdatedFavoritesCount
+}
+
 @Preview(name = "ProfileScreen")
 @Composable
 private fun PreviewProfileScreen() {
@@ -303,6 +283,7 @@ private fun PreviewProfileScreen() {
                 isLoading = false,
                 isLoginKemono = true,
                 isLoginCoomer = true,
+                isLoginPawchive = false,
                 isLogin = true,
                 kemonoLogin = Login(
                     id = 1,
@@ -318,6 +299,7 @@ private fun PreviewProfileScreen() {
                 ),
                 kemonoUpdatedFavoritesCount = 12,
                 coomerUpdatedFavoritesCount = 3,
+                pawchiveUpdatedFavoritesCount = 0,
             ),
             onEvent = {},
             effect = emptyFlow(),

@@ -45,6 +45,7 @@ fun SiteToggleFab(
                 id = when (selectedSite) {
                     SelectedSite.K -> R.drawable.kemono_logo
                     SelectedSite.C -> R.drawable.coomer_logo
+                    SelectedSite.P -> R.drawable.pawchive_logo
                 }
             ),
             modifier = Modifier

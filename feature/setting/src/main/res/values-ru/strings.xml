@@ -8,6 +8,7 @@
     <string name="settings_hub_translate_subtitle">Режим перевода и язык назначения.</string>
     <string name="settings_hub_network_title">Сеть</string>
     <string name="settings_hub_network_subtitle">Домены API и сетевые параметры.</string>
+    <string name="settings_api_enabled_title">Включенные API</string>
     <string name="settings_hub_database_title">База данных и кэш</string>
     <string name="settings_hub_database_subtitle">Лимиты кэша и очистка сохраненных данных.</string>
     <string name="settings_hub_downloads_subtitle">Как именуются и структурируются скачанные файлы.</string>
@@ -36,14 +37,19 @@
     <!-- Cache categories -->
     <string name="settings_cache_tags_kemono">Теги (Kemono)</string>
     <string name="settings_cache_tags_coomer">Теги (Coomer)</string>
+    <string name="settings_cache_tags_pawchive">Теги (Pawchive)</string>
     <string name="settings_cache_tags_kemono_description">Закэшированные списки тегов и страницы тегов Kemono.</string>
     <string name="settings_cache_tags_coomer_description">Закэшированные списки тегов и страницы тегов Coomer.</string>
+    <string name="settings_cache_tags_pawchive_description">Закэшированные списки тегов и страницы тегов Pawchive.</string>
 
     <string name="settings_cache_creators_kemono">Авторы (Kemono)</string>
     <string name="settings_cache_creators_coomer">Авторы (Coomer)</string>
+    <string name="settings_cache_creators_pawchive">Авторы (Pawchive)</string>
     <string name="settings_cache_creators_kemono_description">Закэшированные списки авторов и карточки авторов Kemono.
     </string>
     <string name="settings_cache_creators_coomer_description">Закэшированные списки авторов и карточки авторов Coomer.
+    </string>
+    <string name="settings_cache_creators_pawchive_description">Закэшированные списки авторов и карточки авторов Pawchive.
     </string>
 
     <string name="settings_cache_creator_posts_pages">Посты в профилях авторов</string>
@@ -90,6 +96,10 @@
     <string name="settings_site_display_both_default_coomer">Оба (по умолчанию: Coomer)</string>
     <string name="settings_site_display_only_kemono">Только Kemono</string>
     <string name="settings_site_display_only_coomer">Только Coomer</string>
+    <string name="settings_site_display_all_default_kemono">Все (по умолчанию: Kemono)</string>
+    <string name="settings_site_display_all_default_coomer">Все (по умолчанию: Coomer)</string>
+    <string name="settings_site_display_all_default_pawchive">Все (по умолчанию: Pawchive)</string>
+    <string name="settings_site_display_only_pawchive">Только Pawchive</string>
 
     <!-- UI настройки -->
     <string name="settings_ui_creators_view_mode">Вид авторов</string>
