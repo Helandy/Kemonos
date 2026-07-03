@@ -5,7 +5,7 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.unit.dp
 import androidx.paging.LoadState
 import androidx.paging.compose.LazyPagingItems
@@ -28,7 +28,7 @@ internal fun PostsListPaging(
     parseError: (Throwable) -> ErrorItem,
     scrollStateKey: String,
 ) {
-    val listState = rememberSaveable(scrollStateKey, saver = LazyListState.Saver) {
+    val listState = remember(scrollStateKey) {
         LazyListState()
     }
 

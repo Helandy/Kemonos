@@ -29,7 +29,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
@@ -175,7 +175,7 @@ private fun FavoritePostsGroupedList(
 
     when (postsViewMode) {
         PostsViewMode.LIST -> {
-            val listState = rememberSaveable("$scrollStateKey:list", saver = LazyListState.Saver) {
+            val listState = remember("$scrollStateKey:list") {
                 LazyListState()
             }
 
@@ -198,7 +198,7 @@ private fun FavoritePostsGroupedList(
 
                     items(
                         count = group.posts.size,
-                        key = { index -> "${group.service}:${group.userId}:${group.posts[index].id}" }
+                        key = { index -> group.posts[index].groupedFavoritePostKey(index) }
                     ) { index ->
                         val post = group.posts[index]
                         PostCard(
@@ -213,7 +213,7 @@ private fun FavoritePostsGroupedList(
         }
 
         PostsViewMode.GRID -> {
-            val gridState = rememberSaveable("$scrollStateKey:grid", saver = LazyGridState.Saver) {
+            val gridState = remember("$scrollStateKey:grid") {
                 LazyGridState()
             }
 
@@ -242,7 +242,7 @@ private fun FavoritePostsGroupedList(
 
                     items(
                         count = group.posts.size,
-                        key = { index -> "${group.service}:${group.userId}:${group.posts[index].id}" }
+                        key = { index -> group.posts[index].groupedFavoritePostKey(index) }
                     ) { index ->
                         val post = group.posts[index]
                         PostCard(
@@ -257,6 +257,9 @@ private fun FavoritePostsGroupedList(
         }
     }
 }
+
+private fun PostDomain.groupedFavoritePostKey(index: Int): String =
+    "post:$service:$userId:$id:${favedSeq ?: "no-fav"}:$index"
 
 /** Строит стабильные группы постов по ключу "service:userId". */
 private fun buildAuthorGroups(
