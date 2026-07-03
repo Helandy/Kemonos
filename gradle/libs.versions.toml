@@ -5,8 +5,8 @@ minSdk = "29"
 jvmVersion = "21"
 
 # --- App versioning
-appVersionName = "1.15"
-appVersionCode = "90"
+appVersionName = "1.15.1"
+appVersionCode = "91"
 
 agp = "9.2.1"
 kotlin = "2.4.0"
@@ -25,11 +25,11 @@ credentials = "1.6.0"
 # --- Compose
 # Для BOM не задавать вручную версии для compose libs
 # foundation/material3/icons/etс должно подтягиваться BOM
-composeBom = "2026.06.00"
+composeBom = "2026.06.01"
 
 # --- DI
-hilt = "2.59.2"
-androidxHilt = "1.3.0"
+hilt = "2.60"
+androidxHilt = "1.4.0"
 
 # --- Networking
 retrofit = "3.0.0"
@@ -49,7 +49,7 @@ coil3 = "3.5.0"
 multiplatformMarkdownRendererM3 = "0.43.0"
 
 # --- Navigation3
-navigation3 = "1.1.3"
+navigation3 = "1.1.4"
 material3AdaptiveNav3 = "1.0.0-alpha03"
 
 # --- Play Services
