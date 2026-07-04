@@ -29,7 +29,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
@@ -175,7 +175,7 @@ private fun FavoritePostsGroupedList(
 
     when (postsViewMode) {
         PostsViewMode.LIST -> {
-            val listState = remember("$scrollStateKey:list") {
+            val listState = rememberSaveable("$scrollStateKey:list", saver = LazyListState.Saver) {
                 LazyListState()
             }
 
@@ -213,7 +213,7 @@ private fun FavoritePostsGroupedList(
         }
 
         PostsViewMode.GRID -> {
-            val gridState = remember("$scrollStateKey:grid") {
+            val gridState = rememberSaveable("$scrollStateKey:grid", saver = LazyGridState.Saver) {
                 LazyGridState()
             }
 
