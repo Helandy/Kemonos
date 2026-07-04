@@ -9,7 +9,7 @@ import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyGridState
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.paging.compose.LazyPagingItems
@@ -34,10 +34,16 @@ fun CreatorsContentPaging(
     expanded: Boolean? = null,
     onClickRandomHeader: (() -> Unit)? = null,
     scrollStateKey: String = "creators",
-    listState: LazyListState = remember("$scrollStateKey:list") {
+    listState: LazyListState = rememberSaveable(
+        "$scrollStateKey:list",
+        saver = LazyListState.Saver
+    ) {
         LazyListState()
     },
-    gridState: LazyGridState = remember("$scrollStateKey:grid") {
+    gridState: LazyGridState = rememberSaveable(
+        "$scrollStateKey:grid",
+        saver = LazyGridState.Saver
+    ) {
         LazyGridState()
     },
 ) {
