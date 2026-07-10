@@ -6,6 +6,7 @@ import androidx.paging.PagingData
 import kotlinx.coroutines.flow.Flow
 import su.afk.kemonos.creatorProfile.domain.repository.ICreatorsRepository
 import su.afk.kemonos.domain.models.PostDomain
+import su.afk.kemonos.utils.posts.distinctPosts
 import javax.inject.Inject
 
 internal class GetProfilePostsPagingUseCase @Inject constructor(
@@ -34,7 +35,7 @@ internal class GetProfilePostsPagingUseCase @Inject constructor(
                     pageSize = PAGE_SIZE,
                 )
             }
-        ).flow
+        ).flow.distinctPosts()
     }
 
     companion object {
