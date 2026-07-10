@@ -10,6 +10,7 @@ import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.launch
 import su.afk.kemonos.domain.SelectedSite
 import su.afk.kemonos.domain.models.PostDomain
+import su.afk.kemonos.domain.models.PostDomain.Companion.stableKey
 import su.afk.kemonos.error.error.IErrorHandlerUseCase
 import su.afk.kemonos.error.error.storage.RetryStorage
 import su.afk.kemonos.posts.domain.usecase.GetHashLookupUseCase
@@ -116,7 +117,12 @@ internal class HashLookupViewModel @Inject constructor(
                     copy(
                         hashInput = hash,
                         result = result,
-                        posts = flowOf(PagingData.from(result.posts, sourceLoadStates = loadStates)),
+                        posts = flowOf(
+                            PagingData.from(
+                                result.posts.distinctBy { it.stableKey() },
+                                sourceLoadStates = loadStates,
+                            )
+                        ),
                         isLoading = false,
                     )
                 }

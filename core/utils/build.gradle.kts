@@ -10,5 +10,6 @@ java {
 
 dependencies {
     implementation(libs.bundles.coroutines)
+    implementation(libs.androidx.paging.common)
     implementation(project(":core:model"))
 }
