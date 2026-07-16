@@ -9,6 +9,13 @@
     <string name="settings_hub_network_title">Сеть</string>
     <string name="settings_hub_network_subtitle">Домены API и сетевые параметры.</string>
     <string name="settings_api_enabled_title">Включенные API</string>
+    <string name="settings_pawchive_media_hosts_title">Медиа-хосты Pawchive (необязательно)</string>
+    <string name="settings_pawchive_media_hosts_description">Оставьте поле пустым, чтобы адрес вычислялся из домена API Pawchive.</string>
+    <string name="settings_pawchive_image_host_label">Хост изображений</string>
+    <string name="settings_pawchive_file_host_label">Хост файлов</string>
+    <string name="settings_pawchive_media_host_automatic">Вычисленный адрес: %1$s</string>
+    <string name="settings_pawchive_image_current">Изображения: %1$s</string>
+    <string name="settings_pawchive_file_current">Файлы: %1$s</string>
     <string name="settings_hub_database_title">База данных и кэш</string>
     <string name="settings_hub_database_subtitle">Лимиты кэша и очистка сохраненных данных.</string>
     <string name="settings_hub_downloads_subtitle">Как именуются и структурируются скачанные файлы.</string>

@@ -5,11 +5,11 @@ minSdk = "29"
 jvmVersion = "21"
 
 # --- App versioning
-appVersionName = "1.15.3"
-appVersionCode = "93"
+appVersionName = "1.15.4"
+appVersionCode = "95"
 
-agp = "9.2.1"
-kotlin = "2.4.0"
+agp = "9.3.0"
+kotlin = "2.4.10"
 ksp = "2.3.6"
 
 # --- AndroidX

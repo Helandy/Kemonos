@@ -38,6 +38,7 @@
                 <data android:scheme="https"/>
                 <data android:host="kemono.cr"/>
                 <data android:host="coomer.st"/>
+                <data android:host="pawchive.pw"/>
                 <data android:host="pawchive.st"/>
 
                 <!-- Sections -->

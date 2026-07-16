@@ -78,6 +78,12 @@ internal fun SettingNetworkScreen(
                     }
                     if (SelectedSite.P in state.uiSettingModel.enabledSites) {
                         CurrentUrlText("Pawchive: ${state.pawchiveUrl}")
+                        CurrentUrlText(
+                            stringResource(R.string.settings_pawchive_image_current, state.pawchiveImageUrl)
+                        )
+                        CurrentUrlText(
+                            stringResource(R.string.settings_pawchive_file_current, state.pawchiveFileUrl)
+                        )
                     }
                 }
             }
@@ -122,6 +128,57 @@ internal fun SettingNetworkScreen(
                     value = state.inputPawchiveDomain,
                     onValueChange = { onEvent(Event.ApiSetting.InputPawchiveDomainChanged(it)) },
                     label = { Text(stringResource(su.afk.kemonos.ui.R.string.main_api_pawchive_url_label)) }
+                )
+
+                Spacer(Modifier.height(12.dp))
+
+                Text(
+                    text = stringResource(R.string.settings_pawchive_media_hosts_title),
+                    style = MaterialTheme.typography.titleSmall,
+                )
+
+                Text(
+                    text = stringResource(R.string.settings_pawchive_media_hosts_description),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+
+                Spacer(Modifier.height(8.dp))
+
+                BaseUrlDomainField(
+                    value = state.inputPawchiveImageHostOverride,
+                    onValueChange = {
+                        onEvent(Event.ApiSetting.InputPawchiveImageHostChanged(it))
+                    },
+                    label = { Text(stringResource(R.string.settings_pawchive_image_host_label)) },
+                    suffixText = null,
+                    supportingText = {
+                        Text(
+                            stringResource(
+                                R.string.settings_pawchive_media_host_automatic,
+                                state.pawchiveImageUrl,
+                            )
+                        )
+                    },
+                )
+
+                Spacer(Modifier.height(8.dp))
+
+                BaseUrlDomainField(
+                    value = state.inputPawchiveFileHostOverride,
+                    onValueChange = {
+                        onEvent(Event.ApiSetting.InputPawchiveFileHostChanged(it))
+                    },
+                    label = { Text(stringResource(R.string.settings_pawchive_file_host_label)) },
+                    suffixText = null,
+                    supportingText = {
+                        Text(
+                            stringResource(
+                                R.string.settings_pawchive_media_host_automatic,
+                                state.pawchiveFileUrl,
+                            )
+                        )
+                    },
                 )
             }
 

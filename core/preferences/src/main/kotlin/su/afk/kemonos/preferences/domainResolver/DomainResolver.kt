@@ -6,8 +6,8 @@ import su.afk.kemonos.domain.SelectedSite
 import su.afk.kemonos.preferences.GetCoomerRootUrlUseCase
 import su.afk.kemonos.preferences.GetKemonoRootUrlUseCase
 import su.afk.kemonos.preferences.GetPawchiveRootUrlUseCase
+import su.afk.kemonos.preferences.UrlPrefs
 import su.afk.kemonos.preferences.site.ISelectedSiteUseCase
-import su.afk.kemonos.utils.pawchive.PawchiveConstants
 import javax.inject.Inject
 
 private val coomerServicesList = setOf("onlyfans", "fansly", "candfans")
@@ -19,6 +19,30 @@ interface IDomainResolver {
     fun imageBaseUrlByService(service: String): String
     fun creatorImageBaseUrlByService(service: String): String = imageBaseUrlByService(service)
     fun fileBaseUrlByService(service: String): String = imageBaseUrlByService(service)
+    fun pawchiveHostConfig(): PawchiveHostConfig
+}
+
+data class PawchiveHostConfig(
+    val apiBaseUrl: String,
+    val rootUrl: String,
+    val imageBaseUrl: String,
+    val fileBaseUrl: String,
+)
+
+object PawchiveHostConfigResolver {
+    fun resolve(
+        apiBaseUrl: String,
+        imageHostOverride: String,
+        fileHostOverride: String,
+    ): PawchiveHostConfig {
+        val rootUrl = apiBaseUrl.toOriginUrl()
+        return PawchiveHostConfig(
+            apiBaseUrl = apiBaseUrl,
+            rootUrl = rootUrl,
+            imageBaseUrl = imageHostOverride.ifBlank { rootUrl.withHostPrefix("img") },
+            fileBaseUrl = fileHostOverride.ifBlank { rootUrl.withHostPrefix("file") },
+        )
+    }
 }
 
 fun IDomainResolver.selectedSiteByService(service: String): SelectedSite {
@@ -34,6 +58,7 @@ class DomainResolver @Inject constructor(
     private val getCoomerRootUrl: GetCoomerRootUrlUseCase,
     private val getPawchiveRootUrl: GetPawchiveRootUrlUseCase,
     private val selectedSiteUseCase: ISelectedSiteUseCase,
+    private val urlPrefs: UrlPrefs,
 ) : IDomainResolver {
 
     override fun selectedSite(): SelectedSite = selectedSiteUseCase.getSite()
@@ -47,19 +72,27 @@ class DomainResolver @Inject constructor(
     }
 
     override fun imageBaseUrlByService(service: String): String {
-        if (selectedSite() == SelectedSite.P) return "https://img.pawchive.st"
+        if (selectedSite() == SelectedSite.P) return pawchiveHostConfig().imageBaseUrl
         val base = baseUrlByService(service)
         return base.toImgBaseUrl()
     }
 
     override fun creatorImageBaseUrlByService(service: String): String {
-        if (selectedSite() == SelectedSite.P) return baseUrlByService(service)
+        if (selectedSite() == SelectedSite.P) return pawchiveHostConfig().rootUrl
         return imageBaseUrlByService(service)
     }
 
     override fun fileBaseUrlByService(service: String): String {
-        if (selectedSite() == SelectedSite.P) return PawchiveConstants.FILE_BASE_URL
+        if (selectedSite() == SelectedSite.P) return pawchiveHostConfig().fileBaseUrl
         return imageBaseUrlByService(service)
+    }
+
+    override fun pawchiveHostConfig(): PawchiveHostConfig {
+        return PawchiveHostConfigResolver.resolve(
+            apiBaseUrl = urlPrefs.pawchiveUrl.value,
+            imageHostOverride = urlPrefs.pawchiveImageHostOverride.value,
+            fileHostOverride = urlPrefs.pawchiveFileHostOverride.value,
+        )
     }
 }
 
@@ -78,4 +111,31 @@ private fun String.toImgBaseUrl(): String {
             .build()
             .toString()
     }.getOrElse { this }
+}
+
+private fun String.withHostPrefix(prefix: String): String {
+    return runCatching {
+        val uri = toUri()
+        val scheme = uri.scheme ?: "https"
+        val host = uri.host ?: return this
+        val derivedHost = if (host.startsWith("$prefix.")) host else "$prefix.$host"
+        Uri.Builder()
+            .scheme(scheme)
+            .encodedAuthority(derivedHost)
+            .build()
+            .toString()
+    }.getOrElse { this }
+}
+
+private fun String.toOriginUrl(): String {
+    return runCatching {
+        val uri = toUri()
+        val scheme = uri.scheme ?: "https"
+        val authority = uri.encodedAuthority ?: return trimEnd('/')
+        Uri.Builder()
+            .scheme(scheme)
+            .encodedAuthority(authority)
+            .build()
+            .toString()
+    }.getOrElse { trimEnd('/').substringBefore("/api") }
 }

@@ -19,12 +19,12 @@ import su.afk.kemonos.data.dto.PollDto.Companion.toDomain
 import su.afk.kemonos.data.dto.PostUnifiedDto
 import su.afk.kemonos.data.dto.PostUnifiedDto.Companion.toDomain
 import su.afk.kemonos.data.dto.PostTagsDtoAdapter
+import su.afk.kemonos.domain.models.AttachmentDomain
 import su.afk.kemonos.domain.models.PostDomain
 import su.afk.kemonos.domain.models.PreviewDomain
 import su.afk.kemonos.domain.models.VideoDomain
 import su.afk.kemonos.utils.file.isImageFile
 import su.afk.kemonos.utils.file.isVideoFile
-import su.afk.kemonos.utils.pawchive.PawchiveConstants
 
 internal data class PostResponseDto(
     @SerializedName("post")
@@ -106,6 +106,7 @@ internal data class PawchivePostResponseDto(
         service: String,
         creatorId: String,
         postId: String,
+        fileBaseUrl: String,
     ): PostContentDomain {
         val postDomain = post?.toDomain() ?: toRootPostDomain(
             service = service,
@@ -116,18 +117,20 @@ internal data class PawchivePostResponseDto(
         val mergedAttachments = rootAttachments.ifEmpty { postDomain.attachments }
         val attachmentPreviews = mergedAttachments.filter { isImageFile(it.path) }.map {
             PreviewDomain(
-                server = it.server ?: PawchiveConstants.FILE_BASE_URL,
+                server = fileBaseUrl,
                 path = it.path,
                 name = it.fileNameOrPathName(),
                 type = "thumbnail",
             )
         }
-        val attachmentVideos = mergedAttachments.mapNotNull { it.toPawchiveVideoOrNull() }
+        val attachmentVideos = mergedAttachments.mapNotNull {
+            it.toPawchiveVideoOrNull(fileBaseUrl)
+        }
         val filePreview = postDomain.file
             ?.takeIf { isImageFile(it.path) }
             ?.let {
                 PreviewDomain(
-                    server = PawchiveConstants.FILE_BASE_URL,
+                    server = fileBaseUrl,
                     path = it.path,
                     name = it.name.takeIf { name -> name.isNotBlank() } ?: it.path.substringAfterLast('/'),
                     type = "thumbnail",
@@ -146,20 +149,22 @@ internal data class PawchivePostResponseDto(
     }
 }
 
-private fun su.afk.kemonos.domain.models.AttachmentDomain.toPawchiveVideoOrNull(): VideoDomain? {
+private fun AttachmentDomain.toPawchiveVideoOrNull(
+    fileBaseUrl: String,
+): VideoDomain? {
     if (!isVideoAttachment()) return null
     return VideoDomain(
-        server = server ?: PawchiveConstants.FILE_BASE_URL,
+        server = fileBaseUrl,
         path = path,
         name = fileNameOrPathName(),
     )
 }
 
-private fun su.afk.kemonos.domain.models.AttachmentDomain.isVideoAttachment(): Boolean {
+private fun AttachmentDomain.isVideoAttachment(): Boolean {
     return isVideoFile(path) || isVideoFile(name)
 }
 
-private fun su.afk.kemonos.domain.models.AttachmentDomain.fileNameOrPathName(): String =
+private fun AttachmentDomain.fileNameOrPathName(): String =
     name?.takeIf { it.isNotBlank() } ?: path.substringAfterLast('/')
 
 private fun PawchivePostResponseDto.toRootPostDomain(

@@ -21,4 +21,11 @@ object PreviewDomainResolver : IDomainResolver {
     override fun creatorImageBaseUrlByService(service: String): String {
         return "https://example.com"
     }
+
+    override fun pawchiveHostConfig() = PawchiveHostConfig(
+        apiBaseUrl = "https://example.com/api/",
+        rootUrl = "https://example.com",
+        imageBaseUrl = "https://img.example.com",
+        fileBaseUrl = "https://file.example.com",
+    )
 }

@@ -6,4 +6,6 @@ interface IGetBaseUrlsUseCase {
     val kemonoUrl: StateFlow<String>
     val coomerUrl: StateFlow<String>
     val pawchiveUrl: StateFlow<String>
+    val pawchiveImageHostOverride: StateFlow<String>
+    val pawchiveFileHostOverride: StateFlow<String>
 }
