@@ -12,6 +12,8 @@ import su.afk.kemonos.navigation.NavigationManager
 import su.afk.kemonos.preferences.GetCoomerRootUrlUseCase
 import su.afk.kemonos.preferences.GetKemonoRootUrlUseCase
 import su.afk.kemonos.preferences.GetPawchiveRootUrlUseCase
+import su.afk.kemonos.preferences.domainResolver.IDomainResolver
+import su.afk.kemonos.preferences.siteUrl.IGetBaseUrlsUseCase
 import su.afk.kemonos.preferences.ui.IUiSettingUseCase
 import su.afk.kemonos.preferences.useCase.CacheKeys
 import su.afk.kemonos.preferences.useCase.CacheTimes
@@ -32,6 +34,8 @@ class SettingViewModel @Inject constructor(
     private val getCoomerRootUrlUseCase: GetCoomerRootUrlUseCase,
     private val getKemonoRootUrlUseCase: GetKemonoRootUrlUseCase,
     private val getPawchiveRootUrlUseCase: GetPawchiveRootUrlUseCase,
+    private val getBaseUrlsUseCase: IGetBaseUrlsUseCase,
+    private val domainResolver: IDomainResolver,
     private val cacheTimestamps: ICacheTimestampUseCase,
     private val uiSetting: IUiSettingUseCase,
     private val uiPrefsDelegate: SettingUiPreferencesDelegate,
@@ -104,15 +108,24 @@ class SettingViewModel @Inject constructor(
         val kemono = getKemonoRootUrlUseCase()
         val coomer = getCoomerRootUrlUseCase()
         val pawchive = getPawchiveRootUrlUseCase()
+        val pawchiveHosts = domainResolver.pawchiveHostConfig()
+        val pawchiveImageOverride = getBaseUrlsUseCase.pawchiveImageHostOverride.value
+        val pawchiveFileOverride = getBaseUrlsUseCase.pawchiveFileHostOverride.value
 
         setState {
             copy(
                 kemonoUrl = kemono,
                 coomerUrl = coomer,
                 pawchiveUrl = pawchive,
+                pawchiveImageUrl = pawchiveHosts.imageBaseUrl,
+                pawchiveFileUrl = pawchiveHosts.fileBaseUrl,
                 inputKemonoDomain = state.value.inputKemonoDomain.ifEmpty { normalizeDomain(kemono) },
                 inputCoomerDomain = state.value.inputCoomerDomain.ifEmpty { normalizeDomain(coomer) },
                 inputPawchiveDomain = state.value.inputPawchiveDomain.ifEmpty { normalizeDomain(pawchive) },
+                inputPawchiveImageHostOverride = state.value.inputPawchiveImageHostOverride
+                    .ifEmpty { normalizeDomain(pawchiveImageOverride) },
+                inputPawchiveFileHostOverride = state.value.inputPawchiveFileHostOverride
+                    .ifEmpty { normalizeDomain(pawchiveFileOverride) },
                 inputVideoPreviewServerDomain = state.value.inputVideoPreviewServerDomain.ifEmpty {
                     normalizeDomain(state.value.uiSettingModel.videoPreviewServerUrl)
                 },

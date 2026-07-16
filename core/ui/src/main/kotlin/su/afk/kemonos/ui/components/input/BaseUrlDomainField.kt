@@ -12,6 +12,8 @@ fun BaseUrlDomainField(
     onValueChange: (String) -> Unit,
     label: @Composable () -> Unit,
     enabled: Boolean = true,
+    suffixText: String? = "/api/",
+    supportingText: (@Composable () -> Unit)? = null,
 ) {
     OutlinedTextField(
         modifier = Modifier.fillMaxWidth(),
@@ -30,6 +32,7 @@ fun BaseUrlDomainField(
         singleLine = true,
         label = label,
         prefix = { Text("https://") },
-        suffix = { Text("/api/") },
+        suffix = suffixText?.let { text -> { Text(text) } },
+        supportingText = supportingText,
     )
 }

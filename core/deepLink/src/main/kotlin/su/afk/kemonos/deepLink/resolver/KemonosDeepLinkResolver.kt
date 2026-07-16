@@ -18,7 +18,10 @@ internal class KemonosDeepLinkResolver @Inject constructor(
 ) : DeepLinkResolver {
 
     override suspend fun resolve(uri: Uri): NavKey? {
-        val hostOk = uri.host == Domains.KEMONO || uri.host == Domains.COOMER || uri.host == Domains.PAWCHIVE
+        val hostOk = uri.host == Domains.KEMONO ||
+                uri.host == Domains.COOMER ||
+                uri.host == Domains.PAWCHIVE ||
+                uri.host == Domains.PAWCHIVE_LEGACY
         if (!hostOk) return null
 
         selectedSiteUseCase.setSite(siteByHost(uri.host))
@@ -82,7 +85,7 @@ internal class KemonosDeepLinkResolver @Inject constructor(
     private fun siteByHost(host: String?): SelectedSite =
         when (host) {
             Domains.COOMER -> SelectedSite.C
-            Domains.PAWCHIVE -> SelectedSite.P
+            Domains.PAWCHIVE, Domains.PAWCHIVE_LEGACY -> SelectedSite.P
             else -> SelectedSite.K
         }
 }

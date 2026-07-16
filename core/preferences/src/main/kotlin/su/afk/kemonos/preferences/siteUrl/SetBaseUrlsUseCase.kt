@@ -7,9 +7,21 @@ internal class SetBaseUrlsUseCase @Inject constructor(
     private val urlPrefs: UrlPrefs,
 ) : ISetBaseUrlsUseCase {
 
-    override suspend fun invoke(kemonoUrl: String, coomerUrl: String, pawchiveUrl: String) {
+    override suspend fun invoke(
+        kemonoUrl: String,
+        coomerUrl: String,
+        pawchiveUrl: String,
+        pawchiveImageHostOverride: String?,
+        pawchiveFileHostOverride: String?,
+    ) {
         urlPrefs.setKemonoUrl(kemonoUrl)
         urlPrefs.setCoomerUrl(coomerUrl)
         urlPrefs.setPawchiveUrl(pawchiveUrl)
+        if (pawchiveImageHostOverride != null) {
+            urlPrefs.setPawchiveImageHostOverride(pawchiveImageHostOverride)
+        }
+        if (pawchiveFileHostOverride != null) {
+            urlPrefs.setPawchiveFileHostOverride(pawchiveFileHostOverride)
+        }
     }
 }

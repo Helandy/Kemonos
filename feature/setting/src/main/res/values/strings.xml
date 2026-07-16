@@ -9,6 +9,13 @@
     <string name="settings_hub_network_title">Network</string>
     <string name="settings_hub_network_subtitle">API domains and connection-related options.</string>
     <string name="settings_api_enabled_title">Enabled APIs</string>
+    <string name="settings_pawchive_media_hosts_title">Pawchive media hosts (optional)</string>
+    <string name="settings_pawchive_media_hosts_description">Leave a field empty to derive it automatically from the Pawchive API domain.</string>
+    <string name="settings_pawchive_image_host_label">Image host override</string>
+    <string name="settings_pawchive_file_host_label">File host override</string>
+    <string name="settings_pawchive_media_host_automatic">Automatic: %1$s</string>
+    <string name="settings_pawchive_image_current">Images: %1$s</string>
+    <string name="settings_pawchive_file_current">Files: %1$s</string>
     <string name="settings_hub_database_title">Database &amp; cache</string>
     <string name="settings_hub_database_subtitle">Cache size limits and cached data cleanup.</string>
     <string name="settings_hub_downloads_subtitle">How downloaded files are named and organized.</string>

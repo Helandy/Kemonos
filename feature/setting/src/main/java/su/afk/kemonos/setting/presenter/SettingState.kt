@@ -30,10 +30,14 @@ class SettingState {
         val kemonoUrl: String = "",
         val coomerUrl: String = "",
         val pawchiveUrl: String = "",
+        val pawchiveImageUrl: String = "",
+        val pawchiveFileUrl: String = "",
 
         val inputKemonoDomain: String = "",
         val inputCoomerDomain: String = "",
         val inputPawchiveDomain: String = "",
+        val inputPawchiveImageHostOverride: String = "",
+        val inputPawchiveFileHostOverride: String = "",
         val inputVideoPreviewServerDomain: String = "",
 
         val isSaving: Boolean = false,
@@ -143,6 +147,8 @@ class SettingState {
             data class InputKemonoDomainChanged(val value: String) : ApiSetting
             data class InputCoomerDomainChanged(val value: String) : ApiSetting
             data class InputPawchiveDomainChanged(val value: String) : ApiSetting
+            data class InputPawchiveImageHostChanged(val value: String) : ApiSetting
+            data class InputPawchiveFileHostChanged(val value: String) : ApiSetting
             data class InputVideoPreviewServerDomainChanged(val value: String) : ApiSetting
             data class ToggleApiSite(val site: SelectedSite, val enabled: Boolean) : ApiSetting
             data object SaveUrls : ApiSetting
