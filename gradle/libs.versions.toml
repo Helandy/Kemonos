@@ -5,10 +5,10 @@ minSdk = "29"
 jvmVersion = "21"
 
 # --- App versioning
-appVersionName = "1.15.4"
-appVersionCode = "95"
+appVersionName = "1.16"
+appVersionCode = "96"
 
-agp = "9.3.0"
+agp = "9.3.1"
 kotlin = "2.4.10"
 ksp = "2.3.6"
 
@@ -37,7 +37,7 @@ okhttp = "5.4.0"
 gson = "2.14.0"
 
 # --- Jsoup
-jsoup = "1.22.2"
+jsoup = "1.23.1"
 re2j = "1.8"
 
 # --- Serialization / Coroutines
@@ -49,12 +49,12 @@ coil3 = "3.5.0"
 multiplatformMarkdownRendererM3 = "0.43.0"
 
 # --- Navigation3
-navigation3 = "1.1.4"
+navigation3 = "1.1.5"
 material3AdaptiveNav3 = "1.0.0-alpha03"
 
 # --- Play Services
 playServicesCast = "22.3.1"
-appmetrica = "8.3.0"
+appmetrica = "8.5.0"
 
 # --- Translate
 translate = "17.0.3"
