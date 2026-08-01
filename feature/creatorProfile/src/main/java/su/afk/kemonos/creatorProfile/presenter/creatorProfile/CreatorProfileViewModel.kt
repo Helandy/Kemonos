@@ -393,6 +393,7 @@ internal class CreatorProfileViewModel @AssistedInject constructor(
 
         val result = likeDelegate.onFavoriteClick(
             isFavorite = currentState.isFavorite,
+            profile = currentState.profile,
             service = currentState.service,
             id = currentState.id
         )
@@ -407,17 +408,13 @@ internal class CreatorProfileViewModel @AssistedInject constructor(
         setState { copy(favoriteActionLoading = false) }
     }
 
-    /** проверит в избранном ли автор */
+    /** проверит в избранном/локальных лайках ли автор (кнопка доступна всегда, авторизация не требуется) */
     private suspend fun isCreatorFavorite() {
-        val isShowAvailable = likeDelegate.creatorIsAvailableLike()
-        if (isShowAvailable) {
-            val favorite = likeDelegate.isCreatorFavorite(
-                service = currentState.service,
-                id = currentState.id
-            )
-            setState { copy(isFavorite = favorite) }
-        }
-        setState { copy(isFavoriteShowButton = isShowAvailable) }
+        val favorite = likeDelegate.isCreatorFavorite(
+            service = currentState.service,
+            id = currentState.id
+        )
+        setState { copy(isFavorite = favorite, isFavoriteShowButton = true) }
     }
 
     fun onPullRefresh() = viewModelScope.launch {

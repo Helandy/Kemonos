@@ -20,6 +20,7 @@ import su.afk.kemonos.preferences.site.setSiteAndAwait
 import su.afk.kemonos.preferences.ui.IUiSettingUseCase
 import su.afk.kemonos.profile.api.domain.IGetFavoriteArtistsUseCase
 import su.afk.kemonos.profile.api.domain.favoriteProfiles.FavoriteSortedType
+import su.afk.kemonos.profile.domain.favorites.SyncLocalLikesUseCase
 import su.afk.kemonos.profile.domain.favorites.creator.GetFavoriteArtistsPagingUseCase
 import su.afk.kemonos.profile.domain.favorites.fresh.IFreshFavoriteArtistsUpdatesUseCase
 import su.afk.kemonos.profile.presenter.favoriteProfiles.FavoriteProfilesState.*
@@ -32,6 +33,7 @@ import javax.inject.Inject
 @HiltViewModel
 internal class FavoriteProfilesViewModel @Inject constructor(
     private val getFavoriteArtistsUseCase: IGetFavoriteArtistsUseCase,
+    private val syncLocalLikesUseCase: SyncLocalLikesUseCase,
     private val getFavoriteArtistsPagingUseCase: GetFavoriteArtistsPagingUseCase,
     private val selectedSiteUseCase: ISelectedSiteUseCase,
     private val favoriteProfilesFiltersUseCase: IFavoriteProfilesFiltersUseCase,
@@ -190,6 +192,8 @@ internal class FavoriteProfilesViewModel @Inject constructor(
         if (currentState.loading || currentState.refreshing) return@launch
 
         setState { copy(loading = !refresh, refreshing = refresh) }
+
+        runCatching { syncLocalLikesUseCase(currentState.selectedSite) }
 
         runCatching {
             // это то, что реально кладёт в БД

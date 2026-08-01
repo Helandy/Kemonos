@@ -15,6 +15,7 @@ import su.afk.kemonos.storage.api.repository.download.ITrackedDownloadsRepositor
 import su.afk.kemonos.storage.api.repository.favorites.artist.IStoreFavoriteArtistsRepository
 import su.afk.kemonos.storage.api.repository.favorites.post.IStoreFavoritePostsRepository
 import su.afk.kemonos.storage.api.repository.favorites.updates.IFreshFavoriteArtistsUpdatesRepository
+import su.afk.kemonos.storage.api.repository.localLikes.IStoreLocalLikedArtistsRepository
 import su.afk.kemonos.storage.api.repository.localLikes.IStoreLocalLikedPostsRepository
 import su.afk.kemonos.storage.api.repository.popular.IStoragePopularPostsRepository
 import su.afk.kemonos.storage.api.repository.post.IStoragePostStorageRepository
@@ -34,6 +35,7 @@ import su.afk.kemonos.storage.repository.download.TrackedDownloadsRepository
 import su.afk.kemonos.storage.repository.favorites.artist.StoreFavoriteArtistsRepository
 import su.afk.kemonos.storage.repository.favorites.post.StoreFavoritePostsRepository
 import su.afk.kemonos.storage.repository.favorites.updates.FreshFavoriteArtistsUpdatesRepository
+import su.afk.kemonos.storage.repository.localLikes.StoreLocalLikedArtistsRepository
 import su.afk.kemonos.storage.repository.localLikes.StoreLocalLikedPostsRepository
 import su.afk.kemonos.storage.repository.popular.StoragePopularPostsRepository
 import su.afk.kemonos.storage.repository.post.StoragePostStorageRepository
@@ -77,6 +79,12 @@ internal interface RepositoryModule {
     fun bindStoreLocalLikedPostsRepository(
         impl: StoreLocalLikedPostsRepository
     ): IStoreLocalLikedPostsRepository
+
+    @Singleton
+    @Binds
+    fun bindStoreLocalLikedArtistsRepository(
+        impl: StoreLocalLikedArtistsRepository
+    ): IStoreLocalLikedArtistsRepository
 
     @Singleton
     @Binds

@@ -21,6 +21,7 @@ import su.afk.kemonos.storage.entity.download.dao.DownloadTaskDao
 import su.afk.kemonos.storage.entity.favorites.artist.FavoriteArtistsDao
 import su.afk.kemonos.storage.entity.favorites.post.FavoritePostsDao
 import su.afk.kemonos.storage.entity.favorites.updates.FreshFavoriteArtistUpdatesDao
+import su.afk.kemonos.storage.entity.localLikes.LocalLikedArtistsDao
 import su.afk.kemonos.storage.entity.localLikes.LocalLikedPostsDao
 import su.afk.kemonos.storage.entity.popular.dao.KemonoPostsPopularCacheDao
 import su.afk.kemonos.storage.entity.post.dao.PostContentCacheDao
@@ -65,6 +66,7 @@ internal object DatabaseKemonoModule {
                 KemonoFrom19To20,
                 KemonoFrom20To21,
                 KemonoFrom21To22,
+                KemonoFrom22To23,
             )
             .addCallback(
                 DestructiveMigrationPrefSync.createCleanupCallback(
@@ -110,6 +112,9 @@ internal object DatabaseKemonoModule {
 
     @Provides
     fun provideLocalLikedPostsDao(db: KemonoDatabase): LocalLikedPostsDao = db.localLikedPostsDao()
+
+    @Provides
+    fun provideLocalLikedArtistsDao(db: KemonoDatabase): LocalLikedArtistsDao = db.localLikedArtistsDao()
 
     @Provides
     fun provideCreatorProfileCacheDao(db: KemonoDatabase): CreatorProfileCacheDao = db.creatorProfileCacheDao()

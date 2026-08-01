@@ -16,6 +16,7 @@ import su.afk.kemonos.profile.data.repository.FavoritesRepository.Companion.MIN_
 import su.afk.kemonos.profile.domain.repository.IFavoritesRepository
 import su.afk.kemonos.storage.api.repository.favorites.artist.IStoreFavoriteArtistsRepository
 import su.afk.kemonos.storage.api.repository.favorites.post.IStoreFavoritePostsRepository
+import su.afk.kemonos.storage.api.repository.localLikes.IStoreLocalLikedArtistsRepository
 import su.afk.kemonos.storage.api.repository.localLikes.IStoreLocalLikedPostsRepository
 import javax.inject.Inject
 
@@ -24,6 +25,7 @@ internal class FavoritesRepository @Inject constructor(
     private val artistsStore: IStoreFavoriteArtistsRepository,
     private val postsStore: IStoreFavoritePostsRepository,
     private val localLikedPostsStore: IStoreLocalLikedPostsRepository,
+    private val localLikedArtistsStore: IStoreLocalLikedArtistsRepository,
     private val isAuthKemonoUseCase: IsAuthKemonoUseCase,
     private val isAuthCoomerUseCase: IsAuthCoomerUseCase,
     private val isAuthPawchiveUseCase: IsAuthPawchiveUseCase,
@@ -37,7 +39,10 @@ internal class FavoritesRepository @Inject constructor(
         }
     }
 
-    /** Пагинация favorite artists из локального Room-кэша. */
+    /**
+     * Пагинация favorite artists. Без авторизации — из локальных лайков (сервер недоступен без сессии),
+     * без учета сортировки/фильтра по сервису (не применимо для локального режима).
+     */
     override suspend fun pageFavoriteArtists(
         site: SelectedSite,
         service: String,
@@ -47,6 +52,10 @@ internal class FavoritesRepository @Inject constructor(
         limit: Int,
         offset: Int,
     ): List<FavoriteArtist> {
+        if (!isAuthorized(site)) {
+            return localLikedArtistsStore.page(site = site, query = query, limit = limit, offset = offset)
+        }
+
         return artistsStore.page(
             site = site,
             service = service,
@@ -97,12 +106,17 @@ internal class FavoritesRepository @Inject constructor(
         }
     }
 
-    /** Возвращает favorite artists с учетом freshness кэша и флага принудительного refresh. */
+    /**
+     * Возвращает favorite artists с учетом freshness кэша и флага принудительного refresh.
+     * Без авторизации на сайте сервер недоступен — список читается из локально лайкнутых авторов.
+     */
     override suspend fun getFavoriteArtists(
         site: SelectedSite,
         getOldCache: Boolean,
         forceRefresh: Boolean,
     ): List<FavoriteArtist> {
+        if (!isAuthorized(site)) return localLikedArtistsStore.getAll(site)
+
         if (getOldCache) return artistsStore.getAll(site)
         if (forceRefresh) return refreshFavoriteArtists(site)
 
@@ -139,10 +153,15 @@ internal class FavoritesRepository @Inject constructor(
         }
     }
 
-    /** Отправляет ранее лайкнутые без авторизации посты на сервер после логина. */
+    /** Отправляет ранее лайкнутые без авторизации посты и авторов на сервер после логина. */
     override suspend fun syncLocalLikes(site: SelectedSite) {
         if (!isAuthorized(site)) return
 
+        syncLocalLikedPosts(site)
+        syncLocalLikedArtists(site)
+    }
+
+    private suspend fun syncLocalLikedPosts(site: SelectedSite) {
         val pending = runCatching { localLikedPostsStore.getAll(site) }.getOrDefault(emptyList())
         if (pending.isEmpty()) return
 
@@ -169,6 +188,27 @@ internal class FavoritesRepository @Inject constructor(
 
         if (synced) {
             runCatching { getFavoritePosts(site = site, refresh = true) }
+        }
+    }
+
+    private suspend fun syncLocalLikedArtists(site: SelectedSite) {
+        val pending = runCatching { localLikedArtistsStore.getAll(site) }.getOrDefault(emptyList())
+        if (pending.isEmpty()) return
+
+        var synced = false
+        pending.forEach { artist ->
+            val success = runCatching {
+                api.addFavoriteCreator(service = artist.service, id = artist.id).isSuccessful
+            }.getOrDefault(false)
+
+            if (success) {
+                localLikedArtistsStore.remove(site = site, service = artist.service, id = artist.id)
+                synced = true
+            }
+        }
+
+        if (synced) {
+            runCatching { refreshFavoriteArtists(site) }
         }
     }
 
