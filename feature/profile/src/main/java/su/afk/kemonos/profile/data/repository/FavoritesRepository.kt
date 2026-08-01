@@ -1,5 +1,9 @@
 package su.afk.kemonos.profile.data.repository
 
+import kotlinx.coroutines.flow.first
+import su.afk.kemonos.auth.IsAuthCoomerUseCase
+import su.afk.kemonos.auth.IsAuthKemonoUseCase
+import su.afk.kemonos.auth.IsAuthPawchiveUseCase
 import su.afk.kemonos.data.dto.PostUnifiedDto.Companion.toDomain
 import su.afk.kemonos.domain.SelectedSite
 import su.afk.kemonos.domain.models.PostDomain
@@ -12,13 +16,26 @@ import su.afk.kemonos.profile.data.repository.FavoritesRepository.Companion.MIN_
 import su.afk.kemonos.profile.domain.repository.IFavoritesRepository
 import su.afk.kemonos.storage.api.repository.favorites.artist.IStoreFavoriteArtistsRepository
 import su.afk.kemonos.storage.api.repository.favorites.post.IStoreFavoritePostsRepository
+import su.afk.kemonos.storage.api.repository.localLikes.IStoreLocalLikedPostsRepository
 import javax.inject.Inject
 
 internal class FavoritesRepository @Inject constructor(
     private val api: FavoritesApi,
     private val artistsStore: IStoreFavoriteArtistsRepository,
     private val postsStore: IStoreFavoritePostsRepository,
+    private val localLikedPostsStore: IStoreLocalLikedPostsRepository,
+    private val isAuthKemonoUseCase: IsAuthKemonoUseCase,
+    private val isAuthCoomerUseCase: IsAuthCoomerUseCase,
+    private val isAuthPawchiveUseCase: IsAuthPawchiveUseCase,
 ) : IFavoritesRepository {
+
+    private suspend fun isAuthorized(site: SelectedSite): Boolean {
+        return when (site) {
+            SelectedSite.C -> isAuthCoomerUseCase().first()
+            SelectedSite.K -> isAuthKemonoUseCase().first()
+            SelectedSite.P -> isAuthPawchiveUseCase().first()
+        }
+    }
 
     /** Пагинация favorite artists из локального Room-кэша. */
     override suspend fun pageFavoriteArtists(
@@ -45,7 +62,7 @@ internal class FavoritesRepository @Inject constructor(
         artistsStore.getDistinctServices(site)
 
     /**
-     * Пагинация favorite posts из локального Room-кэша.
+     * Пагинация favorite posts. Без авторизации — из локальных лайков (сервер недоступен без сессии).
      * Для короткого запроса (< [MIN_POST_SEARCH_QUERY_LENGTH]) отключаем LIKE-поиск ради скорости.
      */
     override suspend fun pageFavoritePosts(
@@ -56,6 +73,15 @@ internal class FavoritesRepository @Inject constructor(
         offset: Int,
     ): List<PostDomain> {
         val q = query?.trim().orEmpty()
+
+        if (!isAuthorized(site)) {
+            return if (q.length >= MIN_POST_SEARCH_QUERY_LENGTH) {
+                localLikedPostsStore.pageSearch(site = site, query = q, limit = limit, offset = offset)
+            } else {
+                localLikedPostsStore.page(site = site, limit = limit, offset = offset)
+            }
+        }
+
         return if (q.length >= MIN_POST_SEARCH_QUERY_LENGTH) {
             if (groupByAuthor) {
                 postsStore.pageSearchGrouped(site = site, query = q, limit = limit, offset = offset)
@@ -93,8 +119,15 @@ internal class FavoritesRepository @Inject constructor(
         }
     }
 
-    /** Возвращает favorite posts из кэша или сети и синхронизирует Room-кэш. */
+    /**
+     * Возвращает favorite posts. Без авторизации на сайте сервер недоступен —
+     * список читается из локально лайкнутых постов.
+     */
     override suspend fun getFavoritePosts(site: SelectedSite, refresh: Boolean): List<PostDomain> {
+        if (!isAuthorized(site)) {
+            return localLikedPostsStore.getAll(site)
+        }
+
         if (!refresh && postsStore.isCacheFresh(site)) {
             return postsStore.getAll(site)
         }
@@ -103,6 +136,39 @@ internal class FavoritesRepository @Inject constructor(
             val network = list.map { it.toDomain() }
             postsStore.replaceAll(site, network)
             network
+        }
+    }
+
+    /** Отправляет ранее лайкнутые без авторизации посты на сервер после логина. */
+    override suspend fun syncLocalLikes(site: SelectedSite) {
+        if (!isAuthorized(site)) return
+
+        val pending = runCatching { localLikedPostsStore.getAll(site) }.getOrDefault(emptyList())
+        if (pending.isEmpty()) return
+
+        var synced = false
+        pending.forEach { post ->
+            val success = runCatching {
+                api.addFavoritePost(
+                    service = post.service,
+                    creatorId = post.userId,
+                    postId = post.id,
+                ).isSuccessful
+            }.getOrDefault(false)
+
+            if (success) {
+                localLikedPostsStore.remove(
+                    site = site,
+                    service = post.service,
+                    creatorId = post.userId,
+                    postId = post.id,
+                )
+                synced = true
+            }
+        }
+
+        if (synced) {
+            runCatching { getFavoritePosts(site = site, refresh = true) }
         }
     }
 

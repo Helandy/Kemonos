@@ -34,4 +34,7 @@ internal interface IFavoritesRepository {
 
     suspend fun getFavoritePosts(site: SelectedSite, refresh: Boolean): List<PostDomain>
     suspend fun refreshFavoriteArtists(site: SelectedSite): List<FavoriteArtist>
+
+    /** Отправляет ранее лайкнутые без авторизации посты на сервер после логина. */
+    suspend fun syncLocalLikes(site: SelectedSite)
 }

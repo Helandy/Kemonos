@@ -20,6 +20,7 @@ import su.afk.kemonos.preferences.site.ISelectedSiteUseCase
 import su.afk.kemonos.preferences.site.setSiteAndAwait
 import su.afk.kemonos.preferences.ui.IUiSettingUseCase
 import su.afk.kemonos.profile.domain.favorites.GetFavoritePostsUseCase
+import su.afk.kemonos.profile.domain.favorites.SyncLocalLikesUseCase
 import su.afk.kemonos.profile.domain.favorites.posts.GetFavoritePostsPagingUseCase
 import su.afk.kemonos.profile.presenter.favoritePosts.FavoritePostsState.*
 import su.afk.kemonos.profile.utils.Const.KEY_SELECT_SITE
@@ -35,6 +36,7 @@ import javax.inject.Inject
 @HiltViewModel
 internal class FavoritePostsViewModel @Inject constructor(
     private val getFavoritePostsUseCase: GetFavoritePostsUseCase,
+    private val syncLocalLikesUseCase: SyncLocalLikesUseCase,
     private val storeCreatorsRepository: IStoreCreatorsRepository,
     private val storeFavoritePostsRepository: IStoreFavoritePostsRepository,
     private val navManager: NavigationManager,
@@ -219,6 +221,8 @@ internal class FavoritePostsViewModel @Inject constructor(
         if (currentState.loading) return@launch
 
         setState { copy(loading = true) }
+
+        runCatching { syncLocalLikesUseCase(currentState.selectSite) }
 
         runCatching {
             getFavoritePostsUseCase(site = currentState.selectSite, refresh = refresh)

@@ -23,6 +23,8 @@ import su.afk.kemonos.storage.entity.favorites.post.FavoritePostEntity
 import su.afk.kemonos.storage.entity.favorites.post.FavoritePostsDao
 import su.afk.kemonos.storage.entity.favorites.updates.FreshFavoriteArtistUpdateEntity
 import su.afk.kemonos.storage.entity.favorites.updates.FreshFavoriteArtistUpdatesDao
+import su.afk.kemonos.storage.entity.localLikes.LocalLikedPostEntity
+import su.afk.kemonos.storage.entity.localLikes.LocalLikedPostsDao
 import su.afk.kemonos.storage.entity.popular.PostsPopularCacheEntity
 import su.afk.kemonos.storage.entity.popular.dao.KemonoPostsPopularCacheDao
 import su.afk.kemonos.storage.entity.post.PostContentCacheEntity
@@ -47,6 +49,7 @@ import su.afk.kemonos.storage.entity.video.dao.VideoInfoDao
         FavoriteArtistEntity::class,
         FavoritePostEntity::class,
         FreshFavoriteArtistUpdateEntity::class,
+        LocalLikedPostEntity::class,
 
         ProfileEntity::class,
         CreatorProfileDmsCacheEntity::class,
@@ -76,7 +79,7 @@ import su.afk.kemonos.storage.entity.video.dao.VideoInfoDao
         DownloadTaskEntity::class,
         BlacklistedAuthorEntity::class,
     ],
-    version = 21,
+    version = 22,
     exportSchema = false
 )
 @TypeConverters(SelectedSiteConverters::class)
@@ -86,6 +89,7 @@ internal abstract class KemonoDatabase : RoomDatabase() {
     abstract fun favoriteArtistsDao(): FavoriteArtistsDao
     abstract fun favoritePostsDao(): FavoritePostsDao
     abstract fun freshFavoriteArtistUpdatesDao(): FreshFavoriteArtistUpdatesDao
+    abstract fun localLikedPostsDao(): LocalLikedPostsDao
 
     abstract fun kemonoProfileDao(): ProfileDao
     abstract fun creatorProfileCacheDao(): CreatorProfileCacheDao
