@@ -8,6 +8,7 @@ import su.afk.kemonos.creatorPost.api.domain.model.PostContentDomain
 import su.afk.kemonos.creatorPost.domain.useCase.FavoritesPostUseCase
 import su.afk.kemonos.domain.SelectedSite
 import su.afk.kemonos.preferences.site.ISelectedSiteUseCase
+import su.afk.kemonos.storage.api.repository.localLikes.IStoreLocalLikedPostsRepository
 import javax.inject.Inject
 
 internal class LikeDelegate @Inject constructor(
@@ -16,9 +17,10 @@ internal class LikeDelegate @Inject constructor(
     private val isAuthKemonoUseCase: IsAuthKemonoUseCase,
     private val isAuthCoomerUseCase: IsAuthCoomerUseCase,
     private val isAuthPawchiveUseCase: IsAuthPawchiveUseCase,
+    private val localLikedPostsRepository: IStoreLocalLikedPostsRepository,
 ) {
 
-    /** Проверка можно ли лайкнуть */
+    /** Проверка авторизован ли пользователь на выбранном сайте (лайк без авторизации хранится только локально) */
     suspend fun postIsAvailableLike(): Boolean {
         return when (selectedSiteUseCase.getSite()) {
             SelectedSite.C -> isAuthCoomerUseCase().first()
@@ -27,8 +29,7 @@ internal class LikeDelegate @Inject constructor(
         }
     }
 
-    /** добавить в избранное */
-    /** удалить из избранное */
+    /** добавить/удалить лайк: авторизован — через API, иначе — только локально */
     suspend fun onFavoriteClick(
         isFavorite: Boolean,
         post: PostContentDomain?,
@@ -36,9 +37,27 @@ internal class LikeDelegate @Inject constructor(
         creatorId: String,
         postId: String
     ): Result<Unit> {
+        val site = selectedSiteUseCase.getSite()
+
+        if (!postIsAvailableLike()) {
+            return runCatching {
+                if (isFavorite) {
+                    localLikedPostsRepository.remove(
+                        site = site,
+                        service = service,
+                        creatorId = creatorId,
+                        postId = postId,
+                    )
+                } else {
+                    val domain = post?.post ?: throw IllegalStateException("Post is null")
+                    localLikedPostsRepository.add(site = site, item = domain)
+                }
+            }
+        }
+
         return if (isFavorite) {
             favoritesPostUseCase.removePost(
-                site = selectedSiteUseCase.getSite(),
+                site = site,
                 service = service,
                 creatorId = creatorId,
                 postId = postId
@@ -46,17 +65,30 @@ internal class LikeDelegate @Inject constructor(
         } else {
             val domain = post?.post ?: return Result.failure(IllegalStateException("Post is null"))
             favoritesPostUseCase.addPost(
-                site = selectedSiteUseCase.getSite(),
+                site = site,
                 post = domain
             )
         }
     }
 
-    /** Проверит в избранном ли пост */
+    /** Проверит в избранном/локальных лайках ли пост */
     suspend fun isPostFavorite(service: String, creatorId: String, postId: String): Boolean {
+        val site = selectedSiteUseCase.getSite()
+
+        if (!postIsAvailableLike()) {
+            return runCatching {
+                localLikedPostsRepository.exists(
+                    site = site,
+                    service = service,
+                    creatorId = creatorId,
+                    postId = postId,
+                )
+            }.getOrElse { false }
+        }
+
         return runCatching {
             favoritesPostUseCase.isPostFavorite(
-                site = selectedSiteUseCase.getSite(),
+                site = site,
                 service = service,
                 creatorId = creatorId,
                 postId = postId,

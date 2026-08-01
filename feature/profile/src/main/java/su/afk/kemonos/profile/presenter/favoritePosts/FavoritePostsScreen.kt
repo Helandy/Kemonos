@@ -57,6 +57,7 @@ import su.afk.kemonos.ui.components.searchBar.PostsSearchBarWithMediaFilters
 import su.afk.kemonos.ui.haptic.rememberPullRefreshWithHaptic
 import su.afk.kemonos.ui.presenter.baseScreen.BaseScreen
 import su.afk.kemonos.ui.presenter.baseScreen.CenterBackTopBar
+import su.afk.kemonos.ui.presenter.baseScreen.DefaultEmptyContent
 import su.afk.kemonos.ui.presenter.baseScreen.TopBarScroll
 import su.afk.kemonos.ui.preview.KemonosPreviewScreen
 import su.afk.kemonos.profile.R as ProfileR
@@ -76,8 +77,6 @@ internal fun FavoritePostsScreen(
         onEvent(Event.Load(refresh = true))
         posts.refresh()
     }
-    val pagingIsEmpty = posts.loadState.refresh is LoadState.NotLoading && posts.itemCount == 0
-
     BaseScreen(
         contentPadding = PaddingValues(horizontal = 8.dp),
         topBarScroll = TopBarScroll.EnterAlways,
@@ -103,7 +102,7 @@ internal fun FavoritePostsScreen(
                 )
             }
         },
-        isEmpty = pagingIsEmpty,
+        // Пустое состояние рисует сам PostsContentPaging — не дублируем его оверлеем BaseScreen.
         onRetry = { onEvent(Event.Load()) },
         floatingActionButtonEnd = {
             FloatingActionButton(
@@ -130,16 +129,20 @@ internal fun FavoritePostsScreen(
             onRefresh = onRefreshWithHaptic,
         ) {
             if (state.groupByAuthorEnabled) {
-                FavoritePostsGroupedList(
-                    uiSettingModel = state.uiSettingModel,
-                    postsViewMode = state.uiSettingModel.favoritePostsViewMode,
-                    posts = state.groupedPosts,
-                    authorNamesByKey = state.authorNamesByKey,
-                    onPostClick = { onEvent(Event.NavigateToPost(it)) },
-                    onProfileClick = { service, creatorId ->
-                        onEvent(Event.NavigateToProfile(service, creatorId))
-                    }
-                )
+                if (state.groupedPosts.isEmpty() && !state.loading) {
+                    DefaultEmptyContent()
+                } else {
+                    FavoritePostsGroupedList(
+                        uiSettingModel = state.uiSettingModel,
+                        postsViewMode = state.uiSettingModel.favoritePostsViewMode,
+                        posts = state.groupedPosts,
+                        authorNamesByKey = state.authorNamesByKey,
+                        onPostClick = { onEvent(Event.NavigateToPost(it)) },
+                        onProfileClick = { service, creatorId ->
+                            onEvent(Event.NavigateToProfile(service, creatorId))
+                        }
+                    )
+                }
             } else {
                 PostsContentPaging(
                     postsViewMode = state.uiSettingModel.favoritePostsViewMode,

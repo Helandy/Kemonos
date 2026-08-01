@@ -12,6 +12,7 @@ import su.afk.kemonos.error.error.storage.RetryStorage
 import su.afk.kemonos.navigation.NavigationManager
 import su.afk.kemonos.navigation.storage.NavigationStorage
 import su.afk.kemonos.preferences.site.ISelectedSiteUseCase
+import su.afk.kemonos.profile.domain.favorites.SyncLocalLikesUseCase
 import su.afk.kemonos.profile.domain.login.LoginResult
 import su.afk.kemonos.profile.domain.login.LoginUseCase
 import su.afk.kemonos.profile.navigation.AuthDestination
@@ -24,6 +25,7 @@ import javax.inject.Inject
 @HiltViewModel
 internal class LoginViewModel @Inject constructor(
     private val loginUseCase: LoginUseCase,
+    private val syncLocalLikesUseCase: SyncLocalLikesUseCase,
     private val navigationManager: NavigationManager,
     private val navigationStorage: NavigationStorage,
     private val selectedSiteProvider: ISelectedSiteUseCase,
@@ -118,6 +120,11 @@ internal class LoginViewModel @Inject constructor(
         ) {
             is LoginResult.Success -> {
                 setState { copy(isLoading = false) }
+
+                val site = currentState.selectSite
+                viewModelScope.launch {
+                    runCatching { syncLocalLikesUseCase(site) }
+                }
 
                 val shouldAskToSave = !currentState.filledFromCredentialManager
                 if (shouldAskToSave) {

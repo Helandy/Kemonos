@@ -2,6 +2,7 @@ package su.afk.kemonos.profile.data.api
 
 import okhttp3.ResponseBody
 import retrofit2.Response
+import retrofit2.http.DELETE
 import retrofit2.http.GET
 import retrofit2.http.POST
 import retrofit2.http.Path
@@ -51,6 +52,14 @@ internal interface FavoritesApi {
     @AuthCookie
     @POST("v1/favorites/post/{service}/{creatorId}/{postId}")
     suspend fun addFavoritePost(
+        @Path("service") service: String,
+        @Path("creatorId") creatorId: String,
+        @Path("postId") postId: String,
+    ): Response<Unit>
+
+    @AuthCookie
+    @DELETE("v1/favorites/post/{service}/{creatorId}/{postId}")
+    suspend fun removeFavoritePost(
         @Path("service") service: String,
         @Path("creatorId") creatorId: String,
         @Path("postId") postId: String,

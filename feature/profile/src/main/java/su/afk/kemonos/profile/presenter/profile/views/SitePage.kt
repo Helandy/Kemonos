@@ -60,7 +60,7 @@ internal fun SitePage(
                 SelectedSite.K -> R.string.profile_favorites_title_kemono
                 SelectedSite.P -> R.string.profile_favorites_title_pawchive
             },
-            enabled = isLoggedIn,
+            enabled = true,
             onFavoriteProfiles = onFavoriteProfiles,
             onFavoritePosts = onFavoritePosts,
             updatesCount = updatedFavoritesCount

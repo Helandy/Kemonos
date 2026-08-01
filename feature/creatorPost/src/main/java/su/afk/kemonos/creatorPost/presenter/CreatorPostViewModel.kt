@@ -233,26 +233,19 @@ internal class CreatorPostViewModel @AssistedInject constructor(
         return request.requestId == loadingRequestId
     }
 
-    /** Обновляет состояние избранного и видимость кнопки лайка */
+    /** Обновляет состояние избранного/лайка (кнопка доступна всегда, авторизация не требуется) */
     private suspend fun applyFavoriteState(request: LoadRequest) {
-        val isShowAvailable = likeDelegate.postIsAvailableLike()
-        if (!isLatestRequest(request)) return
-
-        val favorite = if (isShowAvailable) {
-            likeDelegate.isPostFavorite(
-                service = request.service,
-                creatorId = request.creatorId,
-                postId = request.postId,
-            )
-        } else {
-            null
-        }
+        val favorite = likeDelegate.isPostFavorite(
+            service = request.service,
+            creatorId = request.creatorId,
+            postId = request.postId,
+        )
         if (!isLatestRequest(request)) return
 
         setState {
             copy(
-                isFavoriteShowButton = isShowAvailable,
-                isFavorite = favorite ?: isFavorite
+                isFavoriteShowButton = true,
+                isFavorite = favorite
             )
         }
     }
