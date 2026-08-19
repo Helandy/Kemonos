@@ -1,5 +1,6 @@
 package su.afk.kemonos.storage.repository.popular
 
+import su.afk.kemonos.storage.entity.popular.dao.PostsPopularCacheDao
 import kotlinx.serialization.json.Json
 import su.afk.kemonos.domain.SelectedSite
 import su.afk.kemonos.posts.api.popular.PopularPosts
@@ -7,35 +8,24 @@ import su.afk.kemonos.preferences.useCase.CacheTimes.TTL_1_HOURS
 import su.afk.kemonos.preferences.useCase.CacheTimes.TTL_3_DAYS
 import su.afk.kemonos.storage.api.repository.popular.IStoragePopularPostsRepository
 import su.afk.kemonos.storage.entity.popular.PostsPopularCacheEntity
-import su.afk.kemonos.storage.entity.popular.dao.CoomerPostsPopularCacheDao
-import su.afk.kemonos.storage.entity.popular.dao.KemonoPostsPopularCacheDao
-import su.afk.kemonos.storage.entity.popular.dao.PawchivePostsPopularCacheDao
 import javax.inject.Inject
 
 internal class StoragePopularPostsRepository @Inject constructor(
-    private val kemonoDao: KemonoPostsPopularCacheDao,
-    private val coomerDao: CoomerPostsPopularCacheDao,
-    private val pawchiveDao: PawchivePostsPopularCacheDao,
+    private val daos: Map<SelectedSite, @JvmSuppressWildcards PostsPopularCacheDao>,
     private val json: Json,
 ) : IStoragePopularPostsRepository {
 
+    private fun dao(site: SelectedSite): PostsPopularCacheDao = daos.getValue(site)
+
     override suspend fun getFreshOrNull(site: SelectedSite, queryKey: String, offset: Int): PopularPosts? {
-        val row = when (site) {
-            SelectedSite.K -> kemonoDao.get(queryKey, offset)
-            SelectedSite.C -> coomerDao.get(queryKey, offset)
-            SelectedSite.P -> pawchiveDao.get(queryKey, offset)
-        } ?: return null
+        val row = dao(site).get(queryKey, offset) ?: return null
 
         if (!isFresh(row.updatedAt, row.queryKey)) return null
         return decode(row.payloadJson)
     }
 
     override suspend fun getStaleOrNull(site: SelectedSite, queryKey: String, offset: Int): PopularPosts? {
-        val row = when (site) {
-            SelectedSite.K -> kemonoDao.get(queryKey, offset)
-            SelectedSite.C -> coomerDao.get(queryKey, offset)
-            SelectedSite.P -> pawchiveDao.get(queryKey, offset)
-        } ?: return null
+        val row = dao(site).get(queryKey, offset) ?: return null
 
         return decode(row.payloadJson)
     }
@@ -48,27 +38,15 @@ internal class StoragePopularPostsRepository @Inject constructor(
             payloadJson = encode(value)
         )
 
-        when (site) {
-            SelectedSite.K -> kemonoDao.upsert(entity)
-            SelectedSite.C -> coomerDao.upsert(entity)
-            SelectedSite.P -> pawchiveDao.upsert(entity)
-        }
+        dao(site).upsert(entity)
     }
 
     override suspend fun clearPage(site: SelectedSite, queryKey: String, offset: Int) {
-        when (site) {
-            SelectedSite.K -> kemonoDao.delete(queryKey, offset)
-            SelectedSite.C -> coomerDao.delete(queryKey, offset)
-            SelectedSite.P -> pawchiveDao.delete(queryKey, offset)
-        }
+        dao(site).delete(queryKey, offset)
     }
 
     override suspend fun clearAll(site: SelectedSite) {
-        when (site) {
-            SelectedSite.K -> kemonoDao.clearAll()
-            SelectedSite.C -> coomerDao.clearAll()
-            SelectedSite.P -> pawchiveDao.clearAll()
-        }
+        dao(site).clearAll()
     }
 
     override suspend fun clearCache(site: SelectedSite) {
@@ -76,19 +54,9 @@ internal class StoragePopularPostsRepository @Inject constructor(
         val shortMinTs = now - TTL_1_HOURS
         val longMinTs = now - TTL_3_DAYS
 
-        when (site) {
-            SelectedSite.K -> {
-                kemonoDao.deleteExpiredByPeriods(shortMinTs, SHORT_PERIODS)
-                kemonoDao.deleteExpiredByPeriods(longMinTs, LONG_PERIODS)
-            }
-            SelectedSite.C -> {
-                coomerDao.deleteExpiredByPeriods(shortMinTs, SHORT_PERIODS)
-                coomerDao.deleteExpiredByPeriods(longMinTs, LONG_PERIODS)
-            }
-            SelectedSite.P -> {
-                pawchiveDao.deleteExpiredByPeriods(shortMinTs, SHORT_PERIODS)
-                pawchiveDao.deleteExpiredByPeriods(longMinTs, LONG_PERIODS)
-            }
+        dao(site).apply {
+            deleteExpiredByPeriods(shortMinTs, SHORT_PERIODS)
+            deleteExpiredByPeriods(longMinTs, LONG_PERIODS)
         }
     }
 

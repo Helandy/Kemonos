@@ -21,6 +21,7 @@ import su.afk.kemonos.ui.preview.KemonosPreviewScreen
 @Composable
 internal fun FavoritesCard(
     titleId: Int,
+    titleArg: String,
     updatesCount: Int,
     enabled: Boolean,
     onFavoriteProfiles: () -> Unit,
@@ -31,7 +32,7 @@ internal fun FavoritesCard(
         verticalArrangement = Arrangement.spacedBy(10.dp),
     ) {
         Text(
-            text = stringResource(titleId),
+            text = stringResource(titleId, titleArg),
             style = MaterialTheme.typography.titleMedium,
             fontWeight = FontWeight.SemiBold,
         )
@@ -58,7 +59,8 @@ internal fun FavoritesCard(
 private fun PreviewFavoritesCard() {
     KemonosPreviewScreen {
         FavoritesCard(
-            titleId = R.string.profile_favorites_title_coomer,
+            titleId = R.string.profile_favorites_title_site,
+            titleArg = "Coomer",
             updatesCount = 1,
             enabled = true,
             onFavoriteProfiles = {},

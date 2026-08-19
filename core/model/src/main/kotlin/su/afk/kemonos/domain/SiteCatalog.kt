@@ -1,0 +1,155 @@
+package su.afk.kemonos.domain
+
+/** Откуда берётся базовый адрес для аватаров/шапок автора. */
+enum class CreatorImageHost {
+    /** Корень сайта: https://pawchive.pw */
+    ROOT,
+
+    /** Хост превью: https://img.kemono.cr */
+    IMAGE,
+}
+
+/**
+ * Правила вывода хостов медиа из базового адреса API.
+ * Префикс `null` означает «использовать хост как есть».
+ */
+data class SiteMediaHosts(
+    /** "img" -> img.example.com */
+    val imageHostPrefix: String?,
+
+    /** "file" -> file.example.com */
+    val fileHostPrefix: String?,
+
+    val creatorImageHost: CreatorImageHost,
+)
+
+/**
+ * Описание источника: всё, что отличает один сайт от другого, собрано в одном месте.
+ *
+ * Добавление нового источника = новая константа [SelectedSite] + ветка в [SiteCatalog.specOf].
+ * Компилятор не даст забыть вторую часть.
+ */
+data class SiteSpec(
+    val site: SelectedSite,
+
+    /**
+     * Стабильный слаг: ключи DataStore, имена файлов БД.
+     * Менять нельзя — сломает уже сохранённые у пользователей настройки.
+     */
+    val slug: String,
+
+    /** Имя для UI. */
+    val displayName: String,
+
+    val defaultApiUrl: String,
+
+    val mediaHosts: SiteMediaHosts,
+
+    /**
+     * Самодостаточный источник: сам обслуживает все свои сервисы.
+     *
+     * Kemono и Coomer — федеративная пара: сервис (onlyfans/fansly/...) определяет,
+     * какому из двух сайтов принадлежит контент. Остальные источники самодостаточны.
+     */
+    val standalone: Boolean,
+
+    /**
+     * Готов ли источник к использованию.
+     *
+     * false = источник объявлен, но его слой данных ещё не подключён:
+     * он не показывается в UI и не участвует в стартовой проверке.
+     */
+    val available: Boolean = true,
+
+    /** Устаревшие дефолты: при совпадении молча заменяются на [defaultApiUrl]. */
+    val legacyDefaultApiUrls: Set<String> = emptySet(),
+)
+
+object SiteCatalog {
+
+    /** Сервисы, которые в паре Kemono/Coomer принадлежат Coomer. */
+    val coomerServices: Set<String> = setOf("onlyfans", "fansly", "candfans")
+
+    /** Исчерпывающий when — новая константа [SelectedSite] ломает сборку именно здесь. */
+    private fun specOf(site: SelectedSite): SiteSpec = when (site) {
+        SelectedSite.K -> SiteSpec(
+            site = site,
+            slug = "kemono",
+            displayName = "Kemono",
+            defaultApiUrl = "https://kemono.cr/api/",
+            mediaHosts = SiteMediaHosts(
+                imageHostPrefix = "img",
+                fileHostPrefix = "img",
+                creatorImageHost = CreatorImageHost.IMAGE,
+            ),
+            standalone = false,
+        )
+
+        SelectedSite.C -> SiteSpec(
+            site = site,
+            slug = "coomer",
+            displayName = "Coomer",
+            defaultApiUrl = "https://coomer.st/api/",
+            mediaHosts = SiteMediaHosts(
+                imageHostPrefix = "img",
+                fileHostPrefix = "img",
+                creatorImageHost = CreatorImageHost.IMAGE,
+            ),
+            standalone = false,
+        )
+
+        SelectedSite.P -> SiteSpec(
+            site = site,
+            slug = "pawchive",
+            displayName = "Pawchive",
+            defaultApiUrl = "https://pawchive.pw/api/",
+            mediaHosts = SiteMediaHosts(
+                imageHostPrefix = "img",
+                fileHostPrefix = "file",
+                creatorImageHost = CreatorImageHost.ROOT,
+            ),
+            standalone = true,
+            legacyDefaultApiUrls = setOf("https://pawchive.st/api/"),
+        )
+
+        SelectedSite.O -> SiteSpec(
+            site = site,
+            slug = "onlyhaven",
+            displayName = "OnlyHaven",
+            defaultApiUrl = "https://cum.st/api/",
+            mediaHosts = SiteMediaHosts(
+                /** превью: img.cum.st/thumbnail/{sha256}/preview.webp */
+                imageHostPrefix = "img",
+                /** файлы: e1.cum.st/media/{sha256}/{variant} */
+                fileHostPrefix = "e1",
+                creatorImageHost = CreatorImageHost.IMAGE,
+            ),
+            standalone = true,
+            /** TODO: включить, когда появятся API-слой и база OnlyHaven. */
+            available = false,
+        )
+    }
+
+    private val specs: Map<SelectedSite, SiteSpec> =
+        SelectedSite.entries.associateWith(::specOf)
+
+    /** Все объявленные источники, в порядке объявления [SelectedSite]. */
+    val all: List<SiteSpec> = SelectedSite.entries.map(specs::getValue)
+
+    /** Источники, готовые к показу пользователю. */
+    val available: List<SiteSpec> = all.filter { it.available }
+
+    /** Порядок источников для UI. */
+    val availableSites: List<SelectedSite> = available.map { it.site }
+
+    operator fun get(site: SelectedSite): SiteSpec = specs.getValue(site)
+
+    /** Какому источнику федеративной пары принадлежит сервис. */
+    fun siteByService(service: String): SelectedSite =
+        if (service in coomerServices) SelectedSite.C else SelectedSite.K
+}
+
+val SelectedSite.spec: SiteSpec get() = SiteCatalog[this]
+val SelectedSite.slug: String get() = spec.slug
+val SelectedSite.displayName: String get() = spec.displayName
+val SelectedSite.defaultApiUrl: String get() = spec.defaultApiUrl

@@ -27,17 +27,14 @@ class SettingState {
 
         val appVersion: String = "",
 
-        val kemonoUrl: String = "",
-        val coomerUrl: String = "",
-        val pawchiveUrl: String = "",
-        val pawchiveImageUrl: String = "",
-        val pawchiveFileUrl: String = "",
+        /** Разрешённые сейчас адреса, для показа. */
+        val siteUrls: Map<SelectedSite, String> = emptyMap(),
+        val imageHostUrls: Map<SelectedSite, String> = emptyMap(),
+        val fileHostUrls: Map<SelectedSite, String> = emptyMap(),
 
-        val inputKemonoDomain: String = "",
-        val inputCoomerDomain: String = "",
-        val inputPawchiveDomain: String = "",
-        val inputPawchiveImageHostOverride: String = "",
-        val inputPawchiveFileHostOverride: String = "",
+        val inputDomains: Map<SelectedSite, String> = emptyMap(),
+        val inputImageHostOverrides: Map<SelectedSite, String> = emptyMap(),
+        val inputFileHostOverrides: Map<SelectedSite, String> = emptyMap(),
         val inputVideoPreviewServerDomain: String = "",
 
         val isSaving: Boolean = false,
@@ -46,15 +43,11 @@ class SettingState {
         val uiSettingModel: UiSettingModel = UiSettingModel(),
 
         /** cache */
-        val tagsKemonoCache: CacheTimeUi = CacheTimeUi(null, null, false),
-        val tagsCoomerCache: CacheTimeUi = CacheTimeUi(null, null, false),
-        val tagsPawchiveCache: CacheTimeUi = CacheTimeUi(null, null, false),
+        val tagsCache: Map<SelectedSite, CacheTimeUi> = emptyMap(),
         val communityCache: CacheTimeUi = CacheTimeUi(null, null, false),
         val discordCache: CacheTimeUi = CacheTimeUi(null, null, false),
 
-        val creatorsKemonoCache: CacheTimeUi = CacheTimeUi(null, null, false),
-        val creatorsCoomerCache: CacheTimeUi = CacheTimeUi(null, null, false),
-        val creatorsPawchiveCache: CacheTimeUi = CacheTimeUi(null, null, false),
+        val creatorsCache: Map<SelectedSite, CacheTimeUi> = emptyMap(),
 
         val postContentsCache: CacheTimeUi = CacheTimeUi(null, null, false),
         val postsSearchCache: CacheTimeUi = CacheTimeUi(null, null, false),
@@ -71,7 +64,17 @@ class SettingState {
         val translateModels: List<TranslateModelInfo> = emptyList(),
         val translateModelsLoading: Boolean = false,
         val deletingTranslateModelId: String? = null,
-    ) : UiState
+    ) : UiState {
+
+        fun siteUrl(site: SelectedSite): String = siteUrls[site].orEmpty()
+        fun inputDomain(site: SelectedSite): String = inputDomains[site].orEmpty()
+        fun tagsCache(site: SelectedSite): CacheTimeUi = tagsCache[site] ?: EMPTY_CACHE
+        fun creatorsCache(site: SelectedSite): CacheTimeUi = creatorsCache[site] ?: EMPTY_CACHE
+
+        private companion object {
+            val EMPTY_CACHE = CacheTimeUi(null, null, false)
+        }
+    }
 
     sealed interface Event : UiEvent {
         data object Back : Event
@@ -144,11 +147,9 @@ class SettingState {
         }
 
         sealed interface ApiSetting : Event {
-            data class InputKemonoDomainChanged(val value: String) : ApiSetting
-            data class InputCoomerDomainChanged(val value: String) : ApiSetting
-            data class InputPawchiveDomainChanged(val value: String) : ApiSetting
-            data class InputPawchiveImageHostChanged(val value: String) : ApiSetting
-            data class InputPawchiveFileHostChanged(val value: String) : ApiSetting
+            data class InputDomainChanged(val site: SelectedSite, val value: String) : ApiSetting
+            data class InputImageHostChanged(val site: SelectedSite, val value: String) : ApiSetting
+            data class InputFileHostChanged(val site: SelectedSite, val value: String) : ApiSetting
             data class InputVideoPreviewServerDomainChanged(val value: String) : ApiSetting
             data class ToggleApiSite(val site: SelectedSite, val enabled: Boolean) : ApiSetting
             data object SaveUrls : ApiSetting

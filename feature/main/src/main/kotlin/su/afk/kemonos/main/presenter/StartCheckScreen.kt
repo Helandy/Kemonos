@@ -1,5 +1,6 @@
 package su.afk.kemonos.main.presenter
 
+import su.afk.kemonos.domain.SelectedSite
 import android.content.ContentValues
 import android.content.Intent
 import android.provider.MediaStore
@@ -119,9 +120,9 @@ internal fun StartCheckScreen(
             else -> {
                 MainApiUnavailableContent(
                     state = state,
-                    onInputKemonoChanged = { onEvent(Event.InputKemonoDomainChanged(it)) },
-                    onInputCoomerChanged = { onEvent(Event.InputCoomerDomainChanged(it)) },
-                    onInputPawchiveChanged = { onEvent(Event.InputPawchiveDomainChanged(it)) },
+                    onInputDomainChanged = { site, value ->
+                        onEvent(Event.InputDomainChanged(site, value))
+                    },
                     onToggleApiSite = { site, enabled -> onEvent(Event.ToggleApiSite(site, enabled)) },
                 )
 
@@ -174,12 +175,8 @@ private fun StartCheckScreenPreview_Update() = PreviewHost {
     StartCheckScreen(
         state = StartCheckState.State(
             isLoading = false,
-            kemonoUrl = "https://kemono.cr",
-            coomerUrl = "https://coomer.st",
-            pawchiveUrl = "https://pawchive.pw",
-            inputKemonoDomain = "kemono.cr",
-            inputCoomerDomain = "coomer.st",
-            inputPawchiveDomain = "pawchive.pw",
+            siteUrls = PREVIEW_SITE_URLS,
+            inputDomains = PREVIEW_INPUT_DOMAINS,
             updateInfo = AppUpdateInfo(
                 latestVersionName = "1.0.0",
                 releaseUrl = "url",
@@ -196,12 +193,8 @@ private fun StartCheckScreenPreview_Update() = PreviewHost {
 private fun StartCheckScreenPreview_Loading() = PreviewHost {
     StartCheckScreen(
         state = StartCheckState.State(
-            kemonoUrl = "https://kemono.cr",
-            coomerUrl = "https://coomer.st",
-            pawchiveUrl = "https://pawchive.pw",
-            inputKemonoDomain = "kemono.cr",
-            inputCoomerDomain = "coomer.st",
-            inputPawchiveDomain = "pawchive.pw",
+            siteUrls = PREVIEW_SITE_URLS,
+            inputDomains = PREVIEW_INPUT_DOMAINS,
         ),
         onEvent = {},
         effect = emptyFlow()
@@ -215,12 +208,8 @@ private fun StartCheckScreenPreview_Success() = PreviewHost {
         state = StartCheckState.State(
             isLoading = false,
             apiSuccess = true,
-            kemonoUrl = "https://kemono.cr",
-            coomerUrl = "https://coomer.st",
-            pawchiveUrl = "https://pawchive.pw",
-            inputKemonoDomain = "kemono.cr",
-            inputCoomerDomain = "coomer.st",
-            inputPawchiveDomain = "pawchive.pw",
+            siteUrls = PREVIEW_SITE_URLS,
+            inputDomains = PREVIEW_INPUT_DOMAINS,
         ),
         onEvent = {},
         effect = emptyFlow()
@@ -233,25 +222,35 @@ private fun StartCheckScreenPreview_Error() = PreviewHost {
     StartCheckScreen(
         state = StartCheckState.State(
             isLoading = false,
-            kemonoError = ErrorItem(
-                title = "API недоступно",
-                message = "Не удалось выполнить запрос. Проверь домен или попробуй позже.",
-                code = 503,
-                method = "GET",
-                url = "https://kemono.cr/api/v1/ping",
-                requestId = "req_01HXYZ...",
-                body = """{"error":"Service Unavailable"}""",
-                cause = "Timeout"
+            errors = mapOf(
+                SelectedSite.K to ErrorItem(
+                    title = "API недоступно",
+                    message = "Не удалось выполнить запрос. Проверь домен или попробуй позже.",
+                    code = 503,
+                    method = "GET",
+                    url = "https://kemono.cr/api/v1/ping",
+                    requestId = "req_01HXYZ...",
+                    body = """{"error":"Service Unavailable"}""",
+                    cause = "Timeout"
+                ),
             ),
             apiSuccess = false,
-            kemonoUrl = "https://kemono.cr",
-            coomerUrl = "https://coomer.st",
-            pawchiveUrl = "https://pawchive.pw",
-            inputKemonoDomain = "kemono.cr",
-            inputCoomerDomain = "coomer.st",
-            inputPawchiveDomain = "pawchive.pw",
+            siteUrls = PREVIEW_SITE_URLS,
+            inputDomains = PREVIEW_INPUT_DOMAINS,
         ),
         onEvent = {},
         effect = emptyFlow()
     )
 }
+
+private val PREVIEW_SITE_URLS = mapOf(
+    SelectedSite.K to "https://kemono.cr",
+    SelectedSite.C to "https://coomer.st",
+    SelectedSite.P to "https://pawchive.pw",
+)
+
+private val PREVIEW_INPUT_DOMAINS = mapOf(
+    SelectedSite.K to "kemono.cr",
+    SelectedSite.C to "coomer.st",
+    SelectedSite.P to "pawchive.pw",
+)

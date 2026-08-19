@@ -1,5 +1,13 @@
 package su.afk.kemonos.storage.di
 
+import su.afk.kemonos.storage.entity.tags.dao.TagsDao
+import su.afk.kemonos.storage.entity.postsSearch.dao.PostsSearchCacheDao
+import su.afk.kemonos.storage.entity.postsSearch.history.dao.PostsSearchHistoryDao
+import su.afk.kemonos.storage.entity.dms.dao.DmsCacheDao
+import su.afk.kemonos.storage.entity.popular.dao.PostsPopularCacheDao
+import su.afk.kemonos.storage.entity.creators.dao.CreatorsDao
+import dagger.multibindings.IntoMap
+import su.afk.kemonos.domain.SelectedSite
 import android.content.Context
 import android.content.SharedPreferences
 import androidx.room.Room
@@ -73,10 +81,10 @@ internal object DatabaseKemonoModule {
                     scope = "kemono",
                     prefs = prefs,
                     keysToClearOnDestructiveRebuild = listOf(
-                        CacheKeys.CREATORS_KEMONO,
+                        CacheKeys.creators(SelectedSite.K),
                     ),
                     keysToClearWhenTableEmpty = mapOf(
-                        "creators" to listOf(CacheKeys.CREATORS_KEMONO),
+                        "creators" to listOf(CacheKeys.creators(SelectedSite.K)),
                     ),
                 )
             )
@@ -140,4 +148,34 @@ internal object DatabaseKemonoModule {
 
     @Provides
     fun provideBlacklistedAuthorsDao(db: KemonoDatabase): BlacklistedAuthorsDao = db.blacklistedAuthorsDao()
+
+    @Provides
+    @IntoMap
+    @SiteKey(SelectedSite.K)
+    fun provideKemonoCreatorsDaoIntoMap(db: KemonoDatabase): CreatorsDao = db.kemonoCreatorsDao()
+
+    @Provides
+    @IntoMap
+    @SiteKey(SelectedSite.K)
+    fun provideKemonoTagsDaoIntoMap(db: KemonoDatabase): TagsDao = db.kemonoTagsDao()
+
+    @Provides
+    @IntoMap
+    @SiteKey(SelectedSite.K)
+    fun provideKemonoPostsSearchCacheDaoIntoMap(db: KemonoDatabase): PostsSearchCacheDao = db.postsSearchCacheDao()
+
+    @Provides
+    @IntoMap
+    @SiteKey(SelectedSite.K)
+    fun provideKemonoPostsSearchHistoryDaoIntoMap(db: KemonoDatabase): PostsSearchHistoryDao = db.postsSearchHistoryDao()
+
+    @Provides
+    @IntoMap
+    @SiteKey(SelectedSite.K)
+    fun provideKemonoDmsCacheDaoIntoMap(db: KemonoDatabase): DmsCacheDao = db.dmsCacheDao()
+
+    @Provides
+    @IntoMap
+    @SiteKey(SelectedSite.K)
+    fun provideKemonoPostsPopularCacheDaoIntoMap(db: KemonoDatabase): PostsPopularCacheDao = db.postsPopularCacheDao()
 }

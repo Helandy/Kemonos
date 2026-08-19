@@ -4,23 +4,23 @@ import androidx.room.*
 import su.afk.kemonos.storage.entity.creators.CreatorsEntity
 
 @Dao
-internal interface PawchiveCreatorsDao {
+internal interface PawchiveCreatorsDao : CreatorsDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertServices(entities: List<CreatorsEntity>)
+    override suspend fun insertServices(entities: List<CreatorsEntity>)
 
     @Query("DELETE FROM creators")
-    suspend fun clear()
+    override suspend fun clear()
 
     @Transaction
-    suspend fun replaceAllChunked(entities: List<CreatorsEntity>, chunkSize: Int = 5000) {
+    override suspend fun replaceAllChunked(entities: List<CreatorsEntity>, chunkSize: Int) {
         if (entities.isEmpty()) return
         clear()
         entities.chunked(chunkSize).forEach { insertServices(it) }
     }
 
     @Query("SELECT DISTINCT service FROM creators ORDER BY service ASC")
-    suspend fun getDistinctServices(): List<String>
+    override suspend fun getDistinctServices(): List<String>
 
     @Query(
         """
@@ -31,7 +31,7 @@ internal interface PawchiveCreatorsDao {
         LIMIT :limit OFFSET :offset
         """
     )
-    suspend fun searchPopularityAsc(service: String?, q: String, limit: Int, offset: Int): List<CreatorsEntity>
+    override suspend fun searchPopularityAsc(service: String?, q: String, limit: Int, offset: Int): List<CreatorsEntity>
 
     @Query(
         """
@@ -42,7 +42,7 @@ internal interface PawchiveCreatorsDao {
         LIMIT :limit OFFSET :offset
         """
     )
-    suspend fun searchPopularityDesc(service: String?, q: String, limit: Int, offset: Int): List<CreatorsEntity>
+    override suspend fun searchPopularityDesc(service: String?, q: String, limit: Int, offset: Int): List<CreatorsEntity>
 
     @Query(
         """
@@ -53,7 +53,7 @@ internal interface PawchiveCreatorsDao {
         LIMIT :limit OFFSET :offset
         """
     )
-    suspend fun searchIndexAsc(service: String?, q: String, limit: Int, offset: Int): List<CreatorsEntity>
+    override suspend fun searchIndexAsc(service: String?, q: String, limit: Int, offset: Int): List<CreatorsEntity>
 
     @Query(
         """
@@ -64,7 +64,7 @@ internal interface PawchiveCreatorsDao {
         LIMIT :limit OFFSET :offset
         """
     )
-    suspend fun searchIndexDesc(service: String?, q: String, limit: Int, offset: Int): List<CreatorsEntity>
+    override suspend fun searchIndexDesc(service: String?, q: String, limit: Int, offset: Int): List<CreatorsEntity>
 
     @Query(
         """
@@ -75,7 +75,7 @@ internal interface PawchiveCreatorsDao {
         LIMIT :limit OFFSET :offset
         """
     )
-    suspend fun searchUpdateAsc(service: String?, q: String, limit: Int, offset: Int): List<CreatorsEntity>
+    override suspend fun searchUpdateAsc(service: String?, q: String, limit: Int, offset: Int): List<CreatorsEntity>
 
     @Query(
         """
@@ -86,7 +86,7 @@ internal interface PawchiveCreatorsDao {
         LIMIT :limit OFFSET :offset
         """
     )
-    suspend fun searchUpdateDesc(service: String?, q: String, limit: Int, offset: Int): List<CreatorsEntity>
+    override suspend fun searchUpdateDesc(service: String?, q: String, limit: Int, offset: Int): List<CreatorsEntity>
 
     @Query(
         """
@@ -97,7 +97,7 @@ internal interface PawchiveCreatorsDao {
         LIMIT :limit OFFSET :offset
         """
     )
-    suspend fun searchNameAsc(service: String?, q: String, limit: Int, offset: Int): List<CreatorsEntity>
+    override suspend fun searchNameAsc(service: String?, q: String, limit: Int, offset: Int): List<CreatorsEntity>
 
     @Query(
         """
@@ -108,7 +108,7 @@ internal interface PawchiveCreatorsDao {
         LIMIT :limit OFFSET :offset
         """
     )
-    suspend fun searchNameDesc(service: String?, q: String, limit: Int, offset: Int): List<CreatorsEntity>
+    override suspend fun searchNameDesc(service: String?, q: String, limit: Int, offset: Int): List<CreatorsEntity>
 
     @Query(
         """
@@ -118,7 +118,7 @@ internal interface PawchiveCreatorsDao {
         LIMIT :limit
         """
     )
-    suspend fun randomCreators(service: String?, limit: Int): List<CreatorsEntity>
+    override suspend fun randomCreators(service: String?, limit: Int): List<CreatorsEntity>
 
     @Query(
         """
@@ -126,5 +126,5 @@ internal interface PawchiveCreatorsDao {
         WHERE (service || ':' || id) IN (:compositeKeys)
         """
     )
-    suspend fun findByCompositeKeys(compositeKeys: Set<String>): List<CreatorsEntity>
+    override suspend fun findByCompositeKeys(compositeKeys: Set<String>): List<CreatorsEntity>
 }

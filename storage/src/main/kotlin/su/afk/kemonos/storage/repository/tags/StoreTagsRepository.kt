@@ -2,49 +2,32 @@ package su.afk.kemonos.storage.repository.tags
 
 import su.afk.kemonos.domain.SelectedSite
 import su.afk.kemonos.posts.api.tags.Tags
-import su.afk.kemonos.preferences.useCase.CacheKeys.TAGS_COOMER
-import su.afk.kemonos.preferences.useCase.CacheKeys.TAGS_KEMONO
-import su.afk.kemonos.preferences.useCase.CacheKeys.TAGS_PAWCHIVE
+import su.afk.kemonos.preferences.useCase.CacheKeys
 import su.afk.kemonos.preferences.useCase.CacheTimes.TTL_30_DAYS
 import su.afk.kemonos.preferences.useCase.ICacheTimestampUseCase
 import su.afk.kemonos.storage.api.repository.tags.IStoreTagsRepository
 import su.afk.kemonos.storage.entity.tags.TagsEntity.Companion.toDomain
 import su.afk.kemonos.storage.entity.tags.TagsEntity.Companion.toEntity
-import su.afk.kemonos.storage.entity.tags.dao.CoomerTagsDao
-import su.afk.kemonos.storage.entity.tags.dao.KemonoTagsDao
-import su.afk.kemonos.storage.entity.tags.dao.PawchiveTagsDao
+import su.afk.kemonos.storage.entity.tags.dao.TagsDao
 import javax.inject.Inject
 
 internal class StoreTagsRepository @Inject constructor(
-    private val kemonoTagsDao: KemonoTagsDao,
-    private val coomerTagsDao: CoomerTagsDao,
-    private val pawchiveTagsDao: PawchiveTagsDao,
+    private val daos: Map<SelectedSite, @JvmSuppressWildcards TagsDao>,
     private val cacheTimestamps: ICacheTimestampUseCase,
 ) : IStoreTagsRepository {
 
-    override suspend fun getAll(site: SelectedSite): List<Tags> {
-        return when (site) {
-            SelectedSite.K -> kemonoTagsDao.getAll().map { it.toDomain() }
-            SelectedSite.C -> coomerTagsDao.getAll().map { it.toDomain() }
-            SelectedSite.P -> pawchiveTagsDao.getAll().map { it.toDomain() }
-        }
-    }
+    private fun dao(site: SelectedSite): TagsDao = daos.getValue(site)
+
+    override suspend fun getAll(site: SelectedSite): List<Tags> =
+        dao(site).getAll().map { it.toDomain() }
 
     override suspend fun update(site: SelectedSite, items: List<Tags>) {
-        when (site) {
-            SelectedSite.K -> kemonoTagsDao.replaceAll(items.map { it.toEntity() })
-            SelectedSite.C -> coomerTagsDao.replaceAll(items.map { it.toEntity() })
-            SelectedSite.P -> pawchiveTagsDao.replaceAll(items.map { it.toEntity() })
-        }
+        dao(site).replaceAll(items.map { it.toEntity() })
         updateCacheTimestamp(site)
     }
 
     override suspend fun clear(site: SelectedSite) {
-        when (site) {
-            SelectedSite.K -> kemonoTagsDao.clear()
-            SelectedSite.C -> coomerTagsDao.clear()
-            SelectedSite.P -> pawchiveTagsDao.clear()
-        }
+        dao(site).clear()
         cacheTimestamps.clearCacheTimestamp(keyPref = key(site))
     }
 
@@ -69,9 +52,5 @@ internal class StoreTagsRepository @Inject constructor(
         return System.currentTimeMillis() - ts < TTL_30_DAYS
     }
 
-    private fun key(site: SelectedSite): String = when (site) {
-        SelectedSite.K -> TAGS_KEMONO
-        SelectedSite.C -> TAGS_COOMER
-        SelectedSite.P -> TAGS_PAWCHIVE
-    }
+    private fun key(site: SelectedSite): String = CacheKeys.tags(site)
 }

@@ -13,6 +13,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import su.afk.kemonos.domain.SelectedSite
+import su.afk.kemonos.domain.SiteCatalog
+import su.afk.kemonos.domain.displayName
 import su.afk.kemonos.setting.R
 import su.afk.kemonos.setting.presenter.SettingState.Event
 import su.afk.kemonos.setting.presenter.SettingState.State
@@ -63,55 +65,33 @@ internal fun SettingDatabaseScreen(
 
             Spacer(Modifier.height(14.dp))
 
-            CacheRow(
-                title = stringResource(R.string.settings_cache_tags_kemono),
-                description = stringResource(R.string.settings_cache_tags_kemono_description),
-                time = state.tagsKemonoCache,
-                dateFormatMode = state.uiSettingModel.dateFormatMode,
-                onClear = { onEvent(Event.CacheClearAction.Tags(SelectedSite.K)) },
-                busy = state.clearInProgress
-            )
-            CacheRow(
-                title = stringResource(R.string.settings_cache_tags_coomer),
-                description = stringResource(R.string.settings_cache_tags_coomer_description),
-                time = state.tagsCoomerCache,
-                dateFormatMode = state.uiSettingModel.dateFormatMode,
-                onClear = { onEvent(Event.CacheClearAction.Tags(SelectedSite.C)) },
-                busy = state.clearInProgress
-            )
-            CacheRow(
-                title = stringResource(R.string.settings_cache_tags_pawchive),
-                description = stringResource(R.string.settings_cache_tags_pawchive_description),
-                time = state.tagsPawchiveCache,
-                dateFormatMode = state.uiSettingModel.dateFormatMode,
-                onClear = { onEvent(Event.CacheClearAction.Tags(SelectedSite.P)) },
-                busy = state.clearInProgress
-            )
+            SiteCatalog.availableSites.forEach { site ->
+                CacheRow(
+                    title = stringResource(R.string.settings_cache_tags_site, site.displayName),
+                    description = stringResource(
+                        R.string.settings_cache_tags_site_description,
+                        site.displayName,
+                    ),
+                    time = state.tagsCache(site),
+                    dateFormatMode = state.uiSettingModel.dateFormatMode,
+                    onClear = { onEvent(Event.CacheClearAction.Tags(site)) },
+                    busy = state.clearInProgress
+                )
+            }
 
-            CacheRow(
-                title = stringResource(R.string.settings_cache_creators_kemono),
-                description = stringResource(R.string.settings_cache_creators_kemono_description),
-                time = state.creatorsKemonoCache,
-                dateFormatMode = state.uiSettingModel.dateFormatMode,
-                onClear = { onEvent(Event.CacheClearAction.Creators(SelectedSite.K)) },
-                busy = state.clearInProgress
-            )
-            CacheRow(
-                title = stringResource(R.string.settings_cache_creators_coomer),
-                description = stringResource(R.string.settings_cache_creators_coomer_description),
-                time = state.creatorsCoomerCache,
-                dateFormatMode = state.uiSettingModel.dateFormatMode,
-                onClear = { onEvent(Event.CacheClearAction.Creators(SelectedSite.C)) },
-                busy = state.clearInProgress
-            )
-            CacheRow(
-                title = stringResource(R.string.settings_cache_creators_pawchive),
-                description = stringResource(R.string.settings_cache_creators_pawchive_description),
-                time = state.creatorsPawchiveCache,
-                dateFormatMode = state.uiSettingModel.dateFormatMode,
-                onClear = { onEvent(Event.CacheClearAction.Creators(SelectedSite.P)) },
-                busy = state.clearInProgress
-            )
+            SiteCatalog.availableSites.forEach { site ->
+                CacheRow(
+                    title = stringResource(R.string.settings_cache_creators_site, site.displayName),
+                    description = stringResource(
+                        R.string.settings_cache_creators_site_description,
+                        site.displayName,
+                    ),
+                    time = state.creatorsCache(site),
+                    dateFormatMode = state.uiSettingModel.dateFormatMode,
+                    onClear = { onEvent(Event.CacheClearAction.Creators(site)) },
+                    busy = state.clearInProgress
+                )
+            }
 
             CacheRow(
                 title = stringResource(R.string.settings_cache_community),

@@ -1,32 +1,15 @@
 package su.afk.kemonos.preferences
 
+import su.afk.kemonos.domain.SelectedSite
 import su.afk.kemonos.utils.url.toRootUrl
 import javax.inject.Inject
 import javax.inject.Singleton
 
+/** Корневой адрес источника: "https://kemono.cr/api/" -> "https://kemono.cr". */
 @Singleton
-class GetKemonoRootUrlUseCase @Inject constructor(
+class GetRootUrlUseCase @Inject constructor(
     private val urlPrefs: UrlPrefs,
 ) {
-    operator fun invoke(): String {
-        return urlPrefs.kemonoUrl.value.toRootUrl()
-    }
-}
-
-@Singleton
-class GetCoomerRootUrlUseCase @Inject constructor(
-    private val urlPrefs: UrlPrefs,
-) {
-    operator fun invoke(): String {
-        return urlPrefs.coomerUrl.value.toRootUrl()
-    }
-}
-
-@Singleton
-class GetPawchiveRootUrlUseCase @Inject constructor(
-    private val urlPrefs: UrlPrefs,
-) {
-    operator fun invoke(): String {
-        return urlPrefs.pawchiveUrl.value.toRootUrl()
-    }
+    operator fun invoke(site: SelectedSite): String =
+        urlPrefs.siteUrl(site).value.toRootUrl()
 }

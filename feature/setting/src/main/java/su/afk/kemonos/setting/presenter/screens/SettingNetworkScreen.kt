@@ -10,6 +10,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import su.afk.kemonos.domain.SelectedSite
+import su.afk.kemonos.domain.SiteCatalog
+import su.afk.kemonos.domain.displayName
 import su.afk.kemonos.setting.R
 import su.afk.kemonos.setting.presenter.SettingState.Event
 import su.afk.kemonos.setting.presenter.SettingState.State
@@ -70,19 +72,19 @@ internal fun SettingNetworkScreen(
                     modifier = Modifier.padding(8.dp),
                     verticalArrangement = Arrangement.spacedBy(6.dp)
                 ) {
-                    if (SelectedSite.K in state.uiSettingModel.enabledSites) {
-                        CurrentUrlText("Kemono: ${state.kemonoUrl}")
-                    }
-                    if (SelectedSite.C in state.uiSettingModel.enabledSites) {
-                        CurrentUrlText("Coomer: ${state.coomerUrl}")
-                    }
-                    if (SelectedSite.P in state.uiSettingModel.enabledSites) {
-                        CurrentUrlText("Pawchive: ${state.pawchiveUrl}")
+                    state.uiSettingModel.enabledSiteList.forEach { site ->
+                        CurrentUrlText("${site.displayName}: ${state.siteUrl(site)}")
                         CurrentUrlText(
-                            stringResource(R.string.settings_pawchive_image_current, state.pawchiveImageUrl)
+                            stringResource(
+                                R.string.settings_media_image_current,
+                                state.imageHostUrls[site].orEmpty(),
+                            )
                         )
                         CurrentUrlText(
-                            stringResource(R.string.settings_pawchive_file_current, state.pawchiveFileUrl)
+                            stringResource(
+                                R.string.settings_media_file_current,
+                                state.fileHostUrls[site].orEmpty(),
+                            )
                         )
                     }
                 }
@@ -97,48 +99,31 @@ internal fun SettingNetworkScreen(
 
             Spacer(Modifier.height(10.dp))
 
-            if (SelectedSite.K in state.uiSettingModel.enabledSites) {
+            state.uiSettingModel.enabledSiteList.forEachIndexed { index, site ->
+                if (index > 0) Spacer(Modifier.height(16.dp))
+
                 BaseUrlDomainField(
-                    value = state.inputKemonoDomain,
-                    onValueChange = { onEvent(Event.ApiSetting.InputKemonoDomainChanged(it)) },
-                    label = { Text(stringResource(su.afk.kemonos.ui.R.string.main_api_kemono_url_label)) }
-                )
-            }
-
-            if (SelectedSite.K in state.uiSettingModel.enabledSites && SelectedSite.C in state.uiSettingModel.enabledSites) {
-                Spacer(Modifier.height(10.dp))
-            }
-
-            if (SelectedSite.C in state.uiSettingModel.enabledSites) {
-                BaseUrlDomainField(
-                    value = state.inputCoomerDomain,
-                    onValueChange = { onEvent(Event.ApiSetting.InputCoomerDomainChanged(it)) },
-                    label = { Text(stringResource(su.afk.kemonos.ui.R.string.main_api_coomer_url_label)) }
-                )
-            }
-
-            if ((SelectedSite.K in state.uiSettingModel.enabledSites || SelectedSite.C in state.uiSettingModel.enabledSites) &&
-                SelectedSite.P in state.uiSettingModel.enabledSites
-            ) {
-                Spacer(Modifier.height(16.dp))
-            }
-
-            if (SelectedSite.P in state.uiSettingModel.enabledSites) {
-                BaseUrlDomainField(
-                    value = state.inputPawchiveDomain,
-                    onValueChange = { onEvent(Event.ApiSetting.InputPawchiveDomainChanged(it)) },
-                    label = { Text(stringResource(su.afk.kemonos.ui.R.string.main_api_pawchive_url_label)) }
+                    value = state.inputDomain(site),
+                    onValueChange = { onEvent(Event.ApiSetting.InputDomainChanged(site, it)) },
+                    label = {
+                        Text(
+                            stringResource(
+                                su.afk.kemonos.ui.R.string.main_api_site_url_label,
+                                site.displayName,
+                            )
+                        )
+                    }
                 )
 
                 Spacer(Modifier.height(12.dp))
 
                 Text(
-                    text = stringResource(R.string.settings_pawchive_media_hosts_title),
+                    text = stringResource(R.string.settings_media_hosts_title, site.displayName),
                     style = MaterialTheme.typography.titleSmall,
                 )
 
                 Text(
-                    text = stringResource(R.string.settings_pawchive_media_hosts_description),
+                    text = stringResource(R.string.settings_media_hosts_description, site.displayName),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
@@ -146,17 +131,15 @@ internal fun SettingNetworkScreen(
                 Spacer(Modifier.height(8.dp))
 
                 BaseUrlDomainField(
-                    value = state.inputPawchiveImageHostOverride,
-                    onValueChange = {
-                        onEvent(Event.ApiSetting.InputPawchiveImageHostChanged(it))
-                    },
-                    label = { Text(stringResource(R.string.settings_pawchive_image_host_label)) },
+                    value = state.inputImageHostOverrides[site].orEmpty(),
+                    onValueChange = { onEvent(Event.ApiSetting.InputImageHostChanged(site, it)) },
+                    label = { Text(stringResource(R.string.settings_media_image_host_label)) },
                     suffixText = null,
                     supportingText = {
                         Text(
                             stringResource(
-                                R.string.settings_pawchive_media_host_automatic,
-                                state.pawchiveImageUrl,
+                                R.string.settings_media_host_automatic,
+                                state.imageHostUrls[site].orEmpty(),
                             )
                         )
                     },
@@ -165,17 +148,15 @@ internal fun SettingNetworkScreen(
                 Spacer(Modifier.height(8.dp))
 
                 BaseUrlDomainField(
-                    value = state.inputPawchiveFileHostOverride,
-                    onValueChange = {
-                        onEvent(Event.ApiSetting.InputPawchiveFileHostChanged(it))
-                    },
-                    label = { Text(stringResource(R.string.settings_pawchive_file_host_label)) },
+                    value = state.inputFileHostOverrides[site].orEmpty(),
+                    onValueChange = { onEvent(Event.ApiSetting.InputFileHostChanged(site, it)) },
+                    label = { Text(stringResource(R.string.settings_media_file_host_label)) },
                     suffixText = null,
                     supportingText = {
                         Text(
                             stringResource(
-                                R.string.settings_pawchive_media_host_automatic,
-                                state.pawchiveFileUrl,
+                                R.string.settings_media_host_automatic,
+                                state.fileHostUrls[site].orEmpty(),
                             )
                         )
                     },
@@ -227,24 +208,16 @@ private fun EnabledApiSwitches(
     enabledSites: Set<SelectedSite>,
     onToggle: (SelectedSite, Boolean) -> Unit,
 ) {
-    SelectedSite.entries.forEach { site ->
+    SiteCatalog.availableSites.forEach { site ->
         val checked = site in enabledSites
         SwitchRow(
-            title = site.settingsLabel(),
+            title = site.displayName,
             checked = checked,
             enabled = enabledSites.size > 1 || !checked,
             onCheckedChange = { onToggle(site, it) },
         )
     }
 }
-
-@Composable
-private fun SelectedSite.settingsLabel(): String =
-    when (this) {
-        SelectedSite.K -> stringResource(su.afk.kemonos.ui.R.string.main_api_kemono_label)
-        SelectedSite.C -> stringResource(su.afk.kemonos.ui.R.string.main_api_coomer_label)
-        SelectedSite.P -> stringResource(su.afk.kemonos.ui.R.string.main_api_pawchive_label)
-    }
 
 @Preview(name = "Setting Network", showBackground = true)
 @Composable

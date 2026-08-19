@@ -9,6 +9,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import su.afk.kemonos.domain.SelectedSite
+import su.afk.kemonos.domain.SiteCatalog
+import su.afk.kemonos.domain.displayName
 import su.afk.kemonos.domain.models.ErrorItem
 import su.afk.kemonos.main.presenter.StartCheckState.State
 import su.afk.kemonos.ui.R
@@ -17,9 +19,7 @@ import su.afk.kemonos.ui.components.input.BaseUrlDomainField
 @Composable
 internal fun MainApiUnavailableContent(
     state: State,
-    onInputKemonoChanged: (String) -> Unit,
-    onInputCoomerChanged: (String) -> Unit,
-    onInputPawchiveChanged: (String) -> Unit,
+    onInputDomainChanged: (SelectedSite, String) -> Unit,
     onToggleApiSite: (SelectedSite, Boolean) -> Unit,
 ) {
     Column(
@@ -39,30 +39,22 @@ internal fun MainApiUnavailableContent(
         MainSectionCard(title = stringResource(R.string.main_api_site_status_title)) {
             MainSiteErrorsBlock(
                 enabledSites = state.enabledSites,
-                kemonoError = state.kemonoError,
-                coomerError = state.coomerError,
-                pawchiveError = state.pawchiveError,
+                errors = state.errors,
             )
         }
 
         MainSectionCard(title = stringResource(R.string.main_api_section_domains_title)) {
             MainDomainFields(
                 enabledSites = state.enabledSites,
-                inputKemonoDomain = state.inputKemonoDomain,
-                inputCoomerDomain = state.inputCoomerDomain,
-                inputPawchiveDomain = state.inputPawchiveDomain,
-                onInputKemonoChanged = onInputKemonoChanged,
-                onInputCoomerChanged = onInputCoomerChanged,
-                onInputPawchiveChanged = onInputPawchiveChanged,
+                inputDomains = state.inputDomains,
+                onInputDomainChanged = onInputDomainChanged,
             )
         }
 
         MainSectionCard(title = stringResource(R.string.main_api_current_urls_title)) {
             MainCurrentUrls(
                 enabledSites = state.enabledSites,
-                kemonoUrl = state.kemonoUrl,
-                coomerUrl = state.coomerUrl,
-                pawchiveUrl = state.pawchiveUrl,
+                siteUrls = state.siteUrls,
             )
         }
     }
@@ -104,22 +96,14 @@ private fun MainSectionCard(
 @Composable
 internal fun MainSiteErrorsBlock(
     enabledSites: Set<SelectedSite>,
-    kemonoError: ErrorItem?,
-    coomerError: ErrorItem?,
-    pawchiveError: ErrorItem?,
+    errors: Map<SelectedSite, ErrorItem>,
 ) {
-    val enabledList = enabledSites.orderedSites()
-
-    enabledList.forEachIndexed { index, site ->
+    enabledSites.orderedSites().forEachIndexed { index, site ->
         if (index > 0) HorizontalDivider()
 
         MainSiteStatusRow(
-            siteLabel = site.label(),
-            error = when (site) {
-                SelectedSite.K -> kemonoError
-                SelectedSite.C -> coomerError
-                SelectedSite.P -> pawchiveError
-            }
+            siteLabel = site.displayName,
+            error = errors[site],
         )
     }
 }
@@ -271,9 +255,7 @@ internal fun MainErrorDebugDetails(error: ErrorItem) {
 @Composable
 internal fun MainCurrentUrls(
     enabledSites: Set<SelectedSite>,
-    kemonoUrl: String,
-    coomerUrl: String,
-    pawchiveUrl: String,
+    siteUrls: Map<SelectedSite, String>,
 ) {
     Column(
         modifier = Modifier.fillMaxWidth(),
@@ -282,11 +264,7 @@ internal fun MainCurrentUrls(
     ) {
         enabledSites.orderedSites().forEach { site ->
             Text(
-                text = when (site) {
-                    SelectedSite.K -> "Kemono: $kemonoUrl"
-                    SelectedSite.C -> "Coomer: $coomerUrl"
-                    SelectedSite.P -> "Pawchive: $pawchiveUrl"
-                },
+                text = "${site.displayName}: ${siteUrls[site].orEmpty()}",
                 style = MaterialTheme.typography.bodySmall,
                 textAlign = TextAlign.Center
             )
@@ -299,7 +277,7 @@ internal fun MainEnabledSitesBlock(
     enabledSites: Set<SelectedSite>,
     onToggleApiSite: (SelectedSite, Boolean) -> Unit,
 ) {
-    SelectedSite.entries.forEach { site ->
+    SiteCatalog.availableSites.forEach { site ->
         val checked = site in enabledSites
         val canToggle = enabledSites.size > 1 || !checked
 
@@ -309,7 +287,7 @@ internal fun MainEnabledSitesBlock(
         ) {
             Text(
                 modifier = Modifier.weight(1f),
-                text = site.label(),
+                text = site.displayName,
                 style = MaterialTheme.typography.bodyLarge,
             )
 
@@ -325,42 +303,18 @@ internal fun MainEnabledSitesBlock(
 @Composable
 internal fun MainDomainFields(
     enabledSites: Set<SelectedSite>,
-    inputKemonoDomain: String,
-    inputCoomerDomain: String,
-    inputPawchiveDomain: String,
-    onInputKemonoChanged: (String) -> Unit,
-    onInputCoomerChanged: (String) -> Unit,
-    onInputPawchiveChanged: (String) -> Unit,
+    inputDomains: Map<SelectedSite, String>,
+    onInputDomainChanged: (SelectedSite, String) -> Unit,
 ) {
-    if (SelectedSite.K in enabledSites) {
+    enabledSites.orderedSites().forEachIndexed { index, site ->
+        if (index > 0) Spacer(Modifier.height(8.dp))
+
         BaseUrlDomainField(
-            value = inputKemonoDomain,
-            onValueChange = onInputKemonoChanged,
-            label = { Text(stringResource(R.string.main_api_kemono_url_label)) },
-        )
-    }
-
-    if (SelectedSite.K in enabledSites && SelectedSite.C in enabledSites) {
-        Spacer(Modifier.height(8.dp))
-    }
-
-    if (SelectedSite.C in enabledSites) {
-        BaseUrlDomainField(
-            value = inputCoomerDomain,
-            onValueChange = onInputCoomerChanged,
-            label = { Text(stringResource(R.string.main_api_coomer_url_label)) },
-        )
-    }
-
-    if ((SelectedSite.K in enabledSites || SelectedSite.C in enabledSites) && SelectedSite.P in enabledSites) {
-        Spacer(Modifier.height(8.dp))
-    }
-
-    if (SelectedSite.P in enabledSites) {
-        BaseUrlDomainField(
-            value = inputPawchiveDomain,
-            onValueChange = onInputPawchiveChanged,
-            label = { Text(stringResource(R.string.main_api_pawchive_url_label)) },
+            value = inputDomains[site].orEmpty(),
+            onValueChange = { onInputDomainChanged(site, it) },
+            label = {
+                Text(stringResource(R.string.main_api_site_url_label, site.displayName))
+            },
         )
     }
 }
@@ -429,13 +383,5 @@ internal fun ErrorItem.toUiMeta(): ErrorUiMeta {
 internal fun ErrorItem.hasDebugDetails(): Boolean =
     !body.isNullOrBlank() || !cause.isNullOrBlank()
 
-@Composable
-private fun SelectedSite.label(): String =
-    when (this) {
-        SelectedSite.K -> stringResource(R.string.main_api_kemono_label)
-        SelectedSite.C -> stringResource(R.string.main_api_coomer_label)
-        SelectedSite.P -> stringResource(R.string.main_api_pawchive_label)
-    }
-
 private fun Set<SelectedSite>.orderedSites(): List<SelectedSite> =
-    listOf(SelectedSite.K, SelectedSite.C, SelectedSite.P).filter { it in this }
+    SiteCatalog.availableSites.filter { it in this }

@@ -4,7 +4,7 @@ import androidx.room.*
 import su.afk.kemonos.storage.entity.postsSearch.entity.PostsSearchCacheEntity
 
 @Dao
-interface PawchivePostsSearchCacheDao {
+interface PawchivePostsSearchCacheDao : PostsSearchCacheDao {
 
     @Query(
         """
@@ -13,7 +13,7 @@ interface PawchivePostsSearchCacheDao {
         ORDER BY indexInPage ASC
         """
     )
-    suspend fun getPage(queryKey: String, offset: Int): List<PostsSearchCacheEntity>
+    override suspend fun getPage(queryKey: String, offset: Int): List<PostsSearchCacheEntity>
 
     @Query(
         """
@@ -24,23 +24,23 @@ interface PawchivePostsSearchCacheDao {
         ORDER BY indexInPage ASC
         """
     )
-    suspend fun getFreshPage(queryKey: String, offset: Int, minUpdatedAt: Long): List<PostsSearchCacheEntity>
+    override suspend fun getFreshPage(queryKey: String, offset: Int, minUpdatedAt: Long): List<PostsSearchCacheEntity>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun upsertAll(items: List<PostsSearchCacheEntity>)
+    override suspend fun upsertAll(items: List<PostsSearchCacheEntity>)
 
     @Query("DELETE FROM posts_search_cache WHERE queryKey = :queryKey AND offset = :offset")
-    suspend fun clearPage(queryKey: String, offset: Int)
+    override suspend fun clearPage(queryKey: String, offset: Int)
 
     @Transaction
-    suspend fun replacePage(queryKey: String, offset: Int, items: List<PostsSearchCacheEntity>) {
+    override suspend fun replacePage(queryKey: String, offset: Int, items: List<PostsSearchCacheEntity>) {
         clearPage(queryKey, offset)
         if (items.isNotEmpty()) upsertAll(items)
     }
 
     @Query("DELETE FROM posts_search_cache WHERE updatedAt < :minUpdatedAt")
-    suspend fun deleteOlderThan(minUpdatedAt: Long)
+    override suspend fun deleteOlderThan(minUpdatedAt: Long)
 
     @Query("DELETE FROM posts_search_cache")
-    suspend fun clearAll()
+    override suspend fun clearAll()
 }

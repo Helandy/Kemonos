@@ -1,5 +1,6 @@
 package su.afk.kemonos.profile.presenter.profile.views
 
+import su.afk.kemonos.domain.displayName
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.runtime.Composable
@@ -55,11 +56,8 @@ internal fun SitePage(
         )
 
         FavoritesCard(
-            titleId = when (site) {
-                SelectedSite.C -> R.string.profile_favorites_title_coomer
-                SelectedSite.K -> R.string.profile_favorites_title_kemono
-                SelectedSite.P -> R.string.profile_favorites_title_pawchive
-            },
+            titleId = R.string.profile_favorites_title_site,
+            titleArg = site.displayName,
             enabled = true,
             onFavoriteProfiles = onFavoriteProfiles,
             onFavoritePosts = onFavoritePosts,

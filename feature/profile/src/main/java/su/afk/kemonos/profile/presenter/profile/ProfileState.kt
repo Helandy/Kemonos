@@ -12,27 +12,26 @@ internal class ProfileState {
     data class State(
         val isLoading: Boolean = true,
 
-        val isLoginKemono: Boolean = false,
-        val isLoginCoomer: Boolean = false,
-        val isLoginPawchive: Boolean = false,
+        val loggedInSites: Set<SelectedSite> = emptySet(),
         val isLogin: Boolean = false,
 
-        val kemonoLogin: Login? = null,
-        val coomerLogin: Login? = null,
-        val pawchiveLogin: Login? = null,
+        val logins: Map<SelectedSite, Login> = emptyMap(),
 
         val showLogoutConfirm: Boolean = false,
         val logoutSite: SelectedSite? = null,
 
-        val kemonoUpdatedFavoritesCount: Int = 0,
-        val coomerUpdatedFavoritesCount: Int = 0,
-        val pawchiveUpdatedFavoritesCount: Int = 0,
+        val updatedFavoritesCounts: Map<SelectedSite, Int> = emptyMap(),
 
         val isExportInProgress: Boolean = false,
         val isImportInProgress: Boolean = false,
 
         val uiSettingModel: UiSettingModel = UiSettingModel(),
-    ) : UiState
+    ) : UiState {
+
+        fun isLoggedIn(site: SelectedSite): Boolean = site in loggedInSites
+        fun login(site: SelectedSite): Login? = logins[site]
+        fun updatedFavoritesCount(site: SelectedSite): Int = updatedFavoritesCounts[site] ?: 0
+    }
 
     enum class ExportType {
         ARTISTS,

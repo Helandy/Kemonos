@@ -1,9 +1,7 @@
 package su.afk.kemonos.profile.data.repository
 
+import su.afk.kemonos.auth.IsAuthSiteUseCase
 import kotlinx.coroutines.flow.first
-import su.afk.kemonos.auth.IsAuthCoomerUseCase
-import su.afk.kemonos.auth.IsAuthKemonoUseCase
-import su.afk.kemonos.auth.IsAuthPawchiveUseCase
 import su.afk.kemonos.data.dto.PostUnifiedDto.Companion.toDomain
 import su.afk.kemonos.domain.SelectedSite
 import su.afk.kemonos.domain.models.PostDomain
@@ -26,17 +24,11 @@ internal class FavoritesRepository @Inject constructor(
     private val postsStore: IStoreFavoritePostsRepository,
     private val localLikedPostsStore: IStoreLocalLikedPostsRepository,
     private val localLikedArtistsStore: IStoreLocalLikedArtistsRepository,
-    private val isAuthKemonoUseCase: IsAuthKemonoUseCase,
-    private val isAuthCoomerUseCase: IsAuthCoomerUseCase,
-    private val isAuthPawchiveUseCase: IsAuthPawchiveUseCase,
+    private val isAuthSiteUseCase: IsAuthSiteUseCase,
 ) : IFavoritesRepository {
 
     private suspend fun isAuthorized(site: SelectedSite): Boolean {
-        return when (site) {
-            SelectedSite.C -> isAuthCoomerUseCase().first()
-            SelectedSite.K -> isAuthKemonoUseCase().first()
-            SelectedSite.P -> isAuthPawchiveUseCase().first()
-        }
+        return isAuthSiteUseCase(site).first()
     }
 
     /**

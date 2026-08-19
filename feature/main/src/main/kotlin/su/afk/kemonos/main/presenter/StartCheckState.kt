@@ -14,33 +14,30 @@ internal class StartCheckState {
         val isLoading: Boolean = true,
         val enabledSites: Set<SelectedSite> = UiSettingModel.DEFAULT_ENABLED_SITES,
 
-        val kemonoError: ErrorItem? = null,
-        val coomerError: ErrorItem? = null,
-        val pawchiveError: ErrorItem? = null,
+        val errors: Map<SelectedSite, ErrorItem> = emptyMap(),
 
         val apiSuccess: Boolean? = null,
 
         /** Значения из Prefs (текущие, «истинные») */
-        val kemonoUrl: String = "",
-        val coomerUrl: String = "",
-        val pawchiveUrl: String = "",
+        val siteUrls: Map<SelectedSite, String> = emptyMap(),
 
-        val inputKemonoDomain: String = "",
-        val inputCoomerDomain: String = "",
-        val inputPawchiveDomain: String = "",
+        val inputDomains: Map<SelectedSite, String> = emptyMap(),
 
         val updateInfo: AppUpdateInfo? = null,
         val pendingCrashPath: String? = null,
-    ) : UiState
+    ) : UiState {
+
+        fun error(site: SelectedSite): ErrorItem? = errors[site]
+        fun siteUrl(site: SelectedSite): String = siteUrls[site].orEmpty()
+        fun inputDomain(site: SelectedSite): String = inputDomains[site].orEmpty()
+    }
 
     sealed interface Event : UiEvent {
         data class UpdateClick(val info: AppUpdateInfo) : Event
         data object UpdateLaterClick : Event
         data object SaveAndCheck : Event
         data object SkipCheck : Event
-        data class InputKemonoDomainChanged(val value: String) : Event
-        data class InputCoomerDomainChanged(val value: String) : Event
-        data class InputPawchiveDomainChanged(val value: String) : Event
+        data class InputDomainChanged(val site: SelectedSite, val value: String) : Event
         data class ToggleApiSite(val site: SelectedSite, val enabled: Boolean) : Event
         data object CrashReportDelete : Event
         data object CrashReportSaveToDevice : Event

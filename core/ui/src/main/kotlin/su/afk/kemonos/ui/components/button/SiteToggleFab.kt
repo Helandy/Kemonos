@@ -46,6 +46,8 @@ fun SiteToggleFab(
                     SelectedSite.K -> R.drawable.kemono_logo
                     SelectedSite.C -> R.drawable.coomer_logo
                     SelectedSite.P -> R.drawable.pawchive_logo
+                    /** TODO: заменить на реальный логотип OnlyHaven (res/drawable/onlyhaven_logo.png) */
+                    SelectedSite.O -> R.drawable.logo
                 }
             ),
             modifier = Modifier

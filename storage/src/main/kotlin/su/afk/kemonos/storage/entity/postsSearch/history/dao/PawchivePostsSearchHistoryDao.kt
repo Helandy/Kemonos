@@ -5,13 +5,13 @@ import kotlinx.coroutines.flow.Flow
 import su.afk.kemonos.storage.entity.postsSearch.history.PostsSearchHistoryEntity
 
 @Dao
-interface PawchivePostsSearchHistoryDao {
+interface PawchivePostsSearchHistoryDao : PostsSearchHistoryDao {
 
     @Query("SELECT query FROM posts_search_history ORDER BY updatedAt DESC LIMIT :limit")
-    fun observeRecent(limit: Int): Flow<List<String>>
+    override fun observeRecent(limit: Int): Flow<List<String>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun upsert(item: PostsSearchHistoryEntity)
+    override suspend fun upsert(item: PostsSearchHistoryEntity)
 
     @Query(
         """
@@ -23,14 +23,14 @@ interface PawchivePostsSearchHistoryDao {
         )
         """
     )
-    suspend fun trim(limit: Int)
+    override suspend fun trimToLimit(limit: Int)
 
     @Transaction
-    suspend fun saveAndTrim(item: PostsSearchHistoryEntity, limit: Int) {
+    override suspend fun saveAndTrim(item: PostsSearchHistoryEntity, limit: Int) {
         upsert(item)
-        trim(limit)
+        trimToLimit(limit)
     }
 
     @Query("DELETE FROM posts_search_history WHERE query = :query")
-    suspend fun delete(query: String)
+    override suspend fun delete(query: String)
 }

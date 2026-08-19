@@ -1,11 +1,9 @@
 package su.afk.kemonos.main.domain
 
+import su.afk.kemonos.auth.IsAuthSiteUseCase
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.first
 import su.afk.kemonos.auth.ClearAuthUseCase
-import su.afk.kemonos.auth.IsAuthCoomerUseCase
-import su.afk.kemonos.auth.IsAuthKemonoUseCase
-import su.afk.kemonos.auth.IsAuthPawchiveUseCase
 import su.afk.kemonos.domain.SelectedSite
 import su.afk.kemonos.network.util.isClientError4xx
 import su.afk.kemonos.preferences.site.ISelectedSiteUseCase
@@ -23,17 +21,15 @@ class CheckAuthForAllSitesUseCase @Inject constructor(
     private val selectedSiteProvider: ISelectedSiteUseCase,
     private val getFavoriteArtistsUseCase: IGetFavoriteArtistsUseCase,
     private val clearAuthUseCase: ClearAuthUseCase,
-    private val isAuthKemonoUseCase: IsAuthKemonoUseCase,
-    private val isAuthCoomerUseCase: IsAuthCoomerUseCase,
-    private val isAuthPawchiveUseCase: IsAuthPawchiveUseCase,
+    private val isAuthSiteUseCase: IsAuthSiteUseCase,
 ) {
 
     suspend operator fun invoke(enabledSites: Set<SelectedSite>): Set<SelectedSite> = coroutineScope {
         val needApiCheck = mutableSetOf<SelectedSite>()
 
-        val isCoomerAuth = isAuthCoomerUseCase().first()
-        val isKemonoAuth = isAuthKemonoUseCase().first()
-        val isPawchiveAuth = isAuthPawchiveUseCase().first()
+        val isCoomerAuth = isAuthSiteUseCase(SelectedSite.C).first()
+        val isKemonoAuth = isAuthSiteUseCase(SelectedSite.K).first()
+        val isPawchiveAuth = isAuthSiteUseCase(SelectedSite.P).first()
 
         if (SelectedSite.C in enabledSites && isCoomerAuth) {
             val stillAuth = checkSiteAuth(SelectedSite.C)

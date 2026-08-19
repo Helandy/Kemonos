@@ -1,5 +1,6 @@
 package su.afk.kemonos.profile.presenter.profile
 
+import su.afk.kemonos.domain.displayName
 import android.content.Context
 import android.net.Uri
 import androidx.lifecycle.SavedStateHandle
@@ -115,15 +116,15 @@ internal class ProfileViewModel @Inject constructor(
         authObserveJob = observeAuthStateUseCase()
             .map { auth ->
                 AuthSnapshot(
-                    isKemonoAuthorized = auth.isKemonoAuthorized,
-                    isCoomerAuthorized = auth.isCoomerAuthorized,
-                    isPawchiveAuthorized = auth.isPawchiveAuthorized,
-                    kemonoLogin = auth.kemono.user?.toLogin(),
-                    coomerLogin = auth.coomer.user?.toLogin(),
-                    pawchiveLogin = auth.pawchive.user?.toLogin(),
-                    kemonoUpdatedFavoritesCount = freshUpdatesUseCase.get(SelectedSite.K).size,
-                    coomerUpdatedFavoritesCount = freshUpdatesUseCase.get(SelectedSite.C).size,
-                    pawchiveUpdatedFavoritesCount = freshUpdatesUseCase.get(SelectedSite.P).size,
+                    authorizedSites = SelectedSite.entries
+                        .filter { auth.isAuthorized(it) }
+                        .toSet(),
+                    logins = SelectedSite.entries.mapNotNull { site ->
+                        auth.forSite(site).user?.toLogin()?.let { site to it }
+                    }.toMap(),
+                    updatedFavoritesCounts = SelectedSite.entries.associateWith {
+                        freshUpdatesUseCase.get(it).size
+                    },
                 )
             }
             .distinctUntilChanged()
@@ -131,18 +132,10 @@ internal class ProfileViewModel @Inject constructor(
                 setState {
                     copy(
                         isLoading = false,
-                        isLoginKemono = snapshot.isKemonoAuthorized,
-                        isLoginCoomer = snapshot.isCoomerAuthorized,
-                        isLoginPawchive = snapshot.isPawchiveAuthorized,
-                        isLogin = snapshot.isKemonoAuthorized ||
-                                snapshot.isCoomerAuthorized ||
-                                snapshot.isPawchiveAuthorized,
-                        kemonoLogin = snapshot.kemonoLogin,
-                        coomerLogin = snapshot.coomerLogin,
-                        pawchiveLogin = snapshot.pawchiveLogin,
-                        kemonoUpdatedFavoritesCount = snapshot.kemonoUpdatedFavoritesCount,
-                        coomerUpdatedFavoritesCount = snapshot.coomerUpdatedFavoritesCount,
-                        pawchiveUpdatedFavoritesCount = snapshot.pawchiveUpdatedFavoritesCount,
+                        loggedInSites = snapshot.authorizedSites,
+                        isLogin = snapshot.authorizedSites.isNotEmpty(),
+                        logins = snapshot.logins,
+                        updatedFavoritesCounts = snapshot.updatedFavoritesCounts,
                     )
                 }
             }
@@ -301,11 +294,7 @@ internal class ProfileViewModel @Inject constructor(
         setState { copy(isImportInProgress = false) }
 
         importResult.onSuccess { result ->
-            val siteName = when (import.site) {
-                SelectedSite.K -> appContext.getString(R.string.kemono)
-                SelectedSite.C -> appContext.getString(R.string.coomer)
-                SelectedSite.P -> appContext.getString(R.string.pawchive)
-            }
+            val siteName = import.site.displayName
             val importTypeName = when (import.type) {
                 FavoritesImportType.ARTISTS -> appContext.getString(R.string.profile_export_authors)
                 FavoritesImportType.POSTS -> appContext.getString(R.string.profile_export_posts)
@@ -403,9 +392,9 @@ internal class ProfileViewModel @Inject constructor(
         setState {
             copy(
                 isLoading = false,
-                kemonoUpdatedFavoritesCount = freshUpdatesUseCase.get(SelectedSite.K).size,
-                coomerUpdatedFavoritesCount = freshUpdatesUseCase.get(SelectedSite.C).size,
-                pawchiveUpdatedFavoritesCount = freshUpdatesUseCase.get(SelectedSite.P).size,
+                updatedFavoritesCounts = SelectedSite.entries.associateWith {
+                    freshUpdatesUseCase.get(it).size
+                },
             )
         }
     }

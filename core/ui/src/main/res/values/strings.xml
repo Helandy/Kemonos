@@ -150,16 +150,12 @@
     <string name="main_api_error_code">Code: %1$d</string>
 
     <string name="main_api_current_urls_title">Current URLs in settings:</string>
-    <string name="main_api_current_urls_value">Kemono: %1$s\nCoomer: %2$s\nPawchive: %3$s</string>
 
     <string name="settings_api_subtitle">You can specify a different API domain if the default one is unavailable.
     </string>
 
     <string name="settings_api_fields_title">Custom domains</string>
 
-    <string name="main_api_kemono_url_label">Kemono API URL</string>
-    <string name="main_api_coomer_url_label">Coomer API URL</string>
-    <string name="main_api_pawchive_url_label">Pawchive API URL</string>
 
     <string name="main_api_check_button">Check</string>
 
@@ -198,9 +194,6 @@
     <string name="main_api_site_status_title">API status</string>
     <string name="main_api_enabled_sites_title">Enabled APIs</string>
 
-    <string name="main_api_kemono_label">Kemono</string>
-    <string name="main_api_coomer_label">Coomer</string>
-    <string name="main_api_pawchive_label">Pawchive</string>
 
     <string name="main_api_site_available">%1$s API is available</string>
     <string name="main_api_site_unavailable">%1$s API is unavailable</string>
@@ -275,4 +268,5 @@
     </string>
     <string name="random_creators_title">Random creators</string>
     <string name="creators_title">Creators</string>
+    <string name="main_api_site_url_label">%1$s API URL</string>
 </resources>

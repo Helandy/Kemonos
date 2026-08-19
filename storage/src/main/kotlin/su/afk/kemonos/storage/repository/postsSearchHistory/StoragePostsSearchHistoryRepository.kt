@@ -4,29 +4,22 @@ import kotlinx.coroutines.flow.Flow
 import su.afk.kemonos.domain.SelectedSite
 import su.afk.kemonos.storage.api.repository.postsSearchHistory.IStoragePostsSearchHistoryRepository
 import su.afk.kemonos.storage.entity.postsSearch.history.PostsSearchHistoryEntity
-import su.afk.kemonos.storage.entity.postsSearch.history.dao.CoomerPostsSearchHistoryDao
-import su.afk.kemonos.storage.entity.postsSearch.history.dao.KemonoPostsSearchHistoryDao
-import su.afk.kemonos.storage.entity.postsSearch.history.dao.PawchivePostsSearchHistoryDao
+import su.afk.kemonos.storage.entity.postsSearch.history.dao.PostsSearchHistoryDao
 import javax.inject.Inject
 
 internal class StoragePostsSearchHistoryRepository @Inject constructor(
-    private val kemonoDao: KemonoPostsSearchHistoryDao,
-    private val coomerDao: CoomerPostsSearchHistoryDao,
-    private val pawchiveDao: PawchivePostsSearchHistoryDao,
+    private val daos: Map<SelectedSite, @JvmSuppressWildcards PostsSearchHistoryDao>,
 ) : IStoragePostsSearchHistoryRepository {
     private companion object {
         const val MAX_HISTORY_LIMIT = 25
     }
 
+    private fun dao(site: SelectedSite): PostsSearchHistoryDao = daos.getValue(site)
+
     override fun observeRecent(site: SelectedSite, limit: Int): Flow<List<String>> =
-        when (site) {
-            SelectedSite.K -> kemonoDao.observeRecent(limit.coerceAtMost(MAX_HISTORY_LIMIT))
-            SelectedSite.C -> coomerDao.observeRecent(limit.coerceAtMost(MAX_HISTORY_LIMIT))
-            SelectedSite.P -> pawchiveDao.observeRecent(limit.coerceAtMost(MAX_HISTORY_LIMIT))
-        }
+        dao(site).observeRecent(limit.coerceAtMost(MAX_HISTORY_LIMIT))
 
     override suspend fun save(site: SelectedSite, query: String, limit: Int) {
-        val appliedLimit = limit.coerceAtMost(MAX_HISTORY_LIMIT)
         val normalized = query.trim()
         if (normalized.isEmpty()) return
 
@@ -34,20 +27,12 @@ internal class StoragePostsSearchHistoryRepository @Inject constructor(
             query = normalized,
             updatedAt = System.currentTimeMillis()
         )
-        when (site) {
-            SelectedSite.K -> kemonoDao.saveAndTrim(item, appliedLimit)
-            SelectedSite.C -> coomerDao.saveAndTrim(item, appliedLimit)
-            SelectedSite.P -> pawchiveDao.saveAndTrim(item, appliedLimit)
-        }
+        dao(site).saveAndTrim(item, limit.coerceAtMost(MAX_HISTORY_LIMIT))
     }
 
     override suspend fun delete(site: SelectedSite, query: String) {
         val normalized = query.trim()
         if (normalized.isEmpty()) return
-        when (site) {
-            SelectedSite.K -> kemonoDao.delete(normalized)
-            SelectedSite.C -> coomerDao.delete(normalized)
-            SelectedSite.P -> pawchiveDao.delete(normalized)
-        }
+        dao(site).delete(normalized)
     }
 }

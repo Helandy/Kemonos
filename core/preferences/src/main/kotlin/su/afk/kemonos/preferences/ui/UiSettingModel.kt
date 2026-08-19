@@ -2,6 +2,7 @@ package su.afk.kemonos.preferences.ui
 
 import androidx.compose.ui.unit.dp
 import su.afk.kemonos.domain.SelectedSite
+import su.afk.kemonos.domain.SiteCatalog
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.util.Locale
@@ -285,7 +286,7 @@ data class UiSettingModel(
             .ifEmpty { SELECTED_SITE_ORDER }
 
     companion object {
-        val SELECTED_SITE_ORDER = listOf(SelectedSite.K, SelectedSite.C, SelectedSite.P)
+        val SELECTED_SITE_ORDER: List<SelectedSite> = SiteCatalog.availableSites
         val DEFAULT_ENABLED_SITES: Set<SelectedSite> = SELECTED_SITE_ORDER.toSet()
         val DEFAULT_SITE_DISPLAY_MODE = SiteDisplayMode.ALL_DEFAULT_COOMER
 

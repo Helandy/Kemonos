@@ -1,5 +1,6 @@
 package su.afk.kemonos.profile.presenter.profile
 
+import su.afk.kemonos.domain.displayName
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -172,11 +173,7 @@ private fun ProfileSummaryCard(
     state: State,
     selectedSite: SelectedSite,
 ) {
-    val selectedLogin = when (selectedSite) {
-        SelectedSite.K -> state.kemonoLogin
-        SelectedSite.C -> state.coomerLogin
-        SelectedSite.P -> state.pawchiveLogin
-    }
+    val selectedLogin = state.login(selectedSite)
     val selectedName = selectedLogin?.username
     val joinedText = selectedLogin?.createdAt
         ?.toUiDateTime(state.uiSettingModel.dateFormatMode)
@@ -242,37 +239,11 @@ private fun ProfileSummaryCard(
     }
 }
 
-@Composable
-private fun SelectedSite.tabTitle(): String = when (this) {
-    SelectedSite.K -> stringResource(R.string.kemono)
-    SelectedSite.C -> stringResource(R.string.coomer)
-    SelectedSite.P -> stringResource(R.string.pawchive)
-}
+private fun SelectedSite.tabTitle(): String = displayName
 
 @Composable
-private fun SelectedSite.accountTitle(): String = when (this) {
-    SelectedSite.K -> stringResource(R.string.profile_kemono_account_title)
-    SelectedSite.C -> stringResource(R.string.profile_coomer_account_title)
-    SelectedSite.P -> stringResource(R.string.profile_pawchive_account_title)
-}
-
-private fun State.isLoggedIn(site: SelectedSite): Boolean = when (site) {
-    SelectedSite.K -> isLoginKemono
-    SelectedSite.C -> isLoginCoomer
-    SelectedSite.P -> isLoginPawchive
-}
-
-private fun State.login(site: SelectedSite): Login? = when (site) {
-    SelectedSite.K -> kemonoLogin
-    SelectedSite.C -> coomerLogin
-    SelectedSite.P -> pawchiveLogin
-}
-
-private fun State.updatedFavoritesCount(site: SelectedSite): Int = when (site) {
-    SelectedSite.K -> kemonoUpdatedFavoritesCount
-    SelectedSite.C -> coomerUpdatedFavoritesCount
-    SelectedSite.P -> pawchiveUpdatedFavoritesCount
-}
+private fun SelectedSite.accountTitle(): String =
+    stringResource(R.string.profile_site_account_title, displayName)
 
 @Preview(name = "ProfileScreen")
 @Composable
@@ -281,25 +252,26 @@ private fun PreviewProfileScreen() {
         ProfileScreen(
             state = State(
                 isLoading = false,
-                isLoginKemono = true,
-                isLoginCoomer = true,
-                isLoginPawchive = false,
+                loggedInSites = setOf(SelectedSite.K, SelectedSite.C),
                 isLogin = true,
-                kemonoLogin = Login(
-                    id = 1,
-                    username = "KemonoUser",
-                    createdAt = "2026-02-25T10:40:00Z",
-                    role = "user",
+                logins = mapOf(
+                    SelectedSite.K to Login(
+                        id = 1,
+                        username = "KemonoUser",
+                        createdAt = "2026-02-25T10:40:00Z",
+                        role = "user",
+                    ),
+                    SelectedSite.C to Login(
+                        id = 2,
+                        username = "CoomerUser",
+                        createdAt = "2026-02-20T09:00:00Z",
+                        role = "user",
+                    ),
                 ),
-                coomerLogin = Login(
-                    id = 2,
-                    username = "CoomerUser",
-                    createdAt = "2026-02-20T09:00:00Z",
-                    role = "user",
+                updatedFavoritesCounts = mapOf(
+                    SelectedSite.K to 12,
+                    SelectedSite.C to 3,
                 ),
-                kemonoUpdatedFavoritesCount = 12,
-                coomerUpdatedFavoritesCount = 3,
-                pawchiveUpdatedFavoritesCount = 0,
             ),
             onEvent = {},
             effect = emptyFlow(),

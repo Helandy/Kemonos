@@ -1,20 +1,18 @@
 package su.afk.kemonos.storage.repository.dms
 
+import su.afk.kemonos.storage.entity.dms.dao.DmsCacheDao
 import su.afk.kemonos.domain.SelectedSite
 import su.afk.kemonos.posts.api.dms.DmDomain
 import su.afk.kemonos.preferences.useCase.CacheTimes.TTL_3_DAYS
 import su.afk.kemonos.storage.api.repository.dms.IStorageDmsRepository
-import su.afk.kemonos.storage.entity.dms.dao.CoomerDmsCacheDao
-import su.afk.kemonos.storage.entity.dms.dao.KemonoDmsCacheDao
-import su.afk.kemonos.storage.entity.dms.dao.PawchiveDmsCacheDao
 import su.afk.kemonos.storage.entity.dms.entity.DmsCacheEntity
 import javax.inject.Inject
 
 internal class StorageDmsRepository @Inject constructor(
-    private val kemonoDao: KemonoDmsCacheDao,
-    private val coomerDao: CoomerDmsCacheDao,
-    private val pawchiveDao: PawchiveDmsCacheDao,
+    private val daos: Map<SelectedSite, @JvmSuppressWildcards DmsCacheDao>,
 ) : IStorageDmsRepository {
+
+    private fun dao(site: SelectedSite): DmsCacheDao = daos.getValue(site)
 
     override suspend fun getFreshPageOrNull(
         site: SelectedSite,
@@ -23,11 +21,7 @@ internal class StorageDmsRepository @Inject constructor(
     ): List<DmDomain>? {
         val minTs = System.currentTimeMillis() - TTL_3_DAYS
 
-        val rows = when (site) {
-            SelectedSite.K -> kemonoDao.getFreshPage(queryKey, offset, minTs)
-            SelectedSite.C -> coomerDao.getFreshPage(queryKey, offset, minTs)
-            SelectedSite.P -> pawchiveDao.getFreshPage(queryKey, offset, minTs)
-        }
+        val rows = dao(site).getFreshPage(queryKey, offset, minTs)
 
         return rows.takeIf { it.isNotEmpty() }?.map(::toDomain)
     }
@@ -37,11 +31,7 @@ internal class StorageDmsRepository @Inject constructor(
         queryKey: String,
         offset: Int,
     ): List<DmDomain> {
-        val rows = when (site) {
-            SelectedSite.K -> kemonoDao.getPage(queryKey, offset)
-            SelectedSite.C -> coomerDao.getPage(queryKey, offset)
-            SelectedSite.P -> pawchiveDao.getPage(queryKey, offset)
-        }
+        val rows = dao(site).getPage(queryKey, offset)
 
         return rows.map(::toDomain)
     }
@@ -63,36 +53,20 @@ internal class StorageDmsRepository @Inject constructor(
             )
         }
 
-        when (site) {
-            SelectedSite.K -> kemonoDao.replacePage(queryKey, offset, entities)
-            SelectedSite.C -> coomerDao.replacePage(queryKey, offset, entities)
-            SelectedSite.P -> pawchiveDao.replacePage(queryKey, offset, entities)
-        }
+        dao(site).replacePage(queryKey, offset, entities)
     }
 
     override suspend fun clearPage(site: SelectedSite, queryKey: String, offset: Int) {
-        when (site) {
-            SelectedSite.K -> kemonoDao.clearPage(queryKey, offset)
-            SelectedSite.C -> coomerDao.clearPage(queryKey, offset)
-            SelectedSite.P -> pawchiveDao.clearPage(queryKey, offset)
-        }
+        dao(site).clearPage(queryKey, offset)
     }
 
     override suspend fun clearCache(site: SelectedSite) {
         val minTs = System.currentTimeMillis() - TTL_3_DAYS
-        when (site) {
-            SelectedSite.K -> kemonoDao.deleteOlderThan(minTs)
-            SelectedSite.C -> coomerDao.deleteOlderThan(minTs)
-            SelectedSite.P -> pawchiveDao.deleteOlderThan(minTs)
-        }
+        dao(site).deleteOlderThan(minTs)
     }
 
     override suspend fun clearAll(site: SelectedSite) {
-        when (site) {
-            SelectedSite.K -> kemonoDao.clearAll()
-            SelectedSite.C -> coomerDao.clearAll()
-            SelectedSite.P -> pawchiveDao.clearAll()
-        }
+        dao(site).clearAll()
     }
 
     private fun toEntity(

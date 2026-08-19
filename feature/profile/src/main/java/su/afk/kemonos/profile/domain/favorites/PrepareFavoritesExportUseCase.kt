@@ -1,5 +1,6 @@
 package su.afk.kemonos.profile.domain.favorites
 
+import su.afk.kemonos.domain.displayName
 import com.google.gson.JsonParser
 import su.afk.kemonos.domain.SelectedSite
 import su.afk.kemonos.preferences.site.ISelectedSiteUseCase
@@ -36,11 +37,7 @@ internal class PrepareFavoritesExportUseCase @Inject constructor(
 
         val count = extractCount(rawJson)
         val datePart = LocalDate.now().format(exportDateFormatter)
-        val sitePart = when (site) {
-            SelectedSite.K -> "Kemono"
-            SelectedSite.C -> "Coomer"
-            SelectedSite.P -> "Pawchive"
-        }
+        val sitePart = site.displayName
         val typePart = when (type) {
             FavoritesExportType.ARTISTS -> "Artist"
             FavoritesExportType.POSTS -> "Post"

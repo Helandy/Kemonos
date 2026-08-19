@@ -16,6 +16,7 @@ import su.afk.kemonos.main.presenter.delegates.AppUpdateGateDelegate
 import su.afk.kemonos.main.presenter.delegates.BaseUrlsObserveDelegate
 import su.afk.kemonos.navigation.NavigationManager
 import su.afk.kemonos.preferences.siteUrl.ISetBaseUrlsUseCase
+import su.afk.kemonos.preferences.siteUrl.SiteUrlUpdate
 import su.afk.kemonos.preferences.ui.IUiSettingUseCase
 import su.afk.kemonos.storage.api.clear.IClearCacheStorageUseCase
 import su.afk.kemonos.ui.crash.ICrashReportManager
@@ -67,16 +68,8 @@ internal class StartCheckViewModel @Inject constructor(
             Event.UpdateLaterClick -> onUpdateLaterClick()
             Event.SaveAndCheck -> onSaveAndCheck()
             Event.SkipCheck -> onSkipCheck()
-            is Event.InputKemonoDomainChanged -> {
-                setState { copy(inputKemonoDomain = event.value) }
-            }
-
-            is Event.InputCoomerDomainChanged -> {
-                setState { copy(inputCoomerDomain = event.value) }
-            }
-
-            is Event.InputPawchiveDomainChanged -> {
-                setState { copy(inputPawchiveDomain = event.value) }
+            is Event.InputDomainChanged -> {
+                setState { copy(inputDomains = inputDomains + (event.site to event.value)) }
             }
 
             is Event.ToggleApiSite -> onToggleApiSite(event.site, event.enabled)
@@ -141,18 +134,14 @@ internal class StartCheckViewModel @Inject constructor(
     }
 
     private fun observeBaseUrls() {
-        baseUrlsObserveDelegate.observe(viewModelScope) { kemono, coomer, pawchive ->
+        baseUrlsObserveDelegate.observe(viewModelScope) { urls ->
             setState {
                 copy(
-                    kemonoUrl = kemono,
-                    coomerUrl = coomer,
-                    pawchiveUrl = pawchive,
-                    inputKemonoDomain = currentState.inputKemonoDomain
-                        .ifEmpty { normalizeDomain(kemono) },
-                    inputCoomerDomain = currentState.inputCoomerDomain
-                        .ifEmpty { normalizeDomain(coomer) },
-                    inputPawchiveDomain = currentState.inputPawchiveDomain
-                        .ifEmpty { normalizeDomain(pawchive) },
+                    siteUrls = urls,
+                    /** Поле, которого пользователь ещё не касался, подставляем из prefs. */
+                    inputDomains = urls.mapValues { (site, url) ->
+                        inputDomains[site].orEmpty().ifEmpty { normalizeDomain(url) }
+                    },
                 )
             }
         }
@@ -177,9 +166,9 @@ internal class StartCheckViewModel @Inject constructor(
     private fun onSaveAndCheck() {
         viewModelScope.launch {
             setBaseUrlsUseCase(
-                kemonoUrl = buildBaseUrl(currentState.inputKemonoDomain),
-                coomerUrl = buildBaseUrl(currentState.inputCoomerDomain),
-                pawchiveUrl = buildBaseUrl(currentState.inputPawchiveDomain),
+                currentState.inputDomains.mapValues { (_, domain) ->
+                    SiteUrlUpdate(apiUrl = buildBaseUrl(domain))
+                },
             )
             uiSetting.setEnabledSites(currentState.enabledSites)
             runApiCheck()
@@ -190,7 +179,7 @@ internal class StartCheckViewModel @Inject constructor(
         if (apiCheckJob?.isActive == true) return
 
         apiCheckJob = viewModelScope.launch {
-            setState { copy(isLoading = true, kemonoError = null, coomerError = null, pawchiveError = null) }
+            setState { copy(isLoading = true, errors = emptyMap()) }
 
             // 1) если есть cookie — дернем избранное, а если 4xx — cookie очистится
             //    и сайт попадёт в sitesToApiCheck
@@ -221,9 +210,7 @@ internal class StartCheckViewModel @Inject constructor(
                     copy(
                         isLoading = false,
                         apiSuccess = false,
-                        kemonoError = result.kemonoError,
-                        coomerError = result.coomerError,
-                        pawchiveError = result.pawchiveError,
+                        errors = result.errors,
                     )
                 }
             }
@@ -235,9 +222,7 @@ internal class StartCheckViewModel @Inject constructor(
             copy(
                 isLoading = false,
                 apiSuccess = true,
-                kemonoError = null,
-                coomerError = null,
-                pawchiveError = null,
+                errors = emptyMap(),
             )
         }
         navManager.enterTabs()
@@ -254,9 +239,7 @@ internal class StartCheckViewModel @Inject constructor(
         setState {
             copy(
                 enabledSites = next,
-                kemonoError = kemonoError.takeIf { SelectedSite.K in next },
-                coomerError = coomerError.takeIf { SelectedSite.C in next },
-                pawchiveError = pawchiveError.takeIf { SelectedSite.P in next },
+                errors = errors.filterKeys { it in next },
             )
         }
     }

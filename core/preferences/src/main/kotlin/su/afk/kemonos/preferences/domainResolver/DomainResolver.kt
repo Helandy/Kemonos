@@ -2,118 +2,111 @@ package su.afk.kemonos.preferences.domainResolver
 
 import android.net.Uri
 import androidx.core.net.toUri
+import su.afk.kemonos.domain.CreatorImageHost
 import su.afk.kemonos.domain.SelectedSite
-import su.afk.kemonos.preferences.GetCoomerRootUrlUseCase
-import su.afk.kemonos.preferences.GetKemonoRootUrlUseCase
-import su.afk.kemonos.preferences.GetPawchiveRootUrlUseCase
+import su.afk.kemonos.domain.SiteCatalog
+import su.afk.kemonos.domain.spec
+import su.afk.kemonos.preferences.GetRootUrlUseCase
 import su.afk.kemonos.preferences.UrlPrefs
 import su.afk.kemonos.preferences.site.ISelectedSiteUseCase
 import javax.inject.Inject
 
-private val coomerServicesList = setOf("onlyfans", "fansly", "candfans")
-private const val COOMER_REFERENCE_SERVICE = "onlyfans"
+/** Разрешённые адреса одного источника. */
+data class SiteHostConfig(
+    val apiBaseUrl: String,
+    val rootUrl: String,
+    val imageBaseUrl: String,
+    val fileBaseUrl: String,
+    val creatorImageBaseUrl: String,
+)
 
 interface IDomainResolver {
     fun selectedSite(): SelectedSite
     fun baseUrlByService(service: String): String
     fun imageBaseUrlByService(service: String): String
-    fun creatorImageBaseUrlByService(service: String): String = imageBaseUrlByService(service)
-    fun fileBaseUrlByService(service: String): String = imageBaseUrlByService(service)
-    fun pawchiveHostConfig(): PawchiveHostConfig
+    fun creatorImageBaseUrlByService(service: String): String
+    fun fileBaseUrlByService(service: String): String
+
+    /** Полный набор адресов источника. */
+    fun hostConfig(site: SelectedSite): SiteHostConfig
 }
 
-data class PawchiveHostConfig(
-    val apiBaseUrl: String,
-    val rootUrl: String,
-    val imageBaseUrl: String,
-    val fileBaseUrl: String,
-)
-
-object PawchiveHostConfigResolver {
+object SiteHostConfigResolver {
     fun resolve(
+        site: SelectedSite,
         apiBaseUrl: String,
-        imageHostOverride: String,
-        fileHostOverride: String,
-    ): PawchiveHostConfig {
+        imageHostOverride: String = "",
+        fileHostOverride: String = "",
+    ): SiteHostConfig {
+        val hosts = site.spec.mediaHosts
         val rootUrl = apiBaseUrl.toOriginUrl()
-        return PawchiveHostConfig(
+
+        val imageBaseUrl = imageHostOverride.ifBlank {
+            rootUrl.withHostPrefix(hosts.imageHostPrefix)
+        }
+        val fileBaseUrl = fileHostOverride.ifBlank {
+            rootUrl.withHostPrefix(hosts.fileHostPrefix)
+        }
+
+        return SiteHostConfig(
             apiBaseUrl = apiBaseUrl,
             rootUrl = rootUrl,
-            imageBaseUrl = imageHostOverride.ifBlank { rootUrl.withHostPrefix("img") },
-            fileBaseUrl = fileHostOverride.ifBlank { rootUrl.withHostPrefix("file") },
+            imageBaseUrl = imageBaseUrl,
+            fileBaseUrl = fileBaseUrl,
+            creatorImageBaseUrl = when (hosts.creatorImageHost) {
+                CreatorImageHost.ROOT -> rootUrl
+                CreatorImageHost.IMAGE -> imageBaseUrl
+            },
         )
     }
 }
 
+/**
+ * Какому источнику принадлежит контент этого сервиса.
+ *
+ * Самодостаточный источник обслуживает свои сервисы сам; для федеративной пары
+ * Kemono/Coomer решает сам сервис.
+ */
 fun IDomainResolver.selectedSiteByService(service: String): SelectedSite {
-    if (selectedSite() == SelectedSite.P) return SelectedSite.P
-    return when (service) {
-        in coomerServicesList -> SelectedSite.C
-        else -> SelectedSite.K
-    }
+    val current = selectedSite()
+    return if (current.spec.standalone) current else SiteCatalog.siteByService(service)
 }
 
 class DomainResolver @Inject constructor(
-    private val getKemonoRootUrl: GetKemonoRootUrlUseCase,
-    private val getCoomerRootUrl: GetCoomerRootUrlUseCase,
-    private val getPawchiveRootUrl: GetPawchiveRootUrlUseCase,
+    private val getRootUrl: GetRootUrlUseCase,
     private val selectedSiteUseCase: ISelectedSiteUseCase,
     private val urlPrefs: UrlPrefs,
 ) : IDomainResolver {
 
     override fun selectedSite(): SelectedSite = selectedSiteUseCase.getSite()
 
-    override fun baseUrlByService(service: String): String {
-        if (selectedSite() == SelectedSite.P) return getPawchiveRootUrl()
-        return when (service) {
-            in coomerServicesList -> getCoomerRootUrl()
-            else -> getKemonoRootUrl()
-        }
-    }
+    override fun baseUrlByService(service: String): String =
+        getRootUrl(selectedSiteByService(service))
 
-    override fun imageBaseUrlByService(service: String): String {
-        if (selectedSite() == SelectedSite.P) return pawchiveHostConfig().imageBaseUrl
-        val base = baseUrlByService(service)
-        return base.toImgBaseUrl()
-    }
+    override fun imageBaseUrlByService(service: String): String =
+        hostConfigByService(service).imageBaseUrl
 
-    override fun creatorImageBaseUrlByService(service: String): String {
-        if (selectedSite() == SelectedSite.P) return pawchiveHostConfig().rootUrl
-        return imageBaseUrlByService(service)
-    }
+    override fun creatorImageBaseUrlByService(service: String): String =
+        hostConfigByService(service).creatorImageBaseUrl
 
-    override fun fileBaseUrlByService(service: String): String {
-        if (selectedSite() == SelectedSite.P) return pawchiveHostConfig().fileBaseUrl
-        return imageBaseUrlByService(service)
-    }
+    override fun fileBaseUrlByService(service: String): String =
+        hostConfigByService(service).fileBaseUrl
 
-    override fun pawchiveHostConfig(): PawchiveHostConfig {
-        return PawchiveHostConfigResolver.resolve(
-            apiBaseUrl = urlPrefs.pawchiveUrl.value,
-            imageHostOverride = urlPrefs.pawchiveImageHostOverride.value,
-            fileHostOverride = urlPrefs.pawchiveFileHostOverride.value,
+    override fun hostConfig(site: SelectedSite): SiteHostConfig =
+        SiteHostConfigResolver.resolve(
+            site = site,
+            apiBaseUrl = urlPrefs.siteUrl(site).value,
+            imageHostOverride = urlPrefs.imageHostOverride(site).value,
+            fileHostOverride = urlPrefs.fileHostOverride(site).value,
         )
-    }
+
+    private fun hostConfigByService(service: String): SiteHostConfig =
+        hostConfig(selectedSiteByService(service))
 }
 
-/** "https://kemono.cr" -> "https://img.kemono.cr" */
-private fun String.toImgBaseUrl(): String {
-    return runCatching {
-        val uri = toUri()
-        val scheme = uri.scheme ?: "https"
-        val host = uri.host ?: return this
-
-        /** если уже img.* — не трогаем */
-        val imgHost = if (host.startsWith("img.")) host else "img.$host"
-        Uri.Builder()
-            .scheme(scheme)
-            .encodedAuthority(imgHost)
-            .build()
-            .toString()
-    }.getOrElse { this }
-}
-
-private fun String.withHostPrefix(prefix: String): String {
+/** "https://kemono.cr" + "img" -> "https://img.kemono.cr". Префикс null оставляет хост как есть. */
+private fun String.withHostPrefix(prefix: String?): String {
+    if (prefix == null) return this
     return runCatching {
         val uri = toUri()
         val scheme = uri.scheme ?: "https"

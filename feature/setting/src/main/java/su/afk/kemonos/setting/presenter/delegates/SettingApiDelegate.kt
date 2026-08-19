@@ -2,9 +2,12 @@ package su.afk.kemonos.setting.presenter.delegates
 
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
+import su.afk.kemonos.domain.SelectedSite
 import su.afk.kemonos.error.error.IErrorHandlerUseCase
+import su.afk.kemonos.preferences.domainResolver.SiteHostConfig
+import su.afk.kemonos.preferences.domainResolver.SiteHostConfigResolver
 import su.afk.kemonos.preferences.siteUrl.ISetBaseUrlsUseCase
-import su.afk.kemonos.preferences.domainResolver.PawchiveHostConfigResolver
+import su.afk.kemonos.preferences.siteUrl.SiteUrlUpdate
 import su.afk.kemonos.preferences.ui.IUiSettingUseCase
 import su.afk.kemonos.preferences.ui.UiSettingModel
 import su.afk.kemonos.setting.presenter.SettingState
@@ -26,20 +29,23 @@ class SettingApiDelegate @Inject constructor(
         setState: (SettingState.State.() -> SettingState.State) -> Unit,
     ) {
         when (event) {
-            is SettingState.Event.ApiSetting.InputKemonoDomainChanged ->
-                setState { copy(inputKemonoDomain = normalizeDomain(event.value)) }
+            is SettingState.Event.ApiSetting.InputDomainChanged -> setState {
+                copy(inputDomains = inputDomains + (event.site to normalizeDomain(event.value)))
+            }
 
-            is SettingState.Event.ApiSetting.InputCoomerDomainChanged ->
-                setState { copy(inputCoomerDomain = normalizeDomain(event.value)) }
+            is SettingState.Event.ApiSetting.InputImageHostChanged -> setState {
+                copy(
+                    inputImageHostOverrides = inputImageHostOverrides +
+                        (event.site to normalizeDomain(event.value)),
+                )
+            }
 
-            is SettingState.Event.ApiSetting.InputPawchiveDomainChanged ->
-                setState { copy(inputPawchiveDomain = normalizeDomain(event.value)) }
-
-            is SettingState.Event.ApiSetting.InputPawchiveImageHostChanged ->
-                setState { copy(inputPawchiveImageHostOverride = normalizeDomain(event.value)) }
-
-            is SettingState.Event.ApiSetting.InputPawchiveFileHostChanged ->
-                setState { copy(inputPawchiveFileHostOverride = normalizeDomain(event.value)) }
+            is SettingState.Event.ApiSetting.InputFileHostChanged -> setState {
+                copy(
+                    inputFileHostOverrides = inputFileHostOverrides +
+                        (event.site to normalizeDomain(event.value)),
+                )
+            }
 
             is SettingState.Event.ApiSetting.InputVideoPreviewServerDomainChanged ->
                 setState { copy(inputVideoPreviewServerDomain = normalizeDomain(event.value)) }
@@ -56,29 +62,33 @@ class SettingApiDelegate @Inject constructor(
                 setState { copy(isSaving = true, saveSuccess = false) }
 
                 val s = getState()
-                val kemono = buildBaseUrl(s.inputKemonoDomain)
-                val coomer = buildBaseUrl(s.inputCoomerDomain)
-                val pawchive = buildBaseUrl(s.inputPawchiveDomain)
-                val pawchiveImageOverride = buildRootUrl(s.inputPawchiveImageHostOverride)
-                val pawchiveFileOverride = buildRootUrl(s.inputPawchiveFileHostOverride)
-                val pawchiveHosts = PawchiveHostConfigResolver.resolve(
-                    apiBaseUrl = pawchive,
-                    imageHostOverride = pawchiveImageOverride,
-                    fileHostOverride = pawchiveFileOverride,
-                )
+
+                val updates: Map<SelectedSite, SiteUrlUpdate> =
+                    SelectedSite.entries.associateWith { site ->
+                        SiteUrlUpdate(
+                            apiUrl = buildBaseUrl(s.inputDomain(site)),
+                            imageHostOverride = buildRootUrl(s.inputImageHostOverrides[site].orEmpty()),
+                            fileHostOverride = buildRootUrl(s.inputFileHostOverrides[site].orEmpty()),
+                        )
+                    }
+
+                val resolvedHosts: Map<SelectedSite, SiteHostConfig> =
+                    updates.mapValues { (site, update) ->
+                        SiteHostConfigResolver.resolve(
+                            site = site,
+                            apiBaseUrl = update.apiUrl,
+                            imageHostOverride = update.imageHostOverride.orEmpty(),
+                            fileHostOverride = update.fileHostOverride.orEmpty(),
+                        )
+                    }
+
                 val previewDomain = s.inputVideoPreviewServerDomain.ifBlank {
                     normalizeDomain(UiSettingModel.DEFAULT_VIDEO_PREVIEW_SERVER_URL)
                 }
                 val previewServerUrl = "https://${previewDomain.trim().trim('/')}"
 
                 runCatching {
-                    setBaseUrlsUseCase(
-                        kemonoUrl = kemono,
-                        coomerUrl = coomer,
-                        pawchiveUrl = pawchive,
-                        pawchiveImageHostOverride = pawchiveImageOverride,
-                        pawchiveFileHostOverride = pawchiveFileOverride,
-                    )
+                    setBaseUrlsUseCase(updates)
                     uiSetting.setEnabledSites(s.uiSettingModel.enabledSites)
                     uiSetting.setVideoPreviewServerUrl(previewServerUrl)
                 }.onSuccess {
@@ -86,11 +96,9 @@ class SettingApiDelegate @Inject constructor(
                         copy(
                             isSaving = false,
                             saveSuccess = true,
-                            kemonoUrl = kemono.toRootUrl(),
-                            coomerUrl = coomer.toRootUrl(),
-                            pawchiveUrl = pawchive.toRootUrl(),
-                            pawchiveImageUrl = pawchiveHosts.imageBaseUrl,
-                            pawchiveFileUrl = pawchiveHosts.fileBaseUrl,
+                            siteUrls = updates.mapValues { (_, u) -> u.apiUrl.toRootUrl() },
+                            imageHostUrls = resolvedHosts.mapValues { (_, h) -> h.imageBaseUrl },
+                            fileHostUrls = resolvedHosts.mapValues { (_, h) -> h.fileBaseUrl },
                             inputVideoPreviewServerDomain = previewDomain,
                         )
                     }

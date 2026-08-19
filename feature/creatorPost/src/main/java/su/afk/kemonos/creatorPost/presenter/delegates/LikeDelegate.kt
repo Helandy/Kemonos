@@ -1,9 +1,7 @@
 package su.afk.kemonos.creatorPost.presenter.delegates
 
+import su.afk.kemonos.auth.IsAuthSiteUseCase
 import kotlinx.coroutines.flow.first
-import su.afk.kemonos.auth.IsAuthCoomerUseCase
-import su.afk.kemonos.auth.IsAuthKemonoUseCase
-import su.afk.kemonos.auth.IsAuthPawchiveUseCase
 import su.afk.kemonos.creatorPost.api.domain.model.PostContentDomain
 import su.afk.kemonos.creatorPost.domain.useCase.FavoritesPostUseCase
 import su.afk.kemonos.domain.SelectedSite
@@ -14,19 +12,13 @@ import javax.inject.Inject
 internal class LikeDelegate @Inject constructor(
     private val favoritesPostUseCase: FavoritesPostUseCase,
     private val selectedSiteUseCase: ISelectedSiteUseCase,
-    private val isAuthKemonoUseCase: IsAuthKemonoUseCase,
-    private val isAuthCoomerUseCase: IsAuthCoomerUseCase,
-    private val isAuthPawchiveUseCase: IsAuthPawchiveUseCase,
+    private val isAuthSiteUseCase: IsAuthSiteUseCase,
     private val localLikedPostsRepository: IStoreLocalLikedPostsRepository,
 ) {
 
     /** Проверка авторизован ли пользователь на выбранном сайте (лайк без авторизации хранится только локально) */
     suspend fun postIsAvailableLike(): Boolean {
-        return when (selectedSiteUseCase.getSite()) {
-            SelectedSite.C -> isAuthCoomerUseCase().first()
-            SelectedSite.K -> isAuthKemonoUseCase().first()
-            SelectedSite.P -> isAuthPawchiveUseCase().first()
-        }
+        return isAuthSiteUseCase(selectedSiteUseCase.getSite()).first()
     }
 
     /** добавить/удалить лайк: авторизован — через API, иначе — только локально */

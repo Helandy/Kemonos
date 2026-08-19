@@ -1,5 +1,13 @@
 package su.afk.kemonos.storage.di
 
+import su.afk.kemonos.storage.entity.tags.dao.TagsDao
+import su.afk.kemonos.storage.entity.postsSearch.dao.PostsSearchCacheDao
+import su.afk.kemonos.storage.entity.postsSearch.history.dao.PostsSearchHistoryDao
+import su.afk.kemonos.storage.entity.dms.dao.DmsCacheDao
+import su.afk.kemonos.storage.entity.popular.dao.PostsPopularCacheDao
+import su.afk.kemonos.storage.entity.creators.dao.CreatorsDao
+import dagger.multibindings.IntoMap
+import su.afk.kemonos.domain.SelectedSite
 import android.content.Context
 import android.content.SharedPreferences
 import androidx.room.Room
@@ -47,10 +55,10 @@ internal object DatabaseCoomerModule {
                     scope = "coomer",
                     prefs = prefs,
                     keysToClearOnDestructiveRebuild = listOf(
-                        CacheKeys.CREATORS_COOMER,
+                        CacheKeys.creators(SelectedSite.C),
                     ),
                     keysToClearWhenTableEmpty = mapOf(
-                        "creators" to listOf(CacheKeys.CREATORS_COOMER),
+                        "creators" to listOf(CacheKeys.creators(SelectedSite.C)),
                     ),
                 )
             )
@@ -75,4 +83,34 @@ internal object DatabaseCoomerModule {
     @Provides
     fun provideCoomerPostsPopularCacheDao(db: CoomerDatabase): CoomerPostsPopularCacheDao =
         db.coomerPostsPopularCacheDao()
+
+    @Provides
+    @IntoMap
+    @SiteKey(SelectedSite.C)
+    fun provideCoomerCreatorsDaoIntoMap(db: CoomerDatabase): CreatorsDao = db.coomerCreatorsDao()
+
+    @Provides
+    @IntoMap
+    @SiteKey(SelectedSite.C)
+    fun provideCoomerTagsDaoIntoMap(db: CoomerDatabase): TagsDao = db.coomerTagsDao()
+
+    @Provides
+    @IntoMap
+    @SiteKey(SelectedSite.C)
+    fun provideCoomerPostsSearchCacheDaoIntoMap(db: CoomerDatabase): PostsSearchCacheDao = db.coomerPostsSearchCacheDao()
+
+    @Provides
+    @IntoMap
+    @SiteKey(SelectedSite.C)
+    fun provideCoomerPostsSearchHistoryDaoIntoMap(db: CoomerDatabase): PostsSearchHistoryDao = db.coomerPostsSearchHistoryDao()
+
+    @Provides
+    @IntoMap
+    @SiteKey(SelectedSite.C)
+    fun provideCoomerDmsCacheDaoIntoMap(db: CoomerDatabase): DmsCacheDao = db.coomerDmsCacheDao()
+
+    @Provides
+    @IntoMap
+    @SiteKey(SelectedSite.C)
+    fun provideCoomerPostsPopularCacheDaoIntoMap(db: CoomerDatabase): PostsPopularCacheDao = db.coomerPostsPopularCacheDao()
 }

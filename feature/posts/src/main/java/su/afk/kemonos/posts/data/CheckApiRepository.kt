@@ -18,16 +18,11 @@ internal class CheckApiRepository @Inject constructor(
 ) : ICheckApiRepository {
 
     override suspend fun getApiCheckForSites(sitesToCheck: Set<SelectedSite>): ApiCheckForAllSitesResult {
-        val kemono = if (SelectedSite.K in sitesToCheck) checkSite(SelectedSite.K)
-        else SingleSiteCheck(site = SelectedSite.K, success = true)
-
-        val coomer = if (SelectedSite.C in sitesToCheck) checkSite(SelectedSite.C)
-        else SingleSiteCheck(site = SelectedSite.C, success = true)
-
-        val pawchive = if (SelectedSite.P in sitesToCheck) checkSite(SelectedSite.P)
-        else SingleSiteCheck(site = SelectedSite.P, success = true)
-
-        return ApiCheckForAllSitesResult(kemono = kemono, coomer = coomer, pawchive = pawchive)
+        val checks = SelectedSite.entries.associateWith { site ->
+            if (site in sitesToCheck) checkSite(site)
+            else SingleSiteCheck(site = site, success = true)
+        }
+        return ApiCheckForAllSitesResult(checks)
     }
 
     private suspend fun checkSite(site: SelectedSite): SingleSiteCheck {

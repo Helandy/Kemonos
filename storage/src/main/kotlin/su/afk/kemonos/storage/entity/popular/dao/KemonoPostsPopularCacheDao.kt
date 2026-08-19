@@ -7,7 +7,7 @@ import androidx.room.Query
 import su.afk.kemonos.storage.entity.popular.PostsPopularCacheEntity
 
 @Dao
-interface KemonoPostsPopularCacheDao {
+interface KemonoPostsPopularCacheDao : PostsPopularCacheDao {
 
     @Query(
         """
@@ -16,10 +16,10 @@ interface KemonoPostsPopularCacheDao {
         LIMIT 1
         """
     )
-    suspend fun get(queryKey: String, offset: Int): PostsPopularCacheEntity?
+    override suspend fun get(queryKey: String, offset: Int): PostsPopularCacheEntity?
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun upsert(entity: PostsPopularCacheEntity)
+    override suspend fun upsert(entity: PostsPopularCacheEntity)
 
     @Query(
         """
@@ -27,10 +27,10 @@ interface KemonoPostsPopularCacheDao {
         WHERE queryKey = :queryKey AND offset = :offset
         """
     )
-    suspend fun delete(queryKey: String, offset: Int)
+    override suspend fun delete(queryKey: String, offset: Int)
 
     @Query("DELETE FROM posts_popular_cache")
-    suspend fun clearAll()
+    override suspend fun clearAll()
 
     /**
      * Удаляем ВСЁ просроченное по конкретным периодам:
@@ -43,11 +43,11 @@ interface KemonoPostsPopularCacheDao {
           AND substr(queryKey, 1, instr(queryKey, '|') - 1) IN (:periods)
         """
     )
-    suspend fun deleteExpiredByPeriods(minTs: Long, periods: List<String>)
+    override suspend fun deleteExpiredByPeriods(minTs: Long, periods: List<String>)
 
     /**
      * (Опционально) если хочешь чистить вообще всё, не только периодами:
      */
     @Query("DELETE FROM posts_popular_cache WHERE updatedAt < :minTs")
-    suspend fun deleteExpiredAll(minTs: Long)
+    override suspend fun deleteExpiredAll(minTs: Long)
 }

@@ -28,7 +28,8 @@ import su.afk.kemonos.error.error.IErrorHandlerUseCase
 import su.afk.kemonos.error.error.storage.RetryStorage
 import su.afk.kemonos.error.error.toFavoriteToastBar
 import su.afk.kemonos.navigation.NavigationManager
-import su.afk.kemonos.preferences.GetKemonoRootUrlUseCase
+import su.afk.kemonos.domain.SelectedSite
+import su.afk.kemonos.preferences.GetRootUrlUseCase
 import su.afk.kemonos.preferences.IGetCurrentSiteRootUrlUseCase
 import su.afk.kemonos.preferences.site.ISelectedSiteUseCase
 import su.afk.kemonos.preferences.ui.CreatorProfileTabKey
@@ -46,7 +47,7 @@ import su.afk.kemonos.ui.shared.model.ShareTarget
 internal class CreatorProfileViewModel @AssistedInject constructor(
     @Assisted private val dest: CreatorDestination.CreatorProfile,
     private val getProfileUseCase: IGetProfileUseCase,
-    private val getKemonoRootUrlUseCase: GetKemonoRootUrlUseCase,
+    private val getRootUrlUseCase: GetRootUrlUseCase,
     private val getCurrentSiteRootUrlUseCase: IGetCurrentSiteRootUrlUseCase,
     private val likeDelegate: LikeDelegate,
     private val navigationDelegate: NavigationDelegate,
@@ -164,7 +165,7 @@ internal class CreatorProfileViewModel @AssistedInject constructor(
     private fun isDiscordProfile(service: String): Boolean {
         if (service != "discord") return false
 
-        val baseUrl = getKemonoRootUrlUseCase()
+        val baseUrl = getRootUrlUseCase(SelectedSite.K)
         val url = "$baseUrl/$service/server/${currentState.id}"
 
         if (currentState.discordUrlOpened) return true

@@ -4,19 +4,19 @@ import androidx.room.*
 import su.afk.kemonos.storage.entity.tags.TagsEntity
 
 @Dao
-interface CoomerTagsDao {
+interface CoomerTagsDao : TagsDao {
 
     @Query("SELECT * FROM tags ORDER BY count DESC")
-    suspend fun getAll(): List<TagsEntity>
+    override suspend fun getAll(): List<TagsEntity>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertAll(items: List<TagsEntity>)
+    override suspend fun insertAll(items: List<TagsEntity>)
 
     @Query("DELETE FROM tags")
-    suspend fun clear()
+    override suspend fun clear()
 
     @Transaction
-    suspend fun replaceAll(items: List<TagsEntity>) {
+    override suspend fun replaceAll(items: List<TagsEntity>) {
         clear()
         if (items.isNotEmpty()) insertAll(items)
     }

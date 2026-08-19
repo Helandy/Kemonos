@@ -1,5 +1,6 @@
 package su.afk.kemonos.profile.presenter.profile.views
 
+import su.afk.kemonos.domain.displayName
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -15,12 +16,7 @@ internal fun LogoutDialog(
     onConfirm: () -> Unit,
     onDismiss: () -> Unit,
 ) {
-    val siteName = when (site) {
-        SelectedSite.K -> stringResource(R.string.kemono)
-        SelectedSite.C -> stringResource(R.string.coomer)
-        SelectedSite.P -> stringResource(R.string.pawchive)
-        null -> ""
-    }
+    val siteName = site?.displayName.orEmpty()
 
     AlertDialog(
         onDismissRequest = onDismiss,

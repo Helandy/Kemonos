@@ -1,6 +1,5 @@
 package su.afk.kemonos.preferences
 
-import su.afk.kemonos.domain.SelectedSite
 import su.afk.kemonos.preferences.site.ISelectedSiteUseCase
 import javax.inject.Inject
 
@@ -10,14 +9,8 @@ interface IGetCurrentSiteRootUrlUseCase {
 
 internal class GetCurrentSiteRootUrlUseCase @Inject constructor(
     private val selectedSiteUseCase: ISelectedSiteUseCase,
-    private val getKemonoRootUrlUseCase: GetKemonoRootUrlUseCase,
-    private val getCoomerRootUrlUseCase: GetCoomerRootUrlUseCase,
-    private val getPawchiveRootUrlUseCase: GetPawchiveRootUrlUseCase,
+    private val getRootUrlUseCase: GetRootUrlUseCase,
 ) : IGetCurrentSiteRootUrlUseCase {
 
-    override fun invoke(): String = when (selectedSiteUseCase.getSite()) {
-        SelectedSite.K -> getKemonoRootUrlUseCase()
-        SelectedSite.C -> getCoomerRootUrlUseCase()
-        SelectedSite.P -> getPawchiveRootUrlUseCase()
-    }
+    override fun invoke(): String = getRootUrlUseCase(selectedSiteUseCase.getSite())
 }

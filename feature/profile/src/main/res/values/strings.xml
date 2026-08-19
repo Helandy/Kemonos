@@ -38,9 +38,6 @@
     <string name="profile_joined_role">Joined %1$s</string>
     <string name="profile_notifications">Notifications: %1$d</string>
 
-    <string name="profile_favorites_title_coomer">Favorites Coomer</string>
-    <string name="profile_favorites_title_kemono">Favorites Kemono</string>
-    <string name="profile_favorites_title_pawchive">Favorites Pawchive</string>
     <string name="profile_favorites_profiles">Profiles</string>
     <string name="profile_favorites_posts">Posts</string>
     <string name="favorite_profiles_title">Favorite profiles</string>
@@ -103,9 +100,6 @@
     <string name="sort_reimport_date">Reimport</string>
 
     <!--  ProfileScreen  -->
-    <string name="profile_kemono_account_title">Kemono account</string>
-    <string name="profile_coomer_account_title">Coomer account</string>
-    <string name="profile_pawchive_account_title">Pawchive account</string>
 
     <string name="profile_account_logged_in_name">Logged in as %1$s</string>
     <string name="profile_account_logged_in_date">Joined: %1$s</string>
@@ -146,10 +140,9 @@
     <string name="logout_confirm">Log out</string>
     <string name="cancel">Cancel</string>
 
-    <string name="kemono">Kemono</string>
-    <string name="coomer">Coomer</string>
-    <string name="pawchive">Pawchive</string>
 
     <string name="profile_settings_button">Setting</string>
 
+    <string name="profile_favorites_title_site">Favorites %1$s</string>
+    <string name="profile_site_account_title">%1$s account</string>
 </resources>

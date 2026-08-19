@@ -4,7 +4,7 @@ import androidx.room.*
 import su.afk.kemonos.storage.entity.postsSearch.entity.PostsSearchCacheEntity
 
 @Dao
-interface CoomerPostsSearchCacheDao {
+interface CoomerPostsSearchCacheDao : PostsSearchCacheDao {
 
     // ----- READ -----
 
@@ -15,7 +15,7 @@ interface CoomerPostsSearchCacheDao {
         ORDER BY indexInPage ASC
         """
     )
-    suspend fun getPage(queryKey: String, offset: Int): List<PostsSearchCacheEntity>
+    override suspend fun getPage(queryKey: String, offset: Int): List<PostsSearchCacheEntity>
 
     @Query(
         """
@@ -26,7 +26,7 @@ interface CoomerPostsSearchCacheDao {
         ORDER BY indexInPage ASC
         """
     )
-    suspend fun getFreshPage(
+    override suspend fun getFreshPage(
         queryKey: String,
         offset: Int,
         minUpdatedAt: Long
@@ -35,10 +35,10 @@ interface CoomerPostsSearchCacheDao {
     // ----- WRITE -----
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun upsertAll(items: List<PostsSearchCacheEntity>)
+    override suspend fun upsertAll(items: List<PostsSearchCacheEntity>)
 
     @Query("DELETE FROM posts_search_cache WHERE queryKey = :queryKey AND offset = :offset")
-    suspend fun clearPage(queryKey: String, offset: Int)
+    override suspend fun clearPage(queryKey: String, offset: Int)
 
     /**
      * Атомарно заменяем страницу:
@@ -46,7 +46,7 @@ interface CoomerPostsSearchCacheDao {
      * 2) вставляем новую
      */
     @Transaction
-    suspend fun replacePage(
+    override suspend fun replacePage(
         queryKey: String,
         offset: Int,
         items: List<PostsSearchCacheEntity>
@@ -58,8 +58,8 @@ interface CoomerPostsSearchCacheDao {
     // ----- CLEANUP -----
 
     @Query("DELETE FROM posts_search_cache WHERE updatedAt < :minUpdatedAt")
-    suspend fun deleteOlderThan(minUpdatedAt: Long)
+    override suspend fun deleteOlderThan(minUpdatedAt: Long)
 
     @Query("DELETE FROM posts_search_cache")
-    suspend fun clearAll()
+    override suspend fun clearAll()
 }

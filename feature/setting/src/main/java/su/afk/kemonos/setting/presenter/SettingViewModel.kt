@@ -9,9 +9,8 @@ import kotlinx.coroutines.launch
 import su.afk.kemonos.error.error.IErrorHandlerUseCase
 import su.afk.kemonos.error.error.storage.RetryStorage
 import su.afk.kemonos.navigation.NavigationManager
-import su.afk.kemonos.preferences.GetCoomerRootUrlUseCase
-import su.afk.kemonos.preferences.GetKemonoRootUrlUseCase
-import su.afk.kemonos.preferences.GetPawchiveRootUrlUseCase
+import su.afk.kemonos.domain.SelectedSite
+import su.afk.kemonos.preferences.GetRootUrlUseCase
 import su.afk.kemonos.preferences.domainResolver.IDomainResolver
 import su.afk.kemonos.preferences.siteUrl.IGetBaseUrlsUseCase
 import su.afk.kemonos.preferences.ui.IUiSettingUseCase
@@ -31,9 +30,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class SettingViewModel @Inject constructor(
-    private val getCoomerRootUrlUseCase: GetCoomerRootUrlUseCase,
-    private val getKemonoRootUrlUseCase: GetKemonoRootUrlUseCase,
-    private val getPawchiveRootUrlUseCase: GetPawchiveRootUrlUseCase,
+    private val getRootUrlUseCase: GetRootUrlUseCase,
     private val getBaseUrlsUseCase: IGetBaseUrlsUseCase,
     private val domainResolver: IDomainResolver,
     private val cacheTimestamps: ICacheTimestampUseCase,
@@ -105,27 +102,30 @@ class SettingViewModel @Inject constructor(
 
     /** Актуальные урлы на сайт (и заполнение инпутов по умолчанию) */
     private fun observeUrls() {
-        val kemono = getKemonoRootUrlUseCase()
-        val coomer = getCoomerRootUrlUseCase()
-        val pawchive = getPawchiveRootUrlUseCase()
-        val pawchiveHosts = domainResolver.pawchiveHostConfig()
-        val pawchiveImageOverride = getBaseUrlsUseCase.pawchiveImageHostOverride.value
-        val pawchiveFileOverride = getBaseUrlsUseCase.pawchiveFileHostOverride.value
+        val rootUrls = SelectedSite.entries.associateWith(getRootUrlUseCase::invoke)
+        val hosts = SelectedSite.entries.associateWith(domainResolver::hostConfig)
+        val imageOverrides = SelectedSite.entries.associateWith {
+            getBaseUrlsUseCase.imageHostOverride(it).value
+        }
+        val fileOverrides = SelectedSite.entries.associateWith {
+            getBaseUrlsUseCase.fileHostOverride(it).value
+        }
 
         setState {
             copy(
-                kemonoUrl = kemono,
-                coomerUrl = coomer,
-                pawchiveUrl = pawchive,
-                pawchiveImageUrl = pawchiveHosts.imageBaseUrl,
-                pawchiveFileUrl = pawchiveHosts.fileBaseUrl,
-                inputKemonoDomain = state.value.inputKemonoDomain.ifEmpty { normalizeDomain(kemono) },
-                inputCoomerDomain = state.value.inputCoomerDomain.ifEmpty { normalizeDomain(coomer) },
-                inputPawchiveDomain = state.value.inputPawchiveDomain.ifEmpty { normalizeDomain(pawchive) },
-                inputPawchiveImageHostOverride = state.value.inputPawchiveImageHostOverride
-                    .ifEmpty { normalizeDomain(pawchiveImageOverride) },
-                inputPawchiveFileHostOverride = state.value.inputPawchiveFileHostOverride
-                    .ifEmpty { normalizeDomain(pawchiveFileOverride) },
+                siteUrls = rootUrls,
+                imageHostUrls = hosts.mapValues { (_, h) -> h.imageBaseUrl },
+                fileHostUrls = hosts.mapValues { (_, h) -> h.fileBaseUrl },
+                /** Поле, которого пользователь ещё не касался, подставляем из prefs. */
+                inputDomains = rootUrls.mapValues { (site, url) ->
+                    inputDomains[site].orEmpty().ifEmpty { normalizeDomain(url) }
+                },
+                inputImageHostOverrides = imageOverrides.mapValues { (site, override) ->
+                    inputImageHostOverrides[site].orEmpty().ifEmpty { normalizeDomain(override) }
+                },
+                inputFileHostOverrides = fileOverrides.mapValues { (site, override) ->
+                    inputFileHostOverrides[site].orEmpty().ifEmpty { normalizeDomain(override) }
+                },
                 inputVideoPreviewServerDomain = state.value.inputVideoPreviewServerDomain.ifEmpty {
                     normalizeDomain(state.value.uiSettingModel.videoPreviewServerUrl)
                 },
@@ -137,13 +137,12 @@ class SettingViewModel @Inject constructor(
     private fun observeCacheTimes() {
         setState {
             copy(
-                creatorsKemonoCache = cacheTimestamps.cacheTimeUi(CacheKeys.CREATORS_KEMONO, CacheTimes.TTL_7_DAYS),
-                creatorsCoomerCache = cacheTimestamps.cacheTimeUi(CacheKeys.CREATORS_COOMER, CacheTimes.TTL_7_DAYS),
-                creatorsPawchiveCache = cacheTimestamps.cacheTimeUi(CacheKeys.CREATORS_PAWCHIVE, CacheTimes.TTL_7_DAYS),
-
-                tagsKemonoCache = cacheTimestamps.cacheTimeUi(CacheKeys.TAGS_KEMONO, CacheTimes.TTL_30_DAYS),
-                tagsCoomerCache = cacheTimestamps.cacheTimeUi(CacheKeys.TAGS_COOMER, CacheTimes.TTL_30_DAYS),
-                tagsPawchiveCache = cacheTimestamps.cacheTimeUi(CacheKeys.TAGS_PAWCHIVE, CacheTimes.TTL_30_DAYS),
+                creatorsCache = SelectedSite.entries.associateWith { site ->
+                    cacheTimestamps.cacheTimeUi(CacheKeys.creators(site), CacheTimes.TTL_7_DAYS)
+                },
+                tagsCache = SelectedSite.entries.associateWith { site ->
+                    cacheTimestamps.cacheTimeUi(CacheKeys.tags(site), CacheTimes.TTL_30_DAYS)
+                },
             )
         }
     }

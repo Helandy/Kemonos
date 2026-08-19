@@ -32,27 +32,22 @@ open class FlowBaseUrlProvider(
     override fun get(): HttpUrl = ref.get()
 }
 
-/** Сменай baseUrl сайта  */
+/** Базовый адрес выбранного сейчас источника. */
 class SwitchingBaseUrlProvider(
     scope: CoroutineScope,
-    prefs: UrlPrefs
+    prefs: UrlPrefs,
 ) : FlowBaseUrlProvider(
     scope = scope,
-    initialUrl = when (prefs.selectedSite.value) {
-        SelectedSite.K -> prefs.kemonoUrl.value
-        SelectedSite.C -> prefs.coomerUrl.value
-        SelectedSite.P -> prefs.pawchiveUrl.value
-    },
-    urlFlow = combine(
-        prefs.selectedSite,
-        prefs.kemonoUrl,
-        prefs.coomerUrl,
-        prefs.pawchiveUrl
-    ) { site, kUrl, cUrl, pUrl ->
-        when (site) {
-            SelectedSite.K -> kUrl
-            SelectedSite.C -> cUrl
-            SelectedSite.P -> pUrl
-        }
-    }.distinctUntilChanged(),
+    initialUrl = prefs.siteUrl(prefs.selectedSite.value).value,
+    urlFlow = selectedSiteUrlFlow(prefs),
 )
+
+/** Не растёт при добавлении источника. */
+private fun selectedSiteUrlFlow(prefs: UrlPrefs): Flow<String> {
+    val sites = SelectedSite.entries
+    val urlsBySite = combine(sites.map(prefs::siteUrl)) { urls ->
+        sites.zip(urls.toList()).toMap()
+    }
+    return combine(prefs.selectedSite, urlsBySite) { site, bySite -> bySite.getValue(site) }
+        .distinctUntilChanged()
+}

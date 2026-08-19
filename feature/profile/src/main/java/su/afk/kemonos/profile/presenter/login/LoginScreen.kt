@@ -128,6 +128,8 @@ private fun AuthLogo(selectSite: SelectedSite) {
         SelectedSite.C -> coomer_logo
         SelectedSite.K -> kemono_logo
         SelectedSite.P -> pawchive_logo
+        /** TODO: заменить на реальный логотип OnlyHaven */
+        SelectedSite.O -> su.afk.kemonos.ui.R.drawable.logo
     }
     Image(
         painter = painterResource(id = logoRes),

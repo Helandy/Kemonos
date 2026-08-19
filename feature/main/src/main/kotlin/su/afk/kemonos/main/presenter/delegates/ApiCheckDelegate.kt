@@ -12,20 +12,14 @@ internal class ApiCheckDelegate @Inject constructor(
         val result = checkApiUseCase(sitesToCheck)
 
         return if (result.allOk) ApiCheckUiResult.Success
-        else ApiCheckUiResult.Failure(
-            kemonoError = result.kemono.error,
-            coomerError = result.coomer.error,
-            pawchiveError = result.pawchive.error,
-        )
+        else ApiCheckUiResult.Failure(errors = result.errors)
     }
 
     sealed interface ApiCheckUiResult {
         data object Success : ApiCheckUiResult
 
         data class Failure(
-            val kemonoError: ErrorItem?,
-            val coomerError: ErrorItem?,
-            val pawchiveError: ErrorItem?,
+            val errors: Map<SelectedSite, ErrorItem>,
         ) : ApiCheckUiResult
     }
 }

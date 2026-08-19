@@ -1,5 +1,6 @@
 package su.afk.kemonos.setting.presenter.screens
 
+import su.afk.kemonos.domain.SelectedSite
 import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.padding
@@ -61,14 +62,18 @@ internal fun previewSettingState(
     return SettingState.State(
         loading = loading,
         appVersion = "preview-1.0.0",
-        kemonoUrl = "https://kemono.su",
-        coomerUrl = "https://coomer.su",
-        pawchiveUrl = "https://pawchive.pw",
-        pawchiveImageUrl = "https://img.pawchive.pw",
-        pawchiveFileUrl = "https://file.pawchive.pw",
-        inputKemonoDomain = "kemono.su",
-        inputCoomerDomain = "coomer.su",
-        inputPawchiveDomain = "pawchive.pw",
+        siteUrls = mapOf(
+            SelectedSite.K to "https://kemono.su",
+            SelectedSite.C to "https://coomer.su",
+            SelectedSite.P to "https://pawchive.pw",
+        ),
+        imageHostUrls = SelectedSite.entries.associateWith { "https://img.example.com" },
+        fileHostUrls = SelectedSite.entries.associateWith { "https://file.example.com" },
+        inputDomains = mapOf(
+            SelectedSite.K to "kemono.su",
+            SelectedSite.C to "coomer.su",
+            SelectedSite.P to "pawchive.pw",
+        ),
         inputVideoPreviewServerDomain = "kemonos.afk.su",
         saveSuccess = true,
         uiSettingModel = UiSettingModel(
@@ -82,36 +87,20 @@ internal fun previewSettingState(
             creatorProfileHiddenTabs = setOf(CreatorProfileTabKey.DMS),
             videoPreviewServerUrl = "https://kemonos.afk.su",
         ),
-        tagsKemonoCache = CacheTimeUi(
-            lastMs = PREVIEW_NOW_MS - DAY_IN_MS,
-            nextMs = PREVIEW_NOW_MS + 29 * DAY_IN_MS,
-            isFresh = true,
-        ),
-        tagsCoomerCache = CacheTimeUi(
-            lastMs = PREVIEW_NOW_MS - DAY_IN_MS,
-            nextMs = PREVIEW_NOW_MS + 29 * DAY_IN_MS,
-            isFresh = true,
-        ),
-        tagsPawchiveCache = CacheTimeUi(
-            lastMs = PREVIEW_NOW_MS - DAY_IN_MS,
-            nextMs = PREVIEW_NOW_MS + 29 * DAY_IN_MS,
-            isFresh = true,
-        ),
-        creatorsKemonoCache = CacheTimeUi(
-            lastMs = PREVIEW_NOW_MS - 2 * DAY_IN_MS,
-            nextMs = PREVIEW_NOW_MS + 5 * DAY_IN_MS,
-            isFresh = true,
-        ),
-        creatorsCoomerCache = CacheTimeUi(
-            lastMs = PREVIEW_NOW_MS - 5 * DAY_IN_MS,
-            nextMs = PREVIEW_NOW_MS + 2 * DAY_IN_MS,
-            isFresh = false,
-        ),
-        creatorsPawchiveCache = CacheTimeUi(
-            lastMs = PREVIEW_NOW_MS - 2 * DAY_IN_MS,
-            nextMs = PREVIEW_NOW_MS + 5 * DAY_IN_MS,
-            isFresh = true,
-        ),
+        tagsCache = SelectedSite.entries.associateWith {
+            CacheTimeUi(
+                lastMs = PREVIEW_NOW_MS - DAY_IN_MS,
+                nextMs = PREVIEW_NOW_MS + 29 * DAY_IN_MS,
+                isFresh = true,
+            )
+        },
+        creatorsCache = SelectedSite.entries.associateWith {
+            CacheTimeUi(
+                lastMs = PREVIEW_NOW_MS - 2 * DAY_IN_MS,
+                nextMs = PREVIEW_NOW_MS + 5 * DAY_IN_MS,
+                isFresh = true,
+            )
+        },
         communityCache = CacheTimeUi(
             lastMs = PREVIEW_NOW_MS - 2 * DAY_IN_MS,
             nextMs = PREVIEW_NOW_MS + 5 * DAY_IN_MS,

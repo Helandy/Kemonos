@@ -1,5 +1,6 @@
 package su.afk.kemonos.auth.domain.model
 
+import su.afk.kemonos.domain.SelectedSite
 import su.afk.kemonos.domain.models.AuthUser
 
 data class SiteAuthState(
@@ -8,14 +9,16 @@ data class SiteAuthState(
 ) {
     val isAuthorized: Boolean
         get() = session != null && user != null
+
+    companion object {
+        val EMPTY = SiteAuthState(null, null)
+    }
 }
 
 data class AuthState(
-    val kemono: SiteAuthState = SiteAuthState(null, null),
-    val coomer: SiteAuthState = SiteAuthState(null, null),
-    val pawchive: SiteAuthState = SiteAuthState(null, null),
+    val sites: Map<SelectedSite, SiteAuthState> = emptyMap(),
 ) {
-    val isKemonoAuthorized: Boolean get() = kemono.isAuthorized
-    val isCoomerAuthorized: Boolean get() = coomer.isAuthorized
-    val isPawchiveAuthorized: Boolean get() = pawchive.isAuthorized
+    fun forSite(site: SelectedSite): SiteAuthState = sites[site] ?: SiteAuthState.EMPTY
+
+    fun isAuthorized(site: SelectedSite): Boolean = forSite(site).isAuthorized
 }

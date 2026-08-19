@@ -28,16 +28,12 @@ internal class AuthRepositoryImpl @Inject constructor(
     private val json: Json,
 ) : AuthRepository, AuthSessionProvider {
 
-    private object DsKeys {
-        val K_USER_JSON = stringPreferencesKey("k_user_json")
-        val C_USER_JSON = stringPreferencesKey("c_user_json")
-        val P_USER_JSON = stringPreferencesKey("p_user_json")
-    }
+    private companion object Keys {
+        /** Историческое именование: SelectedSite.K -> "k_user_json". */
+        fun userJson(site: SelectedSite) =
+            stringPreferencesKey("${site.name.lowercase()}_user_json")
 
-    private object SpKeys {
-        const val K_SESSION = "k_session"
-        const val C_SESSION = "c_session"
-        const val P_SESSION = "p_session"
+        fun session(site: SelectedSite) = "${site.name.lowercase()}_session"
     }
 
     private val refresh = MutableStateFlow(0)
@@ -47,68 +43,34 @@ internal class AuthRepositoryImpl @Inject constructor(
             dataStore.data,
             refresh,
         ) { prefs, _ ->
-            fun readUser(userKey: Preferences.Key<String>): AuthUser? {
-                val userJson = prefs[userKey] ?: return null
+            fun readUser(site: SelectedSite): AuthUser? {
+                val userJson = prefs[Keys.userJson(site)] ?: return null
                 return runCatching { json.decodeFromString<AuthUser>(userJson) }.getOrNull()
             }
 
-            val kUser = readUser(DsKeys.K_USER_JSON)
-            val cUser = readUser(DsKeys.C_USER_JSON)
-            val pUser = readUser(DsKeys.P_USER_JSON)
-
             AuthState(
-                kemono = SiteAuthState(
-                    session = readSession(SelectedSite.K),
-                    user = kUser,
-                ),
-                coomer = SiteAuthState(
-                    session = readSession(SelectedSite.C),
-                    user = cUser,
-                ),
-                pawchive = SiteAuthState(
-                    session = readSession(SelectedSite.P),
-                    user = pUser,
-                ),
+                sites = SelectedSite.entries.associateWith { site ->
+                    SiteAuthState(
+                        session = readSession(site),
+                        user = readUser(site),
+                    )
+                },
             )
         }
 
     override suspend fun saveAuth(site: SelectedSite, session: String, user: AuthUser) {
-        securePrefs.edit(commit = true) {
-            when (site) {
-                SelectedSite.K -> putString(SpKeys.K_SESSION, session)
-                SelectedSite.C -> putString(SpKeys.C_SESSION, session)
-                SelectedSite.P -> putString(SpKeys.P_SESSION, session)
-            }
-        }
+        securePrefs.edit(commit = true) { putString(Keys.session(site), session) }
 
         val userJson = json.encodeToString(user)
-        dataStore.edit { prefs ->
-            when (site) {
-                SelectedSite.K -> prefs[DsKeys.K_USER_JSON] = userJson
-                SelectedSite.C -> prefs[DsKeys.C_USER_JSON] = userJson
-                SelectedSite.P -> prefs[DsKeys.P_USER_JSON] = userJson
-            }
-        }
+        dataStore.edit { prefs -> prefs[Keys.userJson(site)] = userJson }
 
         refresh.value++
     }
 
     override suspend fun clearAuth(site: SelectedSite) {
-        securePrefs.edit(commit = true) {
-            when (site) {
-                SelectedSite.K -> remove(SpKeys.K_SESSION)
-                SelectedSite.C -> remove(SpKeys.C_SESSION)
-                SelectedSite.P -> remove(SpKeys.P_SESSION)
-            }
-        }
+        securePrefs.edit(commit = true) { remove(Keys.session(site)) }
 
-        dataStore.edit { prefs ->
-            when (site) {
-                SelectedSite.K -> prefs.remove(DsKeys.K_USER_JSON)
-                SelectedSite.C -> prefs.remove(DsKeys.C_USER_JSON)
-                SelectedSite.P -> prefs.remove(DsKeys.P_USER_JSON)
-            }
-        }
+        dataStore.edit { prefs -> prefs.remove(Keys.userJson(site)) }
 
         refresh.value++
     }
@@ -122,9 +84,5 @@ internal class AuthRepositoryImpl @Inject constructor(
     override suspend fun getSession(site: SelectedSite): String? = readSession(site)
 
     private fun readSession(site: SelectedSite): String? =
-        when (site) {
-            SelectedSite.K -> securePrefs.getString(SpKeys.K_SESSION, null)
-            SelectedSite.C -> securePrefs.getString(SpKeys.C_SESSION, null)
-            SelectedSite.P -> securePrefs.getString(SpKeys.P_SESSION, null)
-        }
+        securePrefs.getString(Keys.session(site), null)
 }
