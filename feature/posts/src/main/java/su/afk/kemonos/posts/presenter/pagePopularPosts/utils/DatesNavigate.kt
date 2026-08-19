@@ -27,9 +27,10 @@ internal fun PopularNavigationDates?.tripleFor(
 
     if (list.isEmpty()) return null
 
-    val prev = list.getOrNull(0)
-    val next = list.getOrNull(1)
-    val current = list.getOrNull(2)
+    /** пустая строка = слот недоступен (Pawchive отдаёт навигацию не целиком) */
+    val prev = list.getOrNull(0)?.takeIf { it.isNotBlank() }
+    val next = list.getOrNull(1)?.takeIf { it.isNotBlank() }
+    val current = list.getOrNull(2)?.takeIf { it.isNotBlank() }
 
     return Triple(prev, current, next)
 }

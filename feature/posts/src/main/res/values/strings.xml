@@ -35,7 +35,6 @@
     <string name="popular_period_day">Day</string>
     <string name="popular_period_week">Week</string>
     <string name="popular_period_month">Month</string>
-    <string name="popular_pawchive_unsupported">Popular posts are not available for Pawchive.</string>
     <string name="dm_pawchive_unsupported">DM is not available for Pawchive.</string>
 
     <!-- Popular posts date range -->

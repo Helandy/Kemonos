@@ -1,5 +1,6 @@
 package su.afk.kemonos.posts.data.api
 
+import okhttp3.ResponseBody
 import retrofit2.Response
 import retrofit2.http.GET
 import retrofit2.http.Path
@@ -47,6 +48,14 @@ internal interface PostsApi {
         @Query("period") period: PeriodDto = PeriodDto.RECENT,
         @Query("o") offset: Int? = null,
     ): Response<PopularPostsDto>
+
+    /** Pawchive не отдаёт популярное через JSON API — только HTML-страницей в корне сайта */
+    @GET("/posts/popular")
+    suspend fun getPawchivePopularHtml(
+        @Query("date") date: String? = null,
+        @Query("period") period: PeriodDto = PeriodDto.RECENT,
+        @Query("o") offset: Int? = null,
+    ): Response<ResponseBody>
 
     @GET("v1/posts/tags")
     @HeaderText

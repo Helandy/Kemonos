@@ -11,6 +11,7 @@ import su.afk.kemonos.posts.api.tags.Tags.Companion.normalizeTags
 import su.afk.kemonos.posts.data.api.PostsApi
 import su.afk.kemonos.posts.data.dto.dms.toDomain
 import su.afk.kemonos.posts.data.dto.hashLookup.toDomain
+import su.afk.kemonos.posts.data.dto.popular.pawchive.parsePawchivePopularHtml
 import su.afk.kemonos.posts.data.dto.popular.request.toDto
 import su.afk.kemonos.posts.data.dto.popular.response.PopularPostsDto.Companion.toDomain
 import su.afk.kemonos.posts.data.dto.random.RandomDto.Companion.toDomain
@@ -161,12 +162,27 @@ internal class PostsRepository @Inject constructor(
         return try {
             val apiOffset = if (offset == 0) null else offset
 
-            val net = postsApi.getPopularPosts(
-                date = date,
-                period = period.toDto(),
-                offset = apiOffset,
-            ).call { dto ->
-                dto.toDomain()
+            val net = if (site == SelectedSite.P) {
+                postsApi.getPawchivePopularHtml(
+                    date = date,
+                    period = period.toDto(),
+                    offset = apiOffset,
+                ).call { body ->
+                    parsePawchivePopularHtml(
+                        html = body.string(),
+                        period = period,
+                        requestedDate = date,
+                        offset = offset,
+                    )
+                }
+            } else {
+                postsApi.getPopularPosts(
+                    date = date,
+                    period = period.toDto(),
+                    offset = apiOffset,
+                ).call { dto ->
+                    dto.toDomain()
+                }
             }
 
             if (net.posts.isNotEmpty()) {

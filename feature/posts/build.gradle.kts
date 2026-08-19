@@ -10,6 +10,7 @@ dependencies {
     implementation(libs.bundles.serialization.json)
     implementation(libs.bundles.retrofit)
     implementation(libs.bundles.paging)
+    implementation(libs.bundles.jsoup)
 
     implementation(project(":core:navigation"))
     implementation(project(":core:model"))
@@ -23,4 +24,6 @@ dependencies {
     implementation(project(":feature:creatorProfile-api"))
     implementation(project(":feature:creatorPost-api"))
     implementation(project(":storage-api"))
+
+    testImplementation(libs.junit)
 }
