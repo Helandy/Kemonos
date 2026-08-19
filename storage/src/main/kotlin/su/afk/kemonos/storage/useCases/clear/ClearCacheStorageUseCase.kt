@@ -52,23 +52,17 @@ internal class ClearCacheStorageUseCase @Inject constructor(
                     async { storeDiscordRepository.clearCacheOver7Days() },
                     /** Чистка популярных постов */
                     async {
-                        popularPostsCacheRepository.clearCache(SelectedSite.K)
-                        popularPostsCacheRepository.clearCache(SelectedSite.C)
-                        popularPostsCacheRepository.clearCache(SelectedSite.P)
+                        SelectedSite.entries.forEach { popularPostsCacheRepository.clearCache(it) }
                     },
                     /** Чистка сохраненного поста */
                     async { postStorageRepository.clearCache() },
                     /** Чистка поиска */
                     async {
-                        postsSearchCacheRepository.clearCache(SelectedSite.K)
-                        postsSearchCacheRepository.clearCache(SelectedSite.C)
-                        postsSearchCacheRepository.clearCache(SelectedSite.P)
+                        SelectedSite.entries.forEach { postsSearchCacheRepository.clearCache(it) }
                     },
                     /** Чистка dms */
                     async {
-                        dmsCacheRepository.clearCache(SelectedSite.K)
-                        dmsCacheRepository.clearCache(SelectedSite.C)
-                        dmsCacheRepository.clearCache(SelectedSite.P)
+                        SelectedSite.entries.forEach { dmsCacheRepository.clearCache(it) }
                     },
                     /** Чистка истории загрузок старше 60 дней */
                     async { trackedDownloadsRepository.clearCache() },
@@ -78,9 +72,7 @@ internal class ClearCacheStorageUseCase @Inject constructor(
                     async { creatorPostsCacheRepository.clearCache() },
                     /** Чистка сохраненных тэгов */
                     async {
-                        storeTagsRepository.clearIfExpired(SelectedSite.K)
-                        storeTagsRepository.clearIfExpired(SelectedSite.C)
-                        storeTagsRepository.clearIfExpired(SelectedSite.P)
+                        SelectedSite.entries.forEach { storeTagsRepository.clearIfExpired(it) }
                     },
                     /** Чистка кэша информации о видео */
                     async { storeVideoInfoRepository.clearCache() },

@@ -13,7 +13,7 @@ interface IUiSettingUseCase {
     suspend fun setEnabledSites(value: Set<SelectedSite>)
 
     /** Режим отображения сайта */
-    suspend fun setSiteDisplayMode(value: SiteDisplayMode)
+    suspend fun setDefaultSite(value: SelectedSite)
 
     /** Вид отображения авторов  */
     suspend fun setCreatorsViewMode(value: CreatorViewMode)

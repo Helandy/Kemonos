@@ -48,6 +48,7 @@ import su.afk.kemonos.preferences.ui.UiSettingKey.SHOW_IMAGE_PREVIEW_DOWNLOAD_AC
 import su.afk.kemonos.preferences.ui.UiSettingKey.SHOW_IMAGE_PREVIEW_SHARE_ACTION
 import su.afk.kemonos.preferences.ui.UiSettingKey.SHOW_PREVIEW_VIDEO
 import su.afk.kemonos.preferences.ui.UiSettingKey.SITE_DISPLAY_MODE
+import su.afk.kemonos.preferences.ui.UiSettingKey.DEFAULT_SITE
 import su.afk.kemonos.preferences.ui.UiSettingKey.SKIP_API_CHECK_ON_LOGIN
 import su.afk.kemonos.preferences.ui.UiSettingKey.SUGGEST_RANDOM_AUTHORS
 import su.afk.kemonos.preferences.ui.UiSettingKey.TAGS_POSTS_GRID_SIZE
@@ -66,15 +67,19 @@ internal class UiSettingUseCase @Inject constructor(
 
     override val prefs: Flow<UiSettingModel> = dataStore.data.map { p ->
         val legacyPostsSize = p.readEnum(POSTS_SIZE, UiSettingModel.DEFAULT_POSTS_SIZE)
-        val siteDisplayMode = p.readEnum(SITE_DISPLAY_MODE, UiSettingModel.DEFAULT_SITE_DISPLAY_MODE)
-            .withPawchiveDefault()
+        /** Легаси-пресет из старых версий: даёт и набор сайтов, и дефолтный. */
+        val legacy = legacySiteDisplay(p[SITE_DISPLAY_MODE])
         val enabledSites = p.readSelectedSites(ENABLED_SITES)
-            ?: siteDisplayMode.visibleSites.toSet().normalizedEnabledSites()
+            ?: (legacy?.sites ?: UiSettingModel.DEFAULT_ENABLED_SITES).normalizedEnabledSites()
+        val defaultSite = p[DEFAULT_SITE]
+            ?.let { raw -> runCatching { enumValueOf<SelectedSite>(raw) }.getOrNull() }
+            ?: legacy?.defaultSite
+            ?: UiSettingModel.DEFAULT_SITE
 
         UiSettingModel(
             skipApiCheckOnLogin = p[SKIP_API_CHECK_ON_LOGIN] ?: false,
             enabledSites = enabledSites,
-            siteDisplayMode = siteDisplayMode,
+            defaultSite = defaultSite,
             creatorsViewMode = p.readEnum(CREATORS_VIEW_MODE, UiSettingModel.DEFAULT_CREATORS_VIEW_MODE),
             creatorsFavoriteViewMode = p.readEnum(
                 CREATORS_FAVORITE_VIEW_MODE,
@@ -157,10 +162,10 @@ internal class UiSettingUseCase @Inject constructor(
         }
     }
 
-    /** Режим отображения сайта */
-    override suspend fun setSiteDisplayMode(value: SiteDisplayMode) {
+    /** Источник по умолчанию */
+    override suspend fun setDefaultSite(value: SelectedSite) {
         dataStore.edit {
-            it[SITE_DISPLAY_MODE] = value.name
+            it[DEFAULT_SITE] = value.name
         }
     }
 
@@ -383,7 +388,9 @@ internal class UiSettingUseCase @Inject constructor(
 object UiSettingKey {
     val SKIP_API_CHECK_ON_LOGIN = booleanPreferencesKey("SKIP_API_CHECK_ON_LOGIN")
     val ENABLED_SITES = stringPreferencesKey("ENABLED_SITES")
+    /** Устаревший пресет; читается только для миграции. */
     val SITE_DISPLAY_MODE = stringPreferencesKey("SITE_DISPLAY_MODE")
+    val DEFAULT_SITE = stringPreferencesKey("DEFAULT_SITE")
     val CREATORS_VIEW_MODE = stringPreferencesKey("CREATORS_VIEW_MODE")
     val CREATORS_FAVORITE_VIEW_MODE = stringPreferencesKey("CREATORS_FAVORITE_VIEW_MODE")
 
@@ -450,12 +457,28 @@ private inline fun <reified T : Enum<T>> Preferences.readEnum(
     return runCatching { enumValueOf<T>(raw) }.getOrDefault(default)
 }
 
-private fun SiteDisplayMode.withPawchiveDefault(): SiteDisplayMode =
-    when (this) {
-        SiteDisplayMode.BOTH_DEFAULT_KEMONO -> SiteDisplayMode.ALL_DEFAULT_KEMONO
-        SiteDisplayMode.BOTH_DEFAULT_COOMER -> SiteDisplayMode.ALL_DEFAULT_COOMER
-        else -> this
+/** Набор + дефолт, вычитанные из устаревшего пресета SITE_DISPLAY_MODE. */
+private class LegacySiteDisplay(
+    val sites: Set<SelectedSite>,
+    val defaultSite: SelectedSite,
+)
+
+/**
+ * Старые версии хранили один enum-пресет. BOTH_* исторически апгрейдились до ALL_*
+ * (чтобы у существующих пользователей появился Pawchive) — сохраняем это поведение.
+ */
+private fun legacySiteDisplay(raw: String?): LegacySiteDisplay? {
+    val allThree = setOf(SelectedSite.K, SelectedSite.C, SelectedSite.P)
+    return when (raw) {
+        "BOTH_DEFAULT_KEMONO", "ALL_DEFAULT_KEMONO" -> LegacySiteDisplay(allThree, SelectedSite.K)
+        "BOTH_DEFAULT_COOMER", "ALL_DEFAULT_COOMER" -> LegacySiteDisplay(allThree, SelectedSite.C)
+        "ALL_DEFAULT_PAWCHIVE" -> LegacySiteDisplay(allThree, SelectedSite.P)
+        "ONLY_KEMONO" -> LegacySiteDisplay(setOf(SelectedSite.K), SelectedSite.K)
+        "ONLY_COOMER" -> LegacySiteDisplay(setOf(SelectedSite.C), SelectedSite.C)
+        "ONLY_PAWCHIVE" -> LegacySiteDisplay(setOf(SelectedSite.P), SelectedSite.P)
+        else -> null
     }
+}
 
 private fun Preferences.readSelectedSites(key: Preferences.Key<String>): Set<SelectedSite>? {
     val raw = this[key] ?: return null

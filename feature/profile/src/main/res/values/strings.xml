@@ -28,7 +28,7 @@
     <string name="login_error_network">Problems with the Internet. Try again later.</string>
     <string name="login_error_server">Server error. Try again later.</string>
     <string name="login_error_unknown">An unknown error has occurred.</string>
-    <string name="login_pawchive_unsupported">Pawchive login is not available.</string>
+    <string name="login_site_unsupported">%1$s login is not available.</string>
 
     <string name="register_button_login">Already have an account? Log in</string>
 

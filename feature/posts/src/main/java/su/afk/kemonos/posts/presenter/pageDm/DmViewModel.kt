@@ -1,5 +1,6 @@
 package su.afk.kemonos.posts.presenter.pageDm
 
+import su.afk.kemonos.domain.capabilities
 import androidx.lifecycle.SavedStateHandle
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
@@ -113,7 +114,7 @@ internal class DmViewModel @Inject constructor(
         }
         val basePagingFlow = loadRequestFlow
             .onEach { request ->
-                if (request.site == SelectedSite.P) {
+                if (!request.site.capabilities.dms) {
                     setState {
                         copy(
                             dmUnsupported = true,
@@ -125,7 +126,7 @@ internal class DmViewModel @Inject constructor(
                 }
             }
             .map { request ->
-                if (request.site == SelectedSite.P) {
+                if (!request.site.capabilities.dms) {
                     return@map flowOf(PagingData.empty())
                 }
 

@@ -104,8 +104,7 @@ private fun RegisterLogo(selectSite: SelectedSite) {
         SelectedSite.K -> drawable.kemono_logo
         SelectedSite.C -> drawable.coomer_logo
         SelectedSite.P -> drawable.pawchive_logo
-        /** TODO: заменить на реальный логотип OnlyHaven */
-        SelectedSite.O -> drawable.logo
+        SelectedSite.O -> drawable.onlyhaven_logo
     }
     Image(
         painter = painterResource(id = logoRes),

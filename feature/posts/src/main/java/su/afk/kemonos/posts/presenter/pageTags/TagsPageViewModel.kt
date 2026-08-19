@@ -1,5 +1,6 @@
 package su.afk.kemonos.posts.presenter.pageTags
 
+import su.afk.kemonos.domain.capabilities
 import androidx.lifecycle.SavedStateHandle
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -84,7 +85,7 @@ internal class TagsPageViewModel @Inject constructor(
     }
 
     private suspend fun load(site: SelectedSite, forceRefresh: Boolean) {
-        if (site == SelectedSite.P) {
+        if (!site.capabilities.tags) {
             setState {
                 copy(
                     loading = false,

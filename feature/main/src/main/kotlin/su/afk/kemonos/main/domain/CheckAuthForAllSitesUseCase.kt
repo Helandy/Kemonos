@@ -27,29 +27,12 @@ class CheckAuthForAllSitesUseCase @Inject constructor(
     suspend operator fun invoke(enabledSites: Set<SelectedSite>): Set<SelectedSite> = coroutineScope {
         val needApiCheck = mutableSetOf<SelectedSite>()
 
-        val isCoomerAuth = isAuthSiteUseCase(SelectedSite.C).first()
-        val isKemonoAuth = isAuthSiteUseCase(SelectedSite.K).first()
-        val isPawchiveAuth = isAuthSiteUseCase(SelectedSite.P).first()
-
-        if (SelectedSite.C in enabledSites && isCoomerAuth) {
-            val stillAuth = checkSiteAuth(SelectedSite.C)
-            if (!stillAuth) needApiCheck += SelectedSite.C
-        } else if (SelectedSite.C in enabledSites) {
-            needApiCheck += SelectedSite.C
-        }
-
-        if (SelectedSite.K in enabledSites && isKemonoAuth) {
-            val stillAuth = checkSiteAuth(SelectedSite.K)
-            if (!stillAuth) needApiCheck += SelectedSite.K
-        } else if (SelectedSite.K in enabledSites) {
-            needApiCheck += SelectedSite.K
-        }
-
-        if (SelectedSite.P in enabledSites && isPawchiveAuth) {
-            val stillAuth = checkSiteAuth(SelectedSite.P)
-            if (!stillAuth) needApiCheck += SelectedSite.P
-        } else if (SelectedSite.P in enabledSites) {
-            needApiCheck += SelectedSite.P
+        enabledSites.forEach { site ->
+            /** Нет сессии — или она не пережила проверку: сайт идёт в обычную проверку API. */
+            val hasSession = isAuthSiteUseCase(site).first()
+            if (!hasSession || !checkSiteAuth(site)) {
+                needApiCheck += site
+            }
         }
 
         needApiCheck

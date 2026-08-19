@@ -138,7 +138,7 @@ internal class FavoriteProfilesViewModel @Inject constructor(
             restoredState.selectedSite
         } else {
             navigationStorage.consume<SelectedSite>(KEY_SELECT_SITE)
-            ?: uiSetting.prefs.first().siteDisplayMode.defaultSite
+            ?: uiSetting.prefs.first().effectiveDefaultSite
         }
 
         selectedSiteUseCase.setSiteAndAwait(site)

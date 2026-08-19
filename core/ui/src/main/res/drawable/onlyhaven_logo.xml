@@ -1,0 +1,22 @@
+<!--
+  Знак источника OnlyHaven: кольцо «O» и силуэт убежища (haven) внутри.
+  Собственная отрисовка, не брендовый ассет сайта — при желании заменяется на официальный.
+-->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+        android:width="48dp"
+        android:height="48dp"
+        android:viewportWidth="48"
+        android:viewportHeight="48">
+
+    <!-- кольцо «O» -->
+    <path
+            android:pathData="M24,3 A21,21 0 1,1 23.99,3 Z"
+            android:strokeColor="#3B82F6"
+            android:strokeWidth="4"
+            android:fillColor="#00000000"/>
+
+    <!-- силуэт «haven» -->
+    <path
+            android:pathData="M24,14.5 L33.5,24 L30.5,24 L30.5,33 L17.5,33 L17.5,24 L14.5,24 Z"
+            android:fillColor="#3B82F6"/>
+</vector>

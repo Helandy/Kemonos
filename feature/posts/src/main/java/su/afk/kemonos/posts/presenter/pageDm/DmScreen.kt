@@ -1,5 +1,6 @@
 package su.afk.kemonos.posts.presenter.pageDm
 
+import su.afk.kemonos.domain.displayName
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
@@ -130,6 +131,7 @@ internal fun DmScreen(
     ) {
         if (state.dmUnsupported) {
             DmUnsupportedContent(
+                siteName = site.displayName,
                 modifier = Modifier
                     .fillMaxSize()
                     .weight(1f),
@@ -161,6 +163,7 @@ internal fun DmScreen(
 
 @Composable
 private fun DmUnsupportedContent(
+    siteName: String,
     modifier: Modifier = Modifier,
 ) {
     Box(
@@ -168,7 +171,7 @@ private fun DmUnsupportedContent(
         contentAlignment = Alignment.Center,
     ) {
         Text(
-            text = stringResource(PostsR.string.dm_pawchive_unsupported),
+            text = stringResource(PostsR.string.dm_site_unsupported, siteName),
             modifier = Modifier.fillMaxWidth(),
             textAlign = TextAlign.Center,
             style = MaterialTheme.typography.headlineSmall,

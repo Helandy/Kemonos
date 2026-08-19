@@ -1,5 +1,8 @@
 package su.afk.kemonos.setting.presenter.view.general
 
+import su.afk.kemonos.domain.displayName
+import su.afk.kemonos.domain.SiteCatalog
+import su.afk.kemonos.domain.SelectedSite
 import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -33,7 +36,6 @@ import androidx.compose.ui.unit.dp
 import su.afk.kemonos.preferences.ui.AppThemeMode
 import su.afk.kemonos.preferences.ui.DateFormatMode
 import su.afk.kemonos.preferences.ui.RandomButtonPlacement
-import su.afk.kemonos.preferences.ui.SiteDisplayMode
 import su.afk.kemonos.setting.R
 import su.afk.kemonos.setting.presenter.view.common.SectionSpacer
 import su.afk.kemonos.setting.presenter.view.common.SettingsSectionTitle
@@ -46,8 +48,8 @@ import java.util.Locale
 internal fun GeneralSettingsSection(
     suggestRandomAuthors: Boolean,
     onSuggestRandomAuthors: (Boolean) -> Unit,
-    siteDisplayMode: SiteDisplayMode,
-    onSiteDisplayModeChanged: (SiteDisplayMode) -> Unit,
+    defaultSite: SelectedSite,
+    onDefaultSiteChanged: (SelectedSite) -> Unit,
     appThemeMode: AppThemeMode,
     onAppThemeMode: (AppThemeMode) -> Unit,
     hapticFeedbackEnabled: Boolean,
@@ -109,9 +111,9 @@ internal fun GeneralSettingsSection(
 
     ElevatedCard(modifier = Modifier.fillMaxWidth()) {
         Column(modifier = Modifier.padding(vertical = 8.dp)) {
-            SiteDisplayModeSetting(
-                siteDisplayMode = siteDisplayMode,
-                onSiteDisplayModeChanged = onSiteDisplayModeChanged,
+            DefaultSiteSetting(
+                defaultSite = defaultSite,
+                onDefaultSiteChanged = onDefaultSiteChanged,
             )
 
             HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp))
@@ -249,21 +251,11 @@ private fun DateFormatSetting(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun SiteDisplayModeSetting(
-    siteDisplayMode: SiteDisplayMode,
-    onSiteDisplayModeChanged: (SiteDisplayMode) -> Unit,
+private fun DefaultSiteSetting(
+    defaultSite: SelectedSite,
+    onDefaultSiteChanged: (SelectedSite) -> Unit,
 ) {
     var expanded by remember { mutableStateOf(false) }
-    val displayModes = listOf(
-        SiteDisplayMode.ALL_DEFAULT_COOMER,
-        SiteDisplayMode.ALL_DEFAULT_KEMONO,
-        SiteDisplayMode.ALL_DEFAULT_PAWCHIVE,
-        SiteDisplayMode.BOTH_DEFAULT_COOMER,
-        SiteDisplayMode.BOTH_DEFAULT_KEMONO,
-        SiteDisplayMode.ONLY_COOMER,
-        SiteDisplayMode.ONLY_KEMONO,
-        SiteDisplayMode.ONLY_PAWCHIVE,
-    )
 
     Column(
         modifier = Modifier
@@ -283,7 +275,7 @@ private fun SiteDisplayModeSetting(
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Text(
-                    text = siteDisplayMode.label(),
+                    text = defaultSite.displayName,
                     style = MaterialTheme.typography.bodyMedium,
                 )
             }
@@ -293,16 +285,12 @@ private fun SiteDisplayModeSetting(
                 onDismissRequest = { expanded = false },
                 modifier = Modifier.fillMaxWidth(0.9f)
             ) {
-                displayModes.forEach { mode ->
+                SiteCatalog.availableSites.forEach { site ->
                     DropdownMenuItem(
-                        text = {
-                            Text(
-                                text = mode.label()
-                            )
-                        },
+                        text = { Text(text = site.displayName) },
                         onClick = {
                             expanded = false
-                            onSiteDisplayModeChanged(mode)
+                            onDefaultSiteChanged(site)
                         }
                     )
                 }
@@ -311,17 +299,6 @@ private fun SiteDisplayModeSetting(
     }
 }
 
-@Composable
-private fun SiteDisplayMode.label(): String = when (this) {
-    SiteDisplayMode.BOTH_DEFAULT_KEMONO -> stringResource(R.string.settings_site_display_both_default_kemono)
-    SiteDisplayMode.BOTH_DEFAULT_COOMER -> stringResource(R.string.settings_site_display_both_default_coomer)
-    SiteDisplayMode.ONLY_KEMONO -> stringResource(R.string.settings_site_display_only_kemono)
-    SiteDisplayMode.ONLY_COOMER -> stringResource(R.string.settings_site_display_only_coomer)
-    SiteDisplayMode.ALL_DEFAULT_KEMONO -> stringResource(R.string.settings_site_display_all_default_kemono)
-    SiteDisplayMode.ALL_DEFAULT_COOMER -> stringResource(R.string.settings_site_display_all_default_coomer)
-    SiteDisplayMode.ALL_DEFAULT_PAWCHIVE -> stringResource(R.string.settings_site_display_all_default_pawchive)
-    SiteDisplayMode.ONLY_PAWCHIVE -> stringResource(R.string.settings_site_display_only_pawchive)
-}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

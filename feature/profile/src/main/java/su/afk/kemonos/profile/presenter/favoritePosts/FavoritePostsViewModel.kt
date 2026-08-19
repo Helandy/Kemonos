@@ -179,7 +179,7 @@ internal class FavoritePostsViewModel @Inject constructor(
     private fun loadSelectedSite() = viewModelScope.launch {
         val selectSite = savedStateHandle.getSerializableState<FavoritePostsPersistedState>(KEY_STATE)?.selectSite
             ?: navigationStorage.consume<SelectedSite>(KEY_SELECT_SITE)
-            ?: uiSetting.prefs.first().siteDisplayMode.defaultSite
+            ?: uiSetting.prefs.first().effectiveDefaultSite
 
         selectedSiteUseCase.setSiteAndAwait(selectSite)
 

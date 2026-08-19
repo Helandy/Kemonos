@@ -1,5 +1,6 @@
 package su.afk.kemonos.ui.components.posts.postCard
 
+import su.afk.kemonos.domain.capabilities
 import androidx.compose.foundation.background
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
@@ -46,7 +47,7 @@ fun PostCard(
     val imgBaseUrl = remember(post.service) { resolver.imageBaseUrlByService(post.service) }
     val meta = rememberPostCardMeta(
         post = post,
-        allowVideoPreview = resolver.selectedSite() != SelectedSite.P,
+        allowVideoPreview = resolver.selectedSite().capabilities.videoPreview,
     )
     val interactionSource = remember { MutableInteractionSource() }
     val pressedScale = rememberKemonosPressedScale(interactionSource)

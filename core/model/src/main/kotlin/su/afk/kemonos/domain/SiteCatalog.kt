@@ -24,6 +24,29 @@ data class SiteMediaHosts(
 )
 
 /**
+ * Что источник умеет.
+ *
+ * Заменяет разбросанные проверки вида `if (site == SelectedSite.P)`: компилятор
+ * не ловит их при добавлении источника, а флаг заставляет описать поведение явно.
+ */
+data class SiteCapabilities(
+    /** Вход, регистрация, серверное избранное. */
+    val auth: Boolean,
+
+    /** Раздел тегов. */
+    val tags: Boolean,
+
+    /** Лента личных сообщений. */
+    val dms: Boolean,
+
+    /** Раздел популярного. */
+    val popularPosts: Boolean,
+
+    /** Превью видео через внешний сервер метаданных. */
+    val videoPreview: Boolean,
+)
+
+/**
  * Описание источника: всё, что отличает один сайт от другого, собрано в одном месте.
  *
  * Добавление нового источника = новая константа [SelectedSite] + ветка в [SiteCatalog.specOf].
@@ -44,6 +67,8 @@ data class SiteSpec(
     val defaultApiUrl: String,
 
     val mediaHosts: SiteMediaHosts,
+
+    val capabilities: SiteCapabilities,
 
     /**
      * Самодостаточный источник: сам обслуживает все свои сервисы.
@@ -82,6 +107,13 @@ object SiteCatalog {
                 fileHostPrefix = "img",
                 creatorImageHost = CreatorImageHost.IMAGE,
             ),
+                        capabilities = SiteCapabilities(
+                auth = true,
+                tags = true,
+                dms = true,
+                popularPosts = true,
+                videoPreview = true,
+            ),
             standalone = false,
         )
 
@@ -95,6 +127,13 @@ object SiteCatalog {
                 fileHostPrefix = "img",
                 creatorImageHost = CreatorImageHost.IMAGE,
             ),
+                        capabilities = SiteCapabilities(
+                auth = true,
+                tags = true,
+                dms = true,
+                popularPosts = true,
+                videoPreview = true,
+            ),
             standalone = false,
         )
 
@@ -107,6 +146,13 @@ object SiteCatalog {
                 imageHostPrefix = "img",
                 fileHostPrefix = "file",
                 creatorImageHost = CreatorImageHost.ROOT,
+            ),
+            capabilities = SiteCapabilities(
+                auth = false,
+                tags = false,
+                dms = false,
+                popularPosts = true,
+                videoPreview = false,
             ),
             standalone = true,
             legacyDefaultApiUrls = setOf("https://pawchive.st/api/"),
@@ -123,6 +169,15 @@ object SiteCatalog {
                 /** файлы: e1.cum.st/media/{sha256}/{variant} */
                 fileHostPrefix = "e1",
                 creatorImageHost = CreatorImageHost.IMAGE,
+            ),
+            capabilities = SiteCapabilities(
+                /** Публичный API без сессий. */
+                auth = false,
+                tags = false,
+                /** Есть даже глобальная лента /api/v1/dms. */
+                dms = true,
+                popularPosts = false,
+                videoPreview = false,
             ),
             standalone = true,
             /** TODO: включить, когда появятся API-слой и база OnlyHaven. */
@@ -153,3 +208,4 @@ val SelectedSite.spec: SiteSpec get() = SiteCatalog[this]
 val SelectedSite.slug: String get() = spec.slug
 val SelectedSite.displayName: String get() = spec.displayName
 val SelectedSite.defaultApiUrl: String get() = spec.defaultApiUrl
+val SelectedSite.capabilities: SiteCapabilities get() = spec.capabilities

@@ -28,7 +28,7 @@
     <string name="login_error_network">Проблемы с интернетом. Попробуйте позже.</string>
     <string name="login_error_server">Ошибка сервера. Попробуйте позже.</string>
     <string name="login_error_unknown">Произошла неизвестная ошибка.</string>
-    <string name="login_pawchive_unsupported">Вход в Pawchive недоступен.</string>
+    <string name="login_site_unsupported">Вход в %1$s недоступен.</string>
 
     <string name="register_button_login">Уже есть аккаунт? Войти</string>
 

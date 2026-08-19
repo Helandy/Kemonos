@@ -1,5 +1,7 @@
 package su.afk.kemonos.profile.presenter.login
 
+import su.afk.kemonos.domain.displayName
+import su.afk.kemonos.domain.capabilities
 import android.content.Context
 import androidx.lifecycle.SavedStateHandle
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -105,8 +107,8 @@ internal class LoginViewModel @Inject constructor(
     /** Запускает логин: валидация, сетевой запрос и дальнейшая навигация/сохранение credentials. */
     private fun onLoginClick() = viewModelScope.launch {
         if (currentState.isLoading) return@launch
-        if (currentState.selectSite == SelectedSite.P) {
-            showPawchiveUnsupported()
+        if (!currentState.selectSite.capabilities.auth) {
+            showAuthUnsupported()
             return@launch
         }
 
@@ -174,8 +176,8 @@ internal class LoginViewModel @Inject constructor(
 
     /** Принимает выбранные системным credential manager данные и инициирует повторный вход. */
     private fun onCredentialsPicked(username: String, password: String) {
-        if (currentState.selectSite == SelectedSite.P) {
-            showPawchiveUnsupported()
+        if (!currentState.selectSite.capabilities.auth) {
+            showAuthUnsupported()
             return
         }
 
@@ -201,14 +203,19 @@ internal class LoginViewModel @Inject constructor(
 
     /** Однократно запрашивает подсказку сохраненных credentials для пустой формы. */
     private fun requestSavedCredentials() {
-        if (currentState.selectSite == SelectedSite.P) return
+        if (!currentState.selectSite.capabilities.auth) return
         if (credentialsRequested) return
         if (currentState.username.isNotBlank() || currentState.password.isNotBlank()) return
         credentialsRequested = true
         setEffect(Effect.PickPassword)
     }
 
-    private fun showPawchiveUnsupported() {
-        setEffect(Effect.ShowMessage(appContext.getString(R.string.login_pawchive_unsupported)))
+    private fun showAuthUnsupported() {
+        val siteName = currentState.selectSite.displayName
+        setEffect(
+            Effect.ShowMessage(
+                appContext.getString(R.string.login_site_unsupported, siteName)
+            )
+        )
     }
 }

@@ -68,8 +68,8 @@ internal fun SettingUiScreen(
         GeneralSettingsSection(
             suggestRandomAuthors = ui.suggestRandomAuthors,
             onSuggestRandomAuthors = { onEvent(Event.ChangeViewSetting.SuggestRandomAuthors(it)) },
-            siteDisplayMode = ui.siteDisplayMode,
-            onSiteDisplayModeChanged = { onEvent(Event.ChangeViewSetting.SiteDisplayModeChanged(it)) },
+            defaultSite = ui.effectiveDefaultSite,
+            onDefaultSiteChanged = { onEvent(Event.ChangeViewSetting.DefaultSiteChanged(it)) },
             appThemeMode = ui.appThemeMode,
             onAppThemeMode = { onEvent(Event.ChangeViewSetting.EventAppThemeMode(it)) },
             hapticFeedbackEnabled = ui.hapticFeedbackEnabled,

@@ -15,12 +15,9 @@ class SettingUiPreferencesDelegate @Inject constructor(
             is SettingState.Event.ChangeViewSetting.SkipApiCheckOnLogin ->
                 scope.launch { uiSetting.setSkipApiCheckOnLogin(event.value) }
 
-            /** Режим отображения сайта */
-            is SettingState.Event.ChangeViewSetting.SiteDisplayModeChanged ->
-                scope.launch {
-                    uiSetting.setSiteDisplayMode(event.value)
-                    uiSetting.setEnabledSites(event.value.visibleSites.toSet())
-                }
+            /** Источник по умолчанию (набор включённых сайтов правится отдельно) */
+            is SettingState.Event.ChangeViewSetting.DefaultSiteChanged ->
+                scope.launch { uiSetting.setDefaultSite(event.value) }
 
             /** Предлагать рандомных авторов */
             is SettingState.Event.ChangeViewSetting.SuggestRandomAuthors ->

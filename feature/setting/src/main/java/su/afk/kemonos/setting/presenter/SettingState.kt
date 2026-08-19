@@ -12,7 +12,6 @@ import su.afk.kemonos.preferences.ui.PostSwipeAxis
 import su.afk.kemonos.preferences.ui.PostSwipeFeel
 import su.afk.kemonos.preferences.ui.PostsViewMode
 import su.afk.kemonos.preferences.ui.RandomButtonPlacement
-import su.afk.kemonos.preferences.ui.SiteDisplayMode
 import su.afk.kemonos.preferences.ui.TranslateTarget
 import su.afk.kemonos.preferences.ui.UiSettingModel
 import su.afk.kemonos.preferences.ui.VideoPreviewAspectRatio
@@ -94,7 +93,7 @@ class SettingState {
         sealed interface ChangeViewSetting : Event {
             data class SkipApiCheckOnLogin(val value: Boolean) : ChangeViewSetting
 
-            data class SiteDisplayModeChanged(val value: SiteDisplayMode) : ChangeViewSetting
+            data class DefaultSiteChanged(val value: SelectedSite) : ChangeViewSetting
 
             data class SuggestRandomAuthors(val value: Boolean) : ChangeViewSetting
 

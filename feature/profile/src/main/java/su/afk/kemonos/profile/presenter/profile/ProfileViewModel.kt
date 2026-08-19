@@ -1,5 +1,6 @@
 package su.afk.kemonos.profile.presenter.profile
 
+import su.afk.kemonos.domain.capabilities
 import su.afk.kemonos.domain.displayName
 import android.content.Context
 import android.net.Uri
@@ -167,8 +168,12 @@ internal class ProfileViewModel @Inject constructor(
 
     /** Логин */
     private fun onLoginClick(site: SelectedSite) {
-        if (site == SelectedSite.P) {
-            setEffect(Effect.ShowMessage(appContext.getString(R.string.login_pawchive_unsupported)))
+        if (!site.capabilities.auth) {
+            setEffect(
+                Effect.ShowMessage(
+                    appContext.getString(R.string.login_site_unsupported, site.displayName)
+                )
+            )
             return
         }
 

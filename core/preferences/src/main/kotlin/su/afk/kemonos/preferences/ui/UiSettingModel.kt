@@ -122,29 +122,6 @@ enum class CreatorProfileTabKey {
     COMMUNITY,
 }
 
-enum class SiteDisplayMode(
-    val showKemono: Boolean,
-    val showCoomer: Boolean,
-    val showPawchive: Boolean,
-    val defaultSite: SelectedSite,
-) {
-    BOTH_DEFAULT_KEMONO(true, true, false, SelectedSite.K),
-    BOTH_DEFAULT_COOMER(true, true, false, SelectedSite.C),
-    ONLY_KEMONO(true, false, false, SelectedSite.K),
-    ONLY_COOMER(false, true, false, SelectedSite.C),
-    ALL_DEFAULT_KEMONO(true, true, true, SelectedSite.K),
-    ALL_DEFAULT_COOMER(true, true, true, SelectedSite.C),
-    ALL_DEFAULT_PAWCHIVE(true, true, true, SelectedSite.P),
-    ONLY_PAWCHIVE(false, false, true, SelectedSite.P);
-
-    val visibleSites: List<SelectedSite>
-        get() = buildList {
-            if (showKemono) add(SelectedSite.K)
-            if (showCoomer) add(SelectedSite.C)
-            if (showPawchive) add(SelectedSite.P)
-        }.ifEmpty { listOf(defaultSite) }
-}
-
 enum class VideoPreviewAspectRatio(val ratio: Float) {
     RATIO_16_9(16f / 9f),
     RATIO_4_3(4f / 3f),
@@ -161,8 +138,8 @@ data class UiSettingModel(
     /** Сайты/API, которые включены в приложении и стартовой проверке. */
     val enabledSites: Set<SelectedSite> = DEFAULT_ENABLED_SITES,
 
-    /** Режим отображения сайтов */
-    val siteDisplayMode: SiteDisplayMode = DEFAULT_SITE_DISPLAY_MODE,
+    /** Источник по умолчанию (стартовая вкладка/сайт). */
+    val defaultSite: SelectedSite = DEFAULT_SITE,
 
     /** Вид отображения авторов на главной */
     val creatorsViewMode: CreatorViewMode = DEFAULT_CREATORS_VIEW_MODE,
@@ -285,10 +262,20 @@ data class UiSettingModel(
         get() = SELECTED_SITE_ORDER.filter { it in enabledSites }
             .ifEmpty { SELECTED_SITE_ORDER }
 
+    /**
+     * Дефолтный источник, гарантированно входящий в [enabledSiteList].
+     *
+     * Раньше инвариант держался конструкцией enum'а SiteDisplayMode; теперь
+     * [defaultSite] и [enabledSites] независимы, поэтому нормализуем здесь —
+     * иначе `enabledSiteList.indexOf(defaultSite)` вернёт -1.
+     */
+    val effectiveDefaultSite: SelectedSite
+        get() = enabledSiteList.let { sites -> defaultSite.takeIf { it in sites } ?: sites.first() }
+
     companion object {
         val SELECTED_SITE_ORDER: List<SelectedSite> = SiteCatalog.availableSites
         val DEFAULT_ENABLED_SITES: Set<SelectedSite> = SELECTED_SITE_ORDER.toSet()
-        val DEFAULT_SITE_DISPLAY_MODE = SiteDisplayMode.ALL_DEFAULT_COOMER
+        val DEFAULT_SITE = SelectedSite.C
 
         val DEFAULT_CREATORS_VIEW_MODE = CreatorViewMode.LIST
         val DEFAULT_POSTS_VIEW_MODE = PostsViewMode.GRID

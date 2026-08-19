@@ -42,7 +42,7 @@ internal fun ProfileScreen(
     val ui = state.uiSettingModel
     val visibleSites = ui.enabledSiteList
     val pageCount = visibleSites.size
-    val initialPage = visibleSites.indexOf(ui.siteDisplayMode.defaultSite)
+    val initialPage = visibleSites.indexOf(ui.effectiveDefaultSite)
         .takeIf { it >= 0 }
         ?: 0
 
