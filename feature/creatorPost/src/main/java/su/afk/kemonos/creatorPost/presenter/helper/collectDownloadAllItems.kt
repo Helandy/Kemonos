@@ -1,11 +1,12 @@
 package su.afk.kemonos.creatorPost.presenter.helper
 
+import su.afk.kemonos.domain.MediaUrlScheme
 import su.afk.kemonos.creatorPost.api.domain.model.PostContentDomain
 import su.afk.kemonos.domain.models.AttachmentDomain
 import su.afk.kemonos.domain.models.PreviewDomain
 import su.afk.kemonos.domain.models.VideoDomain
 import su.afk.kemonos.ui.uiUtils.format.isAudioFile
-import su.afk.kemonos.utils.url.buildContentUrlToDataSite
+import su.afk.kemonos.utils.url.buildContentUrl
 import java.net.URLEncoder
 import java.util.*
 
@@ -14,7 +15,10 @@ internal data class PostDownloadItem(
     val fileName: String?,
 )
 
-internal fun PostContentDomain.collectDownloadAllItems(fallbackBaseUrl: String): List<PostDownloadItem> = buildList {
+internal fun PostContentDomain.collectDownloadAllItems(
+    fallbackBaseUrl: String,
+    mediaUrlScheme: MediaUrlScheme,
+): List<PostDownloadItem> = buildList {
     previews.asSequence()
         .distinctBy { it.previewKey() }
         .mapNotNull { it.toThumbnailDownloadItemOrNull() }
@@ -28,11 +32,11 @@ internal fun PostContentDomain.collectDownloadAllItems(fallbackBaseUrl: String):
     attachments.asSequence()
         .filter { isAudioFile(it.path) }
         .distinctBy { "${it.server.orEmpty()}|${it.path}" }
-        .map { it.toAttachmentDownloadItem(fallbackBaseUrl) }
+        .map { it.toAttachmentDownloadItem(fallbackBaseUrl, mediaUrlScheme) }
         .forEach(::add)
 
     attachments.asSequence()
-        .map { it.toAttachmentDownloadItem(fallbackBaseUrl) }
+        .map { it.toAttachmentDownloadItem(fallbackBaseUrl, mediaUrlScheme) }
         .forEach(::add)
 }
     .distinctBy(PostDownloadItem::dedupKey)
@@ -63,8 +67,11 @@ private fun VideoDomain.toDownloadItem(): PostDownloadItem = PostDownloadItem(
     fileName = name
 )
 
-private fun AttachmentDomain.toAttachmentDownloadItem(fallbackBaseUrl: String): PostDownloadItem = PostDownloadItem(
-    url = buildContentUrlToDataSite(fallbackBaseUrl),
+private fun AttachmentDomain.toAttachmentDownloadItem(
+    fallbackBaseUrl: String,
+    mediaUrlScheme: MediaUrlScheme,
+): PostDownloadItem = PostDownloadItem(
+    url = buildContentUrl(mediaUrlScheme, fallbackBaseUrl),
     fileName = name
 )
 

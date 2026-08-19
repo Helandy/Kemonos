@@ -11,7 +11,8 @@ import su.afk.kemonos.preferences.ui.DateFormatMode
 import su.afk.kemonos.ui.date.toUiDateTime
 import su.afk.kemonos.ui.uiUtils.format.isImageFile
 import su.afk.kemonos.ui.uiUtils.format.isVideoFile
-import su.afk.kemonos.utils.url.buildContentUrlToDataSite
+import su.afk.kemonos.domain.MediaUrlScheme
+import su.afk.kemonos.utils.url.buildContentUrl
 import java.time.Instant
 import java.time.LocalDateTime
 import java.time.OffsetDateTime
@@ -81,7 +82,11 @@ internal fun buildMediaUrls(message: CommunityMessage, fallbackBaseUrl: String):
                 server = null,
                 path = path,
                 name = att.name
-            ).buildContentUrlToDataSite(fallbackBaseUrl = fallbackBaseUrl)
+            ).buildContentUrl(
+                /** Community/Discord существует только у Kemono. */
+                scheme = MediaUrlScheme.DATA_PREFIXED,
+                fallbackBaseUrl = fallbackBaseUrl,
+            )
             val previewUrl = buildThumbnailUrl(path = path, fallbackBaseUrl = fallbackBaseUrl)
             return@mapNotNull CommunityMedia(
                 previewUrl = previewUrl,

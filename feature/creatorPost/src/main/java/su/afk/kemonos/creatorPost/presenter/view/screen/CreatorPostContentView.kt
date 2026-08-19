@@ -1,5 +1,6 @@
 package su.afk.kemonos.creatorPost.presenter.view.screen
 
+import su.afk.kemonos.preferences.domainResolver.mediaUrlSchemeByService
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -42,7 +43,7 @@ import su.afk.kemonos.ui.R
 import su.afk.kemonos.ui.components.creator.header.CreatorHeader
 import su.afk.kemonos.ui.shared.view.ShareLoadingOverlay
 import su.afk.kemonos.ui.uiUtils.format.audioMimeType
-import su.afk.kemonos.utils.url.buildContentUrlToDataSite
+import su.afk.kemonos.utils.url.buildContentUrl
 import kotlin.math.roundToInt
 
 @Composable
@@ -68,6 +69,7 @@ internal fun CreatorPostContentView(
 
     val imgBaseUrl = remember(post.service) { resolver.imageBaseUrlByService(post.service) }
     val fallbackBaseUrl = remember(post.service) { resolver.fileBaseUrlByService(post.service) }
+    val mediaUrlScheme = remember(post.service) { resolver.mediaUrlSchemeByService(post.service) }
     val uniquePreviews = remember(resolvedPost.previews) {
         resolvedPost.previews.distinctBy { it.previewKey() }
     }
@@ -275,7 +277,7 @@ internal fun CreatorPostContentView(
                             onEvent(Event.AudioInfoRequested(server = server, path = path))
                         },
                         onPlay = { att ->
-                            val url = att.buildContentUrlToDataSite(fallbackBaseUrl)
+                            val url = att.buildContentUrl(mediaUrlScheme, fallbackBaseUrl)
                             onEvent(
                                 Event.PlayAudio(
                                     url = url,
@@ -285,11 +287,11 @@ internal fun CreatorPostContentView(
                             )
                         },
                         onDownload = { att ->
-                            val url = att.buildContentUrlToDataSite(fallbackBaseUrl)
+                            val url = att.buildContentUrl(mediaUrlScheme, fallbackBaseUrl)
                             onEvent(Event.Download(url, att.name))
                         },
                         onShare = { att ->
-                            val url = att.buildContentUrlToDataSite(fallbackBaseUrl)
+                            val url = att.buildContentUrl(mediaUrlScheme, fallbackBaseUrl)
                             onShareRemote(
                                 url,
                                 att.name,
@@ -336,6 +338,7 @@ internal fun CreatorPostContentView(
                         PostAttachmentsSection(
                             attachments = resolvedPost.attachments,
                             fallbackBaseUrl = fallbackBaseUrl,
+                            mediaUrlScheme = mediaUrlScheme,
                             onAttachmentClick = { url, fileName ->
                                 onEvent(Event.Download(url, fileName))
                             },

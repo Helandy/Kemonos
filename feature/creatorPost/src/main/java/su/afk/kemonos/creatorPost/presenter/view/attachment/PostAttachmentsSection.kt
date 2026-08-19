@@ -1,5 +1,6 @@
 package su.afk.kemonos.creatorPost.presenter.view.attachment
 
+import su.afk.kemonos.domain.MediaUrlScheme
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -17,12 +18,13 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import su.afk.kemonos.ui.R
 import su.afk.kemonos.domain.models.AttachmentDomain
-import su.afk.kemonos.utils.url.buildContentUrlToDataSite
+import su.afk.kemonos.utils.url.buildContentUrl
 
 @Composable
 fun PostAttachmentsSection(
     attachments: List<AttachmentDomain>,
     fallbackBaseUrl: String,
+    mediaUrlScheme: MediaUrlScheme,
     onAttachmentClick: (url: String, fileName: String?) -> Unit,
     showHeader: Boolean = true,
 ) {
@@ -39,7 +41,7 @@ fun PostAttachmentsSection(
 
     Column {
         attachments.forEach { att ->
-            val url = att.buildContentUrlToDataSite(fallbackBaseUrl)
+            val url = att.buildContentUrl(mediaUrlScheme, fallbackBaseUrl)
 
             Row(
                 verticalAlignment = Alignment.CenterVertically,

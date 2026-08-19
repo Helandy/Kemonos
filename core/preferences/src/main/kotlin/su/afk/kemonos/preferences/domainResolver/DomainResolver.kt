@@ -3,6 +3,8 @@ package su.afk.kemonos.preferences.domainResolver
 import android.net.Uri
 import androidx.core.net.toUri
 import su.afk.kemonos.domain.CreatorImageHost
+import su.afk.kemonos.domain.MediaUrlScheme
+import su.afk.kemonos.domain.mediaUrlScheme
 import su.afk.kemonos.domain.SelectedSite
 import su.afk.kemonos.domain.SiteCatalog
 import su.afk.kemonos.domain.spec
@@ -71,6 +73,10 @@ fun IDomainResolver.selectedSiteByService(service: String): SelectedSite {
     val current = selectedSite()
     return if (current.spec.standalone) current else SiteCatalog.siteByService(service)
 }
+
+/** Схема сборки ссылок на медиа у источника, которому принадлежит сервис. */
+fun IDomainResolver.mediaUrlSchemeByService(service: String): MediaUrlScheme =
+    selectedSiteByService(service).mediaUrlScheme
 
 class DomainResolver @Inject constructor(
     private val getRootUrl: GetRootUrlUseCase,

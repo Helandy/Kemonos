@@ -1,5 +1,6 @@
 package su.afk.kemonos.creatorPost.presenter
 
+import su.afk.kemonos.preferences.domainResolver.mediaUrlSchemeByService
 import androidx.lifecycle.SavedStateHandle
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
@@ -460,7 +461,10 @@ internal class CreatorPostViewModel @AssistedInject constructor(
     private fun downloadAll() {
         val post = currentState.post ?: return
         val fallbackBaseUrl = domainResolver.fileBaseUrlByService(currentState.service)
-        val allItems = post.collectDownloadAllItems(fallbackBaseUrl = fallbackBaseUrl)
+        val allItems = post.collectDownloadAllItems(
+            fallbackBaseUrl = fallbackBaseUrl,
+            mediaUrlScheme = domainResolver.mediaUrlSchemeByService(currentState.service),
+        )
         if (allItems.isEmpty()) return
 
         viewModelScope.launch {

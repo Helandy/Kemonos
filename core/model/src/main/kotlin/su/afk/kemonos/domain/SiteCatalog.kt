@@ -24,6 +24,17 @@ data class SiteMediaHosts(
 )
 
 /**
+ * Как из [su.afk.kemonos.domain.models.AttachmentDomain] собирается ссылка на файл.
+ */
+enum class MediaUrlScheme {
+    /** kemono/coomer/pawchive: {server}/data{path} — префикс /data добавляет клиент. */
+    DATA_PREFIXED,
+
+    /** OnlyHaven: {server}{path}, где path уже полный (/media/{sha256}/{variant}). */
+    DIRECT,
+}
+
+/**
  * Что источник умеет.
  *
  * Заменяет разбросанные проверки вида `if (site == SelectedSite.P)`: компилятор
@@ -70,6 +81,8 @@ data class SiteSpec(
 
     val capabilities: SiteCapabilities,
 
+    val mediaUrlScheme: MediaUrlScheme,
+
     /**
      * Самодостаточный источник: сам обслуживает все свои сервисы.
      *
@@ -107,7 +120,8 @@ object SiteCatalog {
                 fileHostPrefix = "img",
                 creatorImageHost = CreatorImageHost.IMAGE,
             ),
-                        capabilities = SiteCapabilities(
+                        mediaUrlScheme = MediaUrlScheme.DATA_PREFIXED,
+            capabilities = SiteCapabilities(
                 auth = true,
                 tags = true,
                 dms = true,
@@ -127,7 +141,8 @@ object SiteCatalog {
                 fileHostPrefix = "img",
                 creatorImageHost = CreatorImageHost.IMAGE,
             ),
-                        capabilities = SiteCapabilities(
+                        mediaUrlScheme = MediaUrlScheme.DATA_PREFIXED,
+            capabilities = SiteCapabilities(
                 auth = true,
                 tags = true,
                 dms = true,
@@ -147,6 +162,7 @@ object SiteCatalog {
                 fileHostPrefix = "file",
                 creatorImageHost = CreatorImageHost.ROOT,
             ),
+            mediaUrlScheme = MediaUrlScheme.DATA_PREFIXED,
             capabilities = SiteCapabilities(
                 auth = false,
                 tags = false,
@@ -170,6 +186,7 @@ object SiteCatalog {
                 fileHostPrefix = "e1",
                 creatorImageHost = CreatorImageHost.IMAGE,
             ),
+            mediaUrlScheme = MediaUrlScheme.DIRECT,
             capabilities = SiteCapabilities(
                 /** Публичный API без сессий. */
                 auth = false,
@@ -209,3 +226,4 @@ val SelectedSite.slug: String get() = spec.slug
 val SelectedSite.displayName: String get() = spec.displayName
 val SelectedSite.defaultApiUrl: String get() = spec.defaultApiUrl
 val SelectedSite.capabilities: SiteCapabilities get() = spec.capabilities
+val SelectedSite.mediaUrlScheme: MediaUrlScheme get() = spec.mediaUrlScheme

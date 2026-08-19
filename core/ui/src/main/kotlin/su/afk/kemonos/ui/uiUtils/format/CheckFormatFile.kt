@@ -1,5 +1,6 @@
 package su.afk.kemonos.ui.uiUtils.format
 
+import su.afk.kemonos.domain.MediaUrlScheme
 import android.content.Context
 import android.content.Intent
 import androidx.core.net.toUri
@@ -83,8 +84,20 @@ fun findFirstVideoPath(post: PostDomain): String? {
         .firstOrNull { isVideoFile(it) }
 }
 
-/** Сборка URL под backend */
-fun buildFileUrl(baseUrl: String, path: String): String = "$baseUrl/data$path"
+/** Сборка URL файла по схеме источника. */
+fun buildFileUrl(baseUrl: String, path: String, scheme: MediaUrlScheme): String =
+    when (scheme) {
+        MediaUrlScheme.DATA_PREFIXED -> "$baseUrl/data$path"
+        MediaUrlScheme.DIRECT -> "$baseUrl$path"
+    }
+
+/** Сборка URL превью по схеме источника. */
+fun buildThumbnailUrl(imageBaseUrl: String, attachmentPath: String, thumbnailPath: String?, scheme: MediaUrlScheme): String =
+    when {
+        thumbnailPath != null -> "$imageBaseUrl$thumbnailPath"
+        scheme == MediaUrlScheme.DATA_PREFIXED -> "$imageBaseUrl/thumbnail/data$attachmentPath"
+        else -> "$imageBaseUrl$attachmentPath"
+    }
 
 fun buildVideoPreviewUrl(
     videoPath: String?,

@@ -65,6 +65,12 @@ data class AttachmentDomain(
     val server: String?,
     val path: String,
     val name: String?,
+
+    /**
+     * Готовый путь к превью, если источник не выводит его из [path].
+     * null — превью строится по правилам источника (kemono: /thumbnail/data{path}).
+     */
+    val thumbnailPath: String? = null,
 )
 
 @Serializable
