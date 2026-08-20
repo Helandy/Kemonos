@@ -22,7 +22,12 @@ internal fun rememberPostCardMeta(
         val imagePath = findFirstImagePath(post)
 
         val preview = when {
-            imagePath != null -> PreviewState.Image(imagePath)
+            imagePath != null -> PreviewState.Image(
+                path = imagePath,
+                thumbnailPath = post.attachments
+                    .firstOrNull { it.path == imagePath }
+                    ?.thumbnailPath,
+            )
 
             allowVideoPreview && (isVideoFile(post.file?.path) || post.attachments.any { isVideoFile(it.path) }) ->
                 PreviewState.Video(path = findFirstVideoPath(post))

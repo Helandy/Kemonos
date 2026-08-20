@@ -44,6 +44,7 @@ internal fun PostPreview(
                     imageBaseUrl = imgBaseUrl,
                     path = preview.path,
                     scheme = mediaUrlScheme,
+                    thumbnailPath = preview.thumbnailPath,
                 ),
                 contentDescription = title,
                 modifier = imageModifier,
