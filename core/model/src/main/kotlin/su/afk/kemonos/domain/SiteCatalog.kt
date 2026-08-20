@@ -55,6 +55,16 @@ data class SiteCapabilities(
 
     /** Превью видео через внешний сервер метаданных. */
     val videoPreview: Boolean,
+
+    /**
+     * Источник отдаёт весь список авторов одним запросом.
+     *
+     * true (kemono-подобные) — список выкачивается целиком и кэшируется в Room,
+     * поиск и сортировка идут локально.
+     * false (OnlyHaven) — авторов больше 10к и эндпоинт постраничный,
+     * поэтому листаем и ищем на сервере, без локального кэша.
+     */
+    val bulkCreatorList: Boolean,
 )
 
 /**
@@ -99,6 +109,12 @@ data class SiteSpec(
      */
     val available: Boolean = true,
 
+    /**
+     * Сервисы источника, если они известны заранее.
+     * Пусто — набор вычисляется из кэша авторов.
+     */
+    val knownServices: Set<String> = emptySet(),
+
     /** Устаревшие дефолты: при совпадении молча заменяются на [defaultApiUrl]. */
     val legacyDefaultApiUrls: Set<String> = emptySet(),
 )
@@ -127,6 +143,7 @@ object SiteCatalog {
                 dms = true,
                 popularPosts = true,
                 videoPreview = true,
+                bulkCreatorList = true,
             ),
             standalone = false,
         )
@@ -148,6 +165,7 @@ object SiteCatalog {
                 dms = true,
                 popularPosts = true,
                 videoPreview = true,
+                bulkCreatorList = true,
             ),
             standalone = false,
         )
@@ -169,6 +187,7 @@ object SiteCatalog {
                 dms = false,
                 popularPosts = true,
                 videoPreview = false,
+                bulkCreatorList = true,
             ),
             standalone = true,
             legacyDefaultApiUrls = setOf("https://pawchive.st/api/"),
@@ -195,9 +214,11 @@ object SiteCatalog {
                 dms = true,
                 popularPosts = false,
                 videoPreview = false,
+                bulkCreatorList = false,
             ),
             standalone = true,
-            /** TODO: включить, когда появятся API-слой и база OnlyHaven. */
+            knownServices = setOf("onlyfans", "fansly"),
+            /** TODO: включить, когда API-слой будет проверен на живых данных. */
             available = false,
         )
     }
@@ -227,3 +248,4 @@ val SelectedSite.displayName: String get() = spec.displayName
 val SelectedSite.defaultApiUrl: String get() = spec.defaultApiUrl
 val SelectedSite.capabilities: SiteCapabilities get() = spec.capabilities
 val SelectedSite.mediaUrlScheme: MediaUrlScheme get() = spec.mediaUrlScheme
+val SelectedSite.knownServices: Set<String> get() = spec.knownServices

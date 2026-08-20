@@ -6,6 +6,9 @@ import su.afk.kemonos.creators.data.dto.CreatorsDto.Companion.toDomain
 import su.afk.kemonos.creators.data.dto.RandomCreatorDto.Companion.toDomain
 import su.afk.kemonos.creators.domain.random.RandomCreatorModel
 import su.afk.kemonos.creators.domain.repository.ICreatorsRepository
+import su.afk.kemonos.creators.data.dto.onlyhaven.OnlyHavenCreatorDto.Companion.toDomain
+import su.afk.kemonos.creators.data.dto.onlyhaven.OnlyHavenCreatorDto.Companion.toOnlyHavenSort
+import su.afk.kemonos.domain.capabilities
 import su.afk.kemonos.domain.SelectedSite
 import su.afk.kemonos.domain.models.creator.Creators
 import su.afk.kemonos.domain.models.creator.CreatorsSort
@@ -21,7 +24,27 @@ internal class CreatorsRepository @Inject constructor(
     private val selectedSite: ISelectedSiteUseCase,
 ) : ICreatorsRepository {
 
+    override suspend fun getCreatorsPage(
+        site: SelectedSite,
+        service: String?,
+        query: String,
+        sort: CreatorsSort,
+        limit: Int,
+        offset: Int,
+    ): List<Creators> = selectedSite.withSite(site) {
+        api.getOnlyHavenCreators(
+            offset = offset.takeIf { it > 0 },
+            limit = limit,
+            query = query.trim().ifEmpty { null },
+            service = service,
+            sort = sort.toOnlyHavenSort(),
+        ).call { page -> page.creators.orEmpty().map { it.toDomain() } }
+    }
+
     override suspend fun getCreators(site: SelectedSite): List<Creators> {
+        /** Постраничный источник кэша авторов не имеет — список берётся пейджингом. */
+        if (!site.capabilities.bulkCreatorList) return emptyList()
+
         val cached = storeCreatorsUseCase.searchCreators(
             site = site,
             service = null,
@@ -54,6 +77,7 @@ internal class CreatorsRepository @Inject constructor(
     }
 
     override suspend fun refreshCreatorsIfNeeded(site: SelectedSite): Boolean {
+        if (!site.capabilities.bulkCreatorList) return false
         if (storeCreatorsUseCase.isCreatorsCacheFresh(site = site)) return false
 
         val fromNet = selectedSite.withSite(site) {
