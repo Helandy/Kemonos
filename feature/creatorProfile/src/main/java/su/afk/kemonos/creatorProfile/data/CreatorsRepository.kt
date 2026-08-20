@@ -20,6 +20,8 @@ import su.afk.kemonos.creatorProfile.data.dto.profileTags.TagDto.Companion.toDom
 import su.afk.kemonos.creatorProfile.domain.repository.ICreatorsRepository
 import su.afk.kemonos.creatorProfile.util.Utils.queryKey
 import su.afk.kemonos.data.dto.PostUnifiedDto.Companion.toDomain
+import su.afk.kemonos.data.dto.onlyhaven.OnlyHavenPostDto.Companion.toDomain as toOnlyHavenDomain
+import su.afk.kemonos.preferences.domainResolver.IDomainResolver
 import su.afk.kemonos.domain.SelectedSite
 import su.afk.kemonos.domain.models.PostDomain
 import su.afk.kemonos.domain.models.Tag
@@ -40,6 +42,7 @@ internal class CreatorsRepository @Inject constructor(
     private val cacheJson: CreatorProfileCacheJson,
     private val postsCache: IStorageCreatorPostsRepository,
     private val selectedSiteUseCase: ISelectedSiteUseCase,
+    private val domainResolver: IDomainResolver,
 ) : ICreatorsRepository {
     companion object {
         private const val COMMUNITY_PAGE_SIZE = 150
@@ -61,26 +64,36 @@ internal class CreatorsRepository @Inject constructor(
 
         val apiOffset = if (offset == 0) null else offset
 
-        val response = if (site == SelectedSite.P) {
-            api.getPawchiveProfilePosts(
+        /** Форма ответа у источников разная, поэтому домен собирает каждая ветка сама. */
+        val net = when (site) {
+            SelectedSite.O -> api.getOnlyHavenProfilePosts(
                 service = service,
                 id = id,
                 search = search,
-                tag = tag,
                 offset = apiOffset,
-            )
-        } else {
-            api.getProfilePosts(
-                service = service,
-                id = id,
-                search = search,
-                tag = tag,
-                offset = apiOffset,
-            )
-        }
+            ).call { page ->
+                val fileBaseUrl = domainResolver.hostConfig(site).fileBaseUrl
+                page.posts.orEmpty().map {
+                    /** В элементах списка автора creatorId не приходит. */
+                    it.toOnlyHavenDomain(fileBaseUrl = fileBaseUrl, creatorIdFallback = id)
+                }
+            }
 
-        val net = response.call { list ->
-            list.map { it.toDomain() }
+            SelectedSite.P -> api.getPawchiveProfilePosts(
+                service = service,
+                id = id,
+                search = search,
+                tag = tag,
+                offset = apiOffset,
+            ).call { list -> list.map { it.toDomain() } }
+
+            else -> api.getProfilePosts(
+                service = service,
+                id = id,
+                search = search,
+                tag = tag,
+                offset = apiOffset,
+            ).call { list -> list.map { it.toDomain() } }
         }
 
         postsCache.putPage(site, qk, offset, net)

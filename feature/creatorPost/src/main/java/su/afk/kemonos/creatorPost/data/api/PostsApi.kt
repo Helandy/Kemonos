@@ -1,6 +1,7 @@
 package su.afk.kemonos.creatorPost.data.api
 
 import retrofit2.Response
+import su.afk.kemonos.data.dto.onlyhaven.OnlyHavenPostDto
 import retrofit2.http.GET
 import retrofit2.http.Path
 import su.afk.kemonos.creatorPost.data.dto.comments.ProfilePostCommentsDto
@@ -38,6 +39,14 @@ internal interface PostsApi {
         @Path("id") id: String,
         @Path("postId") postId: String,
     ): Response<PawchivePostResponseDto>
+
+    /** Пост OnlyHaven: ревизий нет, заголовок text/css не нужен. */
+    @GET("v1/{service}/user/{id}/post/{postId}")
+    suspend fun getOnlyHavenProfilePost(
+        @Path("service") service: String,
+        @Path("id") id: String,
+        @Path("postId") postId: String,
+    ): Response<OnlyHavenPostDto>
 
     @HeaderText
     @GET("v1/{service}/user/{id}/post/{postId}/revision/{revisionId}")

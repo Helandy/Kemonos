@@ -2,6 +2,9 @@ package su.afk.kemonos.posts.data
 
 import kotlinx.coroutines.CancellationException
 import su.afk.kemonos.data.dto.PostUnifiedDto.Companion.toDomain
+import su.afk.kemonos.data.dto.onlyhaven.OnlyHavenPostDto.Companion.toDomain as toOnlyHavenDomain
+import su.afk.kemonos.posts.data.dto.onlyhaven.OnlyHavenDmDto.Companion.toDomain
+import su.afk.kemonos.preferences.domainResolver.IDomainResolver
 import su.afk.kemonos.domain.SelectedSite
 import su.afk.kemonos.domain.models.PostDomain
 import su.afk.kemonos.network.util.call
@@ -34,7 +37,12 @@ internal class PostsRepository @Inject constructor(
     private val postsSearchCache: IStoragePostsSearchRepository,
     private val dmsCache: IStorageDmsRepository,
     private val popularCache: IStoragePopularPostsRepository,
+    private val domainResolver: IDomainResolver,
 ) : IPostsRepository {
+
+    /** У OnlyHaven ссылки на файлы собираются клиентом, поэтому нужен хост. */
+    private fun fileBaseUrl(site: SelectedSite): String =
+        domainResolver.hostConfig(site).fileBaseUrl
 
     /** Поиск постов */
     override suspend fun getPosts(
@@ -56,7 +64,15 @@ internal class PostsRepository @Inject constructor(
         return try {
             val apiOffset = if (offset == 0) null else offset
 
-            val net = if (site == SelectedSite.P) {
+            val net = if (site == SelectedSite.O) {
+                /** Тегов у OnlyHaven нет — параметр игнорируется. */
+                postsApi.getOnlyHavenPosts(
+                    search = normalizedQuery,
+                    offset = apiOffset,
+                ).call { page ->
+                    page.posts.orEmpty().map { it.toOnlyHavenDomain(fileBaseUrl(site)) }
+                }
+            } else if (site == SelectedSite.P) {
                 postsApi.getPawchivePosts(
                     search = normalizedQuery,
                     offset = apiOffset,
@@ -108,12 +124,26 @@ internal class PostsRepository @Inject constructor(
         return try {
             val apiOffset = if (offset == 0) null else offset
 
-            val net = postsApi.getDms(
-                offset = apiOffset,
-                limit = limit,
-                query = normalizedQuery,
-            ).call { dto ->
-                dto.toDomain(requestedLimit = limit)
+            val net = if (site == SelectedSite.O) {
+                postsApi.getOnlyHavenDms(
+                    offset = apiOffset,
+                    limit = limit,
+                    search = normalizedQuery,
+                ).call { page ->
+                    DmsPageDomain(
+                        count = page.total ?: DmsPageDomain.UNKNOWN_COUNT,
+                        limit = limit,
+                        dms = page.dms.orEmpty().map { it.toDomain() },
+                    )
+                }
+            } else {
+                postsApi.getDms(
+                    offset = apiOffset,
+                    limit = limit,
+                    query = normalizedQuery,
+                ).call { dto ->
+                    dto.toDomain(requestedLimit = limit)
+                }
             }
 
             if (net.dms.isNotEmpty()) {

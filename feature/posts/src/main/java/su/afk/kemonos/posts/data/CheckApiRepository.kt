@@ -28,10 +28,10 @@ internal class CheckApiRepository @Inject constructor(
     private suspend fun checkSite(site: SelectedSite): SingleSiteCheck {
         return try {
             val response = selectedSite.withSite(site) {
-                if (site == SelectedSite.P) {
-                    api.getPawchivePosts()
-                } else {
-                    api.getPosts()
+                when (site) {
+                    SelectedSite.O -> api.getOnlyHavenPosts()
+                    SelectedSite.P -> api.getPawchivePosts()
+                    else -> api.getPosts()
                 }
             }
 

@@ -6,6 +6,7 @@ import su.afk.kemonos.creatorPost.data.api.PostsApi
 import su.afk.kemonos.creatorPost.data.dto.profilePost.PostResponseDto.Companion.toDomain
 import su.afk.kemonos.creatorPost.data.repository.helper.cacheFirstOrNetwork
 import su.afk.kemonos.creatorPost.domain.repository.IPostRepository
+import su.afk.kemonos.creatorPost.data.dto.onlyhaven.toPostContentDomain
 import su.afk.kemonos.domain.SelectedSite
 import su.afk.kemonos.domain.models.AttachmentDomain
 import su.afk.kemonos.domain.models.PreviewDomain
@@ -25,12 +26,18 @@ internal class PostRepository @Inject constructor(
 
     /** Получение поста */
     override suspend fun getPost(service: String, id: String, postId: String): PostContentDomain {
-        val isPawchive = selectedSiteUseCase.getSite() == SelectedSite.P
+        val site = selectedSiteUseCase.getSite()
+        val isPawchive = site == SelectedSite.P
         val fileBaseUrl = domainResolver.fileBaseUrlByService(service)
         val result = cacheFirstOrNetwork(
             freshCache = { store.getFreshOrNull(service, id, postId) },
             network = {
-                if (isPawchive) {
+                if (site == SelectedSite.O) {
+                    /** Ссылки собираются маппером, поэтому доподстановка сервера не нужна. */
+                    api.getOnlyHavenProfilePost(service, id, postId).call { dto ->
+                        dto.toPostContentDomain(fileBaseUrl = fileBaseUrl, creatorId = id)
+                    }
+                } else if (isPawchive) {
                     api.getPawchiveProfilePost(service, id, postId).call { dto ->
                         dto.toDomain(
                             service = service,
