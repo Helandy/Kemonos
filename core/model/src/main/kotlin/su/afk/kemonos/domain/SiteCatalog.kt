@@ -218,8 +218,6 @@ object SiteCatalog {
             ),
             standalone = true,
             knownServices = setOf("onlyfans", "fansly"),
-            /** TODO: включить, когда API-слой будет проверен на живых данных. */
-            available = false,
         )
     }
 
