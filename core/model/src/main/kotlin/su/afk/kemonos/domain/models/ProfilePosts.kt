@@ -79,6 +79,9 @@ data class PreviewDomain(
     val path: String?,
     val name: String?,
     val type: String?,
+
+    /** Готовый путь превью, если источник не выводит его из [path]. */
+    val thumbnailPath: String? = null,
     val url: String? = null,
     val subject: String? = null,
     val description: String? = null

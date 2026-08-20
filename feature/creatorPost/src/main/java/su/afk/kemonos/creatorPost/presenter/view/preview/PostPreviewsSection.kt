@@ -2,6 +2,7 @@ package su.afk.kemonos.creatorPost.presenter.view.preview
 
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.items
+import su.afk.kemonos.domain.MediaUrlScheme
 import su.afk.kemonos.domain.models.PreviewDomain
 import su.afk.kemonos.preferences.ui.UiSettingModel
 
@@ -9,6 +10,7 @@ internal fun LazyListScope.postPreviewsSection(
     uiSettingModel: UiSettingModel,
     previews: List<PreviewDomain>,
     imgBaseUrl: String,
+    mediaUrlScheme: MediaUrlScheme,
     showNames: Boolean,
     onOpenImage: (String) -> Unit,
     download: (url: String, fileName: String) -> Unit,
@@ -24,6 +26,7 @@ internal fun LazyListScope.postPreviewsSection(
             "thumbnail" -> ThumbnailPreviewItem(
                 preview = preview,
                 imgBaseUrl = imgBaseUrl,
+                mediaUrlScheme = mediaUrlScheme,
                 showFileName = showNames,
                 onPreviewClick = onOpenImage,
                 onDownloadClick = download,

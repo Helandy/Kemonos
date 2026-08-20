@@ -1,5 +1,6 @@
 package su.afk.kemonos.creatorPost.presenter.helper
 
+import su.afk.kemonos.ui.uiUtils.format.buildFileUrl
 import su.afk.kemonos.domain.MediaUrlScheme
 import su.afk.kemonos.creatorPost.api.domain.model.PostContentDomain
 import su.afk.kemonos.domain.models.AttachmentDomain
@@ -21,12 +22,12 @@ internal fun PostContentDomain.collectDownloadAllItems(
 ): List<PostDownloadItem> = buildList {
     previews.asSequence()
         .distinctBy { it.previewKey() }
-        .mapNotNull { it.toThumbnailDownloadItemOrNull() }
+        .mapNotNull { it.toThumbnailDownloadItemOrNull(mediaUrlScheme) }
         .forEach(::add)
 
     videos.asSequence()
         .distinctBy { video -> "video:${video.server}:${video.path}" }
-        .map(VideoDomain::toDownloadItem)
+        .map { it.toDownloadItem(mediaUrlScheme) }
         .forEach(::add)
 
     attachments.asSequence()
@@ -48,7 +49,7 @@ private fun PreviewDomain.previewKey(): String = when (type) {
     else -> "${type}:${path}:${url}"
 }
 
-private fun PreviewDomain.toThumbnailDownloadItemOrNull(): PostDownloadItem? {
+private fun PreviewDomain.toThumbnailDownloadItemOrNull(scheme: MediaUrlScheme): PostDownloadItem? {
     if (type != "thumbnail") return null
 
     val server = server ?: return null
@@ -57,13 +58,13 @@ private fun PreviewDomain.toThumbnailDownloadItemOrNull(): PostDownloadItem? {
     val encodedName = URLEncoder.encode(name, Charsets.UTF_8.name())
 
     return PostDownloadItem(
-        url = "$server/data$path?f=$encodedName",
+        url = buildFileUrl(server, path, scheme) + "?f=" + encodedName,
         fileName = name
     )
 }
 
-private fun VideoDomain.toDownloadItem(): PostDownloadItem = PostDownloadItem(
-    url = "${server}/data${path}",
+private fun VideoDomain.toDownloadItem(scheme: MediaUrlScheme): PostDownloadItem = PostDownloadItem(
+    url = buildFileUrl(server.orEmpty(), path, scheme),
     fileName = name
 )
 

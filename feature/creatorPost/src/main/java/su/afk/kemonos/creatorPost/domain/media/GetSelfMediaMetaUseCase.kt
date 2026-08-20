@@ -1,5 +1,7 @@
 package su.afk.kemonos.creatorPost.domain.media
 
+import su.afk.kemonos.ui.uiUtils.format.buildFileUrl
+import su.afk.kemonos.domain.mediaUrlScheme
 import android.media.MediaMetadataRetriever
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.Dispatchers
@@ -32,7 +34,7 @@ internal class GetSelfMediaMetaUseCase @Inject constructor(
         path: String,
     ): MediaInfo = coroutineScope {
         val key = "${site.name}|$path"
-        val mediaUrl = "$server/data$path"
+        val mediaUrl = buildFileUrl(server, path, site.mediaUrlScheme)
 
         val deferred = inFlight.computeIfAbsent(key) {
             async(Dispatchers.IO) {

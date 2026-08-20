@@ -91,13 +91,23 @@ fun buildFileUrl(baseUrl: String, path: String, scheme: MediaUrlScheme): String 
         MediaUrlScheme.DIRECT -> "$baseUrl$path"
     }
 
-/** Сборка URL превью по схеме источника. */
-fun buildThumbnailUrl(imageBaseUrl: String, attachmentPath: String, thumbnailPath: String?, scheme: MediaUrlScheme): String =
-    when {
-        thumbnailPath != null -> "$imageBaseUrl$thumbnailPath"
-        scheme == MediaUrlScheme.DATA_PREFIXED -> "$imageBaseUrl/thumbnail/data$attachmentPath"
-        else -> "$imageBaseUrl$attachmentPath"
-    }
+/**
+ * Сборка URL превью по схеме источника.
+ *
+ * [thumbnailPath] — готовый путь, если источник задаёт его явно (OnlyHaven).
+ * [segment] — сегмент kemono-схемы: обычно "thumbnail", но у превью поста это `preview.type`.
+ */
+fun buildThumbnailUrl(
+    imageBaseUrl: String,
+    path: String,
+    scheme: MediaUrlScheme,
+    thumbnailPath: String? = null,
+    segment: String = "thumbnail",
+): String = when {
+    thumbnailPath != null -> "$imageBaseUrl$thumbnailPath"
+    scheme == MediaUrlScheme.DATA_PREFIXED -> "$imageBaseUrl/$segment/data$path"
+    else -> "$imageBaseUrl$path"
+}
 
 fun buildVideoPreviewUrl(
     videoPath: String?,

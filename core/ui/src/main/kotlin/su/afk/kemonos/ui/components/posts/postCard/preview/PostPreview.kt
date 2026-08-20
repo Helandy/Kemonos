@@ -1,5 +1,7 @@
 package su.afk.kemonos.ui.components.posts.postCard.preview
 
+import su.afk.kemonos.ui.uiUtils.format.buildThumbnailUrl
+import su.afk.kemonos.domain.MediaUrlScheme
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
@@ -27,6 +29,7 @@ import su.afk.kemonos.ui.uiUtils.format.buildVideoPreviewUrl
 internal fun PostPreview(
     preview: PreviewState,
     imgBaseUrl: String,
+    mediaUrlScheme: MediaUrlScheme,
     uiSettingModel: UiSettingModel,
     title: String?,
     textPreview: String?,
@@ -37,7 +40,11 @@ internal fun PostPreview(
     when (preview) {
         is PreviewState.Image -> {
             AsyncImageWithStatus(
-                model = "$imgBaseUrl/thumbnail/data${preview.path}",
+                model = buildThumbnailUrl(
+                    imageBaseUrl = imgBaseUrl,
+                    path = preview.path,
+                    scheme = mediaUrlScheme,
+                ),
                 contentDescription = title,
                 modifier = imageModifier,
                 contentScale = ContentScale.Crop

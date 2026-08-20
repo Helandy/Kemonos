@@ -223,6 +223,7 @@ internal fun CreatorPostContentView(
                         uiSettingModel = state.uiSettingModel,
                         previews = uniquePreviews,
                         imgBaseUrl = imgBaseUrl,
+                        mediaUrlScheme = mediaUrlScheme,
                         showNames = showPreviewFileNames,
                         onOpenImage = { url -> onEvent(Event.OpenImage(url)) },
                         download = { fullUrl, fileName ->
@@ -248,6 +249,7 @@ internal fun CreatorPostContentView(
                         uiSettingModel = state.uiSettingModel,
                         requestKey = state.selectedRevisionId,
                         videos = uniqueVideos,
+                        mediaUrlScheme = mediaUrlScheme,
                         videoInfo = state.videoInfo,
                         onVideoInfoRequested = { server, path ->
                             onEvent(Event.VideoInfoRequested(server = server, path = path))

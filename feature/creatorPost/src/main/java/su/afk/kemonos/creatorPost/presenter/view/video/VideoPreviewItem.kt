@@ -1,5 +1,7 @@
 package su.afk.kemonos.creatorPost.presenter.view.video
 
+import su.afk.kemonos.ui.uiUtils.format.buildFileUrl
+import su.afk.kemonos.domain.MediaUrlScheme
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.layout.*
@@ -38,12 +40,15 @@ internal fun VideoPreviewItem(
     useExternalMetaData: Boolean,
     requestKey: Any? = null,
     video: VideoDomain,
+    mediaUrlScheme: MediaUrlScheme,
     requestInfo: (server: String, path: String) -> Unit,
     infoState: MediaInfoState?,
     onDownloadClick: (url: String, fileName: String) -> Unit,
 ) {
     val context = LocalContext.current
-    val url = remember(video) { "${video.server}/data${video.path}" }
+    val url = remember(video, mediaUrlScheme) {
+        buildFileUrl(video.server.orEmpty(), video.path, mediaUrlScheme)
+    }
     val remotePreviewReady = when (val state = infoState) {
         is MediaInfoState.Success -> state.data.videoInfo != null
         else -> false

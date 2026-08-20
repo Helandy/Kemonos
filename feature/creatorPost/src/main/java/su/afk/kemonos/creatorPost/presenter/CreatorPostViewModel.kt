@@ -1,5 +1,7 @@
 package su.afk.kemonos.creatorPost.presenter
 
+import su.afk.kemonos.ui.uiUtils.format.buildThumbnailUrl
+import su.afk.kemonos.ui.uiUtils.format.buildFileUrl
 import su.afk.kemonos.preferences.domainResolver.mediaUrlSchemeByService
 import androidx.lifecycle.SavedStateHandle
 import dagger.assisted.Assisted
@@ -585,13 +587,19 @@ internal class CreatorPostViewModel @AssistedInject constructor(
         val name = preview.name ?: return null
 
         val encodedName = URLEncoder.encode(name, "UTF-8")
-        return "$server/data$path?f=$encodedName"
+        val scheme = domainResolver.mediaUrlSchemeByService(currentState.service)
+        return buildFileUrl(server, path, scheme) + "?f=" + encodedName
     }
 
     /** Строит thumbnail URL из PreviewDomain */
     private fun buildThumbnailUrl(imgBaseUrl: String, preview: PreviewDomain): String? {
         val path = preview.path ?: return null
-        return "$imgBaseUrl/thumbnail/data$path"
+        return buildThumbnailUrl(
+            imageBaseUrl = imgBaseUrl,
+            path = path,
+            scheme = domainResolver.mediaUrlSchemeByService(currentState.service),
+            thumbnailPath = preview.thumbnailPath,
+        )
     }
 
     /** Сбрасывает state при переходе на соседний пост */

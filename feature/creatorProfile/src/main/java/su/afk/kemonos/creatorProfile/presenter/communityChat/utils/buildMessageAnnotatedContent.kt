@@ -1,5 +1,6 @@
 package su.afk.kemonos.creatorProfile.presenter.communityChat.utils
 
+import su.afk.kemonos.ui.uiUtils.format.buildThumbnailUrl
 import android.util.Patterns
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.SpanStyle
@@ -136,10 +137,13 @@ internal fun buildMediaUrls(message: CommunityMessage, fallbackBaseUrl: String):
 
 private fun String.toMediaTypePath(): String = substringBefore('#').substringBefore('?')
 
-internal fun buildThumbnailUrl(path: String, fallbackBaseUrl: String): String {
-    val base = fallbackBaseUrl.trim().trimEnd('/')
-    return if (base.isBlank()) "/thumbnail/data$path" else "$base/thumbnail/data$path"
-}
+/** Community/Discord существует только у Kemono, поэтому схема фиксированная. */
+internal fun buildThumbnailUrl(path: String, fallbackBaseUrl: String): String =
+    buildThumbnailUrl(
+        imageBaseUrl = fallbackBaseUrl.trim().trimEnd('/'),
+        path = path,
+        scheme = MediaUrlScheme.DATA_PREFIXED,
+    )
 
 internal fun String.toUiDateTimeWithTime(mode: DateFormatMode): String {
     val dateTime = toLocalDateTimeOrNull(zoneId = ZoneId.systemDefault())

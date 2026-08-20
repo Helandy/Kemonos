@@ -1,5 +1,8 @@
 package su.afk.kemonos.creatorPost.presenter.view.preview
 
+import su.afk.kemonos.ui.uiUtils.format.buildThumbnailUrl
+import su.afk.kemonos.ui.uiUtils.format.buildFileUrl
+import su.afk.kemonos.domain.MediaUrlScheme
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -32,13 +35,23 @@ private data class PreviewUrls(
     val fullUrl: String,
 )
 
-private fun buildPreviewUrls(imgBaseUrl: String, preview: PreviewDomain): PreviewUrls? {
+private fun buildPreviewUrls(
+    imgBaseUrl: String,
+    preview: PreviewDomain,
+    scheme: MediaUrlScheme,
+): PreviewUrls? {
     val server = preview.server ?: return null
     val path = preview.path ?: return null
     val name = preview.name ?: return null
 
-    val thumbUrl = "$imgBaseUrl/${preview.type}/data$path"
-    val fullUrl = "$server/data$path?f=" + URLEncoder.encode(name, "UTF-8")
+    val thumbUrl = buildThumbnailUrl(
+        imageBaseUrl = imgBaseUrl,
+        path = path,
+        scheme = scheme,
+        thumbnailPath = preview.thumbnailPath,
+        segment = preview.type.orEmpty(),
+    )
+    val fullUrl = buildFileUrl(server, path, scheme) + "?f=" + URLEncoder.encode(name, "UTF-8")
     return PreviewUrls(thumbUrl = thumbUrl, fullUrl = fullUrl)
 }
 
@@ -46,6 +59,7 @@ private fun buildPreviewUrls(imgBaseUrl: String, preview: PreviewDomain): Previe
 fun ThumbnailPreviewItem(
     preview: PreviewDomain,
     imgBaseUrl: String,
+    mediaUrlScheme: MediaUrlScheme,
     showFileName: Boolean,
     onPreviewClick: (String) -> Unit,
     onDownloadClick: (String, String) -> Unit,
@@ -54,7 +68,9 @@ fun ThumbnailPreviewItem(
     showShareAction: Boolean,
     blurImage: Boolean,
 ) {
-    val urls = remember(preview, imgBaseUrl) { buildPreviewUrls(imgBaseUrl, preview) } ?: return
+    val urls = remember(preview, imgBaseUrl, mediaUrlScheme) {
+        buildPreviewUrls(imgBaseUrl, preview, mediaUrlScheme)
+    } ?: return
     val filename = preview.name.orEmpty()
 
     var ratio by rememberSaveable(urls.thumbUrl) { mutableStateOf<Float?>(null) }

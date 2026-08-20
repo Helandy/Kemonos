@@ -8,6 +8,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import su.afk.kemonos.creatorPost.domain.media.model.MediaInfoState
+import su.afk.kemonos.domain.MediaUrlScheme
 import su.afk.kemonos.domain.models.VideoDomain
 import su.afk.kemonos.preferences.ui.UiSettingModel
 import su.afk.kemonos.ui.R
@@ -16,6 +17,7 @@ internal fun LazyListScope.postVideosSection(
     uiSettingModel: UiSettingModel,
     requestKey: Any? = null,
     videos: List<VideoDomain>,
+    mediaUrlScheme: MediaUrlScheme,
     videoInfo: Map<String, MediaInfoState>,
     onVideoInfoRequested: (server: String, path: String) -> Unit,
     onDownload: (url: String, fileName: String) -> Unit,
@@ -48,6 +50,7 @@ internal fun LazyListScope.postVideosSection(
             useExternalMetaData = uiSettingModel.useExternalMetaData,
             requestKey = requestKey,
             video = video,
+            mediaUrlScheme = mediaUrlScheme,
             infoState = videoInfo[video.path],
             requestInfo = onVideoInfoRequested,
             onDownloadClick = onDownload
