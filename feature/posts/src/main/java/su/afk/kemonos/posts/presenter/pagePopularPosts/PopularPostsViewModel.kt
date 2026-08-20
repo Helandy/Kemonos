@@ -6,6 +6,9 @@ import androidx.paging.filter
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
+import su.afk.kemonos.domain.capabilities
+import kotlinx.coroutines.flow.flowOf
+import androidx.paging.PagingData
 import su.afk.kemonos.domain.SelectedSite
 import su.afk.kemonos.domain.models.PostDomain
 import su.afk.kemonos.error.error.IErrorHandlerUseCase
@@ -152,6 +155,17 @@ internal class PopularPostsViewModel @Inject constructor(
         forceRefresh: Boolean,
     ) {
         setState { copy(popularDateForPopular = date, popularPeriod = period) }
+
+        if (!site.capabilities.popularPosts) {
+            setState {
+                copy(
+                    popularUnsupported = true,
+                    posts = flowOf(PagingData.empty()),
+                )
+            }
+            return
+        }
+        setState { copy(popularUnsupported = false) }
 
         val flow = getPopularPostsUseCase(
             site = site,

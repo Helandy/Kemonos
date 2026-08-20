@@ -5,4 +5,5 @@ internal object Domains {
     const val COOMER = "coomer.st"
     const val PAWCHIVE = "pawchive.pw"
     const val PAWCHIVE_LEGACY = "pawchive.st"
+    const val ONLYHAVEN = "cum.st"
 }

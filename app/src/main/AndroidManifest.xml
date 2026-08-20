@@ -40,6 +40,7 @@
                 <data android:host="coomer.st"/>
                 <data android:host="pawchive.pw"/>
                 <data android:host="pawchive.st"/>
+                <data android:host="cum.st"/>
 
                 <!-- Sections -->
                 <data android:path="/artists"/>
@@ -58,6 +59,9 @@
                 <data android:pathPrefix="/fansly/user/"/>
                 <data android:pathPrefix="/candfans/user/"/>
                 <data android:pathPrefix="/discord/server/"/>
+
+                <!-- OnlyHaven: /creators/{service}/{id} -->
+                <data android:pathPrefix="/creators/"/>
             </intent-filter>
         </activity>
 

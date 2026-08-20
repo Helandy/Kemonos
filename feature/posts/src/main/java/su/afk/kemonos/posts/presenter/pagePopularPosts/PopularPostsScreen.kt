@@ -1,5 +1,15 @@
 package su.afk.kemonos.posts.presenter.pagePopularPosts
 
+import androidx.compose.foundation.layout.fillMaxWidth
+import su.afk.kemonos.posts.R
+import su.afk.kemonos.domain.displayName
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.Alignment
+import androidx.compose.material3.Text
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
@@ -41,9 +51,10 @@ internal fun PopularPostsScreen(
         onEvent(Event.PullRefresh)
     }
 
-    val isPageLoading = posts.loadState.refresh is LoadState.Loading
+    val isPageLoading = !state.popularUnsupported && posts.loadState.refresh is LoadState.Loading
     val isBusy = isPageLoading || siteSwitching
-    val isEmptyResult = posts.itemCount == 0 && posts.loadState.refresh !is LoadState.Loading
+    val isEmptyResult = state.popularUnsupported ||
+            posts.itemCount == 0 && posts.loadState.refresh !is LoadState.Loading
     val topBarScrollMode = if (isEmptyResult) TopBarScroll.Pinned else TopBarScroll.EnterAlways
 
     BaseScreen(
@@ -52,12 +63,14 @@ internal fun PopularPostsScreen(
         contentPadding = PaddingValues(horizontal = 8.dp),
         isScroll = false,
         topBar = {
-            PopularPeriodsPanel(
-                state = state,
-                onSlotClick = { period, slot ->
-                    onEvent(Event.PeriodSlotClick(period, slot))
-                }
-            )
+            if (!state.popularUnsupported) {
+                PopularPeriodsPanel(
+                    state = state,
+                    onSlotClick = { period, slot ->
+                        onEvent(Event.PeriodSlotClick(period, slot))
+                    }
+                )
+            }
         },
         floatingActionButtonStart = {
             if (state.uiSettingModel.shouldShowSiteToggleFab()) {
@@ -70,6 +83,25 @@ internal fun PopularPostsScreen(
         },
         isLoading = isPageLoading && posts.itemCount == 0,
     ) {
+        if (state.popularUnsupported) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .weight(1f)
+                    .padding(16.dp),
+                contentAlignment = Alignment.Center,
+            ) {
+                Text(
+                    text = stringResource(R.string.popular_site_unsupported, site.displayName),
+                    modifier = Modifier.fillMaxWidth(),
+                    textAlign = TextAlign.Center,
+                    style = MaterialTheme.typography.headlineSmall,
+                    color = MaterialTheme.colorScheme.onBackground,
+                )
+            }
+            return@BaseScreen
+        }
+
         PullToRefreshBox(
             modifier = Modifier
                 .fillMaxSize()

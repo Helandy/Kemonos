@@ -40,4 +40,5 @@
     <!-- Popular posts date range -->
     <string name="popular_range_single">Popular for %1$s</string>
     <string name="popular_range_range">Popular from %1$s to %2$s</string>
+    <string name="popular_site_unsupported">Popular is not available for %1$s.</string>
 </resources>

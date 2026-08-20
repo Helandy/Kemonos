@@ -40,4 +40,5 @@
     <!-- Описание диапазона популярных постов -->
     <string name="popular_range_single">Популярное за %1$s</string>
     <string name="popular_range_range">Популярное с %1$s по %2$s</string>
+    <string name="popular_site_unsupported">Популярное недоступно для %1$s.</string>
 </resources>
