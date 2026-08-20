@@ -53,6 +53,15 @@ data class SiteCapabilities(
     /** Раздел популярного. */
     val popularPosts: Boolean,
 
+    /**
+     * Популярное можно листать по периодам и датам (день/неделя/месяц).
+     *
+     * У OnlyHaven популярное есть, но это просто сортировка ленты по закладкам:
+     * параметры периода эндпоинт молча игнорирует, поэтому панель периодов
+     * для такого источника не показываем.
+     */
+    val popularPeriods: Boolean,
+
     /** Превью видео через внешний сервер метаданных. */
     val videoPreview: Boolean,
 
@@ -151,6 +160,7 @@ object SiteCatalog {
                 tags = true,
                 dms = true,
                 popularPosts = true,
+                popularPeriods = true,
                 videoPreview = true,
                 bulkCreatorList = true,
                 profileExtras = true,
@@ -175,6 +185,7 @@ object SiteCatalog {
                 tags = true,
                 dms = true,
                 popularPosts = true,
+                popularPeriods = true,
                 videoPreview = true,
                 bulkCreatorList = true,
                 profileExtras = true,
@@ -199,6 +210,7 @@ object SiteCatalog {
                 tags = false,
                 dms = false,
                 popularPosts = true,
+                popularPeriods = true,
                 videoPreview = false,
                 bulkCreatorList = true,
                 profileExtras = true,
@@ -227,7 +239,8 @@ object SiteCatalog {
                 tags = false,
                 /** Есть даже глобальная лента /api/v1/dms. */
                 dms = true,
-                popularPosts = false,
+                popularPosts = true,
+                popularPeriods = false,
                 videoPreview = false,
                 bulkCreatorList = false,
                 profileExtras = false,

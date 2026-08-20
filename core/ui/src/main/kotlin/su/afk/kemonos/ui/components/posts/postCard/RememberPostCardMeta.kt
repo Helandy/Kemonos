@@ -21,12 +21,24 @@ internal fun rememberPostCardMeta(
     ) {
         val imagePath = findFirstImagePath(post)
 
+        /**
+         * Источник может отдавать готовую миниатюру для любого вложения, включая видео.
+         * Признак — заполненный thumbnailPath, отдельного флага не нужно.
+         */
+        val selfThumbnail = post.attachments.firstOrNull { it.thumbnailPath != null }
+
         val preview = when {
             imagePath != null -> PreviewState.Image(
                 path = imagePath,
                 thumbnailPath = post.attachments
                     .firstOrNull { it.path == imagePath }
                     ?.thumbnailPath,
+            )
+
+            /** Видео без картинки: показываем миниатюру источника вместо заглушки. */
+            selfThumbnail != null -> PreviewState.Image(
+                path = selfThumbnail.path,
+                thumbnailPath = selfThumbnail.thumbnailPath,
             )
 
             allowVideoPreview && (isVideoFile(post.file?.path) || post.attachments.any { isVideoFile(it.path) }) ->

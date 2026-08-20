@@ -35,12 +35,18 @@ internal interface PostsApi {
         @Query("tag") tag: String? = null,
     ): Response<List<PostUnifiedDto>>
 
-    /** OnlyHaven: {total, posts[]}, пагинация o/n, тегов нет. */
+    /**
+     * OnlyHaven: {total, posts[]}, пагинация o/n, тегов нет.
+     *
+     * [sort] = "popular" даёт раздел популярного — это сортировка ленты
+     * по числу закладок, периодов и дат у неё нет.
+     */
     @GET("v1/posts")
     suspend fun getOnlyHavenPosts(
         @Query("o") offset: Int? = null,
         @Query("n") limit: Int? = null,
         @Query("q") search: String? = null,
+        @Query("sort") sort: String? = null,
     ): Response<OnlyHavenPostsPageDto>
 
     /** OnlyHaven: глобальная лента личных сообщений. */

@@ -1,5 +1,6 @@
 package su.afk.kemonos.posts.presenter.pagePopularPosts
 
+import su.afk.kemonos.domain.capabilities
 import androidx.compose.foundation.layout.fillMaxWidth
 import su.afk.kemonos.posts.R
 import su.afk.kemonos.domain.displayName
@@ -63,7 +64,8 @@ internal fun PopularPostsScreen(
         contentPadding = PaddingValues(horizontal = 8.dp),
         isScroll = false,
         topBar = {
-            if (!state.popularUnsupported) {
+            /** У источника без периодов популярное — просто сортировка ленты. */
+            if (!state.popularUnsupported && site.capabilities.popularPeriods) {
                 PopularPeriodsPanel(
                     state = state,
                     onSlotClick = { period, slot ->

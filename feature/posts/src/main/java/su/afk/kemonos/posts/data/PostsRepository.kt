@@ -8,6 +8,9 @@ import su.afk.kemonos.preferences.domainResolver.IDomainResolver
 import su.afk.kemonos.domain.SelectedSite
 import su.afk.kemonos.domain.models.PostDomain
 import su.afk.kemonos.network.util.call
+import su.afk.kemonos.posts.api.popular.PopularInfo
+import su.afk.kemonos.posts.api.popular.PopularProps
+import java.time.LocalDate
 import su.afk.kemonos.posts.api.popular.PopularPosts
 import su.afk.kemonos.posts.api.tags.Tags
 import su.afk.kemonos.posts.api.tags.Tags.Companion.normalizeTags
@@ -30,6 +33,8 @@ import su.afk.kemonos.storage.api.repository.postsSearch.IStoragePostsSearchRepo
 import su.afk.kemonos.storage.api.repository.tags.IStoreTagsRepository
 import su.afk.kemonos.utils.posts.buildPostsQueryKey
 import javax.inject.Inject
+
+private const val ONLY_HAVEN_SORT_POPULAR = "popular"
 
 internal class PostsRepository @Inject constructor(
     private val postsApi: PostsApi,
@@ -192,7 +197,32 @@ internal class PostsRepository @Inject constructor(
         return try {
             val apiOffset = if (offset == 0) null else offset
 
-            val net = if (site == SelectedSite.P) {
+            val net = if (site == SelectedSite.O) {
+                /** Популярное здесь — сортировка ленты по закладкам, без периодов. */
+                postsApi.getOnlyHavenPosts(
+                    offset = apiOffset,
+                    sort = ONLY_HAVEN_SORT_POPULAR,
+                ).call { page ->
+                    val fileBaseUrl = fileBaseUrl(site)
+                    PopularPosts(
+                        props = PopularProps(
+                            count = page.total ?: 0,
+                            earliestDateForPopular = null,
+                            today = LocalDate.now().toString(),
+                        ),
+                        /** Навигации по датам у источника нет — блок пустой. */
+                        info = PopularInfo(
+                            date = null,
+                            maxDate = null,
+                            minDate = null,
+                            navigationDates = null,
+                            rangeDesc = null,
+                            scale = null,
+                        ),
+                        posts = page.posts.orEmpty().map { it.toOnlyHavenDomain(fileBaseUrl) },
+                    )
+                }
+            } else if (site == SelectedSite.P) {
                 postsApi.getPawchivePopularHtml(
                     date = date,
                     period = period.toDto(),
