@@ -1,5 +1,8 @@
 package su.afk.kemonos.ui.components.creator
 
+import su.afk.kemonos.ui.uiUtils.format.buildCreatorBannerUrl
+import su.afk.kemonos.ui.uiUtils.format.buildCreatorAvatarUrl
+import su.afk.kemonos.preferences.domainResolver.mediaUrlSchemeByService
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -40,6 +43,7 @@ fun CreatorListItem(
     val accent = getColorForFavorites(service)
     val resolver = LocalDomainResolver.current
     val imgBaseUrl = remember(resolver, service) { resolver.creatorImageBaseUrlByService(service) }
+    val mediaUrlScheme = remember(resolver, service) { resolver.mediaUrlSchemeByService(service) }
 
     Box(
         modifier = Modifier
@@ -50,7 +54,7 @@ fun CreatorListItem(
     ) {
         /** Фоновое изображение (баннер) */
         AsyncImageWithStatus(
-            model = "$imgBaseUrl/banners/${service}/${id}",
+            model = buildCreatorBannerUrl(imgBaseUrl, service, id, mediaUrlScheme),
             contentDescription = "Banner for $name",
             contentScale = ContentScale.Crop,
             modifier = Modifier
@@ -74,7 +78,7 @@ fun CreatorListItem(
         ) {
             /** Иконка (аватар) */
             AsyncImageWithStatus(
-                model = "$imgBaseUrl/icons/${service}/${id}",
+                model = buildCreatorAvatarUrl(imgBaseUrl, service, id, mediaUrlScheme),
                 contentDescription = name,
                 modifier = Modifier
                     .size(avatarSize)

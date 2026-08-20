@@ -1,5 +1,8 @@
 package su.afk.kemonos.ui.components.creator.header
 
+import su.afk.kemonos.ui.uiUtils.format.buildCreatorBannerUrl
+import su.afk.kemonos.ui.uiUtils.format.buildCreatorAvatarUrl
+import su.afk.kemonos.preferences.domainResolver.mediaUrlSchemeByService
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -41,6 +44,7 @@ fun CreatorHeader(
 
     val resolver = LocalDomainResolver.current
     val imgBaseUrl = remember(resolver, service) { resolver.creatorImageBaseUrlByService(service) }
+    val mediaUrlScheme = remember(resolver, service) { resolver.mediaUrlSchemeByService(service) }
     val accent = getColorForFavorites(service)
 
     Box(
@@ -50,7 +54,7 @@ fun CreatorHeader(
     ) {
         // 1) Фон: баннер
         AsyncImageWithStatus(
-            model = "$imgBaseUrl/banners/${service}/${creatorId}",
+            model = buildCreatorBannerUrl(imgBaseUrl, service, creatorId, mediaUrlScheme),
             contentDescription = "Banner for $creatorName",
             contentScale = ContentScale.Crop,
             modifier = Modifier.matchParentSize()
@@ -90,7 +94,7 @@ fun CreatorHeader(
                 }
 
                 AsyncImageWithStatus(
-                    model = "$imgBaseUrl/icons/${service}/${creatorId}",
+                    model = buildCreatorAvatarUrl(imgBaseUrl, service, creatorId, mediaUrlScheme),
                     contentDescription = creatorName,
                     modifier = Modifier
                         .size(avatarSize)

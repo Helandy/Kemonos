@@ -1,5 +1,8 @@
 package su.afk.kemonos.ui.components.creator
 
+import su.afk.kemonos.ui.uiUtils.format.buildCreatorBannerUrl
+import su.afk.kemonos.ui.uiUtils.format.buildCreatorAvatarUrl
+import su.afk.kemonos.preferences.domainResolver.mediaUrlSchemeByService
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -39,6 +42,7 @@ internal fun CreatorGridItem(
 ) {
     val resolver = LocalDomainResolver.current
     val imgBaseUrl = remember(resolver, service) { resolver.creatorImageBaseUrlByService(service) }
+    val mediaUrlScheme = remember(resolver, service) { resolver.mediaUrlSchemeByService(service) }
 
     val accent = getColorForFavorites(service)
     val shape = RoundedCornerShape(4.dp)
@@ -53,7 +57,7 @@ internal fun CreatorGridItem(
             .clickable { onClick() }
     ) {
         AsyncImageWithStatus(
-            model = "$imgBaseUrl/banners/${service}/${id}",
+            model = buildCreatorBannerUrl(imgBaseUrl, service, id, mediaUrlScheme),
             contentDescription = "Banner for $name",
             contentScale = ContentScale.Crop,
             modifier = Modifier.matchParentSize()
@@ -75,7 +79,7 @@ internal fun CreatorGridItem(
                 verticalAlignment = Alignment.Top
             ) {
                 AsyncImageWithStatus(
-                    model = "$imgBaseUrl/icons/${service}/${id}",
+                    model = buildCreatorAvatarUrl(imgBaseUrl, service, id, mediaUrlScheme),
                     contentDescription = name,
                     contentScale = ContentScale.Crop,
                     modifier = Modifier

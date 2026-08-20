@@ -91,6 +91,28 @@ fun buildFileUrl(baseUrl: String, path: String, scheme: MediaUrlScheme): String 
         MediaUrlScheme.DIRECT -> "$baseUrl$path"
     }
 
+/** Аватар автора: у источников разные конвенции путей. */
+fun buildCreatorAvatarUrl(
+    imageBaseUrl: String,
+    service: String,
+    creatorId: String,
+    scheme: MediaUrlScheme,
+): String = when (scheme) {
+    MediaUrlScheme.DATA_PREFIXED -> "$imageBaseUrl/icons/$service/$creatorId"
+    MediaUrlScheme.DIRECT -> "$imageBaseUrl/creator/$service/$creatorId/avatar.webp"
+}
+
+/** Шапка профиля автора. */
+fun buildCreatorBannerUrl(
+    imageBaseUrl: String,
+    service: String,
+    creatorId: String,
+    scheme: MediaUrlScheme,
+): String = when (scheme) {
+    MediaUrlScheme.DATA_PREFIXED -> "$imageBaseUrl/banners/$service/$creatorId"
+    MediaUrlScheme.DIRECT -> "$imageBaseUrl/creator/$service/$creatorId/header.webp"
+}
+
 /**
  * Сборка URL превью по схеме источника.
  *
