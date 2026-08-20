@@ -13,15 +13,12 @@ import su.afk.kemonos.domain.SelectedSite
 import su.afk.kemonos.domain.models.creator.Creators
 import su.afk.kemonos.domain.models.creator.CreatorsSort
 import su.afk.kemonos.network.util.call
-import su.afk.kemonos.preferences.site.ISelectedSiteUseCase
-import su.afk.kemonos.preferences.site.withSite
 import su.afk.kemonos.storage.api.repository.creators.IStoreCreatorsRepository
 import javax.inject.Inject
 
 internal class CreatorsRepository @Inject constructor(
-    private val api: CreatorsApi,
+    private val apis: Map<SelectedSite, @JvmSuppressWildcards CreatorsApi>,
     private val storeCreatorsUseCase: IStoreCreatorsRepository,
-    private val selectedSite: ISelectedSiteUseCase,
 ) : ICreatorsRepository {
 
     override suspend fun getCreatorsPage(
@@ -31,8 +28,8 @@ internal class CreatorsRepository @Inject constructor(
         sort: CreatorsSort,
         limit: Int,
         offset: Int,
-    ): List<Creators> = selectedSite.withSite(site) {
-        api.getOnlyHavenCreators(
+    ): List<Creators> = apis.getValue(site).run {
+        getOnlyHavenCreators(
             offset = offset.takeIf { it > 0 },
             limit = limit,
             query = query.trim().ifEmpty { null },
@@ -59,9 +56,7 @@ internal class CreatorsRepository @Inject constructor(
         if (isFresh && cached.isNotEmpty()) return cached
 
         val fromNet = try {
-            selectedSite.withSite(site) {
-                api.getCreators().call { list -> list.map { it.toDomain() } }
-            }
+            apis.getValue(site).getCreators().call { list -> list.map { it.toDomain() } }
         } catch (t: Throwable) {
             if (t is CancellationException) throw t
             if (cached.isNotEmpty()) return cached
@@ -80,17 +75,15 @@ internal class CreatorsRepository @Inject constructor(
         if (!site.capabilities.bulkCreatorList) return false
         if (storeCreatorsUseCase.isCreatorsCacheFresh(site = site)) return false
 
-        val fromNet = selectedSite.withSite(site) {
-            api.getCreators().call { list -> list.map { it.toDomain() } }
-        }
+        val fromNet = apis.getValue(site).getCreators().call { list -> list.map { it.toDomain() } }
         if (fromNet.isEmpty()) return false
 
         storeCreatorsUseCase.updateCreators(site = site, creators = fromNet)
         return true
     }
 
-    override suspend fun randomCreator(site: SelectedSite): RandomCreatorModel = selectedSite.withSite(site) {
-        api.randomCreator().call {
+    override suspend fun randomCreator(site: SelectedSite): RandomCreatorModel = apis.getValue(site).run {
+        randomCreator().call {
             it.toDomain()
         }
     }

@@ -4,7 +4,6 @@ import su.afk.kemonos.domain.displayName
 import com.google.gson.JsonParser
 import su.afk.kemonos.domain.SelectedSite
 import su.afk.kemonos.preferences.site.ISelectedSiteUseCase
-import su.afk.kemonos.preferences.site.withSite
 import su.afk.kemonos.profile.domain.repository.IImportExportRepository
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
@@ -28,11 +27,9 @@ internal class PrepareFavoritesExportUseCase @Inject constructor(
         site: SelectedSite,
         type: FavoritesExportType,
     ): FavoritesExportPayload {
-        val rawJson = selectedSiteUseCase.withSite(site) {
-            when (type) {
-                FavoritesExportType.ARTISTS -> importExportRepository.getFavoriteArtistsRaw()
-                FavoritesExportType.POSTS -> importExportRepository.getFavoritePostsRaw()
-            }
+        val rawJson = when (type) {
+            FavoritesExportType.ARTISTS -> importExportRepository.getFavoriteArtistsRaw(site)
+            FavoritesExportType.POSTS -> importExportRepository.getFavoritePostsRaw(site)
         }
 
         val count = extractCount(rawJson)

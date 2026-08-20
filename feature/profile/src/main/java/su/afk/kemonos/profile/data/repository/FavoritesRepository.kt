@@ -19,7 +19,7 @@ import su.afk.kemonos.storage.api.repository.localLikes.IStoreLocalLikedPostsRep
 import javax.inject.Inject
 
 internal class FavoritesRepository @Inject constructor(
-    private val api: FavoritesApi,
+    private val apis: Map<SelectedSite, @JvmSuppressWildcards FavoritesApi>,
     private val artistsStore: IStoreFavoriteArtistsRepository,
     private val postsStore: IStoreFavoritePostsRepository,
     private val localLikedPostsStore: IStoreLocalLikedPostsRepository,
@@ -118,7 +118,7 @@ internal class FavoritesRepository @Inject constructor(
 
     /** Принудительно обновляет favorite artists из сети и полностью синхронизирует Room-кэш. */
     override suspend fun refreshFavoriteArtists(site: SelectedSite): List<FavoriteArtist> {
-        api.getFavoriteArtists().call { list ->
+        apis.getValue(site).getFavoriteArtists().call { list ->
             val network = list.map { it.toDomain() }
             artistsStore.replaceAll(site, network)
             return network
@@ -138,7 +138,7 @@ internal class FavoritesRepository @Inject constructor(
             return postsStore.getAll(site)
         }
 
-        return api.getFavoritePosts().call { list ->
+        return apis.getValue(site).getFavoritePosts().call { list ->
             val network = list.map { it.toDomain() }
             postsStore.replaceAll(site, network)
             network
@@ -160,7 +160,7 @@ internal class FavoritesRepository @Inject constructor(
         var synced = false
         pending.forEach { post ->
             val success = runCatching {
-                api.addFavoritePost(
+                apis.getValue(site).addFavoritePost(
                     service = post.service,
                     creatorId = post.userId,
                     postId = post.id,
@@ -190,7 +190,7 @@ internal class FavoritesRepository @Inject constructor(
         var synced = false
         pending.forEach { artist ->
             val success = runCatching {
-                api.addFavoriteCreator(service = artist.service, id = artist.id).isSuccessful
+                apis.getValue(site).addFavoriteCreator(service = artist.service, id = artist.id).isSuccessful
             }.getOrDefault(false)
 
             if (success) {

@@ -2,8 +2,6 @@ package su.afk.kemonos.preferences.site
 
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.sync.Mutex
-import kotlinx.coroutines.sync.withLock
 import su.afk.kemonos.domain.SelectedSite
 import su.afk.kemonos.preferences.UrlPrefs
 import javax.inject.Inject
@@ -20,38 +18,25 @@ internal class SelectedSiteUseCase @Inject constructor(
     override fun getSite(): SelectedSite = selectedSite.value
 }
 
-/** Устанавливает сайт и ждёт, пока [selectedSite] действительно отдаст это значение. */
+/**
+ * Насовсем переключает источник и ждёт, пока [selectedSite] отдаст новое значение.
+ *
+ * Нужно там, где переход по ссылке ведёт на контент другого источника: дальше
+ * экран уже работает как обычно, с «текущим» сайтом.
+ *
+ * Для разового обращения к другому источнику это не подходит — берите
+ * SiteRetrofitProvider, который не трогает глобальное состояние.
+ */
 suspend fun ISelectedSiteUseCase.setSiteAndAwait(site: SelectedSite) {
     setSite(site)
     selectedSite.first { it == site }
 }
 
-/**
- * Один глобальный замок на временное переключение.
- * Иначе параллельные withSite(K) и withSite(C) будут гонять DataStore и ломать baseUrl.
- */
-val SITE_SWITCH_MUTEX = Mutex()
-
-/**
- * Временное переключение сайта:
- *  - запоминаем старый
- *  - ставим нужный
- *  - выполняем блок
- *  - возвращаем старый обратно
+/*
+ * Здесь же раньше жили SITE_SWITCH_MUTEX и withSite: чтобы сходить на другой источник,
+ * выбранный сайт временно подменялся и возвращался обратно.
  *
- * ВАЖНО: block теперь suspend, чтобы можно было вызывать retrofit suspend-функции внутри.
+ * Приём был неисправен по двум причинам:
+ *  - подмена доезжала до сетевого клиента асинхронно, и запрос успевал уйти на прежний хост;
+ *  - подмена видна всем, поэтому параллельный запрос «текущего» сайта уходил на чужой.
  */
-suspend inline fun <T> ISelectedSiteUseCase.withSite(
-    site: SelectedSite,
-    crossinline block: suspend () -> T
-): T = SITE_SWITCH_MUTEX.withLock {
-    val previous = getSite()
-    if (previous == site) return@withLock block()
-
-    setSite(site)
-    try {
-        block()
-    } finally {
-        setSite(previous)
-    }
-}

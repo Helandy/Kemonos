@@ -1,5 +1,7 @@
 package su.afk.kemonos.profile.di
 
+import su.afk.kemonos.network.api.SiteRetrofitProvider
+import su.afk.kemonos.domain.SelectedSite
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -28,4 +30,12 @@ internal object NetworkModule {
     @Singleton
     fun provideAccountApi(retrofit: Retrofit): AccountApi =
         retrofit.create(AccountApi::class.java)
+
+    /** Экземпляры, привязанные к источнику. */
+    @Provides
+    @Singleton
+    fun provideFavoritesApiBySite(
+        provider: SiteRetrofitProvider,
+    ): Map<SelectedSite, @JvmSuppressWildcards FavoritesApi> =
+        provider.createApis(FavoritesApi::class.java)
 }

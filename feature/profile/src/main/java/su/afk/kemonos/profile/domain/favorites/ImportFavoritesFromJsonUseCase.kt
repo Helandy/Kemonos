@@ -5,7 +5,6 @@ import com.google.gson.JsonObject
 import com.google.gson.JsonParser
 import su.afk.kemonos.domain.SelectedSite
 import su.afk.kemonos.preferences.site.ISelectedSiteUseCase
-import su.afk.kemonos.preferences.site.withSite
 import su.afk.kemonos.profile.domain.repository.IFavoritesRepository
 import su.afk.kemonos.profile.domain.repository.IImportExportRepository
 import javax.inject.Inject
@@ -69,7 +68,7 @@ internal class ImportFavoritesFromJsonUseCase @Inject constructor(
         val seen = HashSet<String>(root.size())
         val resultEntries = ArrayList<FavoritesImportEntry>(root.size())
 
-        selectedSiteUseCase.withSite(site) {
+        run {
             root.forEachIndexed { index, element ->
                 val rowNumber = index + 1
                 val parsed = parseArtistItem(element)
@@ -95,6 +94,7 @@ internal class ImportFavoritesFromJsonUseCase @Inject constructor(
                 }
 
                 val imported = importExportRepository.addFavoriteArtist(
+                    site = site,
                     service = parsed.service,
                     id = parsed.id,
                 )
@@ -120,7 +120,7 @@ internal class ImportFavoritesFromJsonUseCase @Inject constructor(
         val seen = HashSet<String>(root.size())
         val resultEntries = ArrayList<FavoritesImportEntry>(root.size())
 
-        selectedSiteUseCase.withSite(site) {
+        run {
             root.forEachIndexed { index, element ->
                 val rowNumber = index + 1
                 val parsed = parsePostItem(element)
@@ -146,6 +146,7 @@ internal class ImportFavoritesFromJsonUseCase @Inject constructor(
                 }
 
                 val imported = importExportRepository.addFavoritePost(
+                    site = site,
                     service = parsed.service,
                     creatorId = parsed.creatorId,
                     postId = parsed.postId,

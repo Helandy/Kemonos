@@ -7,13 +7,10 @@ import su.afk.kemonos.posts.api.apiCheck.ApiCheckForAllSitesResult
 import su.afk.kemonos.posts.api.apiCheck.SingleSiteCheck
 import su.afk.kemonos.posts.data.api.PostsApi
 import su.afk.kemonos.posts.domain.repository.ICheckApiRepository
-import su.afk.kemonos.preferences.site.ISelectedSiteUseCase
-import su.afk.kemonos.preferences.site.withSite
 import javax.inject.Inject
 
 internal class CheckApiRepository @Inject constructor(
-    private val api: PostsApi,
-    private val selectedSite: ISelectedSiteUseCase,
+    private val apis: Map<SelectedSite, @JvmSuppressWildcards PostsApi>,
     private val errorHandler: IErrorHandlerUseCase,
 ) : ICheckApiRepository {
 
@@ -27,12 +24,11 @@ internal class CheckApiRepository @Inject constructor(
 
     private suspend fun checkSite(site: SelectedSite): SingleSiteCheck {
         return try {
-            val response = selectedSite.withSite(site) {
-                when (site) {
-                    SelectedSite.O -> api.getOnlyHavenPosts()
-                    SelectedSite.P -> api.getPawchivePosts()
-                    else -> api.getPosts()
-                }
+            val api = apis.getValue(site)
+            val response = when (site) {
+                SelectedSite.O -> api.getOnlyHavenPosts()
+                SelectedSite.P -> api.getPawchivePosts()
+                else -> api.getPosts()
             }
 
             if (response.isSuccessful) {

@@ -9,10 +9,23 @@ import su.afk.kemonos.domain.SelectedSite
 import su.afk.kemonos.preferences.site.ISelectedSiteUseCase
 import javax.inject.Inject
 
-internal class AuthCookieInterceptor @Inject constructor(
+/**
+ * Подставляет session-куку сайта в методы, помеченные [AuthCookie].
+ *
+ * Сайт задаётся [siteProvider], а не читается из глобально выбранного:
+ * клиент, привязанный к конкретному источнику, обязан слать именно его сессию.
+ */
+internal class AuthCookieInterceptor(
     private val authSessionProvider: AuthSessionProvider,
-    private val selectedSiteProvider: ISelectedSiteUseCase,
+    private val siteProvider: () -> SelectedSite,
 ) : Interceptor {
+
+    /** Вариант для клиента текущего выбранного источника. */
+    @Inject
+    constructor(
+        authSessionProvider: AuthSessionProvider,
+        selectedSiteProvider: ISelectedSiteUseCase,
+    ) : this(authSessionProvider, selectedSiteProvider::getSite)
 
     override fun intercept(chain: Interceptor.Chain): Response {
         val request = chain.request()
@@ -29,11 +42,8 @@ internal class AuthCookieInterceptor @Inject constructor(
             return chain.proceed(request)
         }
 
-        /** какой сайт сейчас выбран (Kemono / Coomer) */
-        val currentSite: SelectedSite = selectedSiteProvider.getSite()
-
         val session = runBlocking {
-            authSessionProvider.getSession(currentSite)
+            authSessionProvider.getSession(siteProvider())
         }
 
         if (session.isNullOrBlank()) {
