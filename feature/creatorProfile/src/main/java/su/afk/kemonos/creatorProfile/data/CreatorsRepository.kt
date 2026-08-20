@@ -22,6 +22,8 @@ import su.afk.kemonos.creatorProfile.util.Utils.queryKey
 import su.afk.kemonos.data.dto.PostUnifiedDto.Companion.toDomain
 import su.afk.kemonos.data.dto.onlyhaven.OnlyHavenPostDto.Companion.toDomain as toOnlyHavenDomain
 import su.afk.kemonos.preferences.domainResolver.IDomainResolver
+import su.afk.kemonos.domain.capabilities
+import su.afk.kemonos.creatorProfile.data.dto.onlyhaven.OnlyHavenSimilarCreatorDto.Companion.toDomain as toOnlyHavenSimilarDomain
 import su.afk.kemonos.domain.SelectedSite
 import su.afk.kemonos.domain.models.PostDomain
 import su.afk.kemonos.domain.models.Tag
@@ -127,6 +129,7 @@ internal class CreatorsRepository @Inject constructor(
     /** Tags профиля (кэш 7 дней) */
     override suspend fun getProfileTags(service: String, id: String): List<Tag> {
         val site = selectedSiteUseCase.getSite()
+        if (!site.capabilities.profileExtras) return emptyList()
         cacheStore.getFreshJsonOrNull(site, service, id, CreatorProfileCacheType.TAGS)
             ?.let { return cacheJson.tagsFromJson(it) }
 
@@ -151,6 +154,7 @@ internal class CreatorsRepository @Inject constructor(
     /** Announcements профиля (кэш 7 дней) */
     override suspend fun getProfileAnnouncements(service: String, id: String): List<ProfileAnnouncement> {
         val site = selectedSiteUseCase.getSite()
+        if (!site.capabilities.profileExtras) return emptyList()
         cacheStore.getFreshJsonOrNull(site, service, id, CreatorProfileCacheType.ANNOUNCEMENTS)
             ?.let { return cacheJson.announcementsFromJson(it) }
 
@@ -175,6 +179,7 @@ internal class CreatorsRepository @Inject constructor(
     /** FanCards профиля (кэш 7 дней) */
     override suspend fun getProfileFanCards(service: String, id: String): List<ProfileFanCard> {
         val site = selectedSiteUseCase.getSite()
+        if (!site.capabilities.profileExtras) return emptyList()
         cacheStore.getFreshJsonOrNull(site, service, id, CreatorProfileCacheType.FANCARDS)
             ?.let { return cacheJson.fanCardsFromJson(it) }
 
@@ -199,6 +204,7 @@ internal class CreatorsRepository @Inject constructor(
     /** Links профиля (кэш 7 дней) */
     override suspend fun getProfileLinks(service: String, id: String): List<ProfileLink> {
         val site = selectedSiteUseCase.getSite()
+        if (!site.capabilities.profileExtras) return emptyList()
         cacheStore.getFreshJsonOrNull(site, service, id, CreatorProfileCacheType.LINKS)
             ?.let { return cacheJson.linksFromJson(it) }
 
@@ -226,10 +232,17 @@ internal class CreatorsRepository @Inject constructor(
         cacheStore.getFreshJsonOrNull(site, service, id, CreatorProfileCacheType.SIMILAR)
             ?.let { return cacheJson.similarFromJson(it) }
 
-        val fromNet = safeCallOrNull(
-            api = { api.getProfileRecommended(service, id) },
-            mapper = { dto -> dto.toDomain() }
-        )
+        val fromNet = if (site == SelectedSite.O) {
+            safeCallOrNull(
+                api = { api.getOnlyHavenSimilar(service, id) },
+                mapper = { page -> page.creators.orEmpty().map { it.toOnlyHavenSimilarDomain() } }
+            )
+        } else {
+            safeCallOrNull(
+                api = { api.getProfileRecommended(service, id) },
+                mapper = { dto -> dto.toDomain() }
+            )
+        }
 
         if (fromNet != null) {
             cacheStore.putJson(
@@ -245,6 +258,8 @@ internal class CreatorsRepository @Inject constructor(
     }
 
     override suspend fun getProfileCommunityChannels(service: String, id: String): List<CommunityChannel> {
+        if (!selectedSiteUseCase.getSite().capabilities.profileExtras) return emptyList()
+
         communityCacheStore.getFreshJsonOrNull(service, id, CommunityCacheType.CHANNELS)
             ?.let { return cacheJson.communityChannelsFromJson(it) }
 

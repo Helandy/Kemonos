@@ -65,6 +65,15 @@ data class SiteCapabilities(
      * поэтому листаем и ищем на сервере, без локального кэша.
      */
     val bulkCreatorList: Boolean,
+
+    /**
+     * Дополнения профиля автора семейства kemono: теги, ссылки, анонсы,
+     * фан-карты, community. Источник без них не должен ходить за 404.
+     */
+    val profileExtras: Boolean,
+
+    /** Комментарии к посту. */
+    val comments: Boolean,
 )
 
 /**
@@ -144,6 +153,8 @@ object SiteCatalog {
                 popularPosts = true,
                 videoPreview = true,
                 bulkCreatorList = true,
+                profileExtras = true,
+                comments = true,
             ),
             standalone = false,
         )
@@ -166,6 +177,8 @@ object SiteCatalog {
                 popularPosts = true,
                 videoPreview = true,
                 bulkCreatorList = true,
+                profileExtras = true,
+                comments = true,
             ),
             standalone = false,
         )
@@ -188,6 +201,8 @@ object SiteCatalog {
                 popularPosts = true,
                 videoPreview = false,
                 bulkCreatorList = true,
+                profileExtras = true,
+                comments = true,
             ),
             standalone = true,
             legacyDefaultApiUrls = setOf("https://pawchive.st/api/"),
@@ -215,6 +230,8 @@ object SiteCatalog {
                 popularPosts = false,
                 videoPreview = false,
                 bulkCreatorList = false,
+                profileExtras = false,
+                comments = false,
             ),
             standalone = true,
             knownServices = setOf("onlyfans", "fansly"),

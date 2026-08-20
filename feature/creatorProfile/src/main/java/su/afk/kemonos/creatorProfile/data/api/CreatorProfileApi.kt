@@ -16,6 +16,7 @@ import su.afk.kemonos.creatorProfile.data.dto.profileTags.TagDto
 import su.afk.kemonos.data.dto.PostUnifiedDto
 import su.afk.kemonos.data.dto.onlyhaven.OnlyHavenPostsPageDto
 import su.afk.kemonos.creatorProfile.data.dto.onlyhaven.OnlyHavenProfileDto
+import su.afk.kemonos.creatorProfile.data.dto.onlyhaven.OnlyHavenSimilarPageDto
 import su.afk.kemonos.network.textInterceptor.HeaderText
 
 internal interface CreatorProfileApi {
@@ -57,6 +58,13 @@ internal interface CreatorProfileApi {
         @Path("service") service: String,
         @Path("id") id: String,
     ): Response<OnlyHavenProfileDto>
+
+    /** OnlyHaven: похожие авторы (у kemono этот эндпоинт зовётся /recommended). */
+    @GET("v1/{service}/user/{id}/similar")
+    suspend fun getOnlyHavenSimilar(
+        @Path("service") service: String,
+        @Path("id") id: String,
+    ): Response<OnlyHavenSimilarPageDto>
 
     /** DMs */
     @HeaderText

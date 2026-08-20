@@ -7,6 +7,8 @@ import su.afk.kemonos.creatorPost.data.api.PostsApi
 import su.afk.kemonos.creatorPost.data.dto.comments.ProfilePostCommentsDto.Companion.toDomain
 import su.afk.kemonos.creatorPost.data.repository.helper.cacheFirstOrNetwork
 import su.afk.kemonos.creatorPost.domain.repository.ICommentsRepository
+import su.afk.kemonos.domain.capabilities
+import su.afk.kemonos.preferences.site.ISelectedSiteUseCase
 import su.afk.kemonos.network.util.call
 import su.afk.kemonos.storage.api.repository.comments.IStoreCommentsRepository
 import javax.inject.Inject
@@ -14,10 +16,13 @@ import javax.inject.Inject
 internal class CommentsRepository @Inject constructor(
     private val api: PostsApi,
     private val store: IStoreCommentsRepository,
+    private val selectedSiteUseCase: ISelectedSiteUseCase,
 ) : ICommentsRepository {
 
     /** Получение комментариев к посту */
     override suspend fun getComments(service: String, id: String, postId: String): List<CommentDomain> {
+        if (!selectedSiteUseCase.getSite().capabilities.comments) return emptyList()
+
         return cacheFirstOrNetwork(
             freshCache = {
                 store.getCommentsFreshOrNull(service, id, postId)
