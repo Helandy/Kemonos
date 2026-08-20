@@ -40,6 +40,24 @@ data class OnlyHavenPostDto(
 ) {
     companion object {
 
+        private val HTML_TAG = Regex("<[^>]+>")
+
+        /**
+         * Отрывок для карточки поста у kemono — простой текст, а OnlyHaven
+         * отдаёт только HTML. Полный текст остаётся размеченным: его рендерит UI.
+         */
+        private fun String.toExcerpt(): String =
+            replace(Regex("(?i)<br[^>]*>|</p>"), " ")
+                .replace(HTML_TAG, "")
+                .replace("&nbsp;", " ")
+                .replace("&amp;", "&")
+                .replace("&lt;", "<")
+                .replace("&gt;", ">")
+                .replace("&quot;", "\"")
+                .replace("&#39;", "'")
+                .replace(Regex("\\s+"), " ")
+                .trim()
+
         /** Приложение хранит даты ISO-строками, API отдаёт unix-секунды. */
         internal fun Long?.toIsoOrNull(): String? =
             this?.takeIf { it > 0 }?.let { Instant.ofEpochSecond(it).toString() }
@@ -62,7 +80,7 @@ data class OnlyHavenPostDto(
                 /** Заголовков у постов нет — в карточке показываем имя автора. */
                 title = creatorName,
                 content = body,
-                substring = body,
+                substring = body?.toExcerpt(),
                 added = added.toIsoOrNull(),
                 published = published.toIsoOrNull(),
                 edited = null,
