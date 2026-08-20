@@ -91,7 +91,14 @@ data class PreviewDomain(
 data class VideoDomain(
     val server: String,
     val path: String,
-    val name: String
+    val name: String,
+
+    /** Готовое превью источника: не нужно ни внешнего сервера, ни декодирования кадра. */
+    val thumbnailPath: String? = null,
+
+    /** Длительность и размер, если источник отдаёт их вместе с вложением. */
+    val durationMs: Long? = null,
+    val sizeBytes: Long? = null,
 )
 
 @Serializable

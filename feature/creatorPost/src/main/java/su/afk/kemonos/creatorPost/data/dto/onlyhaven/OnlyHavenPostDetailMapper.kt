@@ -32,11 +32,14 @@ internal fun OnlyHavenPostDto.toPostContentDomain(
         attachments = unlocked.map { (_, domain) -> domain },
         videos = unlocked
             .filter { (dto, _) -> dto.kind == KIND_VIDEO }
-            .map { (_, domain) ->
+            .map { (dto, domain) ->
                 VideoDomain(
                     server = domain.server.orEmpty(),
                     path = domain.path,
                     name = domain.name.orEmpty(),
+                    thumbnailPath = domain.thumbnailPath,
+                    durationMs = dto.durationMs,
+                    sizeBytes = dto.bytes,
                 )
             },
         previews = unlocked

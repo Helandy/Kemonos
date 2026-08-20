@@ -7,6 +7,7 @@ import su.afk.kemonos.creatorProfile.api.ICreatorProfileNavigator
 import su.afk.kemonos.deepLink.data.Domains
 import su.afk.kemonos.domain.SelectedSite
 import su.afk.kemonos.preferences.site.ISelectedSiteUseCase
+import su.afk.kemonos.preferences.site.setSiteAndAwait
 import javax.inject.Inject
 
 // todo продумать функциональность на каждый модуль
@@ -26,7 +27,12 @@ internal class KemonosDeepLinkResolver @Inject constructor(
         if (!hostOk) return null
 
         val site = siteByHost(uri.host)
-        selectedSiteUseCase.setSite(site)
+        /**
+         * Именно await: навигаторы ниже перечитывают выбранный сайт, чтобы
+         * определить владельца сервиса. С асинхронной установкой они увидят
+         * прежний источник и уведут ссылку не туда.
+         */
+        selectedSiteUseCase.setSiteAndAwait(site)
 
         val s = uri.pathSegments
         if (s.isEmpty()) return null

@@ -1,5 +1,10 @@
 package su.afk.kemonos.creatorPost.presenter.view.video
 
+import su.afk.kemonos.ui.uiUtils.format.buildThumbnailUrl
+import su.afk.kemonos.ui.imageLoader.AsyncImageWithStatus
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.blur
 import su.afk.kemonos.ui.uiUtils.format.buildFileUrl
 import su.afk.kemonos.domain.MediaUrlScheme
 import androidx.compose.animation.fadeIn
@@ -41,6 +46,7 @@ internal fun VideoPreviewItem(
     requestKey: Any? = null,
     video: VideoDomain,
     mediaUrlScheme: MediaUrlScheme,
+    imgBaseUrl: String,
     requestInfo: (server: String, path: String) -> Unit,
     infoState: MediaInfoState?,
     onDownloadClick: (url: String, fileName: String) -> Unit,
@@ -49,16 +55,31 @@ internal fun VideoPreviewItem(
     val url = remember(video, mediaUrlScheme) {
         buildFileUrl(video.server.orEmpty(), video.path, mediaUrlScheme)
     }
+    /**
+     * Источник сам отдаёт превью: не нужен ни внешний сервер метаданных,
+     * ни попытка получить кадр из самого файла.
+     */
+    val sourceThumbUrl = video.thumbnailPath?.let {
+        buildThumbnailUrl(
+            imageBaseUrl = imgBaseUrl,
+            path = video.path,
+            scheme = mediaUrlScheme,
+            thumbnailPath = it,
+        )
+    }
+
     val remotePreviewReady = when (val state = infoState) {
         is MediaInfoState.Success -> state.data.videoInfo != null
         else -> false
     }
     val waitingRemoteInfo = useExternalMetaData &&
             (infoState == null || infoState is MediaInfoState.Loading)
-    val useRemotePreview = useExternalMetaData && remotePreviewReady
-    val useSelfPreview = !useExternalMetaData || (!waitingRemoteInfo && !useRemotePreview)
+    val useRemotePreview = sourceThumbUrl == null && useExternalMetaData && remotePreviewReady
+    val useSelfPreview = sourceThumbUrl == null &&
+            (!useExternalMetaData || (!waitingRemoteInfo && !useRemotePreview))
     val waitingMeta = !hasResolvedMeta(infoState)
-    val thumbLoading = waitingRemoteInfo || waitingMeta
+    /** Со своим превью ждать нечего. */
+    val thumbLoading = sourceThumbUrl == null && (waitingRemoteInfo || waitingMeta)
     var remotePreviewDelayPassed by remember(url, showPreview, useRemotePreview) {
         mutableStateOf(false)
     }
@@ -71,8 +92,11 @@ internal fun VideoPreviewItem(
         remotePreviewDelayPassed = true
     }
 
-    LaunchedEffect(requestKey, url) {
-        requestInfo(video.server, video.path)
+    LaunchedEffect(requestKey, url, sourceThumbUrl) {
+        /** Метаданные источника уже пришли вместе с постом — сервер дёргать незачем. */
+        if (sourceThumbUrl == null) {
+            requestInfo(video.server, video.path)
+        }
     }
 
     Column(Modifier.padding(vertical = 4.dp)) {
@@ -80,7 +104,17 @@ internal fun VideoPreviewItem(
             Modifier.fillMaxWidth()
                 .aspectRatio(previewAspectRatio)
         ) {
-            if (useRemotePreview) {
+            if (sourceThumbUrl != null) {
+                AsyncImageWithStatus(
+                    model = sourceThumbUrl,
+                    contentDescription = video.name,
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .clip(RoundedCornerShape(8.dp))
+                        .then(if (blurImage) Modifier.blur(14.dp) else Modifier),
+                    contentScale = if (cropVideoPreview) ContentScale.Crop else ContentScale.Fit,
+                )
+            } else if (useRemotePreview) {
                 RemotePreview(
                     showPreview = showPreview && remotePreviewDelayPassed,
                     previewServerUrl = previewServerUrl,
@@ -163,7 +197,11 @@ internal fun VideoPreviewItem(
                 overflow = TextOverflow.Ellipsis,
                 style = MaterialTheme.typography.bodyLarge
             )
-            VideoPreviewMeta(infoState)
+            if (sourceThumbUrl != null) {
+                SourceVideoMeta(durationMs = video.durationMs, sizeBytes = video.sizeBytes)
+            } else {
+                VideoPreviewMeta(infoState)
+            }
         }
     }
 }
@@ -236,4 +274,20 @@ private fun hasResolvedMeta(infoState: MediaInfoState?): Boolean {
         ?: -1L
 
     return durationMs > 0L && sizeBytes >= 0L
+}
+
+/** Длительность и размер, пришедшие вместе с постом. */
+@Composable
+private fun SourceVideoMeta(durationMs: Long?, sizeBytes: Long?) {
+    if (durationMs == null && sizeBytes == null) return
+
+    val dur = formatDurationMinutesSeconds(durationMs ?: -1L) ?: "?"
+    val sizeStr = formatSizeMegabytesRounded(sizeBytes ?: -1L) ?: "?"
+
+    Text(
+        text = "⏱ $dur   📦 $sizeStr",
+        style = MaterialTheme.typography.bodySmall,
+        fontWeight = FontWeight.Bold,
+        color = MaterialTheme.colorScheme.onSurfaceVariant,
+    )
 }

@@ -2,7 +2,6 @@ package su.afk.kemonos.data.dto.onlyhaven
 
 import com.google.gson.annotations.SerializedName
 import su.afk.kemonos.data.dto.onlyhaven.OnlyHavenAttachmentDto.Companion.toDomainOrNull
-import su.afk.kemonos.data.dto.onlyhaven.OnlyHavenAttachmentDto.Companion.toFileDomainOrNull
 import su.afk.kemonos.domain.models.PostDomain
 import java.time.Instant
 
@@ -84,8 +83,12 @@ data class OnlyHavenPostDto(
                 added = added.toIsoOrNull(),
                 published = published.toIsoOrNull(),
                 edited = null,
-                file = attachments.orEmpty()
-                    .firstNotNullOfOrNull { it.toFileDomainOrNull(fileBaseUrl) },
+                /**
+                 * Отдельного «основного файла» у источника нет — всё лежит в attachments.
+                 * Продублировать сюда первое вложение нельзя: счётчики считают file
+                 * и attachments вместе, и одно видео превращалось в два.
+                 */
+                file = null,
                 incompleteRewards = null,
                 poll = null,
                 attachments = mapped,

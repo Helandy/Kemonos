@@ -25,6 +25,8 @@ data class OnlyHavenAttachmentDto(
     @SerializedName("kind") val kind: String? = null,
     @SerializedName("mimeType") val mimeType: String? = null,
     @SerializedName("variants") val variants: List<OnlyHavenVariantDto>? = null,
+    @SerializedName("durationMs") val durationMs: Long? = null,
+    @SerializedName("bytes") val bytes: Long? = null,
     @SerializedName("originalFilename") val originalFilename: String? = null,
 
     /** платные */

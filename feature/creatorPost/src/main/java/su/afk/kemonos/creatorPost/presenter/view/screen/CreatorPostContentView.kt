@@ -250,6 +250,7 @@ internal fun CreatorPostContentView(
                         requestKey = state.selectedRevisionId,
                         videos = uniqueVideos,
                         mediaUrlScheme = mediaUrlScheme,
+                        imgBaseUrl = imgBaseUrl,
                         videoInfo = state.videoInfo,
                         onVideoInfoRequested = { server, path ->
                             onEvent(Event.VideoInfoRequested(server = server, path = path))

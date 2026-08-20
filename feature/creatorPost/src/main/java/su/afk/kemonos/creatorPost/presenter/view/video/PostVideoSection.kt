@@ -18,6 +18,7 @@ internal fun LazyListScope.postVideosSection(
     requestKey: Any? = null,
     videos: List<VideoDomain>,
     mediaUrlScheme: MediaUrlScheme,
+    imgBaseUrl: String,
     videoInfo: Map<String, MediaInfoState>,
     onVideoInfoRequested: (server: String, path: String) -> Unit,
     onDownload: (url: String, fileName: String) -> Unit,
@@ -51,6 +52,7 @@ internal fun LazyListScope.postVideosSection(
             requestKey = requestKey,
             video = video,
             mediaUrlScheme = mediaUrlScheme,
+            imgBaseUrl = imgBaseUrl,
             infoState = videoInfo[video.path],
             requestInfo = onVideoInfoRequested,
             onDownloadClick = onDownload
