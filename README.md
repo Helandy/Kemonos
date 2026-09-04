@@ -63,11 +63,19 @@ Kemonos is focused on everyday mobile usage: quick browsing, comfortable reading
 
 Install the latest APK from [GitHub Releases](https://github.com/Helandy/Kemonos/releases).
 
-## Support
+## ☕ Support the project
 
-- ⭐ Star the repository
-- 🐞 Open an issue for bugs
-- 💡 Suggest improvements via Discussions/Issues
+Kemonos is developed and maintained independently.
+
+If you enjoy using the app and want to support its future development:
+
+[![Support on Boosty](https://img.shields.io/badge/Support%20on-Boosty-orange?style=for-the-badge)](https://boosty.to/etozhesandy)
+
+You can also support the project for free:
+
+* ⭐ **Star the repository** — it helps others discover the project
+* 🐞 **Report bugs** via [Issues](https://github.com/Helandy/Kemonos/issues)
+* 💡 **Suggest improvements** via [Issues](https://github.com/Helandy/Kemonos/issues)
 
 ## Disclaimer
 
