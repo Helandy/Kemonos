@@ -50,6 +50,21 @@
     <string name="author_blacklist_removed">Автор удален из черного списка</string>
     <string name="author_blacklist_already_exists">Автор уже в черном списке</string>
     <string name="vlc_not_installed">VLC не установлен. Открываю через другое приложение…</string>
+
+    <string name="posts_selection_start">Выбрать работы</string>
+    <string name="posts_selection_count">Выбрано: %1$d</string>
+    <string name="posts_selection_hint">Долгое нажатие по работе добавляет её в выбор</string>
+    <string name="posts_selection_clear">Отмена</string>
+    <string name="posts_selection_download">Скачать</string>
+
+    <string name="batch_download_title">Скачать выбранные работы</string>
+    <string name="batch_download_summary">%1$d работ, нумерация — в порядке выбора</string>
+    <string name="batch_download_folder_label">Папка</string>
+    <string name="batch_download_include_covers">Скачивать обложки</string>
+    <string name="batch_download_include_covers_hint">Сразу для всех выбранных работ</string>
+    <string name="batch_download_confirm">Скачать</string>
+    <string name="batch_download_cancel">Отмена</string>
+    <string name="batch_download_started">%1$d работ в очереди — качаются в фоне</string>
     <string name="video_open_failed">Нет приложения для видео, установите VLC</string>
     <string name="audio_open_failed">Нет приложения для аудио</string>
 

@@ -232,6 +232,26 @@
 
     <string name="settings_download_add_service_title">Add service prefix</string>
 
+    <string name="settings_download_file_name_mode_title">File names</string>
+    <string name="settings_download_file_name_original">Name from the source</string>
+    <string name="settings_download_file_name_original_example">8f3c9a…c1.png</string>
+    <string name="settings_download_file_name_numbered">Sequential number</string>
+    <string name="settings_download_file_name_numbered_example">1.png, 2.webp, 3.jpg</string>
+    <string name="settings_download_file_name_numbered_hash">Number instead of a hash</string>
+    <string name="settings_download_file_name_numbered_hash_example">1.png, artwork.psd, 2.webp</string>
+
+    <string name="settings_download_post_cover_title">Download the post cover</string>
+    <string name="settings_download_single_notification_title">One notification for all downloads</string>
+    <string name="settings_download_single_notification_subtitle">Replaces the per-file notifications with a single one showing how many of the queued files are done. Falls back to the per-file ones if notifications are turned off for the app.</string>
+
+    <string name="settings_download_webp_quality_title">WebP quality</string>
+    <string name="settings_download_webp_quality_hint">Lower means smaller files and more visible loss. 90 is close to the original.</string>
+
+    <string name="settings_download_webp_title">Recompress downloads to WebP</string>
+    <string name="settings_download_webp_subtitle">Re-encodes finished PNG and JPEG downloads. Files already in WebP and animated GIFs are left alone, and the original is only removed once the new file is in place.</string>
+
+    <string name="settings_download_post_cover_subtitle">The cover is the post main file; numbering starts from the next one when it is off</string>
+
     <string name="settings_network_video_preview_title">Video preview server</string>
     <string name="settings_use_external_metadata_title">Use server for video previews</string>
     <string name="settings_video_preview_server_title">Video preview server address</string>

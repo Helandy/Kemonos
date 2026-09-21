@@ -1,7 +1,10 @@
 package su.afk.kemonos.ui.components.posts.postCard
 
 import su.afk.kemonos.domain.capabilities
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.LocalIndication
 import androidx.compose.foundation.background
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -43,6 +46,9 @@ fun PostCard(
     showFavCount: Boolean = false,
     uiSettingModel: UiSettingModel,
     postsSize: PostsSize = uiSettingModel.postsSize,
+    onLongClick: (() -> Unit)? = null,
+    /** Номер поста в текущем выборе; null — пост не выбран. */
+    selectionNumber: Int? = null,
 ) {
     val resolver = LocalDomainResolver.current
     val imgBaseUrl = remember(post.service) { resolver.imageBaseUrlByService(post.service) }
@@ -55,9 +61,14 @@ fun PostCard(
     val pressedScale = rememberKemonosPressedScale(interactionSource)
 
     Card(
-        onClick = onClick,
-        modifier = Modifier.kemonosPressScale(pressedScale),
-        interactionSource = interactionSource,
+        modifier = Modifier
+            .kemonosPressScale(pressedScale)
+            .combinedClickable(
+                interactionSource = interactionSource,
+                indication = LocalIndication.current,
+                onClick = onClick,
+                onLongClick = onLongClick,
+            ),
         shape = RoundedCornerShape(4.dp),
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.surface,
@@ -68,6 +79,9 @@ fun PostCard(
             hoveredElevation = 8.dp,
             focusedElevation = 8.dp,
         ),
+        border = selectionNumber?.let {
+            BorderStroke(2.dp, MaterialTheme.colorScheme.primary)
+        },
     ) {
         Box(
             modifier = Modifier
@@ -85,6 +99,16 @@ fun PostCard(
                 textPreview = post.substring,
                 blurImage = uiSettingModel.blurImages,
             )
+
+            /** Порядковый номер в выборе для массовой загрузки */
+            if (selectionNumber != null) {
+                SelectionBadge(
+                    number = selectionNumber,
+                    modifier = Modifier
+                        .align(Alignment.TopStart)
+                        .padding(postsSize.toPaddingInCornerBadge())
+                )
+            }
 
             /** Число лайков */
             if (showFavCount && meta.favCount > 0) {
@@ -140,6 +164,27 @@ fun PostCard(
                 )
             }
         }
+    }
+}
+
+@Composable
+private fun SelectionBadge(
+    number: Int,
+    modifier: Modifier = Modifier
+) {
+    Surface(
+        modifier = modifier,
+        shape = RoundedCornerShape(99.dp),
+        color = MaterialTheme.colorScheme.primary,
+        contentColor = MaterialTheme.colorScheme.onPrimary,
+        tonalElevation = 2.dp,
+    ) {
+        Text(
+            text = number.toString(),
+            style = MaterialTheme.typography.labelMedium,
+            modifier = Modifier.padding(horizontal = 10.dp, vertical = 4.dp),
+            maxLines = 1,
+        )
     }
 }
 

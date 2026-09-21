@@ -238,6 +238,26 @@
 
     <string name="settings_download_add_service_title">Добавлять префикс сервиса</string>
 
+    <string name="settings_download_file_name_mode_title">Имена файлов</string>
+    <string name="settings_download_file_name_original">Имя из источника</string>
+    <string name="settings_download_file_name_original_example">8f3c9a…c1.png</string>
+    <string name="settings_download_file_name_numbered">Порядковый номер</string>
+    <string name="settings_download_file_name_numbered_example">1.png, 2.webp, 3.jpg</string>
+    <string name="settings_download_file_name_numbered_hash">Номер вместо хеша</string>
+    <string name="settings_download_file_name_numbered_hash_example">1.png, artwork.psd, 2.webp</string>
+
+    <string name="settings_download_post_cover_title">Скачивать обложку поста</string>
+    <string name="settings_download_single_notification_title">Одно уведомление на все загрузки</string>
+    <string name="settings_download_single_notification_subtitle">Вместо уведомления на каждый файл — одно, с числом готовых из поставленных в очередь. Если уведомления приложению запрещены, останутся штатные.</string>
+
+    <string name="settings_download_webp_quality_title">Качество WebP</string>
+    <string name="settings_download_webp_quality_hint">Ниже — меньше файл и заметнее потери. 90 почти неотличимо от исходника.</string>
+
+    <string name="settings_download_webp_title">Пережимать загрузки в WebP</string>
+    <string name="settings_download_webp_subtitle">Перекодирует скачанные png и jpeg. Уже сжатый webp и анимированные gif не трогает, а исходник удаляет только после появления нового файла.</string>
+
+    <string name="settings_download_post_cover_subtitle">Обложка — главный файл поста; если выключено, нумерация начнётся со следующего</string>
+
     <string name="settings_network_video_preview_title">Сервер превью видео</string>
     <string name="settings_use_external_metadata_title">Использовать сервер для превью видео</string>
     <string name="settings_video_preview_server_title">Адрес сервера превью видео</string>

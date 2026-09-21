@@ -168,6 +168,26 @@ class SettingUiPreferencesDelegate @Inject constructor(
             is SettingState.Event.ChangeViewSetting.EditDownloadFolderMode ->
                 scope.launch { uiSetting.setDownloadFolderMode(event.value) }
 
+            /** Как называть скачиваемые файлы поста */
+            is SettingState.Event.ChangeViewSetting.EditDownloadFileNameMode ->
+                scope.launch { uiSetting.setDownloadFileNameMode(event.value) }
+
+            /** Скачивать ли обложку поста */
+            is SettingState.Event.ChangeViewSetting.DownloadPostCover ->
+                scope.launch { uiSetting.setDownloadPostCover(event.value) }
+
+            /** Пережимать ли скачанные картинки в webp */
+            is SettingState.Event.ChangeViewSetting.DownloadConvertToWebp ->
+                scope.launch { uiSetting.setDownloadConvertToWebp(event.value) }
+
+            /** Качество webp при пережатии */
+            is SettingState.Event.ChangeViewSetting.DownloadWebpQuality ->
+                scope.launch { uiSetting.setDownloadWebpQuality(event.value) }
+
+            /** Одно общее уведомление о загрузках */
+            is SettingState.Event.ChangeViewSetting.DownloadSingleNotification ->
+                scope.launch { uiSetting.setDownloadSingleNotification(event.value) }
+
             /** Добавлять префикс сервиса при скачивании */
             is SettingState.Event.ChangeViewSetting.AddServiceName ->
                 scope.launch { uiSetting.setAddServiceName(event.value) }

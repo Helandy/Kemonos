@@ -13,6 +13,7 @@ import su.afk.kemonos.creatorProfile.api.domain.models.profileSimilar.SimilarCre
 import su.afk.kemonos.creatorProfile.navigation.CreatorDestination
 import su.afk.kemonos.creatorProfile.presenter.creatorProfile.model.ProfileTab
 import su.afk.kemonos.domain.models.PostDomain
+import su.afk.kemonos.domain.models.PostDomain.Companion.stableKey
 import su.afk.kemonos.domain.models.Profile
 import su.afk.kemonos.domain.models.Tag
 import su.afk.kemonos.preferences.ui.UiSettingModel
@@ -71,7 +72,22 @@ internal class CreatorProfileState {
         val isInBlacklist: Boolean = false,
 
         val uiSettingModel: UiSettingModel = UiSettingModel(),
-    ) : UiState
+
+        /** Массовая загрузка: посты в порядке выбора */
+        val selectedPosts: List<PostDomain> = emptyList(),
+        val selectionMode: Boolean = false,
+        val batchDownloadDialogVisible: Boolean = false,
+        val batchDownloadFolder: String = "",
+        val batchDownloadIncludeCovers: Boolean = true,
+        val batchDownloadInProgress: Boolean = false,
+    ) : UiState {
+
+        /** Ключ поста -> его номер в выборе, для бейджа на карточке. */
+        val selectedOrder: Map<String, Int>
+            get() = selectedPosts.withIndex().associate { (index, post) ->
+                post.stableKey() to index + 1
+            }
+    }
 
     sealed interface Event : UiEvent {
 
@@ -107,6 +123,16 @@ internal class CreatorProfileState {
 
         /** избранное */
         data object FavoriteClick : Event
+
+        /** массовая загрузка */
+        data class PostLongClicked(val post: PostDomain) : Event
+        data object StartSelection : Event
+        data object ExitSelection : Event
+        data object OpenBatchDownloadDialog : Event
+        data object DismissBatchDownloadDialog : Event
+        data class BatchDownloadFolderChanged(val value: String) : Event
+        data class BatchDownloadIncludeCoversChanged(val value: Boolean) : Event
+        data object ConfirmBatchDownload : Event
     }
 
     sealed interface Effect : UiEffect {
@@ -116,6 +142,7 @@ internal class CreatorProfileState {
         data object AddedToBlacklist : Effect
         data object AlreadyInBlacklist : Effect
         data object RemovedFromBlacklist : Effect
+        data class BatchDownloadStarted(val works: Int) : Effect
     }
 }
 

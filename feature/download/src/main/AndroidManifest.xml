@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- Нужно, чтобы прятать штатные уведомления DownloadManager в пользу своего. -->
+    <uses-permission android:name="android.permission.DOWNLOAD_WITHOUT_NOTIFICATION" />
+
+    <application>
+        <!--
+            DownloadManager адресует эту рассылку нашему пакету, поэтому приёмник
+            обязан быть exported, иначе система до него не достучится.
+        -->
+        <receiver
+            android:name="su.afk.kemonos.download.receiver.DownloadCompleteReceiver"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.DOWNLOAD_COMPLETE" />
+            </intent-filter>
+        </receiver>
+    </application>
+
+</manifest>

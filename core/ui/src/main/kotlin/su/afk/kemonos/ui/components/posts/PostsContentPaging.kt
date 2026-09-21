@@ -25,6 +25,9 @@ fun PostsContentPaging(
     showFavCount: Boolean = false,
     gridPostsSize: PostsSize = uiSettingModel.postsSize,
     scrollStateKey: String = "posts",
+    /** Ключ поста -> его номер в выборе для массовой загрузки. */
+    selectedOrder: Map<String, Int> = emptyMap(),
+    onPostLongClick: ((PostDomain) -> Unit)? = null,
 ) {
     val errorMapper = LocalErrorMapper.current
 
@@ -41,6 +44,8 @@ fun PostsContentPaging(
                 header = header,
                 parseError = errorMapper::map,
                 scrollStateKey = scrollStateKey,
+                selectedOrder = selectedOrder,
+                onPostLongClick = onPostLongClick,
             )
         }
 
@@ -55,6 +60,8 @@ fun PostsContentPaging(
                 header = header,
                 parseError = errorMapper::map,
                 scrollStateKey = scrollStateKey,
+                selectedOrder = selectedOrder,
+                onPostLongClick = onPostLongClick,
             )
         }
     }

@@ -20,11 +20,14 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Cancel
 import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material.icons.outlined.FolderOpen
 import androidx.compose.material.icons.outlined.Link
 import androidx.compose.material.icons.outlined.MoreVert
+import androidx.compose.material.icons.outlined.Pause
 import androidx.compose.material.icons.outlined.Refresh
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.AssistChip
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -43,6 +46,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -75,6 +79,9 @@ internal fun DownloadsScreen(
     val filteredItems = state.items.filter { state.selectedFilter.matches(it.status) }
     val canRestartAll = state.items.any { it.isRestartable }
     val canDeleteCompleted = state.items.any { it.status == DownloadManager.STATUS_SUCCESSFUL }
+    val stoppableCount = state.items.count { it.isStoppable }
+    val cancellableCount = state.items.count { it.isCancellable }
+    var showCancelAllConfirm by remember { mutableStateOf(false) }
 
     BaseScreen(
         isScroll = false,
@@ -87,8 +94,12 @@ internal fun DownloadsScreen(
             ) {
                 DownloadsActionsMenu(
                     canRestartAll = canRestartAll,
+                    canStopAll = stoppableCount > 0,
+                    canCancelAll = cancellableCount > 0,
                     canDeleteCompleted = canDeleteCompleted,
                     onRestartAll = { onEvent(DownloadsState.Event.RestartAllDownloads) },
+                    onStopAll = { onEvent(DownloadsState.Event.StopAllDownloads) },
+                    onCancelAll = { showCancelAllConfirm = true },
                     onDeleteCompleted = { onEvent(DownloadsState.Event.DeleteCompletedDownloads) },
                 )
             }
@@ -138,13 +149,42 @@ internal fun DownloadsScreen(
             }
         }
     }
+
+    if (showCancelAllConfirm) {
+        AlertDialog(
+            onDismissRequest = { showCancelAllConfirm = false },
+            title = { Text(text = stringResource(R.string.downloads_action_cancel_all)) },
+            text = {
+                Text(text = stringResource(R.string.downloads_cancel_all_message, cancellableCount))
+            },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        showCancelAllConfirm = false
+                        onEvent(DownloadsState.Event.CancelAllDownloads)
+                    },
+                ) {
+                    Text(text = stringResource(R.string.downloads_cancel_all_confirm))
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showCancelAllConfirm = false }) {
+                    Text(text = stringResource(R.string.downloads_cancel_all_dismiss))
+                }
+            },
+        )
+    }
 }
 
 @Composable
 private fun DownloadsActionsMenu(
     canRestartAll: Boolean,
+    canStopAll: Boolean,
+    canCancelAll: Boolean,
     canDeleteCompleted: Boolean,
     onRestartAll: () -> Unit,
+    onStopAll: () -> Unit,
+    onCancelAll: () -> Unit,
     onDeleteCompleted: () -> Unit,
 ) {
     var expanded by remember { mutableStateOf(false) }
@@ -160,6 +200,34 @@ private fun DownloadsActionsMenu(
             expanded = expanded,
             onDismissRequest = { expanded = false },
         ) {
+            DropdownMenuItem(
+                text = { Text(text = stringResource(R.string.downloads_action_stop_all)) },
+                enabled = canStopAll,
+                leadingIcon = {
+                    Icon(
+                        imageVector = Icons.Outlined.Pause,
+                        contentDescription = null,
+                    )
+                },
+                onClick = {
+                    expanded = false
+                    onStopAll()
+                },
+            )
+            DropdownMenuItem(
+                text = { Text(text = stringResource(R.string.downloads_action_cancel_all)) },
+                enabled = canCancelAll,
+                leadingIcon = {
+                    Icon(
+                        imageVector = Icons.Outlined.Cancel,
+                        contentDescription = null,
+                    )
+                },
+                onClick = {
+                    expanded = false
+                    onCancelAll()
+                },
+            )
             DropdownMenuItem(
                 text = { Text(text = stringResource(R.string.downloads_action_restart_all)) },
                 enabled = canRestartAll,

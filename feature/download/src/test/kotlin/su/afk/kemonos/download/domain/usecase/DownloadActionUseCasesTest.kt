@@ -118,6 +118,61 @@ internal class DownloadActionUseCasesTest {
         assertEquals(listOf(100L, 101L), repository.deletedIds)
         assertTrue(repository.runtimeUpdates.isEmpty())
     }
+
+    @Test
+    fun stopAllStopsEveryProvidedDownloadAndKeepsTheirTrackedRows() = runBlocking {
+        val dataSource = FakeDownloadManagerDataSource()
+        val repository = FakeTrackedDownloadsRepository()
+        val useCase = StopDownloadsUseCase(
+            StopDownloadUseCase(
+                downloadManagerDataSource = dataSource,
+                trackedDownloadsRepository = repository,
+            )
+        )
+
+        useCase(listOf(100L, 101L))
+
+        assertEquals(listOf(100L, 101L), dataSource.removedIds)
+        /** Записи остаются: остановленную загрузку должно быть чем перезапустить. */
+        assertTrue(repository.deletedIds.isEmpty())
+        assertEquals(listOf(100L, 101L), repository.runtimeUpdates.map { it.downloadId })
+        assertTrue(repository.runtimeUpdates.all { it.lastStatus == DownloadManager.STATUS_PAUSED })
+    }
+
+    @Test
+    fun cancelAllRemovesFromDownloadManagerAndDeletesTrackedRows() = runBlocking {
+        val dataSource = FakeDownloadManagerDataSource()
+        val repository = FakeTrackedDownloadsRepository()
+        val useCase = CancelDownloadsUseCase(
+            downloadManagerDataSource = dataSource,
+            trackedDownloadsRepository = repository,
+        )
+
+        useCase(listOf(100L, 101L))
+
+        /**
+         * Обе половины обязательны: без remove DownloadManager продолжит качать
+         * файл, которого в списке приложения уже нет.
+         */
+        assertEquals(listOf(100L, 101L), dataSource.removedIds)
+        assertEquals(listOf(100L, 101L), repository.deletedIds)
+        assertTrue(repository.runtimeUpdates.isEmpty())
+    }
+
+    @Test
+    fun cancelAllOnEmptySelectionTouchesNothing() = runBlocking {
+        val dataSource = FakeDownloadManagerDataSource()
+        val repository = FakeTrackedDownloadsRepository()
+        val useCase = CancelDownloadsUseCase(
+            downloadManagerDataSource = dataSource,
+            trackedDownloadsRepository = repository,
+        )
+
+        useCase(emptyList())
+
+        assertTrue(dataSource.removedIds.isEmpty())
+        assertTrue(repository.deletedIds.isEmpty())
+    }
 }
 
 private fun trackedDownload(id: Long): TrackedDownload =
@@ -155,6 +210,7 @@ private class FakeDownloadUtil(
         creatorName: String?,
         postId: String?,
         postTitle: String?,
+        subDir: String?,
     ): Long {
         enqueued += EnqueuedDownload(
             url = url,

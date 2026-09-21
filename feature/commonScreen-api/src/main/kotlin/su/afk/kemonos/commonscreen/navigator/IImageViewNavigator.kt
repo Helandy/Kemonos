@@ -12,5 +12,7 @@ interface IImageViewNavigator {
         postId: String? = null,
         postTitle: String? = null,
         thumbnailUrls: Map<String, String> = emptyMap(),
+        /** Имя, под которым сохранять картинку: ключ — её ссылка. */
+        fileNames: Map<String, String> = emptyMap(),
     ): NavKey
 }

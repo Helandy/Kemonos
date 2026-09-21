@@ -39,7 +39,15 @@
     <string name="downloads_action_stop">Стоп</string>
     <string name="downloads_action_restart">Перезапуск</string>
     <string name="downloads_action_restart_all">Перезапустить все</string>
+    <string name="downloads_action_stop_all">Остановить все</string>
+    <string name="downloads_action_cancel_all">Отменить все</string>
+    <string name="downloads_cancel_all_message">Отменить %1$d незавершённых загрузок и убрать их из списка? Частично скачанное будет потеряно — «Остановить все» оставит записи, чтобы перезапустить позже.</string>
+    <string name="downloads_cancel_all_confirm">Отменить загрузки</string>
+    <string name="downloads_cancel_all_dismiss">Оставить</string>
     <string name="downloads_action_delete">Удалить</string>
     <string name="downloads_action_delete_completed">Удалить все завершенные загрузки</string>
     <string name="downloads_actions">Действия загрузок</string>
+    <string name="downloads_notification_channel">Прогресс загрузок</string>
+    <string name="downloads_notification_title">Загрузка</string>
+    <string name="downloads_notification_progress">Готово %1$d из %2$d</string>
 </resources>

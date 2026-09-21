@@ -50,6 +50,21 @@
     <string name="author_blacklist_removed">Author removed from blacklist</string>
     <string name="author_blacklist_already_exists">Author is already in blacklist</string>
     <string name="vlc_not_installed">VLC is not installed. Opening it through another application…</string>
+
+    <string name="posts_selection_start">Select works</string>
+    <string name="posts_selection_count">Selected: %1$d</string>
+    <string name="posts_selection_hint">Long-press a work to add it to the selection</string>
+    <string name="posts_selection_clear">Cancel</string>
+    <string name="posts_selection_download">Download</string>
+
+    <string name="batch_download_title">Download selected works</string>
+    <string name="batch_download_summary">%1$d works, numbered in the order you picked them</string>
+    <string name="batch_download_folder_label">Folder</string>
+    <string name="batch_download_include_covers">Download covers</string>
+    <string name="batch_download_include_covers_hint">Applies to every selected work</string>
+    <string name="batch_download_confirm">Download</string>
+    <string name="batch_download_cancel">Cancel</string>
+    <string name="batch_download_started">%1$d works queued — downloading in the background</string>
     <string name="video_open_failed">No video app found, install VLC</string>
     <string name="audio_open_failed">No audio app found</string>
 

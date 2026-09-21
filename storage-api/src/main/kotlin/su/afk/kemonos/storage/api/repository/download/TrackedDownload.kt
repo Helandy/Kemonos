@@ -9,6 +9,8 @@ data class TrackedDownload(
     val postId: String?,
     val postTitle: String?,
     val createdAtMs: Long,
+    /** Папка загрузки, если она задана явно (массовая загрузка). */
+    val subDir: String? = null,
     val lastStatus: Int? = null,
     val lastReason: Int? = null,
     val lastErrorLabel: String? = null,

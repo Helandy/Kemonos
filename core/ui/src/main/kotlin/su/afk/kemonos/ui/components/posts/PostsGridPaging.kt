@@ -33,6 +33,8 @@ internal fun PostsGridPaging(
     header: (@Composable () -> Unit)? = null,
     parseError: (Throwable) -> ErrorItem,
     scrollStateKey: String,
+    selectedOrder: Map<String, Int> = emptyMap(),
+    onPostLongClick: ((PostDomain) -> Unit)? = null,
 ) {
     val gridState = rememberSaveable(scrollStateKey, saver = LazyGridState.Saver) {
         LazyGridState()
@@ -62,6 +64,8 @@ internal fun PostsGridPaging(
                 showFavCount = showFavCount,
                 uiSettingModel = uiSettingModel,
                 postsSize = gridPostsSize,
+                onLongClick = onPostLongClick?.let { callback -> { callback(post) } },
+                selectionNumber = selectedOrder[post.stableKey()],
             )
         }
 

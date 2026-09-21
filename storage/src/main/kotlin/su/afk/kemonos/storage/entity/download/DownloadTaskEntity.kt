@@ -19,6 +19,7 @@ internal data class DownloadTaskEntity(
     val postId: String?,
     val postTitle: String?,
     val createdAtMs: Long,
+    val subDir: String? = null,
     val lastStatus: Int?,
     val lastReason: Int?,
     val lastErrorLabel: String?,

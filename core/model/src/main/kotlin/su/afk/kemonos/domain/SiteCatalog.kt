@@ -35,14 +35,41 @@ enum class MediaUrlScheme {
 }
 
 /**
+ * Как источник принимает вход.
+ *
+ * Kemono-подобные сайты отдают JSON-API входа; pawchive его не имеет
+ * (`/api/v1/authentication/login` отвечает 404) и принимает только отправку
+ * формы, отвечая подписанной Flask-кукой.
+ */
+enum class AuthScheme {
+    /** Вход не поддерживается. */
+    NONE,
+
+    /** POST /api/v1/authentication/login с JSON-телом. */
+    JSON_API,
+
+    /** POST /account/login формой; сессия приходит в Set-Cookie. */
+    FORM_SESSION,
+}
+
+/**
  * Что источник умеет.
  *
  * Заменяет разбросанные проверки вида `if (site == SelectedSite.P)`: компилятор
  * не ловит их при добавлении источника, а флаг заставляет описать поведение явно.
  */
 data class SiteCapabilities(
-    /** Вход, регистрация, серверное избранное. */
+    /** Вход и серверное избранное. */
     val auth: Boolean,
+
+    /**
+     * Регистрация нового аккаунта из приложения.
+     *
+     * Отдельно от [auth]: у pawchive вход есть, а `/api/v1/authentication/register`
+     * отвечает 404 — кнопку регистрации показывать нельзя.
+     */
+    val register: Boolean,
+
 
     /** Раздел тегов. */
     val tags: Boolean,
@@ -111,6 +138,8 @@ data class SiteSpec(
 
     val mediaUrlScheme: MediaUrlScheme,
 
+    val authScheme: AuthScheme,
+
     /**
      * Самодостаточный источник: сам обслуживает все свои сервисы.
      *
@@ -155,8 +184,10 @@ object SiteCatalog {
                 creatorImageHost = CreatorImageHost.IMAGE,
             ),
                         mediaUrlScheme = MediaUrlScheme.DATA_PREFIXED,
+            authScheme = AuthScheme.JSON_API,
             capabilities = SiteCapabilities(
                 auth = true,
+                register = true,
                 tags = true,
                 dms = true,
                 popularPosts = true,
@@ -180,8 +211,10 @@ object SiteCatalog {
                 creatorImageHost = CreatorImageHost.IMAGE,
             ),
                         mediaUrlScheme = MediaUrlScheme.DATA_PREFIXED,
+            authScheme = AuthScheme.JSON_API,
             capabilities = SiteCapabilities(
                 auth = true,
+                register = true,
                 tags = true,
                 dms = true,
                 popularPosts = true,
@@ -205,8 +238,11 @@ object SiteCatalog {
                 creatorImageHost = CreatorImageHost.ROOT,
             ),
             mediaUrlScheme = MediaUrlScheme.DATA_PREFIXED,
+            authScheme = AuthScheme.FORM_SESSION,
             capabilities = SiteCapabilities(
-                auth = false,
+                auth = true,
+                /** `/api/v1/authentication/register` отвечает 404. */
+                register = false,
                 tags = false,
                 dms = false,
                 popularPosts = true,
@@ -233,9 +269,11 @@ object SiteCatalog {
                 creatorImageHost = CreatorImageHost.IMAGE,
             ),
             mediaUrlScheme = MediaUrlScheme.DIRECT,
+            authScheme = AuthScheme.NONE,
             capabilities = SiteCapabilities(
                 /** Публичный API без сессий. */
                 auth = false,
+                register = false,
                 tags = false,
                 /** Есть даже глобальная лента /api/v1/dms. */
                 dms = true,
@@ -276,4 +314,5 @@ val SelectedSite.displayName: String get() = spec.displayName
 val SelectedSite.defaultApiUrl: String get() = spec.defaultApiUrl
 val SelectedSite.capabilities: SiteCapabilities get() = spec.capabilities
 val SelectedSite.mediaUrlScheme: MediaUrlScheme get() = spec.mediaUrlScheme
+val SelectedSite.authScheme: AuthScheme get() = spec.authScheme
 val SelectedSite.knownServices: Set<String> get() = spec.knownServices

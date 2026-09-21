@@ -1,0 +1,100 @@
+name: Build APK
+
+# Produces an installable APK you can download from the run's Artifacts.
+# The debug APK is signed with the standard debug key, so it installs without
+# any repository secrets. A release APK is only installable once signing
+# secrets are configured (see the "Sign release APK" step).
+on:
+  workflow_dispatch:
+    inputs:
+      build_type:
+        description: Which APK to build
+        type: choice
+        options:
+          - debug
+          - release
+        default: debug
+  push:
+    branches: [ "main" ]
+    tags: [ "v*" ]
+
+jobs:
+  apk:
+    name: Build ${{ inputs.build_type || 'debug' }} APK
+    runs-on: ubuntu-latest
+
+    # A step's `if` cannot read the secrets context, so the presence of a
+    # keystore is resolved once here, where secrets are allowed.
+    env:
+      HAS_KEYSTORE: ${{ secrets.KEYSTORE_BASE64 != '' }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up JDK
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
+
+      - name: Gradle cache
+        uses: gradle/actions/setup-gradle@v3
+
+      - name: Grant execute permission for gradlew
+        run: chmod +x ./gradlew
+
+      - name: Build APK
+        id: build
+        env:
+          BUILD_TYPE: ${{ inputs.build_type || 'debug' }}
+        run: |
+          set -euo pipefail
+          if [ "$BUILD_TYPE" = "release" ]; then
+            ./gradlew assembleRelease
+          else
+            ./gradlew assembleDebug
+          fi
+          apk=$(find app/build/outputs/apk/"$BUILD_TYPE" -name '*.apk' ! -name '*unsigned*' | head -n 1)
+          if [ -z "$apk" ]; then
+            apk=$(find app/build/outputs/apk/"$BUILD_TYPE" -name '*.apk' | head -n 1)
+          fi
+          echo "apk=$apk" >> "$GITHUB_OUTPUT"
+          echo "Built $apk"
+
+      # The project defines no signingConfig, so a release build comes out
+      # unsigned and Android refuses to install it. Sign it here when the
+      # repository has the secrets; otherwise the artifact stays unsigned and
+      # is only good for inspection.
+      - name: Sign release APK
+        id: sign
+        if: ${{ (inputs.build_type == 'release') && (env.HAS_KEYSTORE == 'true') }}
+        env:
+          KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
+          KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
+          UNSIGNED_APK: ${{ steps.build.outputs.apk }}
+        run: |
+          set -euo pipefail
+          echo "$KEYSTORE_BASE64" | base64 -d > "$RUNNER_TEMP/keystore.jks"
+          build_tools=$(ls -d "$ANDROID_HOME"/build-tools/* | sort -V | tail -n 1)
+          signed="${UNSIGNED_APK%.apk}-signed.apk"
+          "$build_tools/zipalign" -p -f 4 "$UNSIGNED_APK" "$signed"
+          "$build_tools/apksigner" sign \
+            --ks "$RUNNER_TEMP/keystore.jks" \
+            --ks-pass env:KEYSTORE_PASSWORD \
+            --ks-key-alias "$KEY_ALIAS" \
+            --key-pass env:KEY_PASSWORD \
+            "$signed"
+          "$build_tools/apksigner" verify "$signed"
+          rm -f "$RUNNER_TEMP/keystore.jks"
+          echo "apk=$signed" >> "$GITHUB_OUTPUT"
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: kemonos-${{ inputs.build_type || 'debug' }}-${{ github.sha }}
+          path: ${{ steps.sign.outputs.apk || steps.build.outputs.apk }}
+          if-no-files-found: error
+          retention-days: 30

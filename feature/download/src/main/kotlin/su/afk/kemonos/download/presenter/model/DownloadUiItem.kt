@@ -22,6 +22,16 @@ internal data class DownloadUiItem(
                 status != DownloadManager.STATUS_RUNNING &&
                 status != DownloadManager.STATUS_PENDING
 
+    /** Ещё живёт в DownloadManager, значит его есть что останавливать. */
+    val isStoppable: Boolean
+        get() = status == DownloadManager.STATUS_PENDING ||
+                status == DownloadManager.STATUS_RUNNING ||
+                status == DownloadManager.STATUS_PAUSED
+
+    /** Скачанное отменять нечего — для него есть удаление завершённых. */
+    val isCancellable: Boolean
+        get() = status != DownloadManager.STATUS_SUCCESSFUL
+
     companion object {
         const val STATUS_REMOVED = -1
 

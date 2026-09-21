@@ -39,7 +39,15 @@
     <string name="downloads_action_stop">Stop</string>
     <string name="downloads_action_restart">Restart</string>
     <string name="downloads_action_restart_all">Restart all</string>
+    <string name="downloads_action_stop_all">Stop all</string>
+    <string name="downloads_action_cancel_all">Cancel all</string>
+    <string name="downloads_cancel_all_message">Cancel %1$d unfinished downloads and remove them from the list? Partly downloaded files are discarded — use Stop all to keep them in the list for a restart.</string>
+    <string name="downloads_cancel_all_confirm">Cancel downloads</string>
+    <string name="downloads_cancel_all_dismiss">Keep</string>
     <string name="downloads_action_delete">Delete</string>
     <string name="downloads_action_delete_completed">Delete all completed downloads</string>
     <string name="downloads_actions">Download actions</string>
+    <string name="downloads_notification_channel">Download progress</string>
+    <string name="downloads_notification_title">Downloading</string>
+    <string name="downloads_notification_progress">%1$d of %2$d done</string>
 </resources>

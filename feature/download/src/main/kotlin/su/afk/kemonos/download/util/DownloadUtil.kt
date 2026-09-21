@@ -7,6 +7,7 @@ import androidx.core.net.toUri
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.first
 import su.afk.kemonos.download.api.IDownloadUtil
+import su.afk.kemonos.download.notification.DownloadProgressNotifier
 import su.afk.kemonos.preferences.ui.DownloadFolderMode
 import su.afk.kemonos.preferences.ui.IUiSettingUseCase
 import su.afk.kemonos.storage.api.repository.download.ITrackedDownloadsRepository
@@ -25,6 +26,7 @@ internal class DownloadUtil @Inject constructor(
     @param:ApplicationContext private val context: Context,
     private val uiSetting: IUiSettingUseCase,
     private val trackedDownloadsRepository: ITrackedDownloadsRepository,
+    private val progressNotifier: DownloadProgressNotifier,
 ) : IDownloadUtil {
 
     override suspend fun enqueueSystemDownload(
@@ -34,13 +36,26 @@ internal class DownloadUtil @Inject constructor(
         creatorName: String?,
         postId: String?,
         postTitle: String?,
+        subDir: String?,
     ): Long {
         val settings = uiSetting.prefs.first()
 
         val downloadManager = context.getSystemService(Context.DOWNLOAD_SERVICE) as DownloadManager
 
+        /**
+         * Своё общее уведомление заменяет штатные только если нам вообще
+         * разрешено уведомлять — иначе пользователь остался бы вовсе без них.
+         */
+        val useSingleNotification = settings.downloadSingleNotification && progressNotifier.canNotify()
+
         val request = DownloadManager.Request(url.toUri())
-            .setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED)
+            .setNotificationVisibility(
+                if (useSingleNotification) {
+                    DownloadManager.Request.VISIBILITY_HIDDEN
+                } else {
+                    DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED
+                }
+            )
             .setAllowedOverMetered(true)
             .setAllowedOverRoaming(true)
 
@@ -51,18 +66,26 @@ internal class DownloadUtil @Inject constructor(
             .sanitizeFileName()
             .ifBlank { "download" }
 
-        val subDir = buildSubDir(
-            mode = settings.downloadFolderMode,
-            addServiceName = settings.addServiceName,
-            service = service,
-            creatorName = creatorName,
-            postId = postId,
-            postTitle = postTitle,
-        )
+        val destinationDir = subDir
+            ?.let { explicit ->
+                buildExplicitSubDir(
+                    addServiceName = settings.addServiceName,
+                    service = service,
+                    subDir = explicit,
+                )
+            }
+            ?: buildSubDir(
+                mode = settings.downloadFolderMode,
+                addServiceName = settings.addServiceName,
+                service = service,
+                creatorName = creatorName,
+                postId = postId,
+                postTitle = postTitle,
+            )
 
         request.setDestinationInExternalPublicDir(
             Environment.DIRECTORY_DOWNLOADS,
-            "$subDir/$safeName"
+            "$destinationDir/$safeName"
         )
 
         val id = downloadManager.enqueue(request)
@@ -77,12 +100,44 @@ internal class DownloadUtil @Inject constructor(
                 postId = postId,
                 postTitle = postTitle,
                 createdAtMs = System.currentTimeMillis(),
+                subDir = subDir,
             )
         )
+
+        if (useSingleNotification) {
+            progressNotifier.refresh()
+        }
 
         return id
     }
 }
+
+/**
+ * Папка, заданная вызывающим: всё, что скачано одной пачкой, лежит вместе.
+ *
+ * Префикс сервиса оставляем — он относится к раскладке приложения, а не к посту.
+ */
+private fun buildExplicitSubDir(
+    addServiceName: Boolean,
+    service: String?,
+    subDir: String,
+): String {
+    val core = subDir.split('/')
+        .map { it.sanitizePathPart(MAX_TITLE_DIR_LEN * 2) }
+        .filter { it.isNotBlank() }
+        .joinToString("/")
+        .ifBlank { "download" }
+
+    return "${appDirPrefix(addServiceName, service)}/$core"
+}
+
+private fun appDirPrefix(addServiceName: Boolean, service: String?): String =
+    if (addServiceName) {
+        val s = service.orEmpty().sanitizePathPart(MAX_SERVICE_LEN).ifBlank { "service" }
+        "$APP_DOWNLOAD_DIR/$s"
+    } else {
+        APP_DOWNLOAD_DIR
+    }
 
 private fun buildSubDir(
     mode: DownloadFolderMode,
@@ -119,14 +174,7 @@ private fun buildSubDir(
             "${titleWithSuffix}_$pid"
     }
 
-    val prefix = if (addServiceName) {
-        val s = service.orEmpty().sanitizePathPart(MAX_SERVICE_LEN).ifBlank { "service" }
-        "$APP_DOWNLOAD_DIR/$s"
-    } else {
-        APP_DOWNLOAD_DIR
-    }
-
-    return "$prefix/$core"
+    return "${appDirPrefix(addServiceName, service)}/$core"
 }
 
 private fun String.stableSuffix(len: Int): String {

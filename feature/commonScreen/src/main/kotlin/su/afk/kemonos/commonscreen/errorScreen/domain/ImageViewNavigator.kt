@@ -15,6 +15,7 @@ class ImageViewNavigator @Inject constructor() : IImageViewNavigator {
         postId: String?,
         postTitle: String?,
         thumbnailUrls: Map<String, String>,
+        fileNames: Map<String, String>,
     ): NavKey {
         val sanitizedUrls = imageUrls
             .asSequence()
@@ -42,6 +43,7 @@ class ImageViewNavigator @Inject constructor() : IImageViewNavigator {
                 postId = postId,
                 postTitle = postTitle,
                 thumbnailUrls = thumbnailUrls,
+                fileNames = fileNames,
             )
         )
     }

@@ -19,6 +19,7 @@ internal class ImageViewState {
         val postId: String? = null,
         val postTitle: String? = null,
         val thumbnailUrls: Map<String, String> = emptyMap(),
+        val fileNames: Map<String, String> = emptyMap(),
         val usePreviewOnlyInImageViewer: Boolean = false,
         val imageViewerSettingsLoaded: Boolean = false,
 

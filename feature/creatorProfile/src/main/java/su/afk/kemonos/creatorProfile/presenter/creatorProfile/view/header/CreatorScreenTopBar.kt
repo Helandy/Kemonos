@@ -30,6 +30,8 @@ internal fun CreatorScreenTopBar(
     onOpenPlatform: (String) -> Unit,
     isInBlacklist: Boolean,
     onToggleBlacklist: () -> Unit,
+    showSelectPosts: Boolean = false,
+    onSelectPosts: () -> Unit = {},
 ) {
     val extrasVisible by remember(scrollBehavior) {
         derivedStateOf {
@@ -62,6 +64,8 @@ internal fun CreatorScreenTopBar(
                     onOpenPlatform = onOpenPlatform,
                     isInBlacklist = isInBlacklist,
                     onToggleBlacklist = onToggleBlacklist,
+                    showSelectPosts = showSelectPosts,
+                    onSelectPosts = onSelectPosts,
                 )
             }
         )
@@ -92,6 +96,8 @@ private fun CreatorTopBarActions(
     onOpenPlatform: (String) -> Unit,
     isInBlacklist: Boolean,
     onToggleBlacklist: () -> Unit,
+    showSelectPosts: Boolean,
+    onSelectPosts: () -> Unit,
 ) {
     var expanded by remember { mutableStateOf(false) }
 
@@ -127,7 +133,12 @@ private fun CreatorTopBarActions(
         onToggleBlacklist = {
             expanded = false
             onToggleBlacklist()
-        }
+        },
+        showSelectPosts = showSelectPosts,
+        onSelectPosts = {
+            expanded = false
+            onSelectPosts()
+        },
     )
 }
 
@@ -142,11 +153,26 @@ private fun CreatorTopBarMenu(
     onOpenPlatform: (String) -> Unit,
     isInBlacklist: Boolean,
     onToggleBlacklist: () -> Unit,
+    showSelectPosts: Boolean,
+    onSelectPosts: () -> Unit,
 ) {
     DropdownMenu(
         expanded = expanded,
         onDismissRequest = onDismiss
     ) {
+        if (showSelectPosts) {
+            DropdownMenuItem(
+                text = { Text(stringResource(R.string.posts_selection_start)) },
+                leadingIcon = {
+                    Icon(
+                        imageVector = Icons.Default.Checklist,
+                        contentDescription = null
+                    )
+                },
+                onClick = onSelectPosts
+            )
+        }
+
         DropdownMenuItem(
             text = { Text(stringResource(R.string.share)) },
             leadingIcon = {

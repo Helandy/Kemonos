@@ -27,6 +27,8 @@ internal fun PostsListPaging(
     header: (@Composable () -> Unit)? = null,
     parseError: (Throwable) -> ErrorItem,
     scrollStateKey: String,
+    selectedOrder: Map<String, Int> = emptyMap(),
+    onPostLongClick: ((PostDomain) -> Unit)? = null,
 ) {
     val listState = rememberSaveable(scrollStateKey, saver = LazyListState.Saver) {
         LazyListState()
@@ -52,7 +54,9 @@ internal fun PostsListPaging(
                 post = post,
                 onClick = { onPostClick(post) },
                 showFavCount = showFavCount,
-                uiSettingModel = uiSettingModel
+                uiSettingModel = uiSettingModel,
+                onLongClick = onPostLongClick?.let { callback -> { callback(post) } },
+                selectionNumber = selectedOrder[post.stableKey()],
             )
         }
 

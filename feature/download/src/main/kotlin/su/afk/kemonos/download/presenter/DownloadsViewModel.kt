@@ -12,11 +12,13 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import su.afk.kemonos.download.domain.repository.DownloadManagerDataSource
+import su.afk.kemonos.download.domain.usecase.CancelDownloadsUseCase
 import su.afk.kemonos.download.domain.usecase.DeleteDownloadUseCase
 import su.afk.kemonos.download.domain.usecase.DeleteDownloadsUseCase
 import su.afk.kemonos.download.domain.usecase.RestartDownloadUseCase
 import su.afk.kemonos.download.domain.usecase.RestartDownloadsUseCase
 import su.afk.kemonos.download.domain.usecase.StopDownloadUseCase
+import su.afk.kemonos.download.domain.usecase.StopDownloadsUseCase
 import su.afk.kemonos.download.presenter.model.DownloadUiItem
 import su.afk.kemonos.error.error.IErrorHandlerUseCase
 import su.afk.kemonos.error.error.storage.RetryStorage
@@ -34,6 +36,8 @@ import javax.inject.Inject
 internal class DownloadsViewModel @Inject constructor(
     private val downloadManagerDataSource: DownloadManagerDataSource,
     private val stopDownloadUseCase: StopDownloadUseCase,
+    private val stopDownloadsUseCase: StopDownloadsUseCase,
+    private val cancelDownloadsUseCase: CancelDownloadsUseCase,
     private val restartDownloadUseCase: RestartDownloadUseCase,
     private val restartDownloadsUseCase: RestartDownloadsUseCase,
     private val deleteDownloadUseCase: DeleteDownloadUseCase,
@@ -66,6 +70,8 @@ internal class DownloadsViewModel @Inject constructor(
             is DownloadsState.Event.StopDownload -> stopDownload(event.downloadId)
             is DownloadsState.Event.RestartDownload -> restartDownload(event.downloadId)
             DownloadsState.Event.RestartAllDownloads -> restartAllDownloads()
+            DownloadsState.Event.StopAllDownloads -> stopAllDownloads()
+            DownloadsState.Event.CancelAllDownloads -> cancelAllDownloads()
             is DownloadsState.Event.DeleteDownload -> deleteDownload(event.downloadId)
             DownloadsState.Event.DeleteCompletedDownloads -> deleteCompletedDownloads()
         }
@@ -156,6 +162,44 @@ internal class DownloadsViewModel @Inject constructor(
             val restartedIds = restartDownloadsUseCase(trackedItems)
             refreshMutex.withLock {
                 restartedIds.forEach { downloadId ->
+                    speedMap.remove(downloadId)
+                    lastSnapshots.remove(downloadId)
+                }
+                refreshInternal(onlyActive = false)
+            }
+        }
+    }
+
+    /** Останавливает всё, что ещё живёт в DownloadManager. Записи остаются — их можно перезапустить. */
+    private fun stopAllDownloads() {
+        viewModelScope.launch {
+            val stoppableIds = refreshMutex.withLock {
+                currentState.items.filter { it.isStoppable }.map { it.downloadId }
+            }
+            if (stoppableIds.isEmpty()) return@launch
+
+            stopDownloadsUseCase(stoppableIds)
+            refreshMutex.withLock {
+                stoppableIds.forEach { downloadId ->
+                    speedMap.remove(downloadId)
+                    lastSnapshots.remove(downloadId)
+                }
+                refreshInternal(onlyActive = false)
+            }
+        }
+    }
+
+    /** Отменяет всё незавершённое: и из очереди, и из списка приложения. */
+    private fun cancelAllDownloads() {
+        viewModelScope.launch {
+            val cancellableIds = refreshMutex.withLock {
+                currentState.items.filter { it.isCancellable }.map { it.downloadId }
+            }
+            if (cancellableIds.isEmpty()) return@launch
+
+            cancelDownloadsUseCase(cancellableIds)
+            refreshMutex.withLock {
+                cancellableIds.forEach { downloadId ->
                     speedMap.remove(downloadId)
                     lastSnapshots.remove(downloadId)
                 }

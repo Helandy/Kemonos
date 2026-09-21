@@ -30,4 +30,6 @@ dependencies {
     implementation(project(":feature:creatorProfile-api"))
     implementation(project(":feature:download-api"))
     implementation(project(":feature:commonScreen-api"))
+
+    testImplementation(libs.junit)
 }

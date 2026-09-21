@@ -11,6 +11,9 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
+import su.afk.kemonos.creatorPost.api.download.BatchDownloadPost
+import su.afk.kemonos.creatorPost.api.download.BatchDownloadRequest
+import su.afk.kemonos.creatorPost.api.download.IPostsBatchDownloader
 import su.afk.kemonos.creatorProfile.api.IGetProfileUseCase
 import su.afk.kemonos.creatorProfile.api.domain.models.profileCommunity.CommunityChannel
 import su.afk.kemonos.creatorProfile.domain.paging.GetProfilePostsPagingUseCase
@@ -22,6 +25,8 @@ import su.afk.kemonos.creatorProfile.presenter.creatorProfile.delegates.Navigati
 import su.afk.kemonos.creatorProfile.presenter.creatorProfile.model.ProfileTab
 import su.afk.kemonos.creatorProfile.presenter.creatorProfile.model.ProfileTab.Companion.toCreatorProfileTabKey
 import su.afk.kemonos.creatorProfile.util.Utils.queryKey
+import su.afk.kemonos.domain.models.PostDomain
+import su.afk.kemonos.domain.models.PostDomain.Companion.stableKey
 import su.afk.kemonos.domain.models.Profile
 import su.afk.kemonos.domain.models.Tag
 import su.afk.kemonos.error.error.IErrorHandlerUseCase
@@ -43,6 +48,8 @@ import su.afk.kemonos.ui.presenter.baseViewModel.getSerializableState
 import su.afk.kemonos.ui.presenter.baseViewModel.setSerializableState
 import su.afk.kemonos.ui.shared.ShareLinkBuilder
 import su.afk.kemonos.ui.shared.model.ShareTarget
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 
 internal class CreatorProfileViewModel @AssistedInject constructor(
     @Assisted private val dest: CreatorDestination.CreatorProfile,
@@ -58,6 +65,7 @@ internal class CreatorProfileViewModel @AssistedInject constructor(
     private val blacklistedAuthorsRepository: IStoreBlacklistedAuthorsRepository,
     private val selectedSiteUseCase: ISelectedSiteUseCase,
     private val uiSetting: IUiSettingUseCase,
+    private val postsBatchDownloader: IPostsBatchDownloader,
     @Assisted savedStateHandle: SavedStateHandle,
     override val errorHandler: IErrorHandlerUseCase,
     override val retryStorage: RetryStorage,
@@ -82,7 +90,7 @@ internal class CreatorProfileViewModel @AssistedInject constructor(
 
             is Event.OpenImage -> navigationDelegate.navigateToOpenImage(event.url)
             is Event.OpenLinkProfile -> navigationDelegate.navigateToLinkProfile(event.link)
-            is Event.OpenPost -> viewModelScope.launch { navigationDelegate.navigateToPost(event.post) }
+            is Event.OpenPost -> onPostClick(event.post)
 
             is Event.TabChanged -> setState { copy(selectedTab = event.tab) }
             is Event.OpenCommunityChannel -> openCommunityChannel(event.channel)
@@ -99,7 +107,103 @@ internal class CreatorProfileViewModel @AssistedInject constructor(
             Event.ToggleBlacklist -> toggleBlacklist()
 
             Event.FavoriteClick -> onFavoriteClick()
+
+            is Event.PostLongClicked -> togglePostSelection(event.post)
+            Event.StartSelection -> setState { copy(selectionMode = true) }
+            Event.ExitSelection -> clearSelection()
+            Event.OpenBatchDownloadDialog -> openBatchDownloadDialog()
+            Event.DismissBatchDownloadDialog -> setState { copy(batchDownloadDialogVisible = false) }
+            is Event.BatchDownloadFolderChanged -> setState { copy(batchDownloadFolder = event.value) }
+            is Event.BatchDownloadIncludeCoversChanged ->
+                setState { copy(batchDownloadIncludeCovers = event.value) }
+
+            Event.ConfirmBatchDownload -> confirmBatchDownload()
         }
+    }
+
+    /** В режиме выбора тап отмечает пост, а не открывает его. */
+    private fun onPostClick(post: PostDomain) {
+        if (currentState.selectionMode) {
+            togglePostSelection(post)
+            return
+        }
+
+        viewModelScope.launch { navigationDelegate.navigateToPost(post) }
+    }
+
+    /**
+     * Порядок выбора — это порядок скачивания, поэтому новый пост уходит в конец списка.
+     */
+    private fun togglePostSelection(post: PostDomain) {
+        val key = post.stableKey()
+        val current = currentState.selectedPosts
+        val next = if (current.any { it.stableKey() == key }) {
+            current.filterNot { it.stableKey() == key }
+        } else {
+            current + post
+        }
+
+        setState { copy(selectedPosts = next, selectionMode = true) }
+    }
+
+    private fun clearSelection() {
+        setState {
+            copy(
+                selectedPosts = emptyList(),
+                selectionMode = false,
+                batchDownloadDialogVisible = false,
+            )
+        }
+    }
+
+    private fun openBatchDownloadDialog() {
+        if (currentState.selectedPosts.isEmpty()) return
+
+        setState {
+            copy(
+                batchDownloadDialogVisible = true,
+                batchDownloadFolder = batchDownloadFolder.ifBlank { defaultBatchFolderName() },
+            )
+        }
+    }
+
+    /** `<автор>_<дата>`: пачки одного автора не перетирают друг друга. */
+    private fun defaultBatchFolderName(): String {
+        val creator = currentState.profile?.name?.trim().orEmpty().ifBlank { currentState.id }
+        val stamp = LocalDateTime.now().format(BATCH_FOLDER_DATE_FORMAT)
+        return "${creator}_$stamp"
+    }
+
+    private fun confirmBatchDownload() {
+        val posts = currentState.selectedPosts
+        if (posts.isEmpty() || currentState.batchDownloadInProgress) return
+
+        val request = BatchDownloadRequest(
+            service = currentState.service,
+            creatorId = currentState.id,
+            creatorName = currentState.profile?.name,
+            posts = posts.map { post -> BatchDownloadPost(postId = post.id, title = post.title) },
+            folderName = currentState.batchDownloadFolder.trim().ifBlank { defaultBatchFolderName() },
+            includeCovers = currentState.batchDownloadIncludeCovers,
+        )
+
+        /**
+         * Пачка уходит в фоновую очередь: разбор полусотни постов идёт минутами,
+         * и держать ради него экран открытым не нужно.
+         */
+        postsBatchDownloader.start(request)
+
+        setState {
+            copy(
+                batchDownloadInProgress = false,
+                batchDownloadDialogVisible = false,
+                selectionMode = false,
+                selectedPosts = emptyList(),
+                batchDownloadFolder = "",
+            )
+        }
+
+        setEffect(Effect.BatchDownloadStarted(works = request.posts.size))
     }
 
     @AssistedFactory
@@ -479,6 +583,9 @@ internal class CreatorProfileViewModel @AssistedInject constructor(
 
     companion object {
         private const val KEY_STATE = "creator_profile_state"
+
+        private val BATCH_FOLDER_DATE_FORMAT: DateTimeFormatter =
+            DateTimeFormatter.ofPattern("yyyyMMdd_HHmm")
 
         private data class TabCheckSpec(
             val key: CreatorProfileTabKey,

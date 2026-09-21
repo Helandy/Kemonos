@@ -75,6 +75,7 @@ internal object DatabaseKemonoModule {
                 KemonoFrom20To21,
                 KemonoFrom21To22,
                 KemonoFrom22To23,
+                KemonoFrom23To24,
             )
             .addCallback(
                 DestructiveMigrationPrefSync.createCleanupCallback(

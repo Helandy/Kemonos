@@ -21,6 +21,7 @@ internal class RestartDownloadUseCase @Inject constructor(
             creatorName = trackedDownload.creatorName,
             postId = trackedDownload.postId,
             postTitle = trackedDownload.postTitle,
+            subDir = trackedDownload.subDir,
         )
         if (newId != trackedDownload.downloadId) {
             trackedDownloadsRepository.delete(trackedDownload.downloadId)

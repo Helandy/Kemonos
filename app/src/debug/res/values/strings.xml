@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Debug builds install next to a release install, so the launcher needs
+         to tell them apart. -->
+    <string name="app_name">Kemonos debug</string>
+</resources>

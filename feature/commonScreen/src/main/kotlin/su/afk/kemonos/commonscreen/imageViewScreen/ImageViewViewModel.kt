@@ -212,8 +212,10 @@ internal class ImageViewViewModel @AssistedInject constructor(
         val url = state.value.imageUrl
             ?.takeIf { it.isNotBlank() }
             ?: return
-        val fileName = url.toUri().lastPathSegment
+        /** Пост уже пронумеровал свои файлы — сохраняем картинку под тем же именем. */
+        val fileName = state.value.fileNames[url]
             ?.takeIf { it.isNotBlank() }
+            ?: url.toUri().lastPathSegment?.takeIf { it.isNotBlank() }
             ?: url.substringAfterLast('/').substringBefore('?').ifBlank { "image" }
 
         viewModelScope.launch {
@@ -255,6 +257,7 @@ internal class ImageViewViewModel @AssistedInject constructor(
             postId = args.postId,
             postTitle = args.postTitle,
             thumbnailUrls = args.thumbnailUrls,
+            fileNames = args.fileNames,
             requestId = newRequestId(),
             reloadKey = persistedState?.reloadKey ?: 0,
             loading = true,

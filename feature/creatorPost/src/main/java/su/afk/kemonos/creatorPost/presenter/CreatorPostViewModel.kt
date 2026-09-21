@@ -21,7 +21,9 @@ import su.afk.kemonos.creatorPost.presenter.delegates.LikeDelegate
 import su.afk.kemonos.creatorPost.presenter.delegates.MediaMetaDelegateNew
 import su.afk.kemonos.creatorPost.presenter.delegates.NavigateDelegates
 import su.afk.kemonos.creatorPost.presenter.delegates.PostLoadDelegate
-import su.afk.kemonos.creatorPost.presenter.helper.collectDownloadAllItems
+import su.afk.kemonos.creatorPost.domain.download.PostDownloadItem
+import su.afk.kemonos.creatorPost.domain.download.collectDownloadAllItems
+import su.afk.kemonos.creatorPost.domain.download.downloadUrlKey
 import su.afk.kemonos.creatorPost.presenter.model.LoadRequest
 import su.afk.kemonos.domain.models.PreviewDomain
 import su.afk.kemonos.download.api.IDownloadUtil
@@ -30,6 +32,7 @@ import su.afk.kemonos.error.error.storage.RetryStorage
 import su.afk.kemonos.error.error.toFavoriteToastBar
 import su.afk.kemonos.preferences.IGetCurrentSiteRootUrlUseCase
 import su.afk.kemonos.preferences.domainResolver.IDomainResolver
+import su.afk.kemonos.preferences.ui.DownloadFileNameMode
 import su.afk.kemonos.preferences.ui.IUiSettingUseCase
 import su.afk.kemonos.preferences.ui.TranslateTarget
 import su.afk.kemonos.ui.presenter.androidView.model.PostBlock
@@ -427,6 +430,12 @@ internal class CreatorPostViewModel @AssistedInject constructor(
         }
         val selectedIndex = imageUrls.indexOf(originalUrl).takeIf { it >= 0 }
 
+        /** Чтобы из просмотрщика файл сохранился под тем же номером, что и из поста. */
+        val fileNamesByUrlKey = downloadFileNamesByUrlKey()
+        val fileNames = imageUrls.mapNotNull { url ->
+            fileNamesByUrlKey[url.downloadUrlKey()]?.let { name -> url to name }
+        }.toMap()
+
         navigateDelegates.navigateOpenImage(
             originalUrl = originalUrl,
             imageUrls = imageUrls,
@@ -436,6 +445,7 @@ internal class CreatorPostViewModel @AssistedInject constructor(
             postId = currentState.postId,
             postTitle = currentState.post?.post?.title,
             thumbnailUrls = thumbnailUrlsMap,
+            fileNames = fileNames,
         )
     }
 
@@ -455,18 +465,13 @@ internal class CreatorPostViewModel @AssistedInject constructor(
     /** Постановка одной загрузки в системный DownloadManager */
     fun download(url: String, fileName: String?) {
         viewModelScope.launch {
-            enqueueDownload(url = url, fileName = fileName)
+            enqueueDownload(url = url, fileName = resolveDownloadFileName(url, fileName))
         }
     }
 
     /** Массовая загрузка всех доступных вложений/медиа поста */
     private fun downloadAll() {
-        val post = currentState.post ?: return
-        val fallbackBaseUrl = domainResolver.fileBaseUrlByService(currentState.service)
-        val allItems = post.collectDownloadAllItems(
-            fallbackBaseUrl = fallbackBaseUrl,
-            mediaUrlScheme = domainResolver.mediaUrlSchemeByService(currentState.service),
-        )
+        val allItems = collectDownloadItems()
         if (allItems.isEmpty()) return
 
         viewModelScope.launch {
@@ -475,6 +480,45 @@ internal class CreatorPostViewModel @AssistedInject constructor(
             }
         }
     }
+
+    /**
+     * Файлы поста с учётом настроек скачивания.
+     *
+     * Единая точка для «скачать всё», кнопки у отдельного файла и просмотрщика:
+     * иначе один и тот же файл получил бы разные номера.
+     */
+    private fun collectDownloadItems(): List<PostDownloadItem> {
+        val post = currentState.post ?: return emptyList()
+        val settings = currentState.uiSettingModel
+
+        return post.collectDownloadAllItems(
+            fallbackBaseUrl = domainResolver.fileBaseUrlByService(currentState.service),
+            mediaUrlScheme = domainResolver.mediaUrlSchemeByService(currentState.service),
+            fileNameMode = settings.downloadFileNameMode,
+            includeCover = settings.downloadPostCover,
+        )
+    }
+
+    /** Имена файлов поста по ссылке; пусто, если имена источника не меняем. */
+    private fun downloadFileNamesByUrlKey(): Map<String, String> {
+        if (currentState.uiSettingModel.downloadFileNameMode == DownloadFileNameMode.ORIGINAL) {
+            return emptyMap()
+        }
+
+        val names = mutableMapOf<String, String>()
+        collectDownloadItems().forEach { item ->
+            val fileName = item.fileName?.takeIf { it.isNotBlank() } ?: return@forEach
+            val key = item.url.downloadUrlKey()
+            /** Первое вхождение — оно же самое раннее по порядку страниц. */
+            if (!names.containsKey(key)) names[key] = fileName
+        }
+
+        return names
+    }
+
+    /** Обложка при выключенной настройке в список не попадает — у неё остаётся имя источника. */
+    private fun resolveDownloadFileName(url: String, fileName: String?): String? =
+        downloadFileNamesByUrlKey()[url.downloadUrlKey()] ?: fileName
 
     /** Единая точка добавления файла в загрузку + тост-эффект */
     private suspend fun enqueueDownload(url: String, fileName: String?) {

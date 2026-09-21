@@ -25,7 +25,12 @@ import su.afk.kemonos.preferences.ui.UiSettingKey.CROP_POST_PREVIEW_VIDEO
 import su.afk.kemonos.preferences.ui.UiSettingKey.CROP_VIDEO_PREVIEW
 import su.afk.kemonos.preferences.ui.UiSettingKey.DATE_FORMAT_MODE
 import su.afk.kemonos.preferences.ui.UiSettingKey.DISCORD_COMMUNITY_REVERSE_ORDER_DEFAULT
+import su.afk.kemonos.preferences.ui.UiSettingKey.DOWNLOAD_CONVERT_TO_WEBP
+import su.afk.kemonos.preferences.ui.UiSettingKey.DOWNLOAD_SINGLE_NOTIFICATION
+import su.afk.kemonos.preferences.ui.UiSettingKey.DOWNLOAD_WEBP_QUALITY
+import su.afk.kemonos.preferences.ui.UiSettingKey.DOWNLOAD_FILE_NAME_MODE
 import su.afk.kemonos.preferences.ui.UiSettingKey.DOWNLOAD_FOLDER_MODE
+import su.afk.kemonos.preferences.ui.UiSettingKey.DOWNLOAD_POST_COVER
 import su.afk.kemonos.preferences.ui.UiSettingKey.ENABLED_SITES
 import su.afk.kemonos.preferences.ui.UiSettingKey.EXPERIMENTAL_CALENDAR
 import su.afk.kemonos.preferences.ui.UiSettingKey.FAVORITE_POSTS_GRID_SIZE
@@ -135,6 +140,20 @@ internal class UiSettingUseCase @Inject constructor(
 
             downloadFolderMode = p.readEnum(DOWNLOAD_FOLDER_MODE, UiSettingModel.DEFAULT_DOWNLOAD_FOLDER_MODE),
             addServiceName = p[ADD_SERVICE_NAME] ?: UiSettingModel.DEFAULT_ADD_SERVICE_NAME,
+            downloadFileNameMode = p.readEnum(
+                DOWNLOAD_FILE_NAME_MODE,
+                UiSettingModel.DEFAULT_DOWNLOAD_FILE_NAME_MODE
+            ),
+            downloadPostCover = p[DOWNLOAD_POST_COVER] ?: UiSettingModel.DEFAULT_DOWNLOAD_POST_COVER,
+            downloadConvertToWebp = p[DOWNLOAD_CONVERT_TO_WEBP]
+                ?: UiSettingModel.DEFAULT_DOWNLOAD_CONVERT_TO_WEBP,
+            downloadWebpQuality = (p[DOWNLOAD_WEBP_QUALITY] ?: UiSettingModel.DEFAULT_DOWNLOAD_WEBP_QUALITY)
+                .coerceIn(
+                    UiSettingModel.MIN_DOWNLOAD_WEBP_QUALITY,
+                    UiSettingModel.MAX_DOWNLOAD_WEBP_QUALITY,
+                ),
+            downloadSingleNotification = p[DOWNLOAD_SINGLE_NOTIFICATION]
+                ?: UiSettingModel.DEFAULT_DOWNLOAD_SINGLE_NOTIFICATION,
             useExternalMetaData = p[USE_EXTERNAL_METADATA] ?: UiSettingModel.USE_EXTERNAL_METADATA,
             videoPreviewServerUrl = p[VIDEO_PREVIEW_SERVER_URL] ?: UiSettingModel.DEFAULT_VIDEO_PREVIEW_SERVER_URL,
             videoPreviewAspectRatio = p.readEnum(
@@ -353,6 +372,35 @@ internal class UiSettingUseCase @Inject constructor(
         dataStore.edit { it[ADD_SERVICE_NAME] = value }
     }
 
+    /** Как называть скачиваемые файлы поста */
+    override suspend fun setDownloadFileNameMode(value: DownloadFileNameMode) {
+        dataStore.edit { it[DOWNLOAD_FILE_NAME_MODE] = value.name }
+    }
+
+    /** Скачивать ли обложку поста */
+    override suspend fun setDownloadPostCover(value: Boolean) {
+        dataStore.edit { it[DOWNLOAD_POST_COVER] = value }
+    }
+
+    /** Пережимать ли скачанные картинки в webp */
+    override suspend fun setDownloadConvertToWebp(value: Boolean) {
+        dataStore.edit { it[DOWNLOAD_CONVERT_TO_WEBP] = value }
+    }
+
+    /** Качество webp при пережатии */
+    override suspend fun setDownloadWebpQuality(value: Int) {
+        val clamped = value.coerceIn(
+            UiSettingModel.MIN_DOWNLOAD_WEBP_QUALITY,
+            UiSettingModel.MAX_DOWNLOAD_WEBP_QUALITY,
+        )
+        dataStore.edit { it[DOWNLOAD_WEBP_QUALITY] = clamped }
+    }
+
+    /** Одно общее уведомление о загрузках вместо уведомления на каждый файл */
+    override suspend fun setDownloadSingleNotification(value: Boolean) {
+        dataStore.edit { it[DOWNLOAD_SINGLE_NOTIFICATION] = value }
+    }
+
     /** Использовать внешнее хранилище метадатнных */
     override suspend fun setUseExternalMetaData(value: Boolean) {
         dataStore.edit { it[USE_EXTERNAL_METADATA] = value }
@@ -435,6 +483,11 @@ object UiSettingKey {
 
     val DOWNLOAD_FOLDER_MODE = stringPreferencesKey("DOWNLOAD_FOLDER_MODE")
     val ADD_SERVICE_NAME = booleanPreferencesKey("ADD_SERVICE_NAME")
+    val DOWNLOAD_FILE_NAME_MODE = stringPreferencesKey("DOWNLOAD_FILE_NAME_MODE")
+    val DOWNLOAD_POST_COVER = booleanPreferencesKey("DOWNLOAD_POST_COVER")
+    val DOWNLOAD_CONVERT_TO_WEBP = booleanPreferencesKey("DOWNLOAD_CONVERT_TO_WEBP")
+    val DOWNLOAD_WEBP_QUALITY = intPreferencesKey("DOWNLOAD_WEBP_QUALITY")
+    val DOWNLOAD_SINGLE_NOTIFICATION = booleanPreferencesKey("DOWNLOAD_SINGLE_NOTIFICATION")
     val USE_EXTERNAL_METADATA = booleanPreferencesKey("USE_EXTERNAL_METADATA")
     val VIDEO_PREVIEW_SERVER_URL = stringPreferencesKey("VIDEO_PREVIEW_SERVER_URL")
     val VIDEO_PREVIEW_ASPECT_RATIO = stringPreferencesKey("VIDEO_PREVIEW_ASPECT_RATIO")

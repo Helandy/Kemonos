@@ -86,10 +86,13 @@ internal fun LoginScreen(
 
             Spacer(Modifier.height(12.dp))
 
-            TextButton(
-                onClick = { onEvent(Event.NavigateToRegisterClick) }
-            ) {
-                Text(stringResource(R.string.login_button_register))
+            /** pawchive регистрацию через API не поддерживает. */
+            if (state.selectSite.capabilities.register) {
+                TextButton(
+                    onClick = { onEvent(Event.NavigateToRegisterClick) }
+                ) {
+                    Text(stringResource(R.string.login_button_register))
+                }
             }
         }
     }

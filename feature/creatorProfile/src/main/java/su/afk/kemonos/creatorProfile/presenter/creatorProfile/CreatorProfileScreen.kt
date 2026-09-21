@@ -29,6 +29,8 @@ import su.afk.kemonos.creatorProfile.presenter.creatorProfile.view.ProfileLinksS
 import su.afk.kemonos.creatorProfile.presenter.creatorProfile.view.SearchBar
 import su.afk.kemonos.creatorProfile.presenter.creatorProfile.view.SimilarCreatorsScreen
 import su.afk.kemonos.creatorProfile.presenter.creatorProfile.view.TagsScreen
+import su.afk.kemonos.creatorProfile.presenter.creatorProfile.view.batchDownload.BatchDownloadDialog
+import su.afk.kemonos.creatorProfile.presenter.creatorProfile.view.batchDownload.PostsSelectionBar
 import su.afk.kemonos.creatorProfile.presenter.creatorProfile.view.discordProfile.DiscordProfilePlaceholder
 import su.afk.kemonos.creatorProfile.presenter.creatorProfile.view.header.CreatorScreenTopBar
 import su.afk.kemonos.creatorProfile.presenter.creatorProfile.view.header.ProfileTabsBar
@@ -59,6 +61,7 @@ internal fun CreatorScreen(
     val authorBlacklistAdded = stringResource(R.string.author_blacklist_added)
     val authorBlacklistRemoved = stringResource(R.string.author_blacklist_removed)
     val authorBlacklistAlreadyExists = stringResource(R.string.author_blacklist_already_exists)
+    val batchDownloadStarted = stringResource(R.string.batch_download_started)
     val posts = if (state.selectedTab == ProfileTab.POSTS) {
         state.profilePosts.collectAsLazyPagingItems()
     } else {
@@ -82,6 +85,9 @@ internal fun CreatorScreen(
                 CreatorProfileState.Effect.AddedToBlacklist -> context.toast(authorBlacklistAdded)
                 CreatorProfileState.Effect.RemovedFromBlacklist -> context.toast(authorBlacklistRemoved)
                 CreatorProfileState.Effect.AlreadyInBlacklist -> context.toast(authorBlacklistAlreadyExists)
+
+                is CreatorProfileState.Effect.BatchDownloadStarted ->
+                    context.toast(batchDownloadStarted.format(effect.works))
             }
         }
     }
@@ -113,6 +119,8 @@ internal fun CreatorScreen(
                 onOpenPlatform = { onEvent(Event.OpenCreatorPlatformLink(it)) },
                 isInBlacklist = state.isInBlacklist,
                 onToggleBlacklist = { onEvent(Event.ToggleBlacklist) },
+                showSelectPosts = state.selectedTab == ProfileTab.POSTS && !state.selectionMode,
+                onSelectPosts = { onEvent(Event.StartSelection) },
             )
         },
         contentModifier = Modifier.padding(horizontal = 8.dp),
@@ -173,6 +181,14 @@ internal fun CreatorScreen(
             }
         )
 
+        if (state.selectionMode && state.selectedTab == ProfileTab.POSTS) {
+            PostsSelectionBar(
+                selectedCount = state.selectedPosts.size,
+                onClear = { onEvent(Event.ExitSelection) },
+                onDownload = { onEvent(Event.OpenBatchDownloadDialog) },
+            )
+        }
+
         PullToRefreshBox(
             modifier = Modifier.fillMaxSize(),
             state = pullState,
@@ -186,6 +202,19 @@ internal fun CreatorScreen(
             )
         }
     }
+
+    if (state.batchDownloadDialogVisible) {
+        BatchDownloadDialog(
+            selectedCount = state.selectedPosts.size,
+            folderName = state.batchDownloadFolder,
+            includeCovers = state.batchDownloadIncludeCovers,
+            inProgress = state.batchDownloadInProgress,
+            onFolderNameChange = { onEvent(Event.BatchDownloadFolderChanged(it)) },
+            onIncludeCoversChange = { onEvent(Event.BatchDownloadIncludeCoversChanged(it)) },
+            onConfirm = { onEvent(Event.ConfirmBatchDownload) },
+            onDismiss = { onEvent(Event.DismissBatchDownloadDialog) },
+        )
+    }
 }
 
 /** Контент выбранной вкладки */
@@ -198,6 +227,7 @@ private fun SelectedTab(
     when (state.selectedTab) {
         ProfileTab.POSTS -> {
             val postsItems = posts ?: state.profilePosts.collectAsLazyPagingItems()
+            val selectedOrder = remember(state.selectedPosts) { state.selectedOrder }
 
             PostsContentPaging(
                 postsViewMode = state.uiSettingModel.profilePostsViewMode,
@@ -209,6 +239,8 @@ private fun SelectedTab(
                     onEvent(Event.OpenPost(it))
                 },
                 onRetry = { postsItems.retry() },
+                selectedOrder = selectedOrder,
+                onPostLongClick = { onEvent(Event.PostLongClicked(it)) },
                 scrollStateKey = "profile-posts:${state.profile?.service}:${state.profile?.id}:${state.currentTag}:${state.searchText.trim()}:${state.mediaFilter}:${state.uiSettingModel.profilePostsViewMode}:${state.uiSettingModel.profilePostsGridSize}",
             )
         }

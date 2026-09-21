@@ -53,6 +53,7 @@ internal class NavigateDelegates @Inject constructor(
         postId: String? = null,
         postTitle: String? = null,
         thumbnailUrls: Map<String, String> = emptyMap(),
+        fileNames: Map<String, String> = emptyMap(),
     ) {
         navManager.navigate(
             imageViewNavigator(
@@ -64,6 +65,7 @@ internal class NavigateDelegates @Inject constructor(
                 postId = postId,
                 postTitle = postTitle,
                 thumbnailUrls = thumbnailUrls,
+                fileNames = fileNames,
             )
         )
     }

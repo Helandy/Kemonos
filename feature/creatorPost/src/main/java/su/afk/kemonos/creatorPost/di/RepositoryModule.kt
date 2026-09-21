@@ -4,7 +4,9 @@ import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
+import su.afk.kemonos.creatorPost.api.download.IPostsBatchDownloader
 import su.afk.kemonos.creatorPost.data.repository.*
+import su.afk.kemonos.creatorPost.domain.download.PostsBatchDownloader
 import su.afk.kemonos.creatorPost.domain.repository.*
 import javax.inject.Singleton
 
@@ -31,4 +33,8 @@ internal interface RepositoryModule {
     @Binds
     @Singleton
     fun provideVideoInfoRepositoryy(repository: VideoInfoRepository): IVideoInfoRepository
+
+    @Binds
+    @Singleton
+    fun bindPostsBatchDownloader(impl: PostsBatchDownloader): IPostsBatchDownloader
 }

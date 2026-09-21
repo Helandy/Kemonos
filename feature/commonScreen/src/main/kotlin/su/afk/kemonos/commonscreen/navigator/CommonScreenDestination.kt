@@ -21,6 +21,8 @@ object CommonScreenDestination {
         val postId: String? = null,
         val postTitle: String? = null,
         val thumbnailUrls: Map<String, String> = emptyMap(),
+        /** Имя файла для скачивания по ссылке картинки; пусто — берём имя из ссылки. */
+        val fileNames: Map<String, String> = emptyMap(),
     )
 
     @Serializable

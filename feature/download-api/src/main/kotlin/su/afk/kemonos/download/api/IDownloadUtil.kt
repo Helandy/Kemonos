@@ -11,5 +11,12 @@ interface IDownloadUtil {
         creatorName: String? = null,
         postId: String? = null,
         postTitle: String? = null,
+        /**
+         * Папка вместо той, что собрана по настройкам.
+         *
+         * Массовая загрузка складывает выбранные посты в одну папку, иначе
+         * сквозная нумерация файлов разъехалась бы по папкам постов.
+         */
+        subDir: String? = null,
     ): Long
 }

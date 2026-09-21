@@ -114,6 +114,21 @@ interface IUiSettingUseCase {
     /** Добавлять префикс сервиса при скачивании */
     suspend fun setAddServiceName(value: Boolean)
 
+    /** Как называть скачиваемые файлы поста */
+    suspend fun setDownloadFileNameMode(value: DownloadFileNameMode)
+
+    /** Скачивать ли обложку поста вместе с остальными файлами */
+    suspend fun setDownloadPostCover(value: Boolean)
+
+    /** Пережимать ли скачанные картинки в webp */
+    suspend fun setDownloadConvertToWebp(value: Boolean)
+
+    /** Качество webp при пережатии */
+    suspend fun setDownloadWebpQuality(value: Int)
+
+    /** Одно общее уведомление о загрузках вместо уведомления на каждый файл */
+    suspend fun setDownloadSingleNotification(value: Boolean)
+
     /** Использовать внешнее хранилище метадатнных */
     suspend fun setUseExternalMetaData(value: Boolean)
 
