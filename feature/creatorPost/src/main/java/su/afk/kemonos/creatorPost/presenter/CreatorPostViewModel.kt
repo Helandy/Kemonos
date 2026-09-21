@@ -257,7 +257,8 @@ internal class CreatorPostViewModel @AssistedInject constructor(
     private fun requestVideoMeta(server: String, path: String) = viewModelScope.launch {
         val currentInfoState = currentState.videoInfo[path]
         if (currentInfoState is MediaInfoState.Success || currentInfoState is MediaInfoState.Loading) return@launch
-        val useExternalMetaData = currentState.uiSettingModel.useExternalMetaData
+        val useExternalMetaData = currentState.uiSettingModel.videoPreviewServerUrl.isNotBlank() &&
+                currentState.uiSettingModel.useExternalMetaData
         val service = currentState.service
 
         setState {
@@ -292,7 +293,8 @@ internal class CreatorPostViewModel @AssistedInject constructor(
     private fun requestAudioMeta(server: String?, path: String) = viewModelScope.launch {
         val currentInfoState = currentState.audioInfo[path]
         if (currentInfoState is MediaInfoState.Success || currentInfoState is MediaInfoState.Loading) return@launch
-        val useExternalMetaData = currentState.uiSettingModel.useExternalMetaData
+        val useExternalMetaData = currentState.uiSettingModel.videoPreviewServerUrl.isNotBlank() &&
+                currentState.uiSettingModel.useExternalMetaData
         val service = currentState.service
 
         setState {

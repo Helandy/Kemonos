@@ -39,6 +39,11 @@
     <string name="downloads_action_stop">Стоп</string>
     <string name="downloads_action_restart">Перезапуск</string>
     <string name="downloads_action_restart_all">Перезапустить все</string>
+    <string name="downloads_action_stop_all">Остановить все</string>
+    <string name="downloads_action_cancel_all">Отменить все</string>
+    <string name="downloads_cancel_all_title">Отменить активные загрузки?</string>
+    <string name="downloads_cancel_all_message">Будет отменено и удалено из Kemonos активных загрузок: %1$d.</string>
+    <string name="downloads_action_cancel_dismiss">Отмена</string>
     <string name="downloads_action_delete">Удалить</string>
     <string name="downloads_action_delete_completed">Удалить все завершенные загрузки</string>
     <string name="downloads_actions">Действия загрузок</string>

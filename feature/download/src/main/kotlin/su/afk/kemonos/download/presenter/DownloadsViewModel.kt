@@ -17,6 +17,8 @@ import su.afk.kemonos.download.domain.usecase.DeleteDownloadsUseCase
 import su.afk.kemonos.download.domain.usecase.RestartDownloadUseCase
 import su.afk.kemonos.download.domain.usecase.RestartDownloadsUseCase
 import su.afk.kemonos.download.domain.usecase.StopDownloadUseCase
+import su.afk.kemonos.download.domain.usecase.StopDownloadsUseCase
+import su.afk.kemonos.download.domain.usecase.CancelDownloadsUseCase
 import su.afk.kemonos.download.presenter.model.DownloadUiItem
 import su.afk.kemonos.error.error.IErrorHandlerUseCase
 import su.afk.kemonos.error.error.storage.RetryStorage
@@ -36,6 +38,8 @@ internal class DownloadsViewModel @Inject constructor(
     private val stopDownloadUseCase: StopDownloadUseCase,
     private val restartDownloadUseCase: RestartDownloadUseCase,
     private val restartDownloadsUseCase: RestartDownloadsUseCase,
+    private val stopDownloadsUseCase: StopDownloadsUseCase,
+    private val cancelDownloadsUseCase: CancelDownloadsUseCase,
     private val deleteDownloadUseCase: DeleteDownloadUseCase,
     private val deleteDownloadsUseCase: DeleteDownloadsUseCase,
     private val trackedDownloadsRepository: ITrackedDownloadsRepository,
@@ -66,6 +70,8 @@ internal class DownloadsViewModel @Inject constructor(
             is DownloadsState.Event.StopDownload -> stopDownload(event.downloadId)
             is DownloadsState.Event.RestartDownload -> restartDownload(event.downloadId)
             DownloadsState.Event.RestartAllDownloads -> restartAllDownloads()
+            DownloadsState.Event.StopAllDownloads -> stopAllDownloads()
+            DownloadsState.Event.CancelAllDownloads -> cancelAllDownloads()
             is DownloadsState.Event.DeleteDownload -> deleteDownload(event.downloadId)
             DownloadsState.Event.DeleteCompletedDownloads -> deleteCompletedDownloads()
         }
@@ -162,6 +168,44 @@ internal class DownloadsViewModel @Inject constructor(
                 refreshInternal(onlyActive = false)
             }
         }
+    }
+
+    private fun stopAllDownloads() {
+        viewModelScope.launch {
+            val activeDownloads = activeTrackedDownloads()
+            if (activeDownloads.isEmpty()) return@launch
+
+            stopDownloadsUseCase(activeDownloads)
+            refreshMutex.withLock {
+                activeDownloads.forEach { downloadId ->
+                    speedMap.remove(downloadId.downloadId)
+                    lastSnapshots.remove(downloadId.downloadId)
+                }
+                refreshInternal(onlyActive = false)
+            }
+        }
+    }
+
+    private fun cancelAllDownloads() {
+        viewModelScope.launch {
+            val activeDownloads = activeTrackedDownloads()
+            if (activeDownloads.isEmpty()) return@launch
+
+            cancelDownloadsUseCase(activeDownloads)
+            refreshMutex.withLock {
+                activeDownloads.forEach { downloadId ->
+                    speedMap.remove(downloadId.downloadId)
+                    lastSnapshots.remove(downloadId.downloadId)
+                }
+                refreshInternal(onlyActive = false)
+            }
+        }
+    }
+
+    private suspend fun activeTrackedDownloads(): List<TrackedDownload> = refreshMutex.withLock {
+        currentState.items
+            .filter { it.status.isActiveDownloadStatus() }
+            .mapNotNull { trackedById[it.downloadId] }
     }
 
     private fun deleteDownload(downloadId: Long) {
@@ -305,6 +349,11 @@ private const val POLL_INTERVAL_MS = 1000L
 private const val KEY_STATE = "downloads_state"
 
 private fun Int?.isActiveStatus(): Boolean =
+    this == DownloadManager.STATUS_PENDING ||
+            this == DownloadManager.STATUS_RUNNING ||
+            this == DownloadManager.STATUS_PAUSED
+
+private fun Int.isActiveDownloadStatus(): Boolean =
     this == DownloadManager.STATUS_PENDING ||
             this == DownloadManager.STATUS_RUNNING ||
             this == DownloadManager.STATUS_PAUSED

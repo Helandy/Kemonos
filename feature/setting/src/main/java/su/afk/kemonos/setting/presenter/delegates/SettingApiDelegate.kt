@@ -85,7 +85,9 @@ class SettingApiDelegate @Inject constructor(
                 val previewDomain = s.inputVideoPreviewServerDomain.ifBlank {
                     normalizeDomain(UiSettingModel.DEFAULT_VIDEO_PREVIEW_SERVER_URL)
                 }
-                val previewServerUrl = "https://${previewDomain.trim().trim('/')}"
+                val previewServerUrl = previewDomain.trim().trim('/').let {
+                    if (it.isBlank()) "" else "https://$it"
+                }
 
                 runCatching {
                     setBaseUrlsUseCase(updates)

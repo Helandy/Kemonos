@@ -44,3 +44,5 @@ local.properties
 /storage-api/build/*
 /core-domain/build/*
 /app/release/*
+.claude
+AGENTS.md

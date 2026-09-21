@@ -314,8 +314,8 @@ data class UiSettingModel(
 
         val DEFAULT_DOWNLOAD_FOLDER_MODE = DownloadFolderMode.CREATOR_POST_TITLE_ID
         const val DEFAULT_ADD_SERVICE_NAME = false
-        const val USE_EXTERNAL_METADATA = true
-        const val DEFAULT_VIDEO_PREVIEW_SERVER_URL = "https://kemonos.win"
+        const val USE_EXTERNAL_METADATA = false
+        const val DEFAULT_VIDEO_PREVIEW_SERVER_URL = ""
         val DEFAULT_VIDEO_PREVIEW_ASPECT_RATIO = VideoPreviewAspectRatio.RATIO_1_1
         const val DEFAULT_CROP_VIDEO_PREVIEW = false
         const val DEFAULT_CROP_POST_PREVIEW_VIDEO = true
