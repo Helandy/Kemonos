@@ -2,10 +2,8 @@ package su.afk.kemonos.profile.presenter.login
 
 import su.afk.kemonos.domain.displayName
 import su.afk.kemonos.domain.capabilities
-import android.content.Context
 import androidx.lifecycle.SavedStateHandle
 import dagger.hilt.android.lifecycle.HiltViewModel
-import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.launch
 import su.afk.kemonos.domain.SelectedSite
 import su.afk.kemonos.domain.models.ErrorItem
@@ -22,6 +20,7 @@ import su.afk.kemonos.profile.R
 import su.afk.kemonos.profile.presenter.login.LoginState.*
 import su.afk.kemonos.profile.utils.Const.KEY_SELECT_SITE
 import su.afk.kemonos.ui.presenter.baseViewModel.BaseViewModelNew
+import su.afk.kemonos.ui.presenter.baseViewModel.UiText
 import javax.inject.Inject
 
 @HiltViewModel
@@ -31,7 +30,6 @@ internal class LoginViewModel @Inject constructor(
     private val navigationManager: NavigationManager,
     private val navigationStorage: NavigationStorage,
     private val selectedSiteProvider: ISelectedSiteUseCase,
-    @param:ApplicationContext private val appContext: Context,
     savedStateHandle: SavedStateHandle,
     override val errorHandler: IErrorHandlerUseCase,
     override val retryStorage: RetryStorage,
@@ -214,7 +212,7 @@ internal class LoginViewModel @Inject constructor(
         val siteName = currentState.selectSite.displayName
         setEffect(
             Effect.ShowMessage(
-                appContext.getString(R.string.login_site_unsupported, siteName)
+                UiText.Resource(R.string.login_site_unsupported, listOf(siteName))
             )
         )
     }
