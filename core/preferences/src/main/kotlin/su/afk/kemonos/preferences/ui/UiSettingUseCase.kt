@@ -136,7 +136,9 @@ internal class UiSettingUseCase @Inject constructor(
             downloadFolderMode = p.readEnum(DOWNLOAD_FOLDER_MODE, UiSettingModel.DEFAULT_DOWNLOAD_FOLDER_MODE),
             addServiceName = p[ADD_SERVICE_NAME] ?: UiSettingModel.DEFAULT_ADD_SERVICE_NAME,
             useExternalMetaData = p[USE_EXTERNAL_METADATA] ?: UiSettingModel.USE_EXTERNAL_METADATA,
-            videoPreviewServerUrl = p[VIDEO_PREVIEW_SERVER_URL] ?: UiSettingModel.DEFAULT_VIDEO_PREVIEW_SERVER_URL,
+            videoPreviewServerUrl = p[VIDEO_PREVIEW_SERVER_URL]
+                ?.takeUnless { it.trim().trimEnd('/').lowercase() in setOf("https://kemonos.win", "http://kemonos.win") }
+                ?: UiSettingModel.DEFAULT_VIDEO_PREVIEW_SERVER_URL,
             videoPreviewAspectRatio = p.readEnum(
                 VIDEO_PREVIEW_ASPECT_RATIO,
                 UiSettingModel.DEFAULT_VIDEO_PREVIEW_ASPECT_RATIO
@@ -435,7 +437,8 @@ object UiSettingKey {
 
     val DOWNLOAD_FOLDER_MODE = stringPreferencesKey("DOWNLOAD_FOLDER_MODE")
     val ADD_SERVICE_NAME = booleanPreferencesKey("ADD_SERVICE_NAME")
-    val USE_EXTERNAL_METADATA = booleanPreferencesKey("USE_EXTERNAL_METADATA")
+    // Новый ключ отключает прежнее согласие при обновлении; последующий выбор сохраняется.
+    val USE_EXTERNAL_METADATA = booleanPreferencesKey("USE_EXTERNAL_METADATA_V2")
     val VIDEO_PREVIEW_SERVER_URL = stringPreferencesKey("VIDEO_PREVIEW_SERVER_URL")
     val VIDEO_PREVIEW_ASPECT_RATIO = stringPreferencesKey("VIDEO_PREVIEW_ASPECT_RATIO")
     val CROP_VIDEO_PREVIEW = booleanPreferencesKey("CROP_VIDEO_PREVIEW")

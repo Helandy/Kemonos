@@ -175,10 +175,15 @@ internal class CreatorsViewModel @Inject constructor(
         videoInfoDomainObserveStarted = true
 
         uiSetting.prefs
-            .map { it.videoPreviewServerUrl }
+            .map { (it.useExternalMetaData && it.videoPreviewServerUrl.isNotBlank()) to it.videoPreviewServerUrl }
             .distinctUntilChanged()
-            .onEach {
+            .onEach { (enabled, _) ->
+                if (!enabled) {
+                    setState { copy(isVideoInfoDomainAvailable = null, showVideoInfoDomainBanner = false) }
+                    return@onEach
+                }
                 val isAvailable = videoInfoDomainStatusDelegate.check()
+                if (!currentState.uiSettingModel.useExternalMetaData || currentState.uiSettingModel.videoPreviewServerUrl.isBlank()) return@onEach
                 setState {
                     copy(
                         isVideoInfoDomainAvailable = isAvailable,

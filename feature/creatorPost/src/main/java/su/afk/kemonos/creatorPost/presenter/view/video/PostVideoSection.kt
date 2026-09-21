@@ -48,7 +48,7 @@ internal fun LazyListScope.postVideosSection(
             cropVideoPreview = uiSettingModel.cropVideoPreview,
             previewAspectRatio = uiSettingModel.videoPreviewAspectRatio.ratio,
             previewServerUrl = uiSettingModel.videoPreviewServerUrl,
-            useExternalMetaData = uiSettingModel.useExternalMetaData,
+            useExternalMetaData = uiSettingModel.videoPreviewServerUrl.isNotBlank() && uiSettingModel.useExternalMetaData,
             requestKey = requestKey,
             video = video,
             mediaUrlScheme = mediaUrlScheme,

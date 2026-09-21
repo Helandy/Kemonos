@@ -39,6 +39,11 @@
     <string name="downloads_action_stop">Stop</string>
     <string name="downloads_action_restart">Restart</string>
     <string name="downloads_action_restart_all">Restart all</string>
+    <string name="downloads_action_stop_all">Stop all</string>
+    <string name="downloads_action_cancel_all">Cancel all</string>
+    <string name="downloads_cancel_all_title">Cancel active downloads?</string>
+    <string name="downloads_cancel_all_message">This will cancel and remove %1$d active downloads from Kemonos.</string>
+    <string name="downloads_action_cancel_dismiss">Cancel</string>
     <string name="downloads_action_delete">Delete</string>
     <string name="downloads_action_delete_completed">Delete all completed downloads</string>
     <string name="downloads_actions">Download actions</string>

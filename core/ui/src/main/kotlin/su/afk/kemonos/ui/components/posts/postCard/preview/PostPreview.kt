@@ -55,7 +55,7 @@ internal fun PostPreview(
         is PreviewState.Video -> {
             if (!uiSettingModel.showPreviewVideo) {
                 PreviewPlaceholder(text = stringResource(R.string.video_section))
-            } else if (uiSettingModel.useExternalMetaData) {
+            } else if (uiSettingModel.videoPreviewServerUrl.isNotBlank() && uiSettingModel.useExternalMetaData) {
                 RemoteVideoPostPreview(
                     videoPath = preview.path,
                     previewServerUrl = uiSettingModel.videoPreviewServerUrl,

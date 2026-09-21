@@ -25,7 +25,10 @@ import androidx.compose.material.icons.outlined.FolderOpen
 import androidx.compose.material.icons.outlined.Link
 import androidx.compose.material.icons.outlined.MoreVert
 import androidx.compose.material.icons.outlined.Refresh
+import androidx.compose.material.icons.outlined.StopCircle
+import androidx.compose.material.icons.outlined.DeleteSweep
 import androidx.compose.material3.AssistChip
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -43,6 +46,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -75,6 +79,8 @@ internal fun DownloadsScreen(
     val filteredItems = state.items.filter { state.selectedFilter.matches(it.status) }
     val canRestartAll = state.items.any { it.isRestartable }
     val canDeleteCompleted = state.items.any { it.status == DownloadManager.STATUS_SUCCESSFUL }
+    val activeDownloadCount = state.items.count { it.status.isActiveDownloadStatus() }
+    var showCancelAllDialog by remember { mutableStateOf(false) }
 
     BaseScreen(
         isScroll = false,
@@ -88,8 +94,12 @@ internal fun DownloadsScreen(
                 DownloadsActionsMenu(
                     canRestartAll = canRestartAll,
                     canDeleteCompleted = canDeleteCompleted,
+                    canStopAll = activeDownloadCount > 0,
+                    canCancelAll = activeDownloadCount > 0,
                     onRestartAll = { onEvent(DownloadsState.Event.RestartAllDownloads) },
                     onDeleteCompleted = { onEvent(DownloadsState.Event.DeleteCompletedDownloads) },
+                    onStopAll = { onEvent(DownloadsState.Event.StopAllDownloads) },
+                    onCancelAll = { showCancelAllDialog = true },
                 )
             }
         },
@@ -138,14 +148,41 @@ internal fun DownloadsScreen(
             }
         }
     }
+
+    if (showCancelAllDialog) {
+        AlertDialog(
+            onDismissRequest = { showCancelAllDialog = false },
+            title = { Text(stringResource(R.string.downloads_cancel_all_title)) },
+            text = { Text(stringResource(R.string.downloads_cancel_all_message, activeDownloadCount)) },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        showCancelAllDialog = false
+                        onEvent(DownloadsState.Event.CancelAllDownloads)
+                    },
+                ) {
+                    Text(stringResource(R.string.downloads_action_cancel_all))
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showCancelAllDialog = false }) {
+                    Text(stringResource(R.string.downloads_action_cancel_dismiss))
+                }
+            },
+        )
+    }
 }
 
 @Composable
 private fun DownloadsActionsMenu(
     canRestartAll: Boolean,
     canDeleteCompleted: Boolean,
+    canStopAll: Boolean,
+    canCancelAll: Boolean,
     onRestartAll: () -> Unit,
     onDeleteCompleted: () -> Unit,
+    onStopAll: () -> Unit,
+    onCancelAll: () -> Unit,
 ) {
     var expanded by remember { mutableStateOf(false) }
 
@@ -160,6 +197,24 @@ private fun DownloadsActionsMenu(
             expanded = expanded,
             onDismissRequest = { expanded = false },
         ) {
+            DropdownMenuItem(
+                text = { Text(text = stringResource(R.string.downloads_action_stop_all)) },
+                enabled = canStopAll,
+                leadingIcon = { Icon(Icons.Outlined.StopCircle, contentDescription = null) },
+                onClick = {
+                    expanded = false
+                    onStopAll()
+                },
+            )
+            DropdownMenuItem(
+                text = { Text(text = stringResource(R.string.downloads_action_cancel_all)) },
+                enabled = canCancelAll,
+                leadingIcon = { Icon(Icons.Outlined.DeleteSweep, contentDescription = null) },
+                onClick = {
+                    expanded = false
+                    onCancelAll()
+                },
+            )
             DropdownMenuItem(
                 text = { Text(text = stringResource(R.string.downloads_action_restart_all)) },
                 enabled = canRestartAll,
@@ -224,6 +279,11 @@ private fun DownloadStatusFilter.toLabel(): String = when (this) {
     DownloadStatusFilter.FAILED -> stringResource(R.string.downloads_filter_failed)
     DownloadStatusFilter.STOPPED -> stringResource(R.string.downloads_filter_stopped)
 }
+
+private fun Int.isActiveDownloadStatus(): Boolean =
+    this == DownloadManager.STATUS_PENDING ||
+            this == DownloadManager.STATUS_RUNNING ||
+            this == DownloadManager.STATUS_PAUSED
 
 @Composable
 private fun DownloadItemCard(

@@ -50,9 +50,9 @@ internal object NetworkModule {
         uiSettingUseCase: IUiSettingUseCase,
     ): BaseUrlProvider = FlowBaseUrlProvider(
         scope = scope,
-        initialUrl = UiSettingModel.DEFAULT_VIDEO_PREVIEW_SERVER_URL,
+        initialUrl = "https://preview-disabled.invalid/",
         urlFlow = uiSettingUseCase.prefs
-            .map { it.videoPreviewServerUrl }
+            .map { it.videoPreviewServerUrl.ifBlank { "https://preview-disabled.invalid/" } }
             .distinctUntilChanged(),
     )
 

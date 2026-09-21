@@ -36,6 +36,7 @@ import su.afk.kemonos.ui.R.drawable.pawchive_logo
 import su.afk.kemonos.ui.presenter.baseScreen.BaseScreen
 import su.afk.kemonos.ui.presenter.baseScreen.CenterBackTopBar
 import su.afk.kemonos.ui.preview.KemonosPreviewScreen
+import su.afk.kemonos.ui.presenter.baseViewModel.asString
 import su.afk.kemonos.ui.uiUtils.findActivity
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -57,7 +58,7 @@ internal fun LoginScreen(
     HandleLoginEffects(
         effect = effect,
         activity = activity,
-        showMessage = { Toast.makeText(context, it, Toast.LENGTH_SHORT).show() },
+        showMessage = { Toast.makeText(context, it.asString(context), Toast.LENGTH_SHORT).show() },
         onEvent = onEvent,
     )
 
@@ -99,7 +100,7 @@ internal fun LoginScreen(
 private fun HandleLoginEffects(
     effect: Flow<Effect>,
     activity: Activity?,
-    showMessage: (String) -> Unit,
+    showMessage: (su.afk.kemonos.ui.presenter.baseViewModel.UiText) -> Unit,
     onEvent: (Event) -> Unit,
 ) {
     LaunchedEffect(effect, activity) {

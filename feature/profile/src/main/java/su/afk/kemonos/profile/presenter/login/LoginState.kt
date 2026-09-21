@@ -7,6 +7,7 @@ import su.afk.kemonos.profile.domain.login.LoginUsernameErrorCode
 import su.afk.kemonos.ui.presenter.baseViewModel.UiEffect
 import su.afk.kemonos.ui.presenter.baseViewModel.UiEvent
 import su.afk.kemonos.ui.presenter.baseViewModel.UiState
+import su.afk.kemonos.ui.presenter.baseViewModel.UiText
 
 internal class LoginState {
     data class State(
@@ -41,6 +42,6 @@ internal class LoginState {
         data object PickPassword : Effect
         data class SavePasswordAndNavigate(val username: String, val password: String) : Effect
         data object NavigateToProfile : Effect
-        data class ShowMessage(val message: String) : Effect
+        data class ShowMessage(val message: UiText) : Effect
     }
 }
