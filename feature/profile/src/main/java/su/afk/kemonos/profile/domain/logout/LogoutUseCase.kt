@@ -1,6 +1,5 @@
 package su.afk.kemonos.profile.domain.logout
 
-import retrofit2.HttpException
 import su.afk.kemonos.profile.domain.repository.IAuthRepository
 import java.io.IOException
 import javax.inject.Inject
@@ -19,8 +18,6 @@ class LogoutUseCase @Inject constructor(
             }
         } catch (e: IOException) {
             LogoutResult.NetworkError
-        } catch (e: HttpException) {
-            LogoutResult.ServerError(e.message())
         } catch (e: Exception) {
             LogoutResult.Unknown
         }

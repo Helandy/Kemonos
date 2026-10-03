@@ -14,16 +14,17 @@ import su.afk.kemonos.error.error.IErrorHandlerUseCase
 import su.afk.kemonos.error.error.storage.RetryStorage
 import su.afk.kemonos.posts.domain.pagingSearch.GetSearchPostsPagingUseCase
 import su.afk.kemonos.posts.presenter.common.POSTS_SEARCH_DEBOUNCE_MILLIS
-import su.afk.kemonos.posts.presenter.common.observeBlacklistedAuthorKeys
+import su.afk.kemonos.posts.domain.usecase.DeleteSearchQueryUseCase
+import su.afk.kemonos.posts.domain.usecase.ObserveBlacklistedAuthorKeysUseCase
+import su.afk.kemonos.posts.domain.usecase.ObserveRecentSearchesUseCase
+import su.afk.kemonos.posts.domain.usecase.SaveSearchQueryUseCase
 import su.afk.kemonos.posts.presenter.common.observeDistinct
 import su.afk.kemonos.posts.presenter.delegates.NavigateToPostDelegate
 import su.afk.kemonos.posts.presenter.pageSearchPosts.SearchPostsState.*
 import su.afk.kemonos.posts.presenter.pageSearchPosts.model.SearchLoadRequest
 import su.afk.kemonos.preferences.site.ISelectedSiteUseCase
 import su.afk.kemonos.preferences.ui.IUiSettingUseCase
-import su.afk.kemonos.storage.api.repository.blacklist.IStoreBlacklistedAuthorsRepository
 import su.afk.kemonos.storage.api.repository.blacklist.blacklistKey
-import su.afk.kemonos.storage.api.repository.postsSearchHistory.IStoragePostsSearchHistoryRepository
 import su.afk.kemonos.ui.components.posts.filter.PostMediaFilter
 import su.afk.kemonos.ui.components.posts.filter.matchesMediaFilter
 import su.afk.kemonos.ui.presenter.baseViewModel.getSerializableState
@@ -36,8 +37,10 @@ internal class SearchPostsViewModel @Inject constructor(
     private val getSearchPostsPagingUseCase: GetSearchPostsPagingUseCase,
     private val navigateToPostDelegate: NavigateToPostDelegate,
     private val uiSetting: IUiSettingUseCase,
-    private val blacklistedAuthorsRepository: IStoreBlacklistedAuthorsRepository,
-    private val postsSearchHistoryRepository: IStoragePostsSearchHistoryRepository,
+    private val observeBlacklistedAuthorKeys: ObserveBlacklistedAuthorKeysUseCase,
+    private val observeRecentSearches: ObserveRecentSearchesUseCase,
+    private val saveSearchQuery: SaveSearchQueryUseCase,
+    private val deleteSearchQuery: DeleteSearchQueryUseCase,
     savedStateHandle: SavedStateHandle,
     override val selectedSiteUseCase: ISelectedSiteUseCase,
     override val errorHandler: IErrorHandlerUseCase,
@@ -112,7 +115,7 @@ internal class SearchPostsViewModel @Inject constructor(
             .map { it.trim() }
             .distinctUntilChanged()
 
-        val blacklistedKeysFlow = blacklistedAuthorsRepository.observeBlacklistedAuthorKeys()
+        val blacklistedKeysFlow = observeBlacklistedAuthorKeys()
 
         combine(
             loadSiteFlow.filterNotNull(),
@@ -133,7 +136,7 @@ internal class SearchPostsViewModel @Inject constructor(
                 val forceRefresh = request.manualRefreshCounter != lastManualRefreshCounter
                 lastManualRefreshCounter = request.manualRefreshCounter
 
-                postsSearchHistoryRepository.save(
+                saveSearchQuery(
                     site = request.site,
                     query = request.search.orEmpty(),
                     limit = recentSearchLimit,
@@ -174,7 +177,7 @@ internal class SearchPostsViewModel @Inject constructor(
             .filterNotNull()
             .distinctUntilChanged()
             .flatMapLatest { currentSite ->
-                postsSearchHistoryRepository.observeRecent(currentSite, recentSearchLimit)
+                observeRecentSearches(currentSite, recentSearchLimit)
             }
             .onEach { items ->
                 setState { copy(recentSearches = items) }
@@ -203,7 +206,7 @@ internal class SearchPostsViewModel @Inject constructor(
     }
 
     private fun onSearchSubmitted() = viewModelScope.launch {
-        postsSearchHistoryRepository.save(
+        saveSearchQuery(
             site = site.value,
             query = currentState.searchQuery,
             limit = recentSearchLimit,
@@ -217,7 +220,7 @@ internal class SearchPostsViewModel @Inject constructor(
     }
 
     private fun onRemoveRecentSearch(query: String) = viewModelScope.launch {
-        postsSearchHistoryRepository.delete(
+        deleteSearchQuery(
             site = site.value,
             query = query,
         )

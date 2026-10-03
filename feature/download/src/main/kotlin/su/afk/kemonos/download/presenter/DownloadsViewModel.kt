@@ -24,7 +24,8 @@ import su.afk.kemonos.error.error.IErrorHandlerUseCase
 import su.afk.kemonos.error.error.storage.RetryStorage
 import su.afk.kemonos.navigation.NavigationManager
 import su.afk.kemonos.preferences.ui.IUiSettingUseCase
-import su.afk.kemonos.storage.api.repository.download.ITrackedDownloadsRepository
+import su.afk.kemonos.download.domain.usecase.ObserveTrackedDownloadsUseCase
+import su.afk.kemonos.download.domain.usecase.UpdateDownloadRuntimeStateUseCase
 import su.afk.kemonos.storage.api.repository.download.TrackedDownload
 import su.afk.kemonos.ui.presenter.baseViewModel.BaseViewModelNew
 import su.afk.kemonos.ui.presenter.baseViewModel.UiEffect
@@ -42,7 +43,8 @@ internal class DownloadsViewModel @Inject constructor(
     private val cancelDownloadsUseCase: CancelDownloadsUseCase,
     private val deleteDownloadUseCase: DeleteDownloadUseCase,
     private val deleteDownloadsUseCase: DeleteDownloadsUseCase,
-    private val trackedDownloadsRepository: ITrackedDownloadsRepository,
+    private val observeTrackedDownloads: ObserveTrackedDownloadsUseCase,
+    private val updateDownloadRuntimeState: UpdateDownloadRuntimeStateUseCase,
     private val uiSetting: IUiSettingUseCase,
     private val navigationManager: NavigationManager,
     savedStateHandle: SavedStateHandle,
@@ -87,7 +89,7 @@ internal class DownloadsViewModel @Inject constructor(
         observeUiSetting()
 
         viewModelScope.launch {
-            trackedDownloadsRepository.observeAll().collect { items ->
+            observeTrackedDownloads().collect { items ->
                 refreshMutex.withLock {
                     tracked = items
                     trackedById.clear()
@@ -313,7 +315,7 @@ internal class DownloadsViewModel @Inject constructor(
                 val reasonChanged = current?.lastReason != item.reasonCode
 
                 if (statusChanged || reasonChanged) {
-                    trackedDownloadsRepository.updateRuntimeState(
+                    updateDownloadRuntimeState(
                         downloadId = item.downloadId,
                         lastStatus = item.status,
                         lastReason = item.reasonCode,

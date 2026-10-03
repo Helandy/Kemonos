@@ -16,12 +16,11 @@ import su.afk.kemonos.error.error.storage.RetryStorage
 import su.afk.kemonos.navigation.NavigationManager
 import su.afk.kemonos.posts.domain.pagingDms.GetDmsPagingUseCase
 import su.afk.kemonos.posts.presenter.common.POSTS_SEARCH_DEBOUNCE_MILLIS
-import su.afk.kemonos.posts.presenter.common.observeBlacklistedAuthorKeys
+import su.afk.kemonos.posts.domain.usecase.ObserveBlacklistedAuthorKeysUseCase
 import su.afk.kemonos.posts.presenter.common.observeDistinct
 import su.afk.kemonos.posts.presenter.pageDm.model.DmLoadRequest
 import su.afk.kemonos.preferences.site.ISelectedSiteUseCase
 import su.afk.kemonos.preferences.ui.IUiSettingUseCase
-import su.afk.kemonos.storage.api.repository.blacklist.IStoreBlacklistedAuthorsRepository
 import su.afk.kemonos.storage.api.repository.blacklist.blacklistKey
 import su.afk.kemonos.ui.presenter.baseViewModel.getSerializableState
 import su.afk.kemonos.ui.presenter.baseViewModel.setSerializableState
@@ -32,7 +31,7 @@ import javax.inject.Inject
 internal class DmViewModel @Inject constructor(
     private val getDmsPagingUseCase: GetDmsPagingUseCase,
     private val uiSetting: IUiSettingUseCase,
-    private val blacklistedAuthorsRepository: IStoreBlacklistedAuthorsRepository,
+    private val observeBlacklistedAuthorKeys: ObserveBlacklistedAuthorKeysUseCase,
     private val navManager: NavigationManager,
     private val creatorProfileNavigator: ICreatorProfileNavigator,
     savedStateHandle: SavedStateHandle,
@@ -96,7 +95,7 @@ internal class DmViewModel @Inject constructor(
     @OptIn(FlowPreview::class)
     private fun observeDmsPipeline() {
         var lastManualRefreshCounter = 0L
-        val blacklistedKeysFlow = blacklistedAuthorsRepository.observeBlacklistedAuthorKeys()
+        val blacklistedKeysFlow = observeBlacklistedAuthorKeys()
 
         val loadRequestFlow = combine(
             loadSiteFlow.filterNotNull(),

@@ -19,13 +19,12 @@ import su.afk.kemonos.navigation.storage.NavigationStorage
 import su.afk.kemonos.preferences.site.ISelectedSiteUseCase
 import su.afk.kemonos.preferences.site.setSiteAndAwait
 import su.afk.kemonos.preferences.ui.IUiSettingUseCase
+import su.afk.kemonos.profile.domain.favorites.GetFavoriteAuthorNamesUseCase
 import su.afk.kemonos.profile.domain.favorites.GetFavoritePostsUseCase
 import su.afk.kemonos.profile.domain.favorites.SyncLocalLikesUseCase
 import su.afk.kemonos.profile.domain.favorites.posts.GetFavoritePostsPagingUseCase
 import su.afk.kemonos.profile.presenter.favoritePosts.FavoritePostsState.*
 import su.afk.kemonos.profile.utils.Const.KEY_SELECT_SITE
-import su.afk.kemonos.storage.api.repository.creators.IStoreCreatorsRepository
-import su.afk.kemonos.storage.api.repository.favorites.post.IStoreFavoritePostsRepository
 import su.afk.kemonos.ui.components.posts.filter.PostMediaFilter
 import su.afk.kemonos.ui.components.posts.filter.matchesMediaFilter
 import su.afk.kemonos.ui.presenter.baseViewModel.BaseViewModelNew
@@ -37,8 +36,7 @@ import javax.inject.Inject
 internal class FavoritePostsViewModel @Inject constructor(
     private val getFavoritePostsUseCase: GetFavoritePostsUseCase,
     private val syncLocalLikesUseCase: SyncLocalLikesUseCase,
-    private val storeCreatorsRepository: IStoreCreatorsRepository,
-    private val storeFavoritePostsRepository: IStoreFavoritePostsRepository,
+    private val getFavoriteAuthorNamesUseCase: GetFavoriteAuthorNamesUseCase,
     private val navManager: NavigationManager,
     private val creatorProfileNavigator: ICreatorProfileNavigator,
     private val creatorPostNavigator: ICreatorPostNavigator,
@@ -197,21 +195,7 @@ internal class FavoritePostsViewModel @Inject constructor(
      * Использует легковесные composite-keys из БД без чтения полных PostDomain.
      */
     private suspend fun loadAuthorNames() {
-        val compositeKeys = runCatching {
-            storeFavoritePostsRepository.getAllAuthorCompositeKeys(currentState.selectSite)
-        }.getOrDefault(emptySet())
-
-        if (compositeKeys.isEmpty()) {
-            setState { copy(authorNamesByKey = emptyMap()) }
-            return
-        }
-
-        val namesByKey = runCatching {
-            storeCreatorsRepository.getNamesByCompositeKeys(
-                site = currentState.selectSite,
-                compositeKeys = compositeKeys,
-            )
-        }.getOrDefault(emptyMap())
+        val namesByKey = getFavoriteAuthorNamesUseCase(currentState.selectSite)
 
         setState { copy(authorNamesByKey = namesByKey) }
     }

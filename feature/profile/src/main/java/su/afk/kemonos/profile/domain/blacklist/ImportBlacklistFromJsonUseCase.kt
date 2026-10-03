@@ -1,8 +1,5 @@
 package su.afk.kemonos.profile.domain.blacklist
 
-import com.google.gson.JsonElement
-import com.google.gson.JsonObject
-import com.google.gson.JsonParser
 import su.afk.kemonos.preferences.domainResolver.IDomainResolver
 import su.afk.kemonos.preferences.domainResolver.selectedSiteByService
 import su.afk.kemonos.preferences.site.ISelectedSiteUseCase
@@ -44,6 +41,7 @@ internal class ImportBlacklistFromJsonUseCase @Inject constructor(
     private val blacklistedAuthorsRepository: IStoreBlacklistedAuthorsRepository,
     private val domainResolver: IDomainResolver,
     private val selectedSiteUseCase: ISelectedSiteUseCase,
+    private val blacklistJsonParser: IBlacklistJsonParser,
 ) {
 
     /**
@@ -51,15 +49,13 @@ internal class ImportBlacklistFromJsonUseCase @Inject constructor(
      * Switches selected site before each upsert according to row service.
      */
     suspend operator fun invoke(rawJson: String): BlacklistImportResult {
-        val root = JsonParser.parseString(rawJson)
-        if (!root.isJsonArray) error("Invalid blacklist import format")
+        val root = blacklistJsonParser.parse(rawJson)
 
         val unique = LinkedHashMap<String, IndexedBlacklistAuthor>()
-        val entries = ArrayList<BlacklistImportEntry>(root.asJsonArray.size())
+        val entries = ArrayList<BlacklistImportEntry>(root.size)
 
-        for ((index, element) in root.asJsonArray.withIndex()) {
+        for ((index, parsed) in root.withIndex()) {
             val rowNumber = index + 1
-            val parsed = parseBlacklistItem(element)
             if (parsed == null) {
                 entries += BlacklistImportEntry(
                     rowNumber = rowNumber,
@@ -112,40 +108,6 @@ internal class ImportBlacklistFromJsonUseCase @Inject constructor(
 
         return BlacklistImportResult(entries = entries.sortedBy { it.rowNumber })
     }
-
-    /** Accepts both new and legacy export fields and maps them to Room model. */
-    private fun parseBlacklistItem(element: JsonElement): BlacklistedAuthor? {
-        if (!element.isJsonObject) return null
-        val obj = element.asJsonObject
-
-        val service = obj.stringField("service") ?: return null
-        val creatorId = obj.stringField("creatorId") ?: obj.stringField("id") ?: return null
-        val creatorName = obj.stringField("creatorName")
-            ?: obj.stringField("name")
-            ?: creatorId
-        val createdAt = obj.longField("createdAt") ?: System.currentTimeMillis()
-
-        return BlacklistedAuthor(
-            service = service,
-            creatorId = creatorId,
-            creatorName = creatorName,
-            createdAt = createdAt,
-        )
-    }
-
-    private fun JsonObject.stringField(name: String): String? =
-        runCatching { get(name) }
-            .getOrNull()
-            ?.takeIf { !it.isJsonNull }
-            ?.let { runCatching { it.asString }.getOrNull() }
-            ?.trim()
-            ?.takeIf { it.isNotEmpty() }
-
-    private fun JsonObject.longField(name: String): Long? =
-        runCatching { get(name) }
-            .getOrNull()
-            ?.takeIf { !it.isJsonNull }
-            ?.let { runCatching { it.asLong }.getOrNull() }
 
     private data class IndexedBlacklistAuthor(
         val rowNumber: Int,

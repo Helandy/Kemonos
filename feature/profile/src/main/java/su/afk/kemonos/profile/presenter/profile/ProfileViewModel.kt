@@ -237,7 +237,7 @@ internal class ProfileViewModel @Inject constructor(
         val saveResult = runCatching {
             withContext(Dispatchers.IO) {
                 saveJsonToFolderUseCase(
-                    folderUri = folderUri,
+                    folderUri = folderUri.toString(),
                     fileName = export.fileName,
                     json = export.json,
                 )
@@ -288,7 +288,7 @@ internal class ProfileViewModel @Inject constructor(
         setState { copy(isImportInProgress = true) }
         val importResult = runCatching {
             withContext(Dispatchers.IO) {
-                val rawJson = readJsonFromUriUseCase(fileUri)
+                val rawJson = readJsonFromUriUseCase(fileUri.toString())
                 importFavoritesFromJsonUseCase(
                     site = import.site,
                     type = import.type,

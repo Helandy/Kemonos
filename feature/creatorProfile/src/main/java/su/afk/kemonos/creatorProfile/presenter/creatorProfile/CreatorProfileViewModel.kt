@@ -21,7 +21,6 @@ import su.afk.kemonos.creatorProfile.presenter.creatorProfile.delegates.LoadingT
 import su.afk.kemonos.creatorProfile.presenter.creatorProfile.delegates.NavigationDelegate
 import su.afk.kemonos.creatorProfile.presenter.creatorProfile.model.ProfileTab
 import su.afk.kemonos.creatorProfile.presenter.creatorProfile.model.ProfileTab.Companion.toCreatorProfileTabKey
-import su.afk.kemonos.creatorProfile.util.Utils.queryKey
 import su.afk.kemonos.domain.models.Profile
 import su.afk.kemonos.domain.models.Tag
 import su.afk.kemonos.error.error.IErrorHandlerUseCase
@@ -31,12 +30,11 @@ import su.afk.kemonos.navigation.NavigationManager
 import su.afk.kemonos.domain.SelectedSite
 import su.afk.kemonos.preferences.GetRootUrlUseCase
 import su.afk.kemonos.preferences.IGetCurrentSiteRootUrlUseCase
-import su.afk.kemonos.preferences.site.ISelectedSiteUseCase
+import su.afk.kemonos.creatorProfile.domain.useCase.InvalidateProfilePostsCacheUseCase
+import su.afk.kemonos.creatorProfile.domain.useCase.ObserveAuthorBlacklistedUseCase
+import su.afk.kemonos.creatorProfile.domain.useCase.SetAuthorBlacklistedUseCase
 import su.afk.kemonos.preferences.ui.CreatorProfileTabKey
 import su.afk.kemonos.preferences.ui.IUiSettingUseCase
-import su.afk.kemonos.storage.api.repository.blacklist.BlacklistedAuthor
-import su.afk.kemonos.storage.api.repository.blacklist.IStoreBlacklistedAuthorsRepository
-import su.afk.kemonos.storage.api.repository.profilePosts.IStorageCreatorPostsRepository
 import su.afk.kemonos.ui.components.posts.filter.matchesMediaFilter
 import su.afk.kemonos.ui.presenter.baseViewModel.BaseViewModelNew
 import su.afk.kemonos.ui.presenter.baseViewModel.getSerializableState
@@ -54,9 +52,9 @@ internal class CreatorProfileViewModel @AssistedInject constructor(
     private val loadingTabsContent: LoadingTabsContent,
     private val getProfilePostsPagingUseCase: GetProfilePostsPagingUseCase,
     private val navManager: NavigationManager,
-    private val postsCache: IStorageCreatorPostsRepository,
-    private val blacklistedAuthorsRepository: IStoreBlacklistedAuthorsRepository,
-    private val selectedSiteUseCase: ISelectedSiteUseCase,
+    private val invalidateProfilePostsCache: InvalidateProfilePostsCacheUseCase,
+    private val observeAuthorBlacklisted: ObserveAuthorBlacklistedUseCase,
+    private val setAuthorBlacklisted: SetAuthorBlacklistedUseCase,
     private val uiSetting: IUiSettingUseCase,
     @Assisted savedStateHandle: SavedStateHandle,
     override val errorHandler: IErrorHandlerUseCase,
@@ -419,13 +417,12 @@ internal class CreatorProfileViewModel @AssistedInject constructor(
     }
 
     fun onPullRefresh() = viewModelScope.launch {
-        val qk = queryKey(
+        invalidateProfilePostsCache(
             service = currentState.service,
             id = currentState.id,
             search = currentState.searchText,
             tag = currentState.currentTag?.tag,
         )
-        postsCache.clearQuery(selectedSiteUseCase.getSite(), qk)
 
         loadAllInternal()
     }
@@ -444,7 +441,7 @@ internal class CreatorProfileViewModel @AssistedInject constructor(
 
     private fun observeBlacklist() {
         observeBlacklistJob?.cancel()
-        observeBlacklistJob = blacklistedAuthorsRepository.observeContains(
+        observeBlacklistJob = observeAuthorBlacklisted(
             service = currentState.service,
             creatorId = currentState.id
         )
@@ -458,21 +455,21 @@ internal class CreatorProfileViewModel @AssistedInject constructor(
         val profile = currentState.profile ?: return@launch
 
         if (currentState.isInBlacklist) {
-            blacklistedAuthorsRepository.remove(
+            setAuthorBlacklisted(
                 service = profile.service,
-                creatorId = profile.id
+                creatorId = profile.id,
+                creatorName = profile.name,
+                blacklisted = false,
             )
             setEffect(Effect.RemovedFromBlacklist)
             return@launch
         }
 
-        blacklistedAuthorsRepository.upsert(
-            BlacklistedAuthor(
-                service = profile.service,
-                creatorId = profile.id,
-                creatorName = profile.name,
-                createdAt = System.currentTimeMillis()
-            )
+        setAuthorBlacklisted(
+            service = profile.service,
+            creatorId = profile.id,
+            creatorName = profile.name,
+            blacklisted = true,
         )
         setEffect(Effect.AddedToBlacklist)
     }

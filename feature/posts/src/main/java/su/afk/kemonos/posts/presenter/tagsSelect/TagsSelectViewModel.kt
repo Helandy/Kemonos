@@ -12,14 +12,13 @@ import su.afk.kemonos.error.error.storage.RetryStorage
 import su.afk.kemonos.navigation.NavigationManager
 import su.afk.kemonos.navigation.storage.NavigationStorage
 import su.afk.kemonos.posts.domain.pagingSearch.GetSearchPostsPagingUseCase
-import su.afk.kemonos.posts.presenter.common.observeBlacklistedAuthorKeys
+import su.afk.kemonos.posts.domain.usecase.ObserveBlacklistedAuthorKeysUseCase
 import su.afk.kemonos.posts.presenter.common.observeDistinct
 import su.afk.kemonos.posts.presenter.delegates.NavigateToPostDelegate
 import su.afk.kemonos.posts.presenter.tagsSelect.TagsSelectState.*
 import su.afk.kemonos.posts.util.Const.TAGS_SELECTED_NAV_KEY
 import su.afk.kemonos.preferences.site.ISelectedSiteUseCase
 import su.afk.kemonos.preferences.ui.IUiSettingUseCase
-import su.afk.kemonos.storage.api.repository.blacklist.IStoreBlacklistedAuthorsRepository
 import su.afk.kemonos.storage.api.repository.blacklist.blacklistKey
 import su.afk.kemonos.ui.components.posts.filter.PostMediaFilter
 import su.afk.kemonos.ui.components.posts.filter.matchesMediaFilter
@@ -36,7 +35,7 @@ internal class TagsSelectViewModel @Inject constructor(
     private val navManager: NavigationManager,
     private val navigationStorage: NavigationStorage,
     private val uiSetting: IUiSettingUseCase,
-    private val blacklistedAuthorsRepository: IStoreBlacklistedAuthorsRepository,
+    private val observeBlacklistedAuthorKeys: ObserveBlacklistedAuthorKeysUseCase,
     savedStateHandle: SavedStateHandle,
     override val errorHandler: IErrorHandlerUseCase,
     override val retryStorage: RetryStorage,
@@ -93,7 +92,7 @@ internal class TagsSelectViewModel @Inject constructor(
         combine(
             selectedTagFlow,
             mediaFilterFlow,
-            blacklistedAuthorsRepository.observeBlacklistedAuthorKeys(),
+            observeBlacklistedAuthorKeys(),
             manualRefreshCounterFlow,
         ) { tag, mediaFilter, blacklistedAuthorKeys, manualRefreshCounter ->
             TagLoadRequest(

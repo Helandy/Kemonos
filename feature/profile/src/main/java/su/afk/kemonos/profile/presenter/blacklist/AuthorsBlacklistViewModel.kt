@@ -27,6 +27,8 @@ import su.afk.kemonos.profile.domain.blacklist.BlacklistImportEntryReason
 import su.afk.kemonos.profile.domain.blacklist.BlacklistImportEntryStatus
 import su.afk.kemonos.profile.domain.blacklist.ImportBlacklistFromJsonUseCase
 import su.afk.kemonos.profile.domain.blacklist.PrepareBlacklistExportUseCase
+import su.afk.kemonos.profile.domain.blacklist.ObserveBlacklistedAuthorsUseCase
+import su.afk.kemonos.profile.domain.blacklist.RemoveBlacklistedAuthorUseCase
 import su.afk.kemonos.profile.domain.file.ReadJsonFromUriUseCase
 import su.afk.kemonos.profile.domain.file.SaveJsonToFolderUseCase
 import su.afk.kemonos.profile.navigation.AuthDestination
@@ -35,7 +37,6 @@ import su.afk.kemonos.profile.presenter.importResult.ImportResultItem
 import su.afk.kemonos.profile.presenter.importResult.ImportResultPayload
 import su.afk.kemonos.profile.presenter.importResult.ImportResultStatus
 import su.afk.kemonos.profile.utils.Const.KEY_IMPORT_RESULT_PAYLOAD
-import su.afk.kemonos.storage.api.repository.blacklist.IStoreBlacklistedAuthorsRepository
 import su.afk.kemonos.ui.presenter.baseViewModel.BaseViewModelNew
 import su.afk.kemonos.ui.presenter.baseViewModel.getSerializableState
 import su.afk.kemonos.ui.presenter.baseViewModel.setSerializableState
@@ -46,7 +47,8 @@ internal class AuthorsBlacklistViewModel @Inject constructor(
     private val navManager: NavigationManager,
     private val navigationStorage: NavigationStorage,
     private val creatorProfileNavigator: ICreatorProfileNavigator,
-    private val blacklistedAuthorsRepository: IStoreBlacklistedAuthorsRepository,
+    private val observeBlacklistedAuthors: ObserveBlacklistedAuthorsUseCase,
+    private val removeBlacklistedAuthor: RemoveBlacklistedAuthorUseCase,
     private val domainResolver: IDomainResolver,
     private val selectedSiteUseCase: ISelectedSiteUseCase,
     private val prepareBlacklistExportUseCase: PrepareBlacklistExportUseCase,
@@ -89,7 +91,7 @@ internal class AuthorsBlacklistViewModel @Inject constructor(
 
     /** Наблюдает за локальным blacklist в Room и обновляет список на экране. */
     private fun observeBlacklist() {
-        blacklistedAuthorsRepository.observeAll()
+        observeBlacklistedAuthors()
             .onEach { items ->
                 setState {
                     copy(
@@ -111,7 +113,7 @@ internal class AuthorsBlacklistViewModel @Inject constructor(
 
     /** Удаляет автора из локального blacklist по service/id. */
     private fun removeAuthor(service: String, creatorId: String) = viewModelScope.launch {
-        blacklistedAuthorsRepository.remove(service = service, creatorId = creatorId)
+        removeBlacklistedAuthor(service = service, creatorId = creatorId)
     }
 
     /** Подтверждает удаление автора из диалога и очищает pending-состояние. */
@@ -150,7 +152,7 @@ internal class AuthorsBlacklistViewModel @Inject constructor(
         setState { copy(isImportExportInProgress = true) }
         val exportResult = runCatching {
             val items = withContext(Dispatchers.IO) {
-                blacklistedAuthorsRepository.observeAll().first()
+                observeBlacklistedAuthors().first()
             }
             items.firstOrNull()?.let { firstAuthor ->
                 syncSelectedSiteByService(firstAuthor.service)
@@ -159,7 +161,7 @@ internal class AuthorsBlacklistViewModel @Inject constructor(
 
             withContext(Dispatchers.IO) {
                 saveJsonToFolderUseCase(
-                    folderUri = folderUri,
+                    folderUri = folderUri.toString(),
                     fileName = payload.fileName,
                     json = payload.json,
                 )
@@ -194,7 +196,7 @@ internal class AuthorsBlacklistViewModel @Inject constructor(
 
         setState { copy(isImportExportInProgress = true) }
         val importResult = runCatching {
-            val rawJson = withContext(Dispatchers.IO) { readJsonFromUriUseCase(fileUri) }
+            val rawJson = withContext(Dispatchers.IO) { readJsonFromUriUseCase(fileUri.toString()) }
             importBlacklistFromJsonUseCase(rawJson)
         }
         setState { copy(isImportExportInProgress = false) }
