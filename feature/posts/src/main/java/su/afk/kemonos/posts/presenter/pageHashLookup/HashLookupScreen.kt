@@ -37,10 +37,10 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.paging.compose.collectAsLazyPagingItems
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import su.afk.kemonos.utils.DefaultDispatcherProvider
 import su.afk.kemonos.domain.SelectedSite
 import su.afk.kemonos.posts.R
 import su.afk.kemonos.posts.domain.model.hashLookup.HashLookupDomain
@@ -85,7 +85,7 @@ internal fun HashLookupScreen(
         if (uri == null) return@rememberLauncherForActivityResult
 
         coroutineScope.launch {
-            val hash = withContext(Dispatchers.IO) {
+            val hash = withContext(DefaultDispatcherProvider.io) {
                 sha256FromUri(context, uri)
             } ?: return@launch
 

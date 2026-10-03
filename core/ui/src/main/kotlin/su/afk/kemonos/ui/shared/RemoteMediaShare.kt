@@ -6,11 +6,12 @@ import android.content.Intent
 import android.webkit.MimeTypeMap
 import androidx.core.content.FileProvider
 import androidx.core.net.toUri
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.withContext
 import okhttp3.OkHttpClient
 import okhttp3.Request
+import su.afk.kemonos.utils.DefaultDispatcherProvider
+import su.afk.kemonos.utils.DispatcherProvider
 import java.io.File
 import java.io.IOException
 import java.util.concurrent.TimeUnit
@@ -35,15 +36,16 @@ suspend fun shareRemoteMedia(
     fileName: String?,
     mime: String = "*/*",
     onProgress: ((bytesRead: Long, totalBytes: Long) -> Unit)? = null,
+    dispatchers: DispatcherProvider = DefaultDispatcherProvider,
 ): Boolean {
     if (!shareOperationMutex.tryLock()) return false
     try {
-        val prepared = withContext(Dispatchers.IO) {
+        val prepared = withContext(dispatchers.io) {
             cleanupSharedMediaCache(context)
-            prepareSharedFile(context, url, fileName, mime, onProgress)
+            prepareSharedFile(context, url, fileName, mime, onProgress, dispatchers)
         } ?: return false
 
-        return withContext(Dispatchers.Main) {
+        return withContext(dispatchers.main) {
             runCatching {
                 val shareIntent = Intent(Intent.ACTION_SEND).apply {
                     type = prepared.mime
@@ -69,8 +71,9 @@ suspend fun openRemoteAudioInExternalApp(
     url: String,
     fileName: String?,
     mime: String = "audio/*",
+    dispatchers: DispatcherProvider = DefaultDispatcherProvider,
 ): Boolean {
-    return withContext(Dispatchers.Main) {
+    return withContext(dispatchers.main) {
         runCatching {
             val viewIntent = Intent(Intent.ACTION_VIEW).apply {
                 setDataAndType(url.toUri(), mime)
@@ -98,6 +101,7 @@ private suspend fun prepareSharedFile(
     fileName: String?,
     mime: String,
     onProgress: ((bytesRead: Long, totalBytes: Long) -> Unit)? = null,
+    dispatchers: DispatcherProvider,
 ): PreparedSharedMedia? {
     val resolvedName = resolveFileName(url, fileName, mime)
     val targetDir = File(context.cacheDir, SHARED_MEDIA_DIR).apply { mkdirs() }
@@ -112,8 +116,8 @@ private suspend fun prepareSharedFile(
 
     if (canReuseCachedFile) {
         val cachedSize = targetFile.length()
-        reportProgress(onProgress, cachedSize, cachedSize)
-    } else if (!downloadToFile(url, targetFile, onProgress)) {
+        reportProgress(dispatchers, onProgress, cachedSize, cachedSize)
+    } else if (!downloadToFile(url, targetFile, dispatchers, onProgress)) {
         return null
     } else {
         runCatching { sourceMetaFile.writeText(url) }
@@ -131,6 +135,7 @@ private suspend fun prepareSharedFile(
 private suspend fun downloadToFile(
     url: String,
     targetFile: File,
+    dispatchers: DispatcherProvider,
     onProgress: ((bytesRead: Long, totalBytes: Long) -> Unit)? = null,
 ): Boolean {
     val request = Request.Builder().url(url).build()
@@ -142,7 +147,7 @@ private suspend fun downloadToFile(
             val body = response.body
             val totalBytes = body.contentLength().coerceAtLeast(0L)
             var bytesRead = 0L
-            reportProgress(onProgress, 0L, totalBytes)
+            reportProgress(dispatchers, onProgress, 0L, totalBytes)
             var lastReportedBytes = 0L
             var lastReportedAtMs = 0L
             tmp.outputStream().use { out ->
@@ -157,7 +162,7 @@ private suspend fun downloadToFile(
                                 bytesRead - lastReportedBytes >= PROGRESS_MIN_DELTA_BYTES ||
                                 nowMs - lastReportedAtMs >= PROGRESS_MIN_INTERVAL_MS
                         if (shouldReport) {
-                            reportProgress(onProgress, bytesRead, totalBytes)
+                            reportProgress(dispatchers, onProgress, bytesRead, totalBytes)
                             lastReportedBytes = bytesRead
                             lastReportedAtMs = nowMs
                         }
@@ -165,7 +170,7 @@ private suspend fun downloadToFile(
                     }
                 }
             }
-            reportProgress(onProgress, bytesRead, totalBytes)
+            reportProgress(dispatchers, onProgress, bytesRead, totalBytes)
         }
 
         if (targetFile.exists() && !targetFile.delete()) {
@@ -182,12 +187,13 @@ private suspend fun downloadToFile(
 }
 
 private suspend fun reportProgress(
+    dispatchers: DispatcherProvider,
     onProgress: ((bytesRead: Long, totalBytes: Long) -> Unit)?,
     bytesRead: Long,
     totalBytes: Long,
 ) {
     if (onProgress == null) return
-    withContext(Dispatchers.Main.immediate) {
+    withContext(dispatchers.mainImmediate) {
         onProgress(bytesRead, totalBytes)
     }
 }
