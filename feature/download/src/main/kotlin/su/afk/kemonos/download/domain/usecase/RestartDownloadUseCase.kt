@@ -4,7 +4,6 @@ import su.afk.kemonos.download.api.IDownloadUtil
 import su.afk.kemonos.download.domain.repository.DownloadManagerDataSource
 import su.afk.kemonos.storage.api.repository.download.ITrackedDownloadsRepository
 import su.afk.kemonos.storage.api.repository.download.TrackedDownload
-import su.afk.kemonos.utils.withIo
 import javax.inject.Inject
 
 internal class RestartDownloadUseCase @Inject constructor(
@@ -12,7 +11,7 @@ internal class RestartDownloadUseCase @Inject constructor(
     private val downloadUtil: IDownloadUtil,
     private val trackedDownloadsRepository: ITrackedDownloadsRepository,
 ) {
-    suspend operator fun invoke(trackedDownload: TrackedDownload): Long = withIo {
+    suspend operator fun invoke(trackedDownload: TrackedDownload): Long {
         downloadManagerDataSource.remove(trackedDownload.downloadId)
         val newId = downloadUtil.enqueueSystemDownload(
             url = trackedDownload.url,
@@ -25,6 +24,6 @@ internal class RestartDownloadUseCase @Inject constructor(
         if (newId != trackedDownload.downloadId) {
             trackedDownloadsRepository.delete(trackedDownload.downloadId)
         }
-        newId
+        return newId
     }
 }
