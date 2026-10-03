@@ -6,6 +6,7 @@ import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import su.afk.kemonos.ui.translate.MlKitTextTranslator
 import su.afk.kemonos.ui.translate.TextTranslator
+import su.afk.kemonos.utils.DispatcherProvider
 import javax.inject.Singleton
 
 @Module
@@ -14,5 +15,6 @@ internal object TranslateModule {
 
     @Provides
     @Singleton
-    fun provideTextTranslator(): TextTranslator = MlKitTextTranslator()
+    fun provideTextTranslator(dispatchers: DispatcherProvider): TextTranslator =
+        MlKitTextTranslator(dispatchers)
 }

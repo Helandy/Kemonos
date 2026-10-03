@@ -8,14 +8,15 @@ import com.google.mlkit.nl.translate.TranslateLanguage
 import com.google.mlkit.nl.translate.Translation
 import com.google.mlkit.nl.translate.Translator
 import com.google.mlkit.nl.translate.TranslatorOptions
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import su.afk.kemonos.utils.DispatcherProvider
 import java.net.URLEncoder
 import java.nio.charset.StandardCharsets
 import java.util.concurrent.ConcurrentHashMap
 import java.util.Locale as JLocale
 
 internal class MlKitTextTranslator(
+    private val dispatchers: DispatcherProvider,
     targetLang: String? = null,
 ) : TextTranslator {
 
@@ -32,7 +33,7 @@ internal class MlKitTextTranslator(
     private val translators = ConcurrentHashMap<String, Translator>()
 
     override suspend fun translateAuto(text: String, targetLangTag: String): String =
-        withContext(Dispatchers.IO) {
+        withContext(dispatchers.io) {
 
             val cleaned = text.preprocessForTranslation()
             if (cleaned.isBlank()) return@withContext ""
@@ -68,7 +69,7 @@ internal class MlKitTextTranslator(
         return Translation.getClient(options)
     }
 
-    private suspend fun detectLanguageSafe(text: String): String = withContext(Dispatchers.IO) {
+    private suspend fun detectLanguageSafe(text: String): String = withContext(dispatchers.io) {
         val identifier = LanguageIdentification.getClient(
             LanguageIdentificationOptions.Builder()
                 .setConfidenceThreshold(0.35f)

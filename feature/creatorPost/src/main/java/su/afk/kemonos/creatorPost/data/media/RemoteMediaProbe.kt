@@ -1,19 +1,20 @@
 package su.afk.kemonos.creatorPost.data.media
 
 import android.media.MediaMetadataRetriever
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import su.afk.kemonos.creatorPost.domain.media.IRemoteMediaProbe
+import su.afk.kemonos.utils.DispatcherProvider
 import javax.inject.Inject
 import javax.inject.Named
 
 internal class RemoteMediaProbe @Inject constructor(
     @param:Named("VideoInfoClient") private val http: OkHttpClient,
+    private val dispatchers: DispatcherProvider,
 ) : IRemoteMediaProbe {
 
-    override suspend fun durationMs(url: String): Long = withContext(Dispatchers.IO) {
+    override suspend fun durationMs(url: String): Long = withContext(dispatchers.io) {
         runCatching {
             MediaMetadataRetriever().use { r ->
                 r.setDataSource(url, HashMap())
@@ -24,7 +25,7 @@ internal class RemoteMediaProbe @Inject constructor(
     }
 
     /** Размер через `Range: bytes=0-0`, без скачивания тела. */
-    override suspend fun sizeBytes(url: String): Long = withContext(Dispatchers.IO) {
+    override suspend fun sizeBytes(url: String): Long = withContext(dispatchers.io) {
         val req = Request.Builder()
             .url(url)
             .get()

@@ -1,6 +1,5 @@
 package su.afk.kemonos.creatorPost.presenter.delegates
 
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.withContext
@@ -16,6 +15,7 @@ import su.afk.kemonos.ui.presenter.androidView.cleanDuplicatedMediaFromContent
 import su.afk.kemonos.ui.presenter.androidView.clearHtml
 import su.afk.kemonos.ui.presenter.androidView.htmlToBlocks
 import su.afk.kemonos.ui.presenter.androidView.model.PostBlock
+import su.afk.kemonos.utils.DispatcherProvider
 import javax.inject.Inject
 
 internal class PostLoadDelegate @Inject constructor(
@@ -23,6 +23,7 @@ internal class PostLoadDelegate @Inject constructor(
     private val getCommentsUseCase: GetCommentsUseCase,
     private val getProfileUseCase: IGetProfileUseCase,
     private val getCurrentSiteRootUrlUseCase: IGetCurrentSiteRootUrlUseCase,
+    private val dispatchers: DispatcherProvider,
 ) {
 
     suspend fun load(request: LoadRequest): LoadedPostData = coroutineScope {
@@ -68,13 +69,13 @@ internal class PostLoadDelegate @Inject constructor(
     private suspend fun buildContentBlocks(post: PostContentDomain?): List<PostBlock> {
         val mediaRefs = post?.collectMediaRefsForDedup().orEmpty()
         val siteBaseUrl = getCurrentSiteRootUrlUseCase()
-        val cleanContent = withContext(Dispatchers.Default) {
+        val cleanContent = withContext(dispatchers.default) {
             cleanDuplicatedMediaFromContent(
                 html = post?.post?.content.orEmpty().take(MAX_HTML_CHARS),
                 attachmentPaths = mediaRefs,
             )
         }
-        return withContext(Dispatchers.Default) {
+        return withContext(dispatchers.default) {
             htmlToBlocks(cleanContent, siteBaseUrl)
         }
     }
