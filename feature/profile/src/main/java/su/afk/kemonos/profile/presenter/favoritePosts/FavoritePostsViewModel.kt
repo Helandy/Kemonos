@@ -3,6 +3,9 @@ package su.afk.kemonos.profile.presenter.favoritePosts
 import androidx.lifecycle.SavedStateHandle
 import androidx.paging.cachedIn
 import androidx.paging.filter
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedFactory
+import dagger.assisted.AssistedInject
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.Job
@@ -15,25 +18,24 @@ import su.afk.kemonos.domain.models.PostDomain
 import su.afk.kemonos.error.error.IErrorHandlerUseCase
 import su.afk.kemonos.error.error.storage.RetryStorage
 import su.afk.kemonos.navigation.NavigationManager
-import su.afk.kemonos.navigation.storage.NavigationStorage
 import su.afk.kemonos.preferences.site.ISelectedSiteUseCase
 import su.afk.kemonos.preferences.site.setSiteAndAwait
 import su.afk.kemonos.preferences.ui.IUiSettingsReader
+import su.afk.kemonos.profile.navigation.AuthDestination
 import su.afk.kemonos.profile.domain.favorites.GetFavoriteAuthorNamesUseCase
 import su.afk.kemonos.profile.domain.favorites.GetFavoritePostsUseCase
 import su.afk.kemonos.profile.domain.favorites.SyncLocalLikesUseCase
 import su.afk.kemonos.profile.domain.favorites.posts.GetFavoritePostsPagingUseCase
 import su.afk.kemonos.profile.presenter.favoritePosts.FavoritePostsState.*
-import su.afk.kemonos.profile.utils.Const.KEY_SELECT_SITE
 import su.afk.kemonos.ui.components.posts.filter.PostMediaFilter
 import su.afk.kemonos.ui.components.posts.filter.matchesMediaFilter
 import su.afk.kemonos.ui.presenter.baseViewModel.BaseViewModelNew
 import su.afk.kemonos.ui.presenter.baseViewModel.getSerializableState
 import su.afk.kemonos.ui.presenter.baseViewModel.setSerializableState
-import javax.inject.Inject
 
-@HiltViewModel
-internal class FavoritePostsViewModel @Inject constructor(
+@HiltViewModel(assistedFactory = FavoritePostsViewModel.Factory::class)
+internal class FavoritePostsViewModel @AssistedInject constructor(
+    @Assisted private val dest: AuthDestination.FavoritePosts,
     private val getFavoritePostsUseCase: GetFavoritePostsUseCase,
     private val syncLocalLikesUseCase: SyncLocalLikesUseCase,
     private val getFavoriteAuthorNamesUseCase: GetFavoriteAuthorNamesUseCase,
@@ -42,12 +44,16 @@ internal class FavoritePostsViewModel @Inject constructor(
     private val creatorPostNavigator: ICreatorPostNavigator,
     private val selectedSiteUseCase: ISelectedSiteUseCase,
     private val getFavoritePostsPagingUseCase: GetFavoritePostsPagingUseCase,
-    private val navigationStorage: NavigationStorage,
     private val uiSetting: IUiSettingsReader,
     savedStateHandle: SavedStateHandle,
     override val errorHandler: IErrorHandlerUseCase,
     override val retryStorage: RetryStorage,
 ) : BaseViewModelNew<State, Event, Effect>(savedStateHandle) {
+
+    @AssistedFactory
+    interface Factory {
+        fun create(dest: AuthDestination.FavoritePosts): FavoritePostsViewModel
+    }
 
     override fun createInitialState(): State =
         savedStateHandle.getSerializableState<FavoritePostsPersistedState>(KEY_STATE)?.toState()
@@ -176,8 +182,7 @@ internal class FavoritePostsViewModel @Inject constructor(
      */
     private fun loadSelectedSite() = viewModelScope.launch {
         val selectSite = savedStateHandle.getSerializableState<FavoritePostsPersistedState>(KEY_STATE)?.selectSite
-            ?: navigationStorage.consume<SelectedSite>(KEY_SELECT_SITE)
-            ?: uiSetting.prefs.first().effectiveDefaultSite
+            ?: dest.site
 
         selectedSiteUseCase.setSiteAndAwait(selectSite)
 

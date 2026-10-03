@@ -11,8 +11,10 @@ import su.afk.kemonos.ui.presenter.baseViewModel.ScreenNavigator
 
 class LoginNavigatorRegister @Inject constructor() : NavRegistrar {
     override fun register(builder: EntryProviderScope<NavKey>, nav: NavigationManager) = with(builder) {
-        entry<AuthDestination.Login> {
-            val viewModel = hiltViewModel<LoginViewModel>()
+        entry<AuthDestination.Login> { key ->
+            val viewModel = hiltViewModel<LoginViewModel, LoginViewModel.Factory>(
+                creationCallback = { factory -> factory.create(key) },
+            )
             ScreenNavigator(viewModel) { state, effect, event ->
                 LoginScreen(
                     state = state,

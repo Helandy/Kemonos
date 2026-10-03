@@ -40,7 +40,6 @@ import su.afk.kemonos.profile.presenter.profile.ProfileState.*
 import su.afk.kemonos.profile.presenter.profile.delegate.LogoutDelegate
 import su.afk.kemonos.profile.presenter.profile.model.AuthSnapshot
 import su.afk.kemonos.profile.utils.Const.KEY_IMPORT_RESULT_PAYLOAD
-import su.afk.kemonos.profile.utils.Const.KEY_SELECT_SITE
 import su.afk.kemonos.setting.api.useCase.IGetSettingDestinationUseCase
 import su.afk.kemonos.ui.presenter.baseViewModel.BaseViewModelNew
 import javax.inject.Inject
@@ -175,17 +174,17 @@ internal class ProfileViewModel @Inject constructor(
             return
         }
 
-        navigateWithSelectedSite(site = site, destination = AuthDestination.Login)
+        navigationManager.navigate(AuthDestination.Login(site))
     }
 
     /** Любимые профили */
     private fun onFavoriteProfilesNavigate(site: SelectedSite) {
-        navigateWithSelectedSite(site = site, destination = AuthDestination.FavoriteProfiles)
+        navigationManager.navigate(AuthDestination.FavoriteProfiles(site))
     }
 
     /** Любимые посты */
     private fun onFavoritePostNavigate(site: SelectedSite) {
-        navigateWithSelectedSite(site = site, destination = AuthDestination.FavoritePosts)
+        navigationManager.navigate(AuthDestination.FavoritePosts(site))
     }
 
     /** Экспорт избранного */
@@ -358,11 +357,6 @@ internal class ProfileViewModel @Inject constructor(
     }
 
     /** Навигация с предварительным сохранением выбранного сайта в storage. */
-    private fun navigateWithSelectedSite(site: SelectedSite, destination: NavKey) {
-        navigationStorage.put(KEY_SELECT_SITE, site)
-        navigationManager.navigate(destination)
-    }
-
     /** Keeps selected site aligned with operation target site before API/local work. */
     private suspend fun syncSelectedSite(site: SelectedSite) {
         selectedSiteUseCase.setSiteAndAwait(site)

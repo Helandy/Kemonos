@@ -11,8 +11,10 @@ import su.afk.kemonos.ui.presenter.baseViewModel.ScreenNavigator
 
 class FavoriteProfilesRegister @Inject constructor() : NavRegistrar {
     override fun register(builder: EntryProviderScope<NavKey>, nav: NavigationManager) = with(builder) {
-        entry<AuthDestination.FavoriteProfiles> {
-            val viewModel = hiltViewModel<FavoriteProfilesViewModel>()
+        entry<AuthDestination.FavoriteProfiles> { key ->
+            val viewModel = hiltViewModel<FavoriteProfilesViewModel, FavoriteProfilesViewModel.Factory>(
+                creationCallback = { factory -> factory.create(key) },
+            )
             ScreenNavigator(viewModel) { state, _, onEventSent ->
                 FavoriteProfilesScreen(
                     state = state,

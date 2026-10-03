@@ -11,8 +11,10 @@ import su.afk.kemonos.ui.presenter.baseViewModel.ScreenNavigator
 
 class NavigatorTagsSelect @Inject constructor() : NavRegistrar {
     override fun register(builder: EntryProviderScope<NavKey>, nav: NavigationManager) = with(builder) {
-        entry<PostsDestination.TagsSelect> {
-            val viewModel = hiltViewModel<TagsSelectViewModel>()
+        entry<PostsDestination.TagsSelect> { key ->
+            val viewModel = hiltViewModel<TagsSelectViewModel, TagsSelectViewModel.Factory>(
+                creationCallback = { factory -> factory.create(key) },
+            )
             ScreenNavigator(viewModel) { state, effect, event ->
                 TagsPostsScreen(
                     state = state,

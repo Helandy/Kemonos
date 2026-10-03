@@ -3,6 +3,7 @@ package su.afk.kemonos.ui.presenter.baseViewModel
 import androidx.lifecycle.SavedStateHandle
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
+import java.util.concurrent.ConcurrentHashMap
 import su.afk.kemonos.error.error.IErrorHandlerUseCase
 import su.afk.kemonos.error.error.storage.RetryStorage
 
@@ -47,13 +48,23 @@ abstract class BaseViewModelNew<S : UiState, E : UiEvent, F : UiEffect>(
     protected abstract val errorHandler: IErrorHandlerUseCase
     protected abstract val retryStorage: RetryStorage
 
+    /** Ключи retry-действий этой VM: чистим при onCleared, чтобы замыкание не держало VM в памяти. */
+    private val retryKeys: MutableSet<String> = ConcurrentHashMap.newKeySet()
+
     override fun onError(exception: Throwable) {
         val retryKey = "${this::class.java.simpleName}:${System.nanoTime()}"
 
+        retryKeys += retryKey
         retryStorage.put(retryKey) { onRetry() }
 
         errorHandler.parse(exception, navigate = true, retryKey = retryKey)
     }
 
     protected open fun onRetry() {}
+
+    override fun onCleared() {
+        retryKeys.forEach(retryStorage::remove)
+        retryKeys.clear()
+        super.onCleared()
+    }
 }

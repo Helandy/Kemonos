@@ -11,12 +11,10 @@ import su.afk.kemonos.domain.SelectedSite
 import su.afk.kemonos.error.error.IErrorHandlerUseCase
 import su.afk.kemonos.error.error.storage.RetryStorage
 import su.afk.kemonos.navigation.NavigationManager
-import su.afk.kemonos.navigation.storage.NavigationStorage
 import su.afk.kemonos.domain.models.tags.Tags
 import su.afk.kemonos.posts.domain.usecase.GetAllTagsUseCase
 import su.afk.kemonos.posts.navigation.PostsDestination
 import su.afk.kemonos.posts.presenter.pageTags.TagsPageState.*
-import su.afk.kemonos.posts.util.Const.TAGS_SELECTED_NAV_KEY
 import su.afk.kemonos.preferences.site.ISelectedSiteUseCase
 import su.afk.kemonos.preferences.ui.IUiSettingsReader
 import su.afk.kemonos.ui.presenter.changeSite.SiteAwareBaseViewModelNew
@@ -26,7 +24,6 @@ import javax.inject.Inject
 internal class TagsPageViewModel @Inject constructor(
     private val getAllTagsUseCase: GetAllTagsUseCase,
     private val navManager: NavigationManager,
-    private val navigationStorage: NavigationStorage,
     private val uiSetting: IUiSettingsReader,
     savedStateHandle: SavedStateHandle,
     override val selectedSiteUseCase: ISelectedSiteUseCase,
@@ -130,8 +127,7 @@ internal class TagsPageViewModel @Inject constructor(
 
     private fun navigateToSelectTag(tag: String?) {
         val normalizedTag = tag?.trim()?.ifEmpty { null } ?: return
-        navigationStorage.put(TAGS_SELECTED_NAV_KEY, normalizedTag)
-        navManager.navigate(PostsDestination.TagsSelect)
+        navManager.navigate(PostsDestination.TagsSelect(normalizedTag))
     }
 
     companion object {
