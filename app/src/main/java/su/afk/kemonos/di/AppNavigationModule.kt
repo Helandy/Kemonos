@@ -1,4 +1,4 @@
-package su.afk.kemonos.navigation.di
+package su.afk.kemonos.di
 
 import androidx.navigation3.runtime.NavKey
 import dagger.Module
@@ -15,7 +15,7 @@ import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
-object NavigationModule {
+object AppNavigationModule {
 
     @Provides
     fun provideInitialTab(): BottomTab = BottomTab.CREATORS

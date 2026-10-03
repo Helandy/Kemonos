@@ -21,7 +21,8 @@ internal fun MainUpdateBanner(
     ) {
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
             UpdateBanner(
-                info = info,
+                latestVersionName = info.latestVersionName,
+                changelog = info.changelog,
                 onUpdateClick = onUpdateClick,
                 onLaterClick = onLaterClick
             )
