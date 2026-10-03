@@ -18,7 +18,6 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
 import okhttp3.OkHttpClient
@@ -71,12 +70,6 @@ object CoilModule {
         dataStore: DataStore<Preferences>,
         @CoilOkHttp okHttpClient: OkHttpClient,
     ): ImageLoader {
-        val cacheMb = runBlocking(Dispatchers.IO) {
-            dataStore.data.first()[COIL_CACHE_SIZE_MB] ?: DEFAULT_COIL_CACHE_MB
-        }.coerceIn(MIN_COIL_CACHE_MB, MAX_COIL_CACHE_MB)
-
-        val cacheBytes = cacheMb.toLong() * 1024L * 1024L
-
         return ImageLoader.Builder(appContext)
             .components {
                 // Avoid android.graphics.Movie-based GIF decoding, which can crash on cancellation.
@@ -94,10 +87,16 @@ object CoilModule {
                     .maxSizePercent(appContext, 0.25)
                     .build()
             }
+            // Лямбда ленивая: Coil вызывает её при первом обращении к кэшу и не на main-потоке,
+            // поэтому чтение настройки не блокирует создание графа DI.
             .diskCache {
+                val cacheMb = runBlocking {
+                    dataStore.data.first()[COIL_CACHE_SIZE_MB] ?: DEFAULT_COIL_CACHE_MB
+                }.coerceIn(MIN_COIL_CACHE_MB, MAX_COIL_CACHE_MB)
+
                 DiskCache.Builder()
                     .directory(appContext.cacheDir.resolve(COIL_DISK_DIR_NAME))
-                    .maxSizeBytes(cacheBytes)
+                    .maxSizeBytes(cacheMb.toLong() * 1024L * 1024L)
                     .build()
             }
             .build()

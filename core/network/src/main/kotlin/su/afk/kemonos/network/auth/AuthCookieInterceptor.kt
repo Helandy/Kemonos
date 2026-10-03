@@ -1,6 +1,5 @@
 package su.afk.kemonos.network.auth
 
-import kotlinx.coroutines.runBlocking
 import okhttp3.Interceptor
 import okhttp3.Response
 import retrofit2.Invocation
@@ -42,9 +41,7 @@ internal class AuthCookieInterceptor(
             return chain.proceed(request)
         }
 
-        val session = runBlocking {
-            authSessionProvider.getSession(siteProvider())
-        }
+        val session = authSessionProvider.getSession(siteProvider())
 
         if (session.isNullOrBlank()) {
             /** нет сессии для нужного сайта → отправляем запрос без куки */
