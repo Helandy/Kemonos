@@ -12,7 +12,7 @@ import su.afk.kemonos.error.error.IErrorHandlerUseCase
 import su.afk.kemonos.error.error.storage.RetryStorage
 import su.afk.kemonos.navigation.NavigationManager
 import su.afk.kemonos.navigation.storage.NavigationStorage
-import su.afk.kemonos.posts.api.tags.Tags
+import su.afk.kemonos.domain.models.tags.Tags
 import su.afk.kemonos.posts.domain.usecase.GetAllTagsUseCase
 import su.afk.kemonos.posts.navigation.PostsDestination
 import su.afk.kemonos.posts.presenter.pageTags.TagsPageState.*

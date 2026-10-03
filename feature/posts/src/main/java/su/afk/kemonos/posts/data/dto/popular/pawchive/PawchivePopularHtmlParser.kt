@@ -4,10 +4,10 @@ import org.jsoup.Jsoup
 import org.jsoup.nodes.Element
 import su.afk.kemonos.domain.models.FileDomain
 import su.afk.kemonos.domain.models.PostDomain
-import su.afk.kemonos.posts.api.popular.PopularInfo
-import su.afk.kemonos.posts.api.popular.PopularNavigationDates
-import su.afk.kemonos.posts.api.popular.PopularPosts
-import su.afk.kemonos.posts.api.popular.PopularProps
+import su.afk.kemonos.domain.models.popular.PopularInfo
+import su.afk.kemonos.domain.models.popular.PopularNavigationDates
+import su.afk.kemonos.domain.models.popular.PopularPosts
+import su.afk.kemonos.domain.models.popular.PopularProps
 import su.afk.kemonos.posts.domain.model.popular.Period
 import java.time.LocalDate
 

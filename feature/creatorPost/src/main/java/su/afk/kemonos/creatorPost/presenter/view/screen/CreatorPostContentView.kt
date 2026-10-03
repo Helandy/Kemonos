@@ -16,7 +16,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
-import su.afk.kemonos.creatorPost.api.domain.model.PostContentRevisionDomain
+import su.afk.kemonos.domain.models.post.PostContentRevisionDomain
 import su.afk.kemonos.creatorPost.presenter.CreatorPostState.Event
 import su.afk.kemonos.creatorPost.presenter.CreatorPostState.State
 import su.afk.kemonos.creatorPost.presenter.view.attachment.PostAttachmentsSection

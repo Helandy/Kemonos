@@ -1,6 +1,6 @@
 package su.afk.kemonos.storage.api.repository.comments
 
-import su.afk.kemonos.creatorPost.api.domain.model.CommentDomain
+import su.afk.kemonos.domain.models.post.CommentDomain
 
 interface IStoreCommentsRepository {
     suspend fun getCommentsOrNull(service: String, userId: String, postId: String): List<CommentDomain>?

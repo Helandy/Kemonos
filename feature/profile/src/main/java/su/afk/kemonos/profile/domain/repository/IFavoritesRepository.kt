@@ -3,7 +3,7 @@ package su.afk.kemonos.profile.domain.repository
 import su.afk.kemonos.domain.SelectedSite
 import su.afk.kemonos.domain.models.PostDomain
 import su.afk.kemonos.domain.models.creator.FavoriteArtist
-import su.afk.kemonos.profile.api.domain.favoriteProfiles.FavoriteSortedType
+import su.afk.kemonos.domain.models.favorites.FavoriteSortedType
 
 internal interface IFavoritesRepository {
     suspend fun pageFavoriteArtists(

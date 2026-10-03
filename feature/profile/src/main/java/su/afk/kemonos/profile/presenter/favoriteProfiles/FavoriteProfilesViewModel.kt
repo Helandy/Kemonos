@@ -19,7 +19,7 @@ import su.afk.kemonos.preferences.site.ISelectedSiteUseCase
 import su.afk.kemonos.preferences.site.setSiteAndAwait
 import su.afk.kemonos.preferences.ui.IUiSettingUseCase
 import su.afk.kemonos.profile.api.domain.IGetFavoriteArtistsUseCase
-import su.afk.kemonos.profile.api.domain.favoriteProfiles.FavoriteSortedType
+import su.afk.kemonos.domain.models.favorites.FavoriteSortedType
 import su.afk.kemonos.profile.domain.favorites.SyncLocalLikesUseCase
 import su.afk.kemonos.profile.domain.favorites.creator.GetFavoriteArtistsPagingUseCase
 import su.afk.kemonos.profile.domain.favorites.fresh.IFreshFavoriteArtistsUpdatesUseCase

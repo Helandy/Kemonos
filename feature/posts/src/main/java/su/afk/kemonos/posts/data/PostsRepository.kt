@@ -8,12 +8,12 @@ import su.afk.kemonos.preferences.domainResolver.IDomainResolver
 import su.afk.kemonos.domain.SelectedSite
 import su.afk.kemonos.domain.models.PostDomain
 import su.afk.kemonos.network.util.call
-import su.afk.kemonos.posts.api.popular.PopularInfo
-import su.afk.kemonos.posts.api.popular.PopularProps
+import su.afk.kemonos.domain.models.popular.PopularInfo
+import su.afk.kemonos.domain.models.popular.PopularProps
 import java.time.LocalDate
-import su.afk.kemonos.posts.api.popular.PopularPosts
-import su.afk.kemonos.posts.api.tags.Tags
-import su.afk.kemonos.posts.api.tags.Tags.Companion.normalizeTags
+import su.afk.kemonos.domain.models.popular.PopularPosts
+import su.afk.kemonos.domain.models.tags.Tags
+import su.afk.kemonos.domain.models.tags.Tags.Companion.normalizeTags
 import su.afk.kemonos.posts.data.api.PostsApi
 import su.afk.kemonos.posts.data.dto.dms.toDomain
 import su.afk.kemonos.posts.data.dto.hashLookup.toDomain

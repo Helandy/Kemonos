@@ -2,7 +2,7 @@ package su.afk.kemonos.posts.presenter.pagePopularPosts.utils
 
 import android.content.Context
 import su.afk.kemonos.posts.R
-import su.afk.kemonos.posts.api.popular.PopularNavigationDates
+import su.afk.kemonos.domain.models.popular.PopularNavigationDates
 import su.afk.kemonos.posts.domain.model.popular.Period
 import su.afk.kemonos.preferences.ui.DateFormatMode
 import java.time.LocalDate

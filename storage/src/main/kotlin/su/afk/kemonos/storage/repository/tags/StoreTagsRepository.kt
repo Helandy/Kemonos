@@ -1,7 +1,7 @@
 package su.afk.kemonos.storage.repository.tags
 
 import su.afk.kemonos.domain.SelectedSite
-import su.afk.kemonos.posts.api.tags.Tags
+import su.afk.kemonos.domain.models.tags.Tags
 import su.afk.kemonos.preferences.useCase.CacheKeys
 import su.afk.kemonos.preferences.useCase.CacheTimes.TTL_30_DAYS
 import su.afk.kemonos.preferences.useCase.ICacheTimestampUseCase

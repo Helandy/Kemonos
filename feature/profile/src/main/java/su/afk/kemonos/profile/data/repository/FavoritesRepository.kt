@@ -7,7 +7,7 @@ import su.afk.kemonos.domain.SelectedSite
 import su.afk.kemonos.domain.models.PostDomain
 import su.afk.kemonos.domain.models.creator.FavoriteArtist
 import su.afk.kemonos.network.util.call
-import su.afk.kemonos.profile.api.domain.favoriteProfiles.FavoriteSortedType
+import su.afk.kemonos.domain.models.favorites.FavoriteSortedType
 import su.afk.kemonos.profile.data.api.FavoritesApi
 import su.afk.kemonos.profile.data.dto.favorites.artist.FavoriteArtistDto.Companion.toDomain
 import su.afk.kemonos.profile.data.repository.FavoritesRepository.Companion.MIN_POST_SEARCH_QUERY_LENGTH

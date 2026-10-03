@@ -2,8 +2,8 @@ package su.afk.kemonos.creatorPost.data.dto.comments
 
 
 import com.google.gson.annotations.SerializedName
-import su.afk.kemonos.creatorPost.api.domain.model.CommentDomain
-import su.afk.kemonos.creatorPost.api.domain.model.CommentRevision
+import su.afk.kemonos.domain.models.post.CommentDomain
+import su.afk.kemonos.domain.models.post.CommentRevision
 import su.afk.kemonos.creatorPost.data.dto.comments.Revision.Companion.toDomain
 
 internal data class ProfilePostCommentsDto(

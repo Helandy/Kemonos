@@ -1,4 +1,4 @@
-package su.afk.kemonos.profile.api.domain.favoriteProfiles
+package su.afk.kemonos.domain.models.favorites
 
 data class FreshFavoriteArtistKey(
     val name: String,

@@ -3,7 +3,7 @@ package su.afk.kemonos.creatorPost.domain.media
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
-import su.afk.kemonos.creatorPost.api.domain.model.media.MediaInfo
+import su.afk.kemonos.domain.models.media.MediaInfo
 import su.afk.kemonos.domain.SelectedSite
 import su.afk.kemonos.domain.mediaUrlScheme
 import su.afk.kemonos.storage.api.repository.media.IStorageMediaInfoRepository

@@ -5,7 +5,7 @@ import su.afk.kemonos.domain.models.creator.FavoriteArtist
 import su.afk.kemonos.preferences.useCase.CacheKeys.FAVORITES_ARTISTS
 import su.afk.kemonos.preferences.useCase.CacheTimes.TTL_1_HOURS
 import su.afk.kemonos.preferences.useCase.ICacheTimestampUseCase
-import su.afk.kemonos.profile.api.domain.favoriteProfiles.FavoriteSortedType
+import su.afk.kemonos.domain.models.favorites.FavoriteSortedType
 import su.afk.kemonos.storage.api.repository.favorites.artist.IStoreFavoriteArtistsRepository
 import su.afk.kemonos.storage.entity.favorites.artist.FavoriteArtistEntity.Companion.toDomain
 import su.afk.kemonos.storage.entity.favorites.artist.FavoriteArtistEntity.Companion.toEntity

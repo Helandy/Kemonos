@@ -1,4 +1,4 @@
-package su.afk.kemonos.creatorPost.api.domain.model.media
+package su.afk.kemonos.domain.models.media
 
 data class MediaInfo(
     val durationMs: Long,

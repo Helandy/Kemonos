@@ -1,4 +1,4 @@
-package su.afk.kemonos.profile.api.domain.favoriteProfiles
+package su.afk.kemonos.domain.models.favorites
 
 import kotlinx.serialization.Serializable
 

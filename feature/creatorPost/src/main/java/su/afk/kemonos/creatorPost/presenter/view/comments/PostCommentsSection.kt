@@ -14,7 +14,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import su.afk.kemonos.creatorPost.api.domain.model.CommentDomain
+import su.afk.kemonos.domain.models.post.CommentDomain
 import su.afk.kemonos.preferences.ui.DateFormatMode
 import su.afk.kemonos.ui.R
 import su.afk.kemonos.ui.date.toUiDateTime

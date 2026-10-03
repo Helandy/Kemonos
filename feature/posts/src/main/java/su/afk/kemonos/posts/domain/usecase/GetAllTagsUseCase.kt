@@ -1,7 +1,7 @@
 package su.afk.kemonos.posts.domain.usecase
 
 import su.afk.kemonos.domain.SelectedSite
-import su.afk.kemonos.posts.api.tags.Tags
+import su.afk.kemonos.domain.models.tags.Tags
 import su.afk.kemonos.posts.domain.repository.IPostsRepository
 import javax.inject.Inject
 

@@ -1,7 +1,7 @@
 package su.afk.kemonos.creatorPost.data.dto.file
 
 import com.google.gson.annotations.SerializedName
-import su.afk.kemonos.creatorPost.api.domain.model.media.MediaInfo
+import su.afk.kemonos.domain.models.media.MediaInfo
 
 internal data class FileInfoResponseDto(
     @SerializedName("sizeBytes")

@@ -4,7 +4,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.withContext
-import su.afk.kemonos.creatorPost.api.domain.model.PostContentDomain
+import su.afk.kemonos.domain.models.post.PostContentDomain
 import su.afk.kemonos.creatorPost.domain.useCase.GetCommentsUseCase
 import su.afk.kemonos.creatorPost.domain.useCase.GetPostUseCase
 import su.afk.kemonos.creatorPost.presenter.model.LoadRequest

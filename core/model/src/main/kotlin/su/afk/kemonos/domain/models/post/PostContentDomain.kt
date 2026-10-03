@@ -1,4 +1,4 @@
-package su.afk.kemonos.creatorPost.api.domain.model
+package su.afk.kemonos.domain.models.post
 
 import kotlinx.serialization.Serializable
 import su.afk.kemonos.domain.models.AttachmentDomain

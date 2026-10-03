@@ -1,7 +1,7 @@
 package su.afk.kemonos.storage.api.repository.favorites.updates
 
 import su.afk.kemonos.domain.SelectedSite
-import su.afk.kemonos.profile.api.domain.favoriteProfiles.FreshFavoriteArtistKey
+import su.afk.kemonos.domain.models.favorites.FreshFavoriteArtistKey
 
 data class StoredFreshFavoriteArtistKey(
     val site: SelectedSite,

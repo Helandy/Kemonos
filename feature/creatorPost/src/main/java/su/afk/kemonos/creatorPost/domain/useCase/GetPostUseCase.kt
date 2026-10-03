@@ -1,6 +1,6 @@
 package su.afk.kemonos.creatorPost.domain.useCase
 
-import su.afk.kemonos.creatorPost.api.domain.model.PostContentDomain
+import su.afk.kemonos.domain.models.post.PostContentDomain
 import su.afk.kemonos.creatorPost.domain.repository.IPostRepository
 import javax.inject.Inject
 

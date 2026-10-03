@@ -1,6 +1,6 @@
 package su.afk.kemonos.posts.presenter.pageTags
 
-import su.afk.kemonos.posts.api.tags.Tags
+import su.afk.kemonos.domain.models.tags.Tags
 import su.afk.kemonos.preferences.ui.UiSettingModel
 import su.afk.kemonos.ui.presenter.baseViewModel.UiEffect
 import su.afk.kemonos.ui.presenter.baseViewModel.UiEvent

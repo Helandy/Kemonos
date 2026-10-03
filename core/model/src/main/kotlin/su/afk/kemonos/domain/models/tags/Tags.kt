@@ -1,4 +1,4 @@
-package su.afk.kemonos.posts.api.tags
+package su.afk.kemonos.domain.models.tags
 
 data class Tags(
     val tags: String?,

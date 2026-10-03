@@ -4,7 +4,7 @@ import com.google.gson.annotations.SerializedName
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import org.jsoup.nodes.Entities
-import su.afk.kemonos.posts.api.dms.DmDomain
+import su.afk.kemonos.domain.models.dms.DmDomain
 
 /**
  * Личное сообщение OnlyHaven.

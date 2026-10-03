@@ -1,4 +1,4 @@
-package su.afk.kemonos.creatorPost.api.domain.model
+package su.afk.kemonos.domain.models.post
 
 data class CommentDomain(
     val id: String,

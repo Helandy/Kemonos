@@ -4,7 +4,7 @@ import androidx.paging.PagingData
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.serialization.Serializable
-import su.afk.kemonos.posts.api.dms.DmDomain
+import su.afk.kemonos.domain.models.dms.DmDomain
 import su.afk.kemonos.preferences.ui.UiSettingModel
 import su.afk.kemonos.ui.presenter.baseViewModel.UiEffect
 import su.afk.kemonos.ui.presenter.baseViewModel.UiEvent

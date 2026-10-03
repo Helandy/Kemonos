@@ -1,6 +1,6 @@
 package su.afk.kemonos.posts.domain.model.dms
 
-import su.afk.kemonos.posts.api.dms.DmDomain
+import su.afk.kemonos.domain.models.dms.DmDomain
 
 internal data class DmsPageDomain(
     val count: Int,

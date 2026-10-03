@@ -6,7 +6,7 @@ import androidx.paging.PagingData
 import kotlinx.coroutines.flow.Flow
 import su.afk.kemonos.domain.SelectedSite
 import su.afk.kemonos.domain.models.PostDomain
-import su.afk.kemonos.posts.api.popular.PopularPosts
+import su.afk.kemonos.domain.models.popular.PopularPosts
 import su.afk.kemonos.posts.domain.model.popular.Period
 import su.afk.kemonos.posts.domain.repository.IPostsRepository
 import su.afk.kemonos.utils.posts.distinctPosts

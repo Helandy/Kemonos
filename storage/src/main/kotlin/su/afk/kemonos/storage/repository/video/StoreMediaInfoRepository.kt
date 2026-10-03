@@ -1,6 +1,6 @@
 package su.afk.kemonos.storage.repository.video
 
-import su.afk.kemonos.creatorPost.api.domain.model.media.MediaInfo
+import su.afk.kemonos.domain.models.media.MediaInfo
 import su.afk.kemonos.domain.SelectedSite
 import su.afk.kemonos.preferences.useCase.CacheTimes.TTL_30_DAYS
 import su.afk.kemonos.storage.api.repository.media.IStorageMediaInfoRepository

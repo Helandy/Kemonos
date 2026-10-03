@@ -1,7 +1,7 @@
 package su.afk.kemonos.storage.api.repository.popular
 
 import su.afk.kemonos.domain.SelectedSite
-import su.afk.kemonos.posts.api.popular.PopularPosts
+import su.afk.kemonos.domain.models.popular.PopularPosts
 
 interface IStoragePopularPostsRepository {
     suspend fun getFreshOrNull(site: SelectedSite, queryKey: String, offset: Int): PopularPosts?

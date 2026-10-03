@@ -7,8 +7,8 @@ import kotlinx.serialization.Serializable
 import su.afk.kemonos.domain.SelectedSite
 import su.afk.kemonos.domain.models.creator.FavoriteArtist
 import su.afk.kemonos.preferences.ui.UiSettingModel
-import su.afk.kemonos.profile.api.domain.favoriteProfiles.FavoriteSortedType
-import su.afk.kemonos.profile.api.domain.favoriteProfiles.FreshFavoriteArtistKey
+import su.afk.kemonos.domain.models.favorites.FavoriteSortedType
+import su.afk.kemonos.domain.models.favorites.FreshFavoriteArtistKey
 import su.afk.kemonos.ui.presenter.baseViewModel.UiEffect
 import su.afk.kemonos.ui.presenter.baseViewModel.UiEvent
 import su.afk.kemonos.ui.presenter.baseViewModel.UiState

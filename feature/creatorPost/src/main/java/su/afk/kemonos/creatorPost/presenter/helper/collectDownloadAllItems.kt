@@ -2,7 +2,7 @@ package su.afk.kemonos.creatorPost.presenter.helper
 
 import su.afk.kemonos.ui.uiUtils.format.buildFileUrl
 import su.afk.kemonos.domain.MediaUrlScheme
-import su.afk.kemonos.creatorPost.api.domain.model.PostContentDomain
+import su.afk.kemonos.domain.models.post.PostContentDomain
 import su.afk.kemonos.domain.models.AttachmentDomain
 import su.afk.kemonos.domain.models.PreviewDomain
 import su.afk.kemonos.domain.models.VideoDomain

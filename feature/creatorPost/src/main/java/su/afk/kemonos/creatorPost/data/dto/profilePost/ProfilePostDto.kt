@@ -4,8 +4,8 @@ import com.google.gson.Gson
 import com.google.gson.JsonElement
 import com.google.gson.annotations.JsonAdapter
 import com.google.gson.annotations.SerializedName
-import su.afk.kemonos.creatorPost.api.domain.model.PostContentDomain
-import su.afk.kemonos.creatorPost.api.domain.model.PostContentRevisionDomain
+import su.afk.kemonos.domain.models.post.PostContentDomain
+import su.afk.kemonos.domain.models.post.PostContentRevisionDomain
 import su.afk.kemonos.creatorPost.data.dto.profilePost.PreviewDto.Companion.toDomain
 import su.afk.kemonos.creatorPost.data.dto.profilePost.VideoDto.Companion.toDomain
 import su.afk.kemonos.network.dto.AttachmentDto

@@ -1,6 +1,6 @@
 package su.afk.kemonos.creatorPost.domain.videoInfo.model
 
-import su.afk.kemonos.creatorPost.api.domain.model.media.MediaInfo
+import su.afk.kemonos.domain.models.media.MediaInfo
 
 internal data class VideoInfo(
     val path: String,

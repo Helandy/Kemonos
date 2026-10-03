@@ -35,7 +35,7 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.flow.Flow
 import su.afk.kemonos.domain.SelectedSite
-import su.afk.kemonos.posts.api.tags.Tags
+import su.afk.kemonos.domain.models.tags.Tags
 import su.afk.kemonos.posts.presenter.pageTags.TagsPageState.Effect
 import su.afk.kemonos.posts.presenter.pageTags.TagsPageState.Event
 import su.afk.kemonos.posts.presenter.pageTags.TagsPageState.State

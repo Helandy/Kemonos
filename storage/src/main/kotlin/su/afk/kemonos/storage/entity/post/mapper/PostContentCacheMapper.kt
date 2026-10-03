@@ -4,8 +4,8 @@ import kotlinx.serialization.KSerializer
 import kotlinx.serialization.builtins.ListSerializer
 import kotlinx.serialization.builtins.serializer
 import kotlinx.serialization.json.Json
-import su.afk.kemonos.creatorPost.api.domain.model.PostContentDomain
-import su.afk.kemonos.creatorPost.api.domain.model.PostContentRevisionDomain
+import su.afk.kemonos.domain.models.post.PostContentDomain
+import su.afk.kemonos.domain.models.post.PostContentRevisionDomain
 import su.afk.kemonos.domain.models.*
 import su.afk.kemonos.storage.entity.post.PostContentCacheEntity
 import javax.inject.Inject

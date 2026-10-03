@@ -2,7 +2,7 @@ package su.afk.kemonos.creatorPost.presenter.delegates
 
 import su.afk.kemonos.auth.IsAuthSiteUseCase
 import kotlinx.coroutines.flow.first
-import su.afk.kemonos.creatorPost.api.domain.model.PostContentDomain
+import su.afk.kemonos.domain.models.post.PostContentDomain
 import su.afk.kemonos.creatorPost.domain.useCase.FavoritesPostUseCase
 import su.afk.kemonos.domain.SelectedSite
 import su.afk.kemonos.preferences.site.ISelectedSiteUseCase
