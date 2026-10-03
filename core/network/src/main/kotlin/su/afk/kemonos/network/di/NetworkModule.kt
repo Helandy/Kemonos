@@ -20,7 +20,7 @@ import su.afk.kemonos.network.auth.AuthCookieInterceptor
 import su.afk.kemonos.network.textInterceptor.TextInterceptor
 import su.afk.kemonos.network.versionInterceptor.VersionInterceptor
 import su.afk.kemonos.preferences.UrlPrefs
-import su.afk.kemonos.preferences.ui.IUiSettingUseCase
+import su.afk.kemonos.preferences.ui.IUiSettingsReader
 import su.afk.kemonos.preferences.ui.UiSettingModel
 import java.util.concurrent.TimeUnit
 import javax.inject.Named
@@ -47,7 +47,7 @@ internal object NetworkModule {
     @Named("VideoPreviewServerBaseUrlProvider")
     fun provideVideoPreviewServerBaseUrlProvider(
         @Named("AppScope") scope: CoroutineScope,
-        uiSettingUseCase: IUiSettingUseCase,
+        uiSettingUseCase: IUiSettingsReader,
     ): BaseUrlProvider = FlowBaseUrlProvider(
         scope = scope,
         initialUrl = "https://preview-disabled.invalid/",

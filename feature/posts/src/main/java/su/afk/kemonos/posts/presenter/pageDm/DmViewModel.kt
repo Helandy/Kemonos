@@ -20,7 +20,7 @@ import su.afk.kemonos.posts.domain.usecase.ObserveBlacklistedAuthorKeysUseCase
 import su.afk.kemonos.posts.presenter.common.observeDistinct
 import su.afk.kemonos.posts.presenter.pageDm.model.DmLoadRequest
 import su.afk.kemonos.preferences.site.ISelectedSiteUseCase
-import su.afk.kemonos.preferences.ui.IUiSettingUseCase
+import su.afk.kemonos.preferences.ui.IUiSettingsReader
 import su.afk.kemonos.storage.api.repository.blacklist.blacklistKey
 import su.afk.kemonos.ui.presenter.baseViewModel.getSerializableState
 import su.afk.kemonos.ui.presenter.baseViewModel.setSerializableState
@@ -30,7 +30,7 @@ import javax.inject.Inject
 @HiltViewModel
 internal class DmViewModel @Inject constructor(
     private val getDmsPagingUseCase: GetDmsPagingUseCase,
-    private val uiSetting: IUiSettingUseCase,
+    private val uiSetting: IUiSettingsReader,
     private val observeBlacklistedAuthorKeys: ObserveBlacklistedAuthorKeysUseCase,
     private val navManager: NavigationManager,
     private val creatorProfileNavigator: ICreatorProfileNavigator,

@@ -17,7 +17,7 @@ import su.afk.kemonos.navigation.storage.NavigationStorage
 import su.afk.kemonos.preferences.favoriteProfiles.IFavoriteProfilesFiltersUseCase
 import su.afk.kemonos.preferences.site.ISelectedSiteUseCase
 import su.afk.kemonos.preferences.site.setSiteAndAwait
-import su.afk.kemonos.preferences.ui.IUiSettingUseCase
+import su.afk.kemonos.preferences.ui.IUiSettingsReader
 import su.afk.kemonos.profile.api.domain.IGetFavoriteArtistsUseCase
 import su.afk.kemonos.domain.models.favorites.FavoriteSortedType
 import su.afk.kemonos.profile.domain.favorites.SyncLocalLikesUseCase
@@ -40,7 +40,7 @@ internal class FavoriteProfilesViewModel @Inject constructor(
     private val navManager: NavigationManager,
     private val creatorProfileNavigator: ICreatorProfileNavigator,
     private val navigationStorage: NavigationStorage,
-    private val uiSetting: IUiSettingUseCase,
+    private val uiSetting: IUiSettingsReader,
     private val freshUpdatesUseCase: IFreshFavoriteArtistsUpdatesUseCase,
     savedStateHandle: SavedStateHandle,
     override val errorHandler: IErrorHandlerUseCase,

@@ -18,7 +18,7 @@ import su.afk.kemonos.posts.presenter.delegates.NavigateToPostDelegate
 import su.afk.kemonos.posts.presenter.tagsSelect.TagsSelectState.*
 import su.afk.kemonos.posts.util.Const.TAGS_SELECTED_NAV_KEY
 import su.afk.kemonos.preferences.site.ISelectedSiteUseCase
-import su.afk.kemonos.preferences.ui.IUiSettingUseCase
+import su.afk.kemonos.preferences.ui.IUiSettingsReader
 import su.afk.kemonos.storage.api.repository.blacklist.blacklistKey
 import su.afk.kemonos.ui.components.posts.filter.PostMediaFilter
 import su.afk.kemonos.ui.components.posts.filter.matchesMediaFilter
@@ -34,7 +34,7 @@ internal class TagsSelectViewModel @Inject constructor(
     private val navigateToPostDelegate: NavigateToPostDelegate,
     private val navManager: NavigationManager,
     private val navigationStorage: NavigationStorage,
-    private val uiSetting: IUiSettingUseCase,
+    private val uiSetting: IUiSettingsReader,
     private val observeBlacklistedAuthorKeys: ObserveBlacklistedAuthorKeysUseCase,
     savedStateHandle: SavedStateHandle,
     override val errorHandler: IErrorHandlerUseCase,

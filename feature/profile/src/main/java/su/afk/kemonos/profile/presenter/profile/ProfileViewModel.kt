@@ -26,7 +26,7 @@ import su.afk.kemonos.navigation.NavigationManager
 import su.afk.kemonos.navigation.storage.NavigationStorage
 import su.afk.kemonos.preferences.site.ISelectedSiteUseCase
 import su.afk.kemonos.preferences.site.setSiteAndAwait
-import su.afk.kemonos.preferences.ui.IUiSettingUseCase
+import su.afk.kemonos.preferences.ui.IUiSettingsReader
 import su.afk.kemonos.profile.R
 import su.afk.kemonos.profile.api.model.Login
 import su.afk.kemonos.profile.domain.favorites.*
@@ -56,7 +56,7 @@ internal class ProfileViewModel @Inject constructor(
     private val downloadNavigator: IDownloadNavigator,
     private val getSettingDestinationUseCase: IGetSettingDestinationUseCase,
     private val logoutDelegate: LogoutDelegate,
-    private val uiSetting: IUiSettingUseCase,
+    private val uiSetting: IUiSettingsReader,
     private val prepareFavoritesExportUseCase: PrepareFavoritesExportUseCase,
     private val importFavoritesFromJsonUseCase: ImportFavoritesFromJsonUseCase,
     private val readJsonFromUriUseCase: ReadJsonFromUriUseCase,

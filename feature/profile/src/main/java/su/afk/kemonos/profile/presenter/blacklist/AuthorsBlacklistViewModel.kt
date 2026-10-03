@@ -21,7 +21,7 @@ import su.afk.kemonos.preferences.domainResolver.IDomainResolver
 import su.afk.kemonos.preferences.domainResolver.selectedSiteByService
 import su.afk.kemonos.preferences.site.ISelectedSiteUseCase
 import su.afk.kemonos.preferences.site.setSiteAndAwait
-import su.afk.kemonos.preferences.ui.IUiSettingUseCase
+import su.afk.kemonos.preferences.ui.IUiSettingsReader
 import su.afk.kemonos.profile.R
 import su.afk.kemonos.profile.domain.blacklist.BlacklistImportEntryReason
 import su.afk.kemonos.profile.domain.blacklist.BlacklistImportEntryStatus
@@ -55,7 +55,7 @@ internal class AuthorsBlacklistViewModel @Inject constructor(
     private val importBlacklistFromJsonUseCase: ImportBlacklistFromJsonUseCase,
     private val readJsonFromUriUseCase: ReadJsonFromUriUseCase,
     private val saveJsonToFolderUseCase: SaveJsonToFolderUseCase,
-    private val uiSetting: IUiSettingUseCase,
+    private val uiSetting: IUiSettingsReader,
     @param:ApplicationContext private val appContext: Context,
     savedStateHandle: SavedStateHandle,
     override val errorHandler: IErrorHandlerUseCase,

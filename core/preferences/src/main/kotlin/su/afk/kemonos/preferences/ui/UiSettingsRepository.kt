@@ -60,10 +60,12 @@ import su.afk.kemonos.preferences.ui.UiSettingKey.USE_PREVIEW_ONLY_IN_IMAGE_VIEW
 import su.afk.kemonos.preferences.ui.UiSettingKey.VIDEO_PREVIEW_ASPECT_RATIO
 import su.afk.kemonos.preferences.ui.UiSettingKey.VIDEO_PREVIEW_SERVER_URL
 import javax.inject.Inject
+import javax.inject.Singleton
 
-internal class UiSettingUseCase @Inject constructor(
+@Singleton
+internal class UiSettingsRepository @Inject constructor(
     private val dataStore: DataStore<Preferences>,
-) : IUiSettingUseCase {
+) : IUiSettingsReader, IUiSettingsWriter {
 
     override val prefs: Flow<UiSettingModel> = dataStore.data.map { p ->
         val legacyPostsSize = p.readEnum(POSTS_SIZE, UiSettingModel.DEFAULT_POSTS_SIZE)

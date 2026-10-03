@@ -13,7 +13,7 @@ import su.afk.kemonos.domain.SelectedSite
 import su.afk.kemonos.preferences.GetRootUrlUseCase
 import su.afk.kemonos.preferences.domainResolver.IDomainResolver
 import su.afk.kemonos.preferences.siteUrl.IGetBaseUrlsUseCase
-import su.afk.kemonos.preferences.ui.IUiSettingUseCase
+import su.afk.kemonos.preferences.ui.IUiSettingsReader
 import su.afk.kemonos.preferences.useCase.CacheKeys
 import su.afk.kemonos.preferences.useCase.CacheTimes
 import su.afk.kemonos.preferences.useCase.ICacheTimestampUseCase
@@ -34,7 +34,7 @@ class SettingViewModel @Inject constructor(
     private val getBaseUrlsUseCase: IGetBaseUrlsUseCase,
     private val domainResolver: IDomainResolver,
     private val cacheTimestamps: ICacheTimestampUseCase,
-    private val uiSetting: IUiSettingUseCase,
+    private val uiSetting: IUiSettingsReader,
     private val uiPrefsDelegate: SettingUiPreferencesDelegate,
     private val apiDelegate: SettingApiDelegate,
     private val cacheDelegate: SettingCacheDelegate,

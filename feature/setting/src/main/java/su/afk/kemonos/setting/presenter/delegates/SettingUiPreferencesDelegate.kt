@@ -2,12 +2,12 @@ package su.afk.kemonos.setting.presenter.delegates
 
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
-import su.afk.kemonos.preferences.ui.IUiSettingUseCase
+import su.afk.kemonos.preferences.ui.IUiSettingsWriter
 import su.afk.kemonos.setting.presenter.SettingState
 import javax.inject.Inject
 
 class SettingUiPreferencesDelegate @Inject constructor(
-    private val uiSetting: IUiSettingUseCase
+    private val uiSetting: IUiSettingsWriter
 ) {
     fun handle(event: SettingState.Event.ChangeViewSetting, scope: CoroutineScope) {
         when (event) {

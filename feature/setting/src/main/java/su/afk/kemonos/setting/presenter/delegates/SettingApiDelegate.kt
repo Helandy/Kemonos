@@ -8,7 +8,7 @@ import su.afk.kemonos.preferences.domainResolver.SiteHostConfig
 import su.afk.kemonos.preferences.domainResolver.SiteHostConfigResolver
 import su.afk.kemonos.preferences.siteUrl.ISetBaseUrlsUseCase
 import su.afk.kemonos.preferences.siteUrl.SiteUrlUpdate
-import su.afk.kemonos.preferences.ui.IUiSettingUseCase
+import su.afk.kemonos.preferences.ui.IUiSettingsWriter
 import su.afk.kemonos.preferences.ui.UiSettingModel
 import su.afk.kemonos.setting.presenter.SettingState
 import su.afk.kemonos.utils.url.buildBaseUrl
@@ -19,7 +19,7 @@ import javax.inject.Inject
 
 class SettingApiDelegate @Inject constructor(
     private val setBaseUrlsUseCase: ISetBaseUrlsUseCase,
-    private val uiSetting: IUiSettingUseCase,
+    private val uiSetting: IUiSettingsWriter,
     private val errorHandler: IErrorHandlerUseCase,
 ) {
     fun handle(

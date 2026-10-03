@@ -18,7 +18,7 @@ import su.afk.kemonos.posts.presenter.common.observeDistinct
 import su.afk.kemonos.posts.presenter.delegates.NavigateToPostDelegate
 import su.afk.kemonos.posts.presenter.pageHashLookup.HashLookupState.*
 import su.afk.kemonos.preferences.site.ISelectedSiteUseCase
-import su.afk.kemonos.preferences.ui.IUiSettingUseCase
+import su.afk.kemonos.preferences.ui.IUiSettingsReader
 import su.afk.kemonos.ui.presenter.changeSite.SiteAwareBaseViewModelNew
 import javax.inject.Inject
 
@@ -26,7 +26,7 @@ import javax.inject.Inject
 internal class HashLookupViewModel @Inject constructor(
     private val getHashLookupUseCase: GetHashLookupUseCase,
     private val navigateToPostDelegate: NavigateToPostDelegate,
-    private val uiSetting: IUiSettingUseCase,
+    private val uiSetting: IUiSettingsReader,
     savedStateHandle: SavedStateHandle,
     override val selectedSiteUseCase: ISelectedSiteUseCase,
     override val errorHandler: IErrorHandlerUseCase,

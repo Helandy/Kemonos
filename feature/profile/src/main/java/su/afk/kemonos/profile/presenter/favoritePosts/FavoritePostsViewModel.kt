@@ -18,7 +18,7 @@ import su.afk.kemonos.navigation.NavigationManager
 import su.afk.kemonos.navigation.storage.NavigationStorage
 import su.afk.kemonos.preferences.site.ISelectedSiteUseCase
 import su.afk.kemonos.preferences.site.setSiteAndAwait
-import su.afk.kemonos.preferences.ui.IUiSettingUseCase
+import su.afk.kemonos.preferences.ui.IUiSettingsReader
 import su.afk.kemonos.profile.domain.favorites.GetFavoriteAuthorNamesUseCase
 import su.afk.kemonos.profile.domain.favorites.GetFavoritePostsUseCase
 import su.afk.kemonos.profile.domain.favorites.SyncLocalLikesUseCase
@@ -43,7 +43,7 @@ internal class FavoritePostsViewModel @Inject constructor(
     private val selectedSiteUseCase: ISelectedSiteUseCase,
     private val getFavoritePostsPagingUseCase: GetFavoritePostsPagingUseCase,
     private val navigationStorage: NavigationStorage,
-    private val uiSetting: IUiSettingUseCase,
+    private val uiSetting: IUiSettingsReader,
     savedStateHandle: SavedStateHandle,
     override val errorHandler: IErrorHandlerUseCase,
     override val retryStorage: RetryStorage,

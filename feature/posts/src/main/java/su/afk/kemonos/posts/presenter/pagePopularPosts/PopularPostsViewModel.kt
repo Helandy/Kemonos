@@ -23,7 +23,7 @@ import su.afk.kemonos.posts.presenter.pagePopularPosts.PopularPostsState.*
 import su.afk.kemonos.posts.presenter.pagePopularPosts.model.PopularRequest
 import su.afk.kemonos.posts.presenter.pagePopularPosts.utils.tripleFor
 import su.afk.kemonos.preferences.site.ISelectedSiteUseCase
-import su.afk.kemonos.preferences.ui.IUiSettingUseCase
+import su.afk.kemonos.preferences.ui.IUiSettingsReader
 import su.afk.kemonos.storage.api.repository.blacklist.blacklistKey
 import su.afk.kemonos.ui.presenter.baseViewModel.getSerializableState
 import su.afk.kemonos.ui.presenter.baseViewModel.setSerializableState
@@ -34,7 +34,7 @@ import javax.inject.Inject
 internal class PopularPostsViewModel @Inject constructor(
     private val getPopularPostsUseCase: GetPopularPostsUseCase,
     private val navigateToPostDelegate: NavigateToPostDelegate,
-    private val uiSetting: IUiSettingUseCase,
+    private val uiSetting: IUiSettingsReader,
     private val observeBlacklistedAuthorKeys: ObserveBlacklistedAuthorKeysUseCase,
     savedStateHandle: SavedStateHandle,
     override val selectedSiteUseCase: ISelectedSiteUseCase,

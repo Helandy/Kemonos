@@ -13,7 +13,7 @@ import org.junit.Assert.assertEquals
 import org.junit.Test
 import java.nio.file.Files
 
-class UiSettingUseCaseVideoPreviewAspectRatioTest {
+class UiSettingsRepositoryVideoPreviewAspectRatioTest {
 
     @Test
     fun unknownAspectRatioFallsBackToDefault() = runBlocking {
@@ -22,7 +22,7 @@ class UiSettingUseCaseVideoPreviewAspectRatioTest {
             prefs[UiSettingKey.VIDEO_PREVIEW_ASPECT_RATIO] = "RATIO_2_1"
         }
 
-        val useCase = UiSettingUseCase(dataStore)
+        val useCase = UiSettingsRepository(dataStore)
         val actual = useCase.prefs.first().videoPreviewAspectRatio
 
         assertEquals(VideoPreviewAspectRatio.RATIO_1_1, actual)
@@ -44,7 +44,7 @@ class UiSettingUseCaseVideoPreviewAspectRatioTest {
                 prefs[UiSettingKey.VIDEO_PREVIEW_ASPECT_RATIO] = rawValue
             }
 
-            val useCase = UiSettingUseCase(dataStore)
+            val useCase = UiSettingsRepository(dataStore)
             val actual = useCase.prefs.first().videoPreviewAspectRatio
 
             assertEquals(expected, actual)

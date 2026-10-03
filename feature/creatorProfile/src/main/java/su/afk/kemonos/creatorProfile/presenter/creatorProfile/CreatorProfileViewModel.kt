@@ -34,7 +34,7 @@ import su.afk.kemonos.creatorProfile.domain.useCase.InvalidateProfilePostsCacheU
 import su.afk.kemonos.creatorProfile.domain.useCase.ObserveAuthorBlacklistedUseCase
 import su.afk.kemonos.creatorProfile.domain.useCase.SetAuthorBlacklistedUseCase
 import su.afk.kemonos.preferences.ui.CreatorProfileTabKey
-import su.afk.kemonos.preferences.ui.IUiSettingUseCase
+import su.afk.kemonos.preferences.ui.IUiSettingsReader
 import su.afk.kemonos.ui.components.posts.filter.matchesMediaFilter
 import su.afk.kemonos.ui.presenter.baseViewModel.BaseViewModelNew
 import su.afk.kemonos.ui.presenter.baseViewModel.getSerializableState
@@ -55,7 +55,7 @@ internal class CreatorProfileViewModel @AssistedInject constructor(
     private val invalidateProfilePostsCache: InvalidateProfilePostsCacheUseCase,
     private val observeAuthorBlacklisted: ObserveAuthorBlacklistedUseCase,
     private val setAuthorBlacklisted: SetAuthorBlacklistedUseCase,
-    private val uiSetting: IUiSettingUseCase,
+    private val uiSetting: IUiSettingsReader,
     @Assisted savedStateHandle: SavedStateHandle,
     override val errorHandler: IErrorHandlerUseCase,
     override val retryStorage: RetryStorage,

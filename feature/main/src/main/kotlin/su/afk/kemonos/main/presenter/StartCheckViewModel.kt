@@ -17,7 +17,8 @@ import su.afk.kemonos.main.presenter.delegates.BaseUrlsObserveDelegate
 import su.afk.kemonos.navigation.NavigationManager
 import su.afk.kemonos.preferences.siteUrl.ISetBaseUrlsUseCase
 import su.afk.kemonos.preferences.siteUrl.SiteUrlUpdate
-import su.afk.kemonos.preferences.ui.IUiSettingUseCase
+import su.afk.kemonos.preferences.ui.IUiSettingsReader
+import su.afk.kemonos.preferences.ui.IUiSettingsWriter
 import su.afk.kemonos.storage.api.clear.IClearCacheStorageUseCase
 import su.afk.kemonos.ui.crash.ICrashReportManager
 import su.afk.kemonos.ui.presenter.baseViewModel.BaseViewModelNew
@@ -34,7 +35,8 @@ internal class StartCheckViewModel @Inject constructor(
     private val apiCheckDelegate: ApiCheckDelegate,
     private val updateGateDelegate: AppUpdateGateDelegate,
     private val baseUrlsObserveDelegate: BaseUrlsObserveDelegate,
-    private val uiSetting: IUiSettingUseCase,
+    private val uiSetting: IUiSettingsReader,
+    private val uiSettingsWriter: IUiSettingsWriter,
     private val crashReportManager: ICrashReportManager,
     savedStateHandle: SavedStateHandle,
     override val errorHandler: IErrorHandlerUseCase,
@@ -170,7 +172,7 @@ internal class StartCheckViewModel @Inject constructor(
                     SiteUrlUpdate(apiUrl = buildBaseUrl(domain))
                 },
             )
-            uiSetting.setEnabledSites(currentState.enabledSites)
+            uiSettingsWriter.setEnabledSites(currentState.enabledSites)
             runApiCheck()
         }
     }

@@ -23,7 +23,7 @@ import su.afk.kemonos.posts.presenter.delegates.NavigateToPostDelegate
 import su.afk.kemonos.posts.presenter.pageSearchPosts.SearchPostsState.*
 import su.afk.kemonos.posts.presenter.pageSearchPosts.model.SearchLoadRequest
 import su.afk.kemonos.preferences.site.ISelectedSiteUseCase
-import su.afk.kemonos.preferences.ui.IUiSettingUseCase
+import su.afk.kemonos.preferences.ui.IUiSettingsReader
 import su.afk.kemonos.storage.api.repository.blacklist.blacklistKey
 import su.afk.kemonos.ui.components.posts.filter.PostMediaFilter
 import su.afk.kemonos.ui.components.posts.filter.matchesMediaFilter
@@ -36,7 +36,7 @@ import javax.inject.Inject
 internal class SearchPostsViewModel @Inject constructor(
     private val getSearchPostsPagingUseCase: GetSearchPostsPagingUseCase,
     private val navigateToPostDelegate: NavigateToPostDelegate,
-    private val uiSetting: IUiSettingUseCase,
+    private val uiSetting: IUiSettingsReader,
     private val observeBlacklistedAuthorKeys: ObserveBlacklistedAuthorKeysUseCase,
     private val observeRecentSearches: ObserveRecentSearchesUseCase,
     private val saveSearchQuery: SaveSearchQueryUseCase,

@@ -25,7 +25,8 @@ import su.afk.kemonos.error.error.IErrorHandlerUseCase
 import su.afk.kemonos.error.error.storage.RetryStorage
 import su.afk.kemonos.navigation.NavigationManager
 import su.afk.kemonos.preferences.site.ISelectedSiteUseCase
-import su.afk.kemonos.preferences.ui.IUiSettingUseCase
+import su.afk.kemonos.preferences.ui.IUiSettingsReader
+import su.afk.kemonos.preferences.ui.IUiSettingsWriter
 import su.afk.kemonos.preferences.ui.UiSettingModel
 import su.afk.kemonos.ui.presenter.baseViewModel.getSerializableState
 import su.afk.kemonos.ui.presenter.baseViewModel.setSerializableState
@@ -41,7 +42,8 @@ internal class CreatorsViewModel @Inject constructor(
     private val listDelegate: CreatorsListDelegate,
     private val randomListDelegate: RandomListDelegate,
     private val videoInfoDomainStatusDelegate: VideoInfoDomainStatusDelegate,
-    private val uiSetting: IUiSettingUseCase,
+    private val uiSetting: IUiSettingsReader,
+    private val uiSettingsWriter: IUiSettingsWriter,
     savedStateHandle: SavedStateHandle,
     override val selectedSiteUseCase: ISelectedSiteUseCase,
     override val errorHandler: IErrorHandlerUseCase,
@@ -139,7 +141,7 @@ internal class CreatorsViewModel @Inject constructor(
         uiSetting.prefs.distinctUntilChanged().onEach { model ->
             if (model.creatorsGithubRateBannerInstallTsMs == 0L) {
                 val now = System.currentTimeMillis()
-                uiSetting.setCreatorsGithubRateBannerInstallTsMs(now)
+                uiSettingsWriter.setCreatorsGithubRateBannerInstallTsMs(now)
 
                 val modelWithInstallTs = model.copy(creatorsGithubRateBannerInstallTsMs = now)
                 ensureSiteEnabled(modelWithInstallTs.enabledSiteList)
@@ -335,7 +337,7 @@ internal class CreatorsViewModel @Inject constructor(
     }
 
     private fun onHideGithubRateBanner() = viewModelScope.launch {
-        uiSetting.setCreatorsGithubRateBannerDisabled(true)
+        uiSettingsWriter.setCreatorsGithubRateBannerDisabled(true)
         setState { copy(showGithubRateBanner = false) }
     }
 

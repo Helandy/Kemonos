@@ -8,14 +8,14 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import su.afk.kemonos.main.api.IMainSettingsSync
 import su.afk.kemonos.preferences.site.ISelectedSiteUseCase
-import su.afk.kemonos.preferences.ui.IUiSettingUseCase
+import su.afk.kemonos.preferences.ui.IUiSettingsReader
 import javax.inject.Inject
 import javax.inject.Named
 import javax.inject.Singleton
 
 @Singleton
 class MainSettingsSync @Inject constructor(
-    private val uiSettingUseCase: IUiSettingUseCase,
+    private val uiSettingUseCase: IUiSettingsReader,
     private val selectedSiteUseCase: ISelectedSiteUseCase,
     @param:Named("AppScope") private val appScope: CoroutineScope,
 ) : IMainSettingsSync {

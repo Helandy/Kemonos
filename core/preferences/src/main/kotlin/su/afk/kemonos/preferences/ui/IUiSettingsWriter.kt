@@ -3,9 +3,8 @@ package su.afk.kemonos.preferences.ui
 import kotlinx.coroutines.flow.Flow
 import su.afk.kemonos.domain.SelectedSite
 
-interface IUiSettingUseCase {
-    val prefs: Flow<UiSettingModel>
-
+/** Изменение UI-настроек. Используется только экранами, которые их редактируют. */
+interface IUiSettingsWriter {
     /** Debug: пропустить проверку API при входе */
     suspend fun setSkipApiCheckOnLogin(value: Boolean)
 
