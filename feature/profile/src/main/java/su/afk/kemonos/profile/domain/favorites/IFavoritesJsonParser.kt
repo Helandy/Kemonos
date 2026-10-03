@@ -13,11 +13,11 @@ internal data class PostImportItem(
 
 internal interface IFavoritesJsonParser {
     /** Number of rows in an exported array; 0 when [rawJson] is not a valid array. */
-    fun countRows(rawJson: String): Int
+    suspend fun countRows(rawJson: String): Int
 
     /** One element per row, `null` for a row that is not a valid artist. Throws if the file is not a JSON array. */
-    fun parseArtists(rawJson: String): List<ArtistImportItem?>
+    suspend fun parseArtists(rawJson: String): List<ArtistImportItem?>
 
     /** One element per row, `null` for a row that is not a valid post. Throws if the file is not a JSON array. */
-    fun parsePosts(rawJson: String): List<PostImportItem?>
+    suspend fun parsePosts(rawJson: String): List<PostImportItem?>
 }

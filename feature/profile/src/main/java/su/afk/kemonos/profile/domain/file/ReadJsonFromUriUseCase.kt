@@ -5,5 +5,5 @@ import javax.inject.Inject
 internal class ReadJsonFromUriUseCase @Inject constructor(
     private val jsonFileStorage: IJsonFileStorage,
 ) {
-    operator fun invoke(fileUri: String): String = jsonFileStorage.read(fileUri)
+    suspend operator fun invoke(fileUri: String): String = jsonFileStorage.read(fileUri)
 }

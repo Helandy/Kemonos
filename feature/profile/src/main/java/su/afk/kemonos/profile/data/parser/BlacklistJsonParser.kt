@@ -1,15 +1,19 @@
 package su.afk.kemonos.profile.data.parser
 
 import com.google.gson.JsonElement
+import kotlinx.coroutines.withContext
 import su.afk.kemonos.profile.domain.blacklist.IBlacklistJsonParser
 import su.afk.kemonos.storage.api.repository.blacklist.BlacklistedAuthor
+import su.afk.kemonos.utils.DispatcherProvider
 import javax.inject.Inject
 
-internal class BlacklistJsonParser @Inject constructor() : IBlacklistJsonParser {
+internal class BlacklistJsonParser @Inject constructor(
+    private val dispatchers: DispatcherProvider,
+) : IBlacklistJsonParser {
 
-    override fun parse(rawJson: String): List<BlacklistedAuthor?> {
+    override suspend fun parse(rawJson: String): List<BlacklistedAuthor?> = withContext(dispatchers.default) {
         val root = parseJsonArrayOrNull(rawJson) ?: error("Invalid blacklist import format")
-        return root.map(::parseItem)
+        root.map(::parseItem)
     }
 
     /** Accepts both new and legacy export fields and maps them to Room model. */

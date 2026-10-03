@@ -5,27 +5,30 @@ import android.content.Intent
 import android.provider.DocumentsContract
 import android.net.Uri
 import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.withContext
 import su.afk.kemonos.profile.domain.file.IJsonFileStorage
+import su.afk.kemonos.utils.DispatcherProvider
 import javax.inject.Inject
 
 /** SAF-реализация: читает и пишет JSON через [android.content.ContentResolver]. */
 internal class JsonFileStorage @Inject constructor(
     @param:ApplicationContext private val appContext: Context,
+    private val dispatchers: DispatcherProvider,
 ) : IJsonFileStorage {
 
-    override fun read(fileUri: String): String {
+    override suspend fun read(fileUri: String): String = withContext(dispatchers.io) {
         val uri = Uri.parse(fileUri)
         val resolver = appContext.contentResolver
         runCatching {
             resolver.takePersistableUriPermission(uri, Intent.FLAG_GRANT_READ_URI_PERMISSION)
         }
 
-        return resolver.openInputStream(uri)?.bufferedReader(Charsets.UTF_8)?.use { reader ->
+        resolver.openInputStream(uri)?.bufferedReader(Charsets.UTF_8)?.use { reader ->
             reader.readText()
         } ?: error("Failed to open import file stream")
     }
 
-    override fun write(folderUri: String, fileName: String, json: String) {
+    override suspend fun write(folderUri: String, fileName: String, json: String) = withContext(dispatchers.io) {
         val folder = Uri.parse(folderUri)
         val resolver = appContext.contentResolver
         val rwFlags = Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_WRITE_URI_PERMISSION

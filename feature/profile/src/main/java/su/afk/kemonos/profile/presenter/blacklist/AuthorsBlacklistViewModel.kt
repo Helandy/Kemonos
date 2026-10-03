@@ -5,13 +5,11 @@ import android.net.Uri
 import androidx.lifecycle.SavedStateHandle
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import su.afk.kemonos.creatorProfile.api.ICreatorProfileNavigator
 import su.afk.kemonos.error.error.IErrorHandlerUseCase
 import su.afk.kemonos.error.error.storage.RetryStorage
@@ -151,22 +149,18 @@ internal class AuthorsBlacklistViewModel @Inject constructor(
 
         setState { copy(isImportExportInProgress = true) }
         val exportResult = runCatching {
-            val items = withContext(Dispatchers.IO) {
-                observeBlacklistedAuthors().first()
-            }
+            val items = observeBlacklistedAuthors().first()
             items.firstOrNull()?.let { firstAuthor ->
                 syncSelectedSiteByService(firstAuthor.service)
             }
             val payload = prepareBlacklistExportUseCase(items)
 
-            withContext(Dispatchers.IO) {
-                saveJsonToFolderUseCase(
-                    folderUri = folderUri.toString(),
-                    fileName = payload.fileName,
-                    json = payload.json,
-                )
-                payload.fileName
-            }
+            saveJsonToFolderUseCase(
+                folderUri = folderUri.toString(),
+                fileName = payload.fileName,
+                json = payload.json,
+            )
+            payload.fileName
         }
         setState { copy(isImportExportInProgress = false) }
 
@@ -196,7 +190,7 @@ internal class AuthorsBlacklistViewModel @Inject constructor(
 
         setState { copy(isImportExportInProgress = true) }
         val importResult = runCatching {
-            val rawJson = withContext(Dispatchers.IO) { readJsonFromUriUseCase(fileUri.toString()) }
+            val rawJson = readJsonFromUriUseCase(fileUri.toString())
             importBlacklistFromJsonUseCase(rawJson)
         }
         setState { copy(isImportExportInProgress = false) }

@@ -5,7 +5,7 @@ import javax.inject.Inject
 internal class SaveJsonToFolderUseCase @Inject constructor(
     private val jsonFileStorage: IJsonFileStorage,
 ) {
-    operator fun invoke(
+    suspend operator fun invoke(
         folderUri: String,
         fileName: String,
         json: String,

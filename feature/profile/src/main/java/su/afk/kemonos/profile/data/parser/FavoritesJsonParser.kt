@@ -1,20 +1,26 @@
 package su.afk.kemonos.profile.data.parser
 
 import com.google.gson.JsonElement
+import kotlinx.coroutines.withContext
 import su.afk.kemonos.profile.domain.favorites.ArtistImportItem
 import su.afk.kemonos.profile.domain.favorites.IFavoritesJsonParser
 import su.afk.kemonos.profile.domain.favorites.PostImportItem
+import su.afk.kemonos.utils.DispatcherProvider
 import javax.inject.Inject
 
-internal class FavoritesJsonParser @Inject constructor() : IFavoritesJsonParser {
+internal class FavoritesJsonParser @Inject constructor(
+    private val dispatchers: DispatcherProvider,
+) : IFavoritesJsonParser {
 
-    override fun countRows(rawJson: String): Int = parseJsonArrayOrNull(rawJson)?.size() ?: 0
+    override suspend fun countRows(rawJson: String): Int = withContext(dispatchers.default) {
+        parseJsonArrayOrNull(rawJson)?.size() ?: 0
+    }
 
-    override fun parseArtists(rawJson: String): List<ArtistImportItem?> =
-        requireArray(rawJson).map(::parseArtist)
+    override suspend fun parseArtists(rawJson: String): List<ArtistImportItem?> =
+        withContext(dispatchers.default) { requireArray(rawJson).map(::parseArtist) }
 
-    override fun parsePosts(rawJson: String): List<PostImportItem?> =
-        requireArray(rawJson).map(::parsePost)
+    override suspend fun parsePosts(rawJson: String): List<PostImportItem?> =
+        withContext(dispatchers.default) { requireArray(rawJson).map(::parsePost) }
 
     private fun requireArray(rawJson: String) =
         parseJsonArrayOrNull(rawJson) ?: error("Invalid import file format")
