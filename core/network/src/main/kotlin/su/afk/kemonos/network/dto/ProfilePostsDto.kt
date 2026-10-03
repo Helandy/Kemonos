@@ -1,4 +1,4 @@
-package su.afk.kemonos.data.dto
+package su.afk.kemonos.network.dto
 
 import com.google.gson.JsonDeserializationContext
 import com.google.gson.JsonDeserializer
@@ -6,10 +6,10 @@ import com.google.gson.JsonElement
 import com.google.gson.annotations.JsonAdapter
 import com.google.gson.annotations.SerializedName
 import java.lang.reflect.Type
-import su.afk.kemonos.data.dto.AttachmentDto.Companion.toDomainOrNull
-import su.afk.kemonos.data.dto.FileDto.Companion.toDomain
-import su.afk.kemonos.data.dto.IncompleteRewardsDto.Companion.toDomain
-import su.afk.kemonos.data.dto.PollDto.Companion.toDomain
+import su.afk.kemonos.network.dto.AttachmentDto.Companion.toDomainOrNull
+import su.afk.kemonos.network.dto.FileDto.Companion.toDomain
+import su.afk.kemonos.network.dto.IncompleteRewardsDto.Companion.toDomain
+import su.afk.kemonos.network.dto.PollDto.Companion.toDomain
 import su.afk.kemonos.domain.models.PostDomain
 
 /** Общая модель для поиск и избранного */

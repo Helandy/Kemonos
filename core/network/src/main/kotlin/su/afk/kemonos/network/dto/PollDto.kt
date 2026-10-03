@@ -1,7 +1,7 @@
-package su.afk.kemonos.data.dto
+package su.afk.kemonos.network.dto
 
 import com.google.gson.annotations.SerializedName
-import su.afk.kemonos.data.dto.ChoicesDto.Companion.toDomain
+import su.afk.kemonos.network.dto.ChoicesDto.Companion.toDomain
 import su.afk.kemonos.domain.models.ChoicesDomain
 import su.afk.kemonos.domain.models.PollDomain
 

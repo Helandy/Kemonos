@@ -1,4 +1,4 @@
-package su.afk.kemonos.data.dto
+package su.afk.kemonos.network.dto
 
 
 import com.google.gson.annotations.SerializedName

@@ -1,4 +1,4 @@
-package su.afk.kemonos.data.dto.onlyhaven
+package su.afk.kemonos.network.dto.onlyhaven
 
 import com.google.gson.annotations.SerializedName
 import su.afk.kemonos.domain.models.AttachmentDomain

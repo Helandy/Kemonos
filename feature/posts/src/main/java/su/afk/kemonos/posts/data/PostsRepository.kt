@@ -1,8 +1,8 @@
 package su.afk.kemonos.posts.data
 
 import kotlinx.coroutines.CancellationException
-import su.afk.kemonos.data.dto.PostUnifiedDto.Companion.toDomain
-import su.afk.kemonos.data.dto.onlyhaven.OnlyHavenPostDto.Companion.toDomain as toOnlyHavenDomain
+import su.afk.kemonos.network.dto.PostUnifiedDto.Companion.toDomain
+import su.afk.kemonos.network.dto.onlyhaven.OnlyHavenPostDto.Companion.toDomain as toOnlyHavenDomain
 import su.afk.kemonos.posts.data.dto.onlyhaven.OnlyHavenDmDto.Companion.toDomain
 import su.afk.kemonos.preferences.domainResolver.IDomainResolver
 import su.afk.kemonos.domain.SelectedSite
