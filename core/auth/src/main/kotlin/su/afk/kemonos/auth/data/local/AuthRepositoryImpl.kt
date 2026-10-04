@@ -81,7 +81,7 @@ internal class AuthRepositoryImpl @Inject constructor(
         refresh.value++
     }
 
-    override suspend fun getSession(site: SelectedSite): String? = readSession(site)
+    override fun getSession(site: SelectedSite): String? = readSession(site)
 
     private fun readSession(site: SelectedSite): String? =
         securePrefs.getString(Keys.session(site), null)

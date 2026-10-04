@@ -3,6 +3,9 @@ package su.afk.kemonos.posts.presenter.tagsSelect
 import androidx.lifecycle.SavedStateHandle
 import androidx.paging.cachedIn
 import androidx.paging.filter
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedFactory
+import dagger.assisted.AssistedInject
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
@@ -10,37 +13,39 @@ import su.afk.kemonos.domain.models.PostDomain
 import su.afk.kemonos.error.error.IErrorHandlerUseCase
 import su.afk.kemonos.error.error.storage.RetryStorage
 import su.afk.kemonos.navigation.NavigationManager
-import su.afk.kemonos.navigation.storage.NavigationStorage
 import su.afk.kemonos.posts.domain.pagingSearch.GetSearchPostsPagingUseCase
-import su.afk.kemonos.posts.presenter.common.observeBlacklistedAuthorKeys
+import su.afk.kemonos.posts.domain.usecase.ObserveBlacklistedAuthorKeysUseCase
+import su.afk.kemonos.posts.navigation.PostsDestination
 import su.afk.kemonos.posts.presenter.common.observeDistinct
 import su.afk.kemonos.posts.presenter.delegates.NavigateToPostDelegate
 import su.afk.kemonos.posts.presenter.tagsSelect.TagsSelectState.*
-import su.afk.kemonos.posts.util.Const.TAGS_SELECTED_NAV_KEY
 import su.afk.kemonos.preferences.site.ISelectedSiteUseCase
-import su.afk.kemonos.preferences.ui.IUiSettingUseCase
-import su.afk.kemonos.storage.api.repository.blacklist.IStoreBlacklistedAuthorsRepository
+import su.afk.kemonos.preferences.ui.IUiSettingsReader
 import su.afk.kemonos.storage.api.repository.blacklist.blacklistKey
 import su.afk.kemonos.ui.components.posts.filter.PostMediaFilter
 import su.afk.kemonos.ui.components.posts.filter.matchesMediaFilter
 import su.afk.kemonos.ui.presenter.baseViewModel.BaseViewModelNew
 import su.afk.kemonos.ui.presenter.baseViewModel.getSerializableState
 import su.afk.kemonos.ui.presenter.baseViewModel.setSerializableState
-import javax.inject.Inject
 
-@HiltViewModel
-internal class TagsSelectViewModel @Inject constructor(
+@HiltViewModel(assistedFactory = TagsSelectViewModel.Factory::class)
+internal class TagsSelectViewModel @AssistedInject constructor(
+    @Assisted private val dest: PostsDestination.TagsSelect,
     private val selectedSiteUseCase: ISelectedSiteUseCase,
     private val getSearchPostsPagingUseCase: GetSearchPostsPagingUseCase,
     private val navigateToPostDelegate: NavigateToPostDelegate,
     private val navManager: NavigationManager,
-    private val navigationStorage: NavigationStorage,
-    private val uiSetting: IUiSettingUseCase,
-    private val blacklistedAuthorsRepository: IStoreBlacklistedAuthorsRepository,
+    private val uiSetting: IUiSettingsReader,
+    private val observeBlacklistedAuthorKeys: ObserveBlacklistedAuthorKeysUseCase,
     savedStateHandle: SavedStateHandle,
     override val errorHandler: IErrorHandlerUseCase,
     override val retryStorage: RetryStorage,
 ) : BaseViewModelNew<State, Event, Effect>(savedStateHandle) {
+
+    @AssistedFactory
+    interface Factory {
+        fun create(dest: PostsDestination.TagsSelect): TagsSelectViewModel
+    }
 
     override fun createInitialState(): State =
         savedStateHandle.getSerializableState<TagsSelectPersistedState>(KEY_STATE)?.toState()
@@ -60,9 +65,7 @@ internal class TagsSelectViewModel @Inject constructor(
         observeTagContentAndBlacklist()
 
         val selectedTag = currentState.selectedTag
-            ?: navigationStorage.consume<String>(TAGS_SELECTED_NAV_KEY)
-                ?.trim()
-                ?.ifEmpty { null }
+            ?: dest.tag.trim().ifEmpty { null }
         selectedTagFlow.value = selectedTag
     }
 
@@ -93,7 +96,7 @@ internal class TagsSelectViewModel @Inject constructor(
         combine(
             selectedTagFlow,
             mediaFilterFlow,
-            blacklistedAuthorsRepository.observeBlacklistedAuthorKeys(),
+            observeBlacklistedAuthorKeys(),
             manualRefreshCounterFlow,
         ) { tag, mediaFilter, blacklistedAuthorKeys, manualRefreshCounter ->
             TagLoadRequest(

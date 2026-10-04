@@ -1,12 +1,13 @@
 package su.afk.kemonos.error.error.storage
 
+import java.util.concurrent.ConcurrentHashMap
 import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
 class RetryStorage @Inject constructor() {
 
-    private val storage = mutableMapOf<String, () -> Unit>()
+    private val storage = ConcurrentHashMap<String, () -> Unit>()
 
     fun put(key: String, action: () -> Unit) {
         storage[key] = action
@@ -14,9 +15,7 @@ class RetryStorage @Inject constructor() {
 
     /** Забрать и удалить */
     fun consume(key: String): (() -> Unit)? {
-        val action = storage[key]
-        storage.remove(key)
-        return action
+        return storage.remove(key)
     }
 
     fun remove(key: String) {

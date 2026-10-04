@@ -1,13 +1,11 @@
 package su.afk.kemonos.app.update.domain.useCase
 
-import android.content.Context
-import dagger.hilt.android.qualifiers.ApplicationContext
 import su.afk.kemonos.app.update.api.model.AppUpdateInfo
 import su.afk.kemonos.app.update.api.useCase.ICheckAppUpdateUseCase
 import su.afk.kemonos.app.update.domain.model.SemanticVersion.Companion.isNewerThan
 import su.afk.kemonos.app.update.domain.model.SemanticVersion.Companion.toSemVerOrNull
 import su.afk.kemonos.app.update.domain.repository.IAppUpdateRepository
-import su.afk.kemonos.app.update.util.currentVersionName
+import su.afk.kemonos.app.update.domain.repository.IAppVersionProvider
 import javax.inject.Inject
 
 /**
@@ -22,12 +20,12 @@ import javax.inject.Inject
  * иначе возвращает null.
  */
 internal class CheckAppUpdateUseCase @Inject constructor(
-    @param:ApplicationContext private val context: Context,
+    private val appVersionProvider: IAppVersionProvider,
     private val repository: IAppUpdateRepository,
 ) : ICheckAppUpdateUseCase {
 
     override suspend operator fun invoke(): AppUpdateInfo? = runCatching {
-        val current = context.currentVersionName().toSemVerOrNull() ?: return null
+        val current = appVersionProvider.currentVersionName().toSemVerOrNull() ?: return null
 
         val remote = repository.getLatestVersion().getOrNull() ?: return null
 

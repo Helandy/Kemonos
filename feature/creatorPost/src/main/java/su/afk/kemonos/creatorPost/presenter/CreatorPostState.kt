@@ -1,8 +1,8 @@
 package su.afk.kemonos.creatorPost.presenter
 
 import kotlinx.serialization.Serializable
-import su.afk.kemonos.creatorPost.api.domain.model.CommentDomain
-import su.afk.kemonos.creatorPost.api.domain.model.PostContentDomain
+import su.afk.kemonos.domain.models.post.CommentDomain
+import su.afk.kemonos.domain.models.post.PostContentDomain
 import su.afk.kemonos.creatorPost.domain.media.model.MediaInfoState
 import su.afk.kemonos.creatorPost.navigation.CreatorPostDestination
 import su.afk.kemonos.domain.models.Profile

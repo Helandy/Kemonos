@@ -1,7 +1,7 @@
 package su.afk.kemonos.creatorPost.data.api
 
 import retrofit2.Response
-import su.afk.kemonos.data.dto.onlyhaven.OnlyHavenPostDto
+import su.afk.kemonos.network.dto.onlyhaven.OnlyHavenPostDto
 import retrofit2.http.GET
 import retrofit2.http.Path
 import su.afk.kemonos.creatorPost.data.dto.comments.ProfilePostCommentsDto

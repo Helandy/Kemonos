@@ -34,5 +34,4 @@ dependencies {
 
     implementation(project(":core:navigation"))
     implementation(project(":core:model"))
-    implementation(project(":feature:commonScreen-api"))
 }

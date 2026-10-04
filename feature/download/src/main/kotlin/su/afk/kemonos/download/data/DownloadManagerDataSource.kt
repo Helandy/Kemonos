@@ -6,15 +6,17 @@ import android.database.Cursor
 import dagger.hilt.android.qualifiers.ApplicationContext
 import su.afk.kemonos.download.domain.model.DownloadManagerSnapshot
 import su.afk.kemonos.download.domain.repository.DownloadManagerDataSource
-import su.afk.kemonos.utils.withIo
+import kotlinx.coroutines.withContext
+import su.afk.kemonos.utils.DispatcherProvider
 import javax.inject.Inject
 
 internal class DownloadManagerDataSourceImpl @Inject constructor(
     @ApplicationContext context: Context,
+    private val dispatchers: DispatcherProvider,
 ) : DownloadManagerDataSource {
     private val downloadManager = context.getSystemService(Context.DOWNLOAD_SERVICE) as DownloadManager
 
-    override suspend fun querySnapshots(ids: List<Long>): Map<Long, DownloadManagerSnapshot> = withIo {
+    override suspend fun querySnapshots(ids: List<Long>): Map<Long, DownloadManagerSnapshot> = withContext(dispatchers.io) {
         if (ids.isEmpty()) {
             emptyMap()
         } else buildMap {
@@ -55,7 +57,7 @@ internal class DownloadManagerDataSourceImpl @Inject constructor(
         }
     }
 
-    override suspend fun remove(id: Long): Int = withIo {
+    override suspend fun remove(id: Long): Int = withContext(dispatchers.io) {
         downloadManager.remove(id)
     }
 }

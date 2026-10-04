@@ -2,7 +2,7 @@ package su.afk.kemonos.storage.repository.favorites.updates
 
 import su.afk.kemonos.domain.SelectedSite
 import su.afk.kemonos.preferences.useCase.CacheTimes.TTL_3_DAYS
-import su.afk.kemonos.profile.api.domain.favoriteProfiles.FreshFavoriteArtistKey
+import su.afk.kemonos.domain.models.favorites.FreshFavoriteArtistKey
 import su.afk.kemonos.storage.api.repository.favorites.updates.IFreshFavoriteArtistsUpdatesRepository
 import su.afk.kemonos.storage.api.repository.favorites.updates.StoredFreshFavoriteArtistKey
 import su.afk.kemonos.storage.entity.favorites.updates.FreshFavoriteArtistUpdateEntity

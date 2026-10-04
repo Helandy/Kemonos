@@ -1,6 +1,9 @@
 package su.afk.kemonos.profile.presenter.register
 
 import androidx.lifecycle.SavedStateHandle
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedFactory
+import dagger.assisted.AssistedInject
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import su.afk.kemonos.domain.SelectedSite
@@ -8,26 +11,28 @@ import su.afk.kemonos.domain.models.ErrorItem
 import su.afk.kemonos.error.error.IErrorHandlerUseCase
 import su.afk.kemonos.error.error.storage.RetryStorage
 import su.afk.kemonos.navigation.NavigationManager
-import su.afk.kemonos.navigation.storage.NavigationStorage
 import su.afk.kemonos.preferences.site.ISelectedSiteUseCase
 import su.afk.kemonos.profile.domain.register.RegisterResult
 import su.afk.kemonos.profile.domain.register.RegisterUseCase
 import su.afk.kemonos.profile.navigation.AuthDestination
 import su.afk.kemonos.profile.presenter.register.RegisterState.*
-import su.afk.kemonos.profile.utils.Const.KEY_SELECT_SITE
 import su.afk.kemonos.ui.presenter.baseViewModel.BaseViewModelNew
-import javax.inject.Inject
 
-@HiltViewModel
-internal class RegisterViewModel @Inject constructor(
+@HiltViewModel(assistedFactory = RegisterViewModel.Factory::class)
+internal class RegisterViewModel @AssistedInject constructor(
+    @Assisted private val dest: AuthDestination.Register,
     private val registerUseCase: RegisterUseCase,
     private val navigationManager: NavigationManager,
-    private val navigationStorage: NavigationStorage,
     private val selectedSiteProvider: ISelectedSiteUseCase,
     savedStateHandle: SavedStateHandle,
     override val errorHandler: IErrorHandlerUseCase,
     override val retryStorage: RetryStorage,
 ) : BaseViewModelNew<State, Event, Effect>(savedStateHandle) {
+
+    @AssistedFactory
+    interface Factory {
+        fun create(dest: AuthDestination.Register): RegisterViewModel
+    }
 
     /** Начальное состояние экрана регистрации. */
     override fun createInitialState(): State = State()
@@ -40,25 +45,12 @@ internal class RegisterViewModel @Inject constructor(
         setState { copy(isLoading = false, error = null) }
     }
 
-    /** Инициализирует текущий сайт из navigation storage и синхронизирует его в preferences. */
+    /** Синхронизирует сайт, переданный в аргументах destination, в preferences. */
     init {
-        val selectSite = navigationStorage.consume<SelectedSite>(KEY_SELECT_SITE)
-
-        if (selectSite != null) {
-            viewModelScope.launch {
-                selectedSiteProvider.setSite(selectSite)
-            }
-            setState { copy(selectSite = selectSite) }
-        } else {
-            setState {
-                copy(
-                    error = ErrorItem(
-                        title = "Error",
-                        message = "Couldn't identify the site (navigation error)"
-                    )
-                )
-            }
+        viewModelScope.launch {
+            selectedSiteProvider.setSite(dest.site)
         }
+        setState { copy(selectSite = dest.site) }
     }
 
     /** Центральная обработка UI-событий экрана регистрации. */
@@ -137,15 +129,13 @@ internal class RegisterViewModel @Inject constructor(
 
     /** Явный переход на экран логина с сохранением выбранного сайта. */
     private fun onNavigateToLoginClick() {
-        navigationStorage.put(KEY_SELECT_SITE, currentState.selectSite)
-        navigationManager.replace(AuthDestination.Login)
+        navigationManager.replace(AuthDestination.Login(currentState.selectSite))
     }
 
     /** Завершает post-register flow после попытки сохранения пароля. */
     private fun onPasswordSaveFinished() {
         if (!pendingNavigateToLogin) return
         pendingNavigateToLogin = false
-        navigationStorage.put(KEY_SELECT_SITE, currentState.selectSite)
-        navigationManager.replace(AuthDestination.Login)
+        navigationManager.replace(AuthDestination.Login(currentState.selectSite))
     }
 }

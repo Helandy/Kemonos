@@ -20,7 +20,7 @@ import su.afk.kemonos.download.api.IDownloadUtil
 import su.afk.kemonos.error.error.IErrorHandlerUseCase
 import su.afk.kemonos.error.error.storage.RetryStorage
 import su.afk.kemonos.navigation.NavigationManager
-import su.afk.kemonos.preferences.ui.IUiSettingUseCase
+import su.afk.kemonos.preferences.ui.IUiSettingsReader
 import su.afk.kemonos.ui.imageLoader.imageProgress.ImageProgressStore
 import su.afk.kemonos.ui.presenter.baseViewModel.BaseViewModelNew
 import su.afk.kemonos.ui.presenter.baseViewModel.getSerializableState
@@ -35,7 +35,7 @@ internal class ImageViewViewModel @AssistedInject constructor(
     private val navManager: NavigationManager,
     private val progressStore: ImageProgressStore,
     private val downloadUtil: IDownloadUtil,
-    private val uiSettingUseCase: IUiSettingUseCase,
+    private val uiSettingUseCase: IUiSettingsReader,
     @Assisted savedStateHandle: SavedStateHandle,
     override val errorHandler: IErrorHandlerUseCase,
     override val retryStorage: RetryStorage

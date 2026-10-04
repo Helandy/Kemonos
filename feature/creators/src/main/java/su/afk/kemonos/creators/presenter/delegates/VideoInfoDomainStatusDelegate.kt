@@ -1,17 +1,18 @@
 package su.afk.kemonos.creators.presenter.delegates
 
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import org.json.JSONObject
+import su.afk.kemonos.utils.DispatcherProvider
 import javax.inject.Inject
 import javax.inject.Named
 
 internal class VideoInfoDomainStatusDelegate @Inject constructor(
     @param:Named("VideoInfoClientRemote") private val client: OkHttpClient,
+    private val dispatchers: DispatcherProvider,
 ) {
-    suspend fun check(): Boolean = withContext(Dispatchers.IO) {
+    suspend fun check(): Boolean = withContext(dispatchers.io) {
         runCatching {
             val request = Request.Builder()
                 .url(STATUS_URL_PLACEHOLDER)

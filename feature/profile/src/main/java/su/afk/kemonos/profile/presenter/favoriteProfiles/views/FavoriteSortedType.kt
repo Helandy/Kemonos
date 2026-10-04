@@ -4,7 +4,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.stringResource
 import su.afk.kemonos.domain.models.creator.FavoriteArtist
 import su.afk.kemonos.profile.R
-import su.afk.kemonos.profile.api.domain.favoriteProfiles.FavoriteSortedType
+import su.afk.kemonos.domain.models.favorites.FavoriteSortedType
 import su.afk.kemonos.ui.components.searchBar.SortOption
 
 @Composable

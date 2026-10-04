@@ -7,7 +7,7 @@ import retrofit2.http.GET
 import retrofit2.http.POST
 import retrofit2.http.Path
 import retrofit2.http.Query
-import su.afk.kemonos.data.dto.PostUnifiedDto
+import su.afk.kemonos.network.dto.PostUnifiedDto
 import su.afk.kemonos.network.auth.AuthCookie
 import su.afk.kemonos.network.textInterceptor.HeaderText
 import su.afk.kemonos.profile.data.dto.favorites.artist.FavoriteArtistDto

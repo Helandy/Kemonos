@@ -5,8 +5,8 @@ import retrofit2.Response
 import retrofit2.http.GET
 import retrofit2.http.Path
 import retrofit2.http.Query
-import su.afk.kemonos.data.dto.PostUnifiedDto
-import su.afk.kemonos.data.dto.onlyhaven.OnlyHavenPostsPageDto
+import su.afk.kemonos.network.dto.PostUnifiedDto
+import su.afk.kemonos.network.dto.onlyhaven.OnlyHavenPostsPageDto
 import su.afk.kemonos.posts.data.dto.onlyhaven.OnlyHavenDmsPageDto
 import su.afk.kemonos.network.textInterceptor.HeaderText
 import su.afk.kemonos.posts.data.dto.PostsDto

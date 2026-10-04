@@ -1,7 +1,7 @@
 package su.afk.kemonos.creatorPost.data.repository
 
-import su.afk.kemonos.creatorPost.api.domain.model.PostContentDomain
-import su.afk.kemonos.creatorPost.api.domain.model.PostContentDomain.Companion.withPawchiveMediaServer
+import su.afk.kemonos.domain.models.post.PostContentDomain
+import su.afk.kemonos.domain.models.post.PostContentDomain.Companion.withPawchiveMediaServer
 import su.afk.kemonos.creatorPost.data.api.PostsApi
 import su.afk.kemonos.creatorPost.data.dto.profilePost.PostResponseDto.Companion.toDomain
 import su.afk.kemonos.creatorPost.data.repository.helper.cacheFirstOrNetwork

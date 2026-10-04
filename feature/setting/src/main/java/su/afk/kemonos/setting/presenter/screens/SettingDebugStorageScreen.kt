@@ -13,8 +13,8 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import su.afk.kemonos.utils.DefaultDispatcherProvider
 import su.afk.kemonos.setting.R
 import su.afk.kemonos.setting.presenter.SettingState.Event
 import su.afk.kemonos.setting.presenter.SettingState.State
@@ -49,7 +49,7 @@ internal fun SettingDebugStorageScreen(
 
         LaunchedEffect(imageLoader, initialInfo) {
             if (initialInfo != null) return@LaunchedEffect
-            info = withContext(Dispatchers.IO) { collectStorageInfo(context) }
+            info = withContext(DefaultDispatcherProvider.io) { collectStorageInfo(context) }
         }
 
         SectionSpacer()

@@ -2,22 +2,23 @@ package su.afk.kemonos.profile.navigation
 
 import androidx.navigation3.runtime.NavKey
 import kotlinx.serialization.Serializable
+import su.afk.kemonos.domain.SelectedSite
 
 internal object AuthDestination {
     @Serializable
     data object Profile : NavKey
 
     @Serializable
-    data object Login : NavKey
+    data class Login(val site: SelectedSite) : NavKey
 
     @Serializable
-    data object Register : NavKey
+    data class Register(val site: SelectedSite) : NavKey
 
     @Serializable
-    data object FavoriteProfiles : NavKey
+    data class FavoriteProfiles(val site: SelectedSite) : NavKey
 
     @Serializable
-    data object FavoritePosts : NavKey
+    data class FavoritePosts(val site: SelectedSite) : NavKey
 
     @Serializable
     data object AuthorsBlacklist : NavKey

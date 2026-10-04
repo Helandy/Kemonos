@@ -1,6 +1,6 @@
 package su.afk.kemonos.storage.api.repository.post
 
-import su.afk.kemonos.creatorPost.api.domain.model.PostContentDomain
+import su.afk.kemonos.domain.models.post.PostContentDomain
 
 interface IStoragePostStorageRepository {
     suspend fun getOrNull(service: String, userId: String, postId: String): PostContentDomain?

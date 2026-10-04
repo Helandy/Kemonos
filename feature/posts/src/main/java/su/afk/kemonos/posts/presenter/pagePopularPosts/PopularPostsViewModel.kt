@@ -16,15 +16,14 @@ import su.afk.kemonos.error.error.storage.RetryStorage
 import su.afk.kemonos.posts.domain.model.popular.Period
 import su.afk.kemonos.posts.domain.model.popular.PopularNavSlot
 import su.afk.kemonos.posts.domain.pagingPopular.GetPopularPostsUseCase
-import su.afk.kemonos.posts.presenter.common.observeBlacklistedAuthorKeys
+import su.afk.kemonos.posts.domain.usecase.ObserveBlacklistedAuthorKeysUseCase
 import su.afk.kemonos.posts.presenter.common.observeDistinct
 import su.afk.kemonos.posts.presenter.delegates.NavigateToPostDelegate
 import su.afk.kemonos.posts.presenter.pagePopularPosts.PopularPostsState.*
 import su.afk.kemonos.posts.presenter.pagePopularPosts.model.PopularRequest
 import su.afk.kemonos.posts.presenter.pagePopularPosts.utils.tripleFor
 import su.afk.kemonos.preferences.site.ISelectedSiteUseCase
-import su.afk.kemonos.preferences.ui.IUiSettingUseCase
-import su.afk.kemonos.storage.api.repository.blacklist.IStoreBlacklistedAuthorsRepository
+import su.afk.kemonos.preferences.ui.IUiSettingsReader
 import su.afk.kemonos.storage.api.repository.blacklist.blacklistKey
 import su.afk.kemonos.ui.presenter.baseViewModel.getSerializableState
 import su.afk.kemonos.ui.presenter.baseViewModel.setSerializableState
@@ -35,8 +34,8 @@ import javax.inject.Inject
 internal class PopularPostsViewModel @Inject constructor(
     private val getPopularPostsUseCase: GetPopularPostsUseCase,
     private val navigateToPostDelegate: NavigateToPostDelegate,
-    private val uiSetting: IUiSettingUseCase,
-    private val blacklistedAuthorsRepository: IStoreBlacklistedAuthorsRepository,
+    private val uiSetting: IUiSettingsReader,
+    private val observeBlacklistedAuthorKeys: ObserveBlacklistedAuthorKeysUseCase,
     savedStateHandle: SavedStateHandle,
     override val selectedSiteUseCase: ISelectedSiteUseCase,
     override val errorHandler: IErrorHandlerUseCase,
@@ -98,7 +97,7 @@ internal class PopularPostsViewModel @Inject constructor(
 
     private fun observePopular() {
         var lastManualRefreshCounter = 0L
-        val blacklistedKeysFlow = blacklistedAuthorsRepository.observeBlacklistedAuthorKeys()
+        val blacklistedKeysFlow = observeBlacklistedAuthorKeys()
 
         combine(
             popularRequestFlow.filterNotNull(),

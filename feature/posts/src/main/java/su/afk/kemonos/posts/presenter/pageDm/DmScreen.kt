@@ -43,7 +43,7 @@ import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import kotlinx.coroutines.flow.Flow
 import su.afk.kemonos.domain.SelectedSite
-import su.afk.kemonos.posts.api.dms.DmDomain
+import su.afk.kemonos.domain.models.dms.DmDomain
 import su.afk.kemonos.posts.presenter.pageDm.DmState.Effect
 import su.afk.kemonos.posts.presenter.pageDm.DmState.Event
 import su.afk.kemonos.posts.presenter.pageDm.DmState.State

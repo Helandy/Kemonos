@@ -30,7 +30,7 @@ import su.afk.kemonos.error.error.storage.RetryStorage
 import su.afk.kemonos.error.error.toFavoriteToastBar
 import su.afk.kemonos.preferences.IGetCurrentSiteRootUrlUseCase
 import su.afk.kemonos.preferences.domainResolver.IDomainResolver
-import su.afk.kemonos.preferences.ui.IUiSettingUseCase
+import su.afk.kemonos.preferences.ui.IUiSettingsReader
 import su.afk.kemonos.preferences.ui.TranslateTarget
 import su.afk.kemonos.ui.presenter.androidView.model.PostBlock
 import su.afk.kemonos.ui.presenter.baseViewModel.BaseViewModelNew
@@ -52,7 +52,7 @@ internal class CreatorPostViewModel @AssistedInject constructor(
     private val navigateDelegates: NavigateDelegates,
     private val downloadUtil: IDownloadUtil,
     private val translator: TextTranslator,
-    private val uiSetting: IUiSettingUseCase,
+    private val uiSetting: IUiSettingsReader,
     @Assisted savedStateHandle: SavedStateHandle,
     override val errorHandler: IErrorHandlerUseCase,
     override val retryStorage: RetryStorage,

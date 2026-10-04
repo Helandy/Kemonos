@@ -1,10 +1,10 @@
 package su.afk.kemonos.creatorPost.data.dto.onlyhaven
 
-import su.afk.kemonos.creatorPost.api.domain.model.PostContentDomain
-import su.afk.kemonos.data.dto.onlyhaven.OnlyHavenAttachmentDto
-import su.afk.kemonos.data.dto.onlyhaven.OnlyHavenAttachmentDto.Companion.toDomainOrNull
-import su.afk.kemonos.data.dto.onlyhaven.OnlyHavenPostDto
-import su.afk.kemonos.data.dto.onlyhaven.OnlyHavenPostDto.Companion.toDomain
+import su.afk.kemonos.domain.models.post.PostContentDomain
+import su.afk.kemonos.network.dto.onlyhaven.OnlyHavenAttachmentDto
+import su.afk.kemonos.network.dto.onlyhaven.OnlyHavenAttachmentDto.Companion.toDomainOrNull
+import su.afk.kemonos.network.dto.onlyhaven.OnlyHavenPostDto
+import su.afk.kemonos.network.dto.onlyhaven.OnlyHavenPostDto.Companion.toDomain
 import su.afk.kemonos.domain.models.PreviewDomain
 import su.afk.kemonos.domain.models.VideoDomain
 

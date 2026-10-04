@@ -8,14 +8,12 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.navigation3.runtime.NavKey
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import su.afk.kemonos.auth.ObserveAuthStateUseCase
 import su.afk.kemonos.domain.SelectedSite
 import su.afk.kemonos.domain.models.AuthUser
@@ -26,7 +24,7 @@ import su.afk.kemonos.navigation.NavigationManager
 import su.afk.kemonos.navigation.storage.NavigationStorage
 import su.afk.kemonos.preferences.site.ISelectedSiteUseCase
 import su.afk.kemonos.preferences.site.setSiteAndAwait
-import su.afk.kemonos.preferences.ui.IUiSettingUseCase
+import su.afk.kemonos.preferences.ui.IUiSettingsReader
 import su.afk.kemonos.profile.R
 import su.afk.kemonos.profile.api.model.Login
 import su.afk.kemonos.profile.domain.favorites.*
@@ -42,7 +40,6 @@ import su.afk.kemonos.profile.presenter.profile.ProfileState.*
 import su.afk.kemonos.profile.presenter.profile.delegate.LogoutDelegate
 import su.afk.kemonos.profile.presenter.profile.model.AuthSnapshot
 import su.afk.kemonos.profile.utils.Const.KEY_IMPORT_RESULT_PAYLOAD
-import su.afk.kemonos.profile.utils.Const.KEY_SELECT_SITE
 import su.afk.kemonos.setting.api.useCase.IGetSettingDestinationUseCase
 import su.afk.kemonos.ui.presenter.baseViewModel.BaseViewModelNew
 import javax.inject.Inject
@@ -56,7 +53,7 @@ internal class ProfileViewModel @Inject constructor(
     private val downloadNavigator: IDownloadNavigator,
     private val getSettingDestinationUseCase: IGetSettingDestinationUseCase,
     private val logoutDelegate: LogoutDelegate,
-    private val uiSetting: IUiSettingUseCase,
+    private val uiSetting: IUiSettingsReader,
     private val prepareFavoritesExportUseCase: PrepareFavoritesExportUseCase,
     private val importFavoritesFromJsonUseCase: ImportFavoritesFromJsonUseCase,
     private val readJsonFromUriUseCase: ReadJsonFromUriUseCase,
@@ -177,17 +174,17 @@ internal class ProfileViewModel @Inject constructor(
             return
         }
 
-        navigateWithSelectedSite(site = site, destination = AuthDestination.Login)
+        navigationManager.navigate(AuthDestination.Login(site))
     }
 
     /** Любимые профили */
     private fun onFavoriteProfilesNavigate(site: SelectedSite) {
-        navigateWithSelectedSite(site = site, destination = AuthDestination.FavoriteProfiles)
+        navigationManager.navigate(AuthDestination.FavoriteProfiles(site))
     }
 
     /** Любимые посты */
     private fun onFavoritePostNavigate(site: SelectedSite) {
-        navigateWithSelectedSite(site = site, destination = AuthDestination.FavoritePosts)
+        navigationManager.navigate(AuthDestination.FavoritePosts(site))
     }
 
     /** Экспорт избранного */
@@ -235,13 +232,11 @@ internal class ProfileViewModel @Inject constructor(
 
         setState { copy(isExportInProgress = true) }
         val saveResult = runCatching {
-            withContext(Dispatchers.IO) {
-                saveJsonToFolderUseCase(
-                    folderUri = folderUri,
-                    fileName = export.fileName,
-                    json = export.json,
-                )
-            }
+            saveJsonToFolderUseCase(
+                folderUri = folderUri.toString(),
+                fileName = export.fileName,
+                json = export.json,
+            )
         }
         setState { copy(isExportInProgress = false) }
 
@@ -287,14 +282,12 @@ internal class ProfileViewModel @Inject constructor(
 
         setState { copy(isImportInProgress = true) }
         val importResult = runCatching {
-            withContext(Dispatchers.IO) {
-                val rawJson = readJsonFromUriUseCase(fileUri)
-                importFavoritesFromJsonUseCase(
-                    site = import.site,
-                    type = import.type,
-                    rawJson = rawJson,
-                )
-            }
+            val rawJson = readJsonFromUriUseCase(fileUri.toString())
+            importFavoritesFromJsonUseCase(
+                site = import.site,
+                type = import.type,
+                rawJson = rawJson,
+            )
         }
         setState { copy(isImportInProgress = false) }
 
@@ -364,11 +357,6 @@ internal class ProfileViewModel @Inject constructor(
     }
 
     /** Навигация с предварительным сохранением выбранного сайта в storage. */
-    private fun navigateWithSelectedSite(site: SelectedSite, destination: NavKey) {
-        navigationStorage.put(KEY_SELECT_SITE, site)
-        navigationManager.navigate(destination)
-    }
-
     /** Keeps selected site aligned with operation target site before API/local work. */
     private suspend fun syncSelectedSite(site: SelectedSite) {
         selectedSiteUseCase.setSiteAndAwait(site)

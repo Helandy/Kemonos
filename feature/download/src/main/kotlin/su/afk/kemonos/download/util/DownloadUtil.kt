@@ -8,9 +8,11 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.first
 import su.afk.kemonos.download.api.IDownloadUtil
 import su.afk.kemonos.preferences.ui.DownloadFolderMode
-import su.afk.kemonos.preferences.ui.IUiSettingUseCase
+import su.afk.kemonos.preferences.ui.IUiSettingsReader
 import su.afk.kemonos.storage.api.repository.download.ITrackedDownloadsRepository
 import su.afk.kemonos.storage.api.repository.download.TrackedDownload
+import kotlinx.coroutines.withContext
+import su.afk.kemonos.utils.DispatcherProvider
 import javax.inject.Inject
 
 private const val APP_DOWNLOAD_DIR = "Kemonos"
@@ -23,8 +25,9 @@ private const val MAX_TITLE_DIR_LEN = 32
  */
 internal class DownloadUtil @Inject constructor(
     @param:ApplicationContext private val context: Context,
-    private val uiSetting: IUiSettingUseCase,
+    private val uiSetting: IUiSettingsReader,
     private val trackedDownloadsRepository: ITrackedDownloadsRepository,
+    private val dispatchers: DispatcherProvider,
 ) : IDownloadUtil {
 
     override suspend fun enqueueSystemDownload(
@@ -65,7 +68,7 @@ internal class DownloadUtil @Inject constructor(
             "$subDir/$safeName"
         )
 
-        val id = downloadManager.enqueue(request)
+        val id = withContext(dispatchers.io) { downloadManager.enqueue(request) }
 
         trackedDownloadsRepository.upsert(
             TrackedDownload(

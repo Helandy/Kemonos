@@ -3,7 +3,7 @@ package su.afk.kemonos.error.error
 import kotlinx.coroutines.CancellationException
 import okhttp3.ResponseBody
 import retrofit2.HttpException
-import su.afk.kemonos.commonscreen.navigator.IErrorNavigator
+import su.afk.kemonos.navigation.IErrorNavigator
 import su.afk.kemonos.domain.models.ErrorItem
 import su.afk.kemonos.error.R
 import su.afk.kemonos.navigation.NavigationManager

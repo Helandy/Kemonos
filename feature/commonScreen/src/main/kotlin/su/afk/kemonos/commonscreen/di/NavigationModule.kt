@@ -9,7 +9,7 @@ import su.afk.kemonos.commonscreen.errorScreen.ErrorNavigator
 import su.afk.kemonos.commonscreen.errorScreen.ErrorNavigatorRegister
 import su.afk.kemonos.commonscreen.errorScreen.domain.ImageViewNavigator
 import su.afk.kemonos.commonscreen.imageViewScreen.ImageViewRegistrar
-import su.afk.kemonos.commonscreen.navigator.IErrorNavigator
+import su.afk.kemonos.navigation.IErrorNavigator
 import su.afk.kemonos.commonscreen.navigator.IImageViewNavigator
 import su.afk.kemonos.navigation.NavRegistrar
 import javax.inject.Singleton

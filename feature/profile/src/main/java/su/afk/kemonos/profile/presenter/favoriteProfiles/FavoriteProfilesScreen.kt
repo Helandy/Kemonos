@@ -18,7 +18,7 @@ import su.afk.kemonos.domain.models.creator.FavoriteArtist
 import su.afk.kemonos.preferences.ui.CreatorViewMode
 import su.afk.kemonos.preferences.ui.UiSettingModel
 import su.afk.kemonos.profile.R
-import su.afk.kemonos.profile.api.domain.favoriteProfiles.FreshFavoriteArtistKey
+import su.afk.kemonos.domain.models.favorites.FreshFavoriteArtistKey
 import su.afk.kemonos.profile.presenter.favoriteProfiles.FavoriteProfilesState.Event
 import su.afk.kemonos.profile.presenter.favoriteProfiles.FavoriteProfilesState.State
 import su.afk.kemonos.profile.presenter.favoriteProfiles.views.favoriteProfilesSortOptions

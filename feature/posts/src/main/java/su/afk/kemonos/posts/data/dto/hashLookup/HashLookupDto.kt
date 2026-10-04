@@ -1,8 +1,8 @@
 package su.afk.kemonos.posts.data.dto.hashLookup
 
 import com.google.gson.annotations.SerializedName
-import su.afk.kemonos.data.dto.PostUnifiedDto
-import su.afk.kemonos.data.dto.PostUnifiedDto.Companion.toDomain
+import su.afk.kemonos.network.dto.PostUnifiedDto
+import su.afk.kemonos.network.dto.PostUnifiedDto.Companion.toDomain
 import su.afk.kemonos.posts.domain.model.hashLookup.HashLookupDomain
 
 internal data class HashLookupDto(

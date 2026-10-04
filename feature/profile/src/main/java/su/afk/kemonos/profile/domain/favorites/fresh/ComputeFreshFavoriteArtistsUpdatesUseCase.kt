@@ -2,7 +2,7 @@ package su.afk.kemonos.profile.domain.favorites.fresh
 
 import su.afk.kemonos.domain.SelectedSite
 import su.afk.kemonos.domain.models.creator.FavoriteArtist
-import su.afk.kemonos.profile.api.domain.favoriteProfiles.FreshFavoriteArtistKey
+import su.afk.kemonos.domain.models.favorites.FreshFavoriteArtistKey
 import java.time.Instant
 import javax.inject.Inject
 

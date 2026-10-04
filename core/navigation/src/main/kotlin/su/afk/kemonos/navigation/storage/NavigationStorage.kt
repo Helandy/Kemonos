@@ -1,13 +1,17 @@
 package su.afk.kemonos.navigation.storage
 
+import java.util.concurrent.ConcurrentHashMap
 import javax.inject.Inject
 import javax.inject.Singleton
 
-/** Переработать в будущем */
+/**
+ * Одноразовая in-memory передача тяжёлых объектов между экранами, которые нельзя положить в NavKey
+ * (не переживает смерть процесса). Для простых аргументов используйте поля destination.
+ */
 @Singleton
 class NavigationStorage @Inject constructor() {
 
-    private val storage = mutableMapOf<String, Any>()
+    private val storage = ConcurrentHashMap<String, Any>()
 
     /** Положить объект по ключу */
     fun <T : Any> put(key: String, obj: T) {

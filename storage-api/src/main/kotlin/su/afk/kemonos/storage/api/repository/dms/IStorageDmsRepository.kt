@@ -1,7 +1,7 @@
 package su.afk.kemonos.storage.api.repository.dms
 
 import su.afk.kemonos.domain.SelectedSite
-import su.afk.kemonos.posts.api.dms.DmDomain
+import su.afk.kemonos.domain.models.dms.DmDomain
 
 interface IStorageDmsRepository {
     suspend fun getFreshPageOrNull(site: SelectedSite, queryKey: String, offset: Int): List<DmDomain>?

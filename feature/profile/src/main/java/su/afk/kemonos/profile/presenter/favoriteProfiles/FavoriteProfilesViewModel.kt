@@ -2,6 +2,9 @@ package su.afk.kemonos.profile.presenter.favoriteProfiles
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.paging.cachedIn
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedFactory
+import dagger.assisted.AssistedInject
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.Job
@@ -13,25 +16,24 @@ import su.afk.kemonos.domain.models.creator.FavoriteArtist
 import su.afk.kemonos.error.error.IErrorHandlerUseCase
 import su.afk.kemonos.error.error.storage.RetryStorage
 import su.afk.kemonos.navigation.NavigationManager
-import su.afk.kemonos.navigation.storage.NavigationStorage
 import su.afk.kemonos.preferences.favoriteProfiles.IFavoriteProfilesFiltersUseCase
 import su.afk.kemonos.preferences.site.ISelectedSiteUseCase
 import su.afk.kemonos.preferences.site.setSiteAndAwait
-import su.afk.kemonos.preferences.ui.IUiSettingUseCase
+import su.afk.kemonos.preferences.ui.IUiSettingsReader
+import su.afk.kemonos.profile.navigation.AuthDestination
 import su.afk.kemonos.profile.api.domain.IGetFavoriteArtistsUseCase
-import su.afk.kemonos.profile.api.domain.favoriteProfiles.FavoriteSortedType
+import su.afk.kemonos.domain.models.favorites.FavoriteSortedType
 import su.afk.kemonos.profile.domain.favorites.SyncLocalLikesUseCase
 import su.afk.kemonos.profile.domain.favorites.creator.GetFavoriteArtistsPagingUseCase
 import su.afk.kemonos.profile.domain.favorites.fresh.IFreshFavoriteArtistsUpdatesUseCase
 import su.afk.kemonos.profile.presenter.favoriteProfiles.FavoriteProfilesState.*
-import su.afk.kemonos.profile.utils.Const.KEY_SELECT_SITE
 import su.afk.kemonos.ui.presenter.baseViewModel.BaseViewModelNew
 import su.afk.kemonos.ui.presenter.baseViewModel.getSerializableState
 import su.afk.kemonos.ui.presenter.baseViewModel.setSerializableState
-import javax.inject.Inject
 
-@HiltViewModel
-internal class FavoriteProfilesViewModel @Inject constructor(
+@HiltViewModel(assistedFactory = FavoriteProfilesViewModel.Factory::class)
+internal class FavoriteProfilesViewModel @AssistedInject constructor(
+    @Assisted private val dest: AuthDestination.FavoriteProfiles,
     private val getFavoriteArtistsUseCase: IGetFavoriteArtistsUseCase,
     private val syncLocalLikesUseCase: SyncLocalLikesUseCase,
     private val getFavoriteArtistsPagingUseCase: GetFavoriteArtistsPagingUseCase,
@@ -39,13 +41,17 @@ internal class FavoriteProfilesViewModel @Inject constructor(
     private val favoriteProfilesFiltersUseCase: IFavoriteProfilesFiltersUseCase,
     private val navManager: NavigationManager,
     private val creatorProfileNavigator: ICreatorProfileNavigator,
-    private val navigationStorage: NavigationStorage,
-    private val uiSetting: IUiSettingUseCase,
+    private val uiSetting: IUiSettingsReader,
     private val freshUpdatesUseCase: IFreshFavoriteArtistsUpdatesUseCase,
     savedStateHandle: SavedStateHandle,
     override val errorHandler: IErrorHandlerUseCase,
     override val retryStorage: RetryStorage,
 ) : BaseViewModelNew<State, Event, Effect>(savedStateHandle) {
+
+    @AssistedFactory
+    interface Factory {
+        fun create(dest: AuthDestination.FavoriteProfiles): FavoriteProfilesViewModel
+    }
 
     private val searchQueryFlow = MutableStateFlow(currentState.searchQuery)
     private var observeJob: Job? = null
@@ -137,8 +143,7 @@ internal class FavoriteProfilesViewModel @Inject constructor(
         val site = if (hasRestoredState) {
             restoredState.selectedSite
         } else {
-            navigationStorage.consume<SelectedSite>(KEY_SELECT_SITE)
-            ?: uiSetting.prefs.first().effectiveDefaultSite
+            dest.site
         }
 
         selectedSiteUseCase.setSiteAndAwait(site)

@@ -2,7 +2,7 @@ package su.afk.kemonos.storage.entity.video
 
 import androidx.room.Entity
 import androidx.room.Index
-import su.afk.kemonos.creatorPost.api.domain.model.media.MediaInfo
+import su.afk.kemonos.domain.models.media.MediaInfo
 import su.afk.kemonos.domain.SelectedSite
 
 @Entity(

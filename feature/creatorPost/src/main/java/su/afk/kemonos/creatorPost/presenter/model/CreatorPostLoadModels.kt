@@ -1,7 +1,7 @@
 package su.afk.kemonos.creatorPost.presenter.model
 
-import su.afk.kemonos.creatorPost.api.domain.model.CommentDomain
-import su.afk.kemonos.creatorPost.api.domain.model.PostContentDomain
+import su.afk.kemonos.domain.models.post.CommentDomain
+import su.afk.kemonos.domain.models.post.PostContentDomain
 import su.afk.kemonos.domain.models.Profile
 import su.afk.kemonos.ui.presenter.androidView.model.PostBlock
 

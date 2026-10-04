@@ -13,8 +13,8 @@ import su.afk.kemonos.creatorProfile.data.dto.profileFanCards.ProfileFanCardsDto
 import su.afk.kemonos.creatorProfile.data.dto.profileLinks.ProfileLinksDto
 import su.afk.kemonos.creatorProfile.data.dto.profileSimilar.SimilarCreatorDto
 import su.afk.kemonos.creatorProfile.data.dto.profileTags.TagDto
-import su.afk.kemonos.data.dto.PostUnifiedDto
-import su.afk.kemonos.data.dto.onlyhaven.OnlyHavenPostsPageDto
+import su.afk.kemonos.network.dto.PostUnifiedDto
+import su.afk.kemonos.network.dto.onlyhaven.OnlyHavenPostsPageDto
 import su.afk.kemonos.creatorProfile.data.dto.onlyhaven.OnlyHavenProfileDto
 import su.afk.kemonos.creatorProfile.data.dto.onlyhaven.OnlyHavenSimilarPageDto
 import su.afk.kemonos.network.textInterceptor.HeaderText

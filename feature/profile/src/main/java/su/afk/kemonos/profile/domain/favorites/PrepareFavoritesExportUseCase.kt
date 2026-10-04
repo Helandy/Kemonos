@@ -1,7 +1,6 @@
 package su.afk.kemonos.profile.domain.favorites
 
 import su.afk.kemonos.domain.displayName
-import com.google.gson.JsonParser
 import su.afk.kemonos.domain.SelectedSite
 import su.afk.kemonos.preferences.site.ISelectedSiteUseCase
 import su.afk.kemonos.profile.domain.repository.IImportExportRepository
@@ -22,6 +21,7 @@ internal data class FavoritesExportPayload(
 internal class PrepareFavoritesExportUseCase @Inject constructor(
     private val selectedSiteUseCase: ISelectedSiteUseCase,
     private val importExportRepository: IImportExportRepository,
+    private val favoritesJsonParser: IFavoritesJsonParser,
 ) {
     suspend operator fun invoke(
         site: SelectedSite,
@@ -32,7 +32,7 @@ internal class PrepareFavoritesExportUseCase @Inject constructor(
             FavoritesExportType.POSTS -> importExportRepository.getFavoritePostsRaw(site)
         }
 
-        val count = extractCount(rawJson)
+        val count = favoritesJsonParser.countRows(rawJson)
         val datePart = LocalDate.now().format(exportDateFormatter)
         val sitePart = site.displayName
         val typePart = when (type) {
@@ -44,13 +44,6 @@ internal class PrepareFavoritesExportUseCase @Inject constructor(
             fileName = "${sitePart}_${typePart}_(${count})_${datePart}.json",
             json = rawJson,
         )
-    }
-
-    private fun extractCount(rawJson: String): Int {
-        return runCatching {
-            val parsed = JsonParser.parseString(rawJson)
-            if (parsed.isJsonArray) parsed.asJsonArray.size() else 0
-        }.getOrDefault(0)
     }
 
     private companion object {

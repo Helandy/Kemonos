@@ -1,7 +1,7 @@
 package su.afk.kemonos.profile.domain.favorites.fresh
 
 import su.afk.kemonos.domain.SelectedSite
-import su.afk.kemonos.profile.api.domain.favoriteProfiles.FreshFavoriteArtistKey
+import su.afk.kemonos.domain.models.favorites.FreshFavoriteArtistKey
 import java.util.concurrent.ConcurrentHashMap
 import javax.inject.Inject
 import javax.inject.Singleton

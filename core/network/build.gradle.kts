@@ -27,6 +27,7 @@ dependencies {
     implementation(libs.bundles.hilt)
 
     implementation(libs.bundles.retrofit)
+    implementation(libs.gson)
     implementation(project(":core:model"))
 
     implementation(project(":core:auth"))

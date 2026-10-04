@@ -12,7 +12,7 @@ import androidx.navigation3.runtime.NavKey
 import dagger.hilt.android.EntryPointAccessors
 import su.afk.kemonos.commonscreen.di.ErrorNavigatorEntryPoint
 import su.afk.kemonos.commonscreen.navigator.CommonScreenDestination
-import su.afk.kemonos.commonscreen.navigator.IErrorNavigator
+import su.afk.kemonos.navigation.IErrorNavigator
 import su.afk.kemonos.domain.models.ErrorItem
 import su.afk.kemonos.navigation.NavRegistrar
 import su.afk.kemonos.navigation.NavigationManager

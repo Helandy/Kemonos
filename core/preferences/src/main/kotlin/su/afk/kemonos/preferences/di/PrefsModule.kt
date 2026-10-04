@@ -12,8 +12,8 @@ import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
+import su.afk.kemonos.utils.DispatcherProvider
 import javax.inject.Named
 import javax.inject.Singleton
 
@@ -24,12 +24,14 @@ object PrefsModule {
     @Provides
     @Singleton
     @Named("AppScope")
-    fun provideAppScope(): CoroutineScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
+    fun provideAppScope(dispatchers: DispatcherProvider): CoroutineScope =
+        CoroutineScope(SupervisorJob() + dispatchers.io)
 
     @Provides
     @Singleton
     @Named("MainScope")
-    fun provideMainScope(): CoroutineScope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
+    fun provideMainScope(dispatchers: DispatcherProvider): CoroutineScope =
+        CoroutineScope(SupervisorJob() + dispatchers.mainImmediate)
 
     @Provides
     @Singleton

@@ -3,7 +3,7 @@ package su.afk.kemonos.storage.repository.popular
 import su.afk.kemonos.storage.entity.popular.dao.PostsPopularCacheDao
 import kotlinx.serialization.json.Json
 import su.afk.kemonos.domain.SelectedSite
-import su.afk.kemonos.posts.api.popular.PopularPosts
+import su.afk.kemonos.domain.models.popular.PopularPosts
 import su.afk.kemonos.preferences.useCase.CacheTimes.TTL_1_HOURS
 import su.afk.kemonos.preferences.useCase.CacheTimes.TTL_3_DAYS
 import su.afk.kemonos.storage.api.repository.popular.IStoragePopularPostsRepository

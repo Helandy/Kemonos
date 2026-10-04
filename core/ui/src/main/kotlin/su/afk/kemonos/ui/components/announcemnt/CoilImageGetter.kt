@@ -14,6 +14,8 @@ import coil3.request.ImageRequest
 import coil3.request.SuccessResult
 import coil3.request.allowHardware
 import kotlinx.coroutines.*
+import su.afk.kemonos.utils.DefaultDispatcherProvider
+import su.afk.kemonos.utils.DispatcherProvider
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.atomic.AtomicBoolean
 import kotlin.coroutines.resume
@@ -40,6 +42,8 @@ class CoilImageGetter(
 
     /** Флаг, идёт ли сейчас скролл LazyColumn */
     private val isScrolling: () -> Boolean,
+
+    private val dispatchers: DispatcherProvider = DefaultDispatcherProvider,
 ) : Html.ImageGetter {
 
     /**
@@ -142,7 +146,7 @@ class CoilImageGetter(
     /**
      * Загружает Image через Coil с включёнными кэшами
      */
-    private suspend fun loadImage(url: String): Image? = withContext(Dispatchers.IO) {
+    private suspend fun loadImage(url: String): Image? = withContext(dispatchers.io) {
         val req = ImageRequest.Builder(textView.context)
             .data(url)
             .allowHardware(false) // TextView не дружит с hardware bitmap
@@ -163,7 +167,7 @@ class CoilImageGetter(
         val now = textWidth(tv)
         if (now > 1) return now
 
-        return withContext(Dispatchers.Main) {
+        return withContext(dispatchers.main) {
             suspendCancellableCoroutine { cont ->
                 val vto = tv.viewTreeObserver
                 val listener = object : ViewTreeObserver.OnGlobalLayoutListener {

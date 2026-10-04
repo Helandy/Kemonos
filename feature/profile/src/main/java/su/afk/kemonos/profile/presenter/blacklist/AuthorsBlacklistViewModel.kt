@@ -5,13 +5,11 @@ import android.net.Uri
 import androidx.lifecycle.SavedStateHandle
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import su.afk.kemonos.creatorProfile.api.ICreatorProfileNavigator
 import su.afk.kemonos.error.error.IErrorHandlerUseCase
 import su.afk.kemonos.error.error.storage.RetryStorage
@@ -21,12 +19,14 @@ import su.afk.kemonos.preferences.domainResolver.IDomainResolver
 import su.afk.kemonos.preferences.domainResolver.selectedSiteByService
 import su.afk.kemonos.preferences.site.ISelectedSiteUseCase
 import su.afk.kemonos.preferences.site.setSiteAndAwait
-import su.afk.kemonos.preferences.ui.IUiSettingUseCase
+import su.afk.kemonos.preferences.ui.IUiSettingsReader
 import su.afk.kemonos.profile.R
 import su.afk.kemonos.profile.domain.blacklist.BlacklistImportEntryReason
 import su.afk.kemonos.profile.domain.blacklist.BlacklistImportEntryStatus
 import su.afk.kemonos.profile.domain.blacklist.ImportBlacklistFromJsonUseCase
 import su.afk.kemonos.profile.domain.blacklist.PrepareBlacklistExportUseCase
+import su.afk.kemonos.profile.domain.blacklist.ObserveBlacklistedAuthorsUseCase
+import su.afk.kemonos.profile.domain.blacklist.RemoveBlacklistedAuthorUseCase
 import su.afk.kemonos.profile.domain.file.ReadJsonFromUriUseCase
 import su.afk.kemonos.profile.domain.file.SaveJsonToFolderUseCase
 import su.afk.kemonos.profile.navigation.AuthDestination
@@ -35,7 +35,6 @@ import su.afk.kemonos.profile.presenter.importResult.ImportResultItem
 import su.afk.kemonos.profile.presenter.importResult.ImportResultPayload
 import su.afk.kemonos.profile.presenter.importResult.ImportResultStatus
 import su.afk.kemonos.profile.utils.Const.KEY_IMPORT_RESULT_PAYLOAD
-import su.afk.kemonos.storage.api.repository.blacklist.IStoreBlacklistedAuthorsRepository
 import su.afk.kemonos.ui.presenter.baseViewModel.BaseViewModelNew
 import su.afk.kemonos.ui.presenter.baseViewModel.getSerializableState
 import su.afk.kemonos.ui.presenter.baseViewModel.setSerializableState
@@ -46,14 +45,15 @@ internal class AuthorsBlacklistViewModel @Inject constructor(
     private val navManager: NavigationManager,
     private val navigationStorage: NavigationStorage,
     private val creatorProfileNavigator: ICreatorProfileNavigator,
-    private val blacklistedAuthorsRepository: IStoreBlacklistedAuthorsRepository,
+    private val observeBlacklistedAuthors: ObserveBlacklistedAuthorsUseCase,
+    private val removeBlacklistedAuthor: RemoveBlacklistedAuthorUseCase,
     private val domainResolver: IDomainResolver,
     private val selectedSiteUseCase: ISelectedSiteUseCase,
     private val prepareBlacklistExportUseCase: PrepareBlacklistExportUseCase,
     private val importBlacklistFromJsonUseCase: ImportBlacklistFromJsonUseCase,
     private val readJsonFromUriUseCase: ReadJsonFromUriUseCase,
     private val saveJsonToFolderUseCase: SaveJsonToFolderUseCase,
-    private val uiSetting: IUiSettingUseCase,
+    private val uiSetting: IUiSettingsReader,
     @param:ApplicationContext private val appContext: Context,
     savedStateHandle: SavedStateHandle,
     override val errorHandler: IErrorHandlerUseCase,
@@ -89,7 +89,7 @@ internal class AuthorsBlacklistViewModel @Inject constructor(
 
     /** Наблюдает за локальным blacklist в Room и обновляет список на экране. */
     private fun observeBlacklist() {
-        blacklistedAuthorsRepository.observeAll()
+        observeBlacklistedAuthors()
             .onEach { items ->
                 setState {
                     copy(
@@ -111,7 +111,7 @@ internal class AuthorsBlacklistViewModel @Inject constructor(
 
     /** Удаляет автора из локального blacklist по service/id. */
     private fun removeAuthor(service: String, creatorId: String) = viewModelScope.launch {
-        blacklistedAuthorsRepository.remove(service = service, creatorId = creatorId)
+        removeBlacklistedAuthor(service = service, creatorId = creatorId)
     }
 
     /** Подтверждает удаление автора из диалога и очищает pending-состояние. */
@@ -149,22 +149,18 @@ internal class AuthorsBlacklistViewModel @Inject constructor(
 
         setState { copy(isImportExportInProgress = true) }
         val exportResult = runCatching {
-            val items = withContext(Dispatchers.IO) {
-                blacklistedAuthorsRepository.observeAll().first()
-            }
+            val items = observeBlacklistedAuthors().first()
             items.firstOrNull()?.let { firstAuthor ->
                 syncSelectedSiteByService(firstAuthor.service)
             }
             val payload = prepareBlacklistExportUseCase(items)
 
-            withContext(Dispatchers.IO) {
-                saveJsonToFolderUseCase(
-                    folderUri = folderUri,
-                    fileName = payload.fileName,
-                    json = payload.json,
-                )
-                payload.fileName
-            }
+            saveJsonToFolderUseCase(
+                folderUri = folderUri.toString(),
+                fileName = payload.fileName,
+                json = payload.json,
+            )
+            payload.fileName
         }
         setState { copy(isImportExportInProgress = false) }
 
@@ -194,7 +190,7 @@ internal class AuthorsBlacklistViewModel @Inject constructor(
 
         setState { copy(isImportExportInProgress = true) }
         val importResult = runCatching {
-            val rawJson = withContext(Dispatchers.IO) { readJsonFromUriUseCase(fileUri) }
+            val rawJson = readJsonFromUriUseCase(fileUri.toString())
             importBlacklistFromJsonUseCase(rawJson)
         }
         setState { copy(isImportExportInProgress = false) }

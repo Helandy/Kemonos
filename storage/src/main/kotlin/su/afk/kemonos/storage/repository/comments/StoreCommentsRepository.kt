@@ -1,6 +1,6 @@
 package su.afk.kemonos.storage.repository.comments
 
-import su.afk.kemonos.creatorPost.api.domain.model.CommentDomain
+import su.afk.kemonos.domain.models.post.CommentDomain
 import su.afk.kemonos.preferences.useCase.CacheTimes.TLL_1_DAYS
 import su.afk.kemonos.preferences.useCase.CacheTimes.TTL_7_DAYS
 import su.afk.kemonos.storage.api.repository.comments.IStoreCommentsRepository

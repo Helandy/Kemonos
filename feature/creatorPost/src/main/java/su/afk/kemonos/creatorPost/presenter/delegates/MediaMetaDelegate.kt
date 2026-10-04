@@ -1,6 +1,6 @@
 package su.afk.kemonos.creatorPost.presenter.delegates
 
-import su.afk.kemonos.creatorPost.api.domain.model.media.MediaInfo
+import su.afk.kemonos.domain.models.media.MediaInfo
 import su.afk.kemonos.creatorPost.domain.file.FileInfoUseCase
 import su.afk.kemonos.creatorPost.domain.media.GetSelfMediaMetaUseCase
 import su.afk.kemonos.creatorPost.domain.media.model.CommonMediaInfo

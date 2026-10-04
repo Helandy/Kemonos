@@ -2,7 +2,7 @@ package su.afk.kemonos.storage.repository.dms
 
 import su.afk.kemonos.storage.entity.dms.dao.DmsCacheDao
 import su.afk.kemonos.domain.SelectedSite
-import su.afk.kemonos.posts.api.dms.DmDomain
+import su.afk.kemonos.domain.models.dms.DmDomain
 import su.afk.kemonos.preferences.useCase.CacheTimes.TTL_3_DAYS
 import su.afk.kemonos.storage.api.repository.dms.IStorageDmsRepository
 import su.afk.kemonos.storage.entity.dms.entity.DmsCacheEntity

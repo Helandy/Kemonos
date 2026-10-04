@@ -7,7 +7,7 @@ import androidx.paging.filter
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import su.afk.kemonos.domain.SelectedSite
-import su.afk.kemonos.posts.api.dms.DmDomain
+import su.afk.kemonos.domain.models.dms.DmDomain
 import su.afk.kemonos.posts.domain.repository.IPostsRepository
 import javax.inject.Inject
 

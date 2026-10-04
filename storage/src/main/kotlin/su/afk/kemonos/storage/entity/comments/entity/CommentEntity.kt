@@ -2,7 +2,7 @@ package su.afk.kemonos.storage.entity.comments.entity
 
 import androidx.room.Entity
 import androidx.room.Index
-import su.afk.kemonos.creatorPost.api.domain.model.CommentDomain
+import su.afk.kemonos.domain.models.post.CommentDomain
 
 @Entity(
     tableName = "comments",

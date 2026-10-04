@@ -1,8 +1,8 @@
 package su.afk.kemonos.creatorPost.data.repository
 
-import su.afk.kemonos.creatorPost.api.domain.model.CommentDomain
-import su.afk.kemonos.creatorPost.api.domain.model.CommentDomain.Companion.toCachePayload
-import su.afk.kemonos.creatorPost.api.domain.model.CommentDomain.Companion.toExternalComments
+import su.afk.kemonos.domain.models.post.CommentDomain
+import su.afk.kemonos.domain.models.post.CommentDomain.Companion.toCachePayload
+import su.afk.kemonos.domain.models.post.CommentDomain.Companion.toExternalComments
 import su.afk.kemonos.creatorPost.data.api.PostsApi
 import su.afk.kemonos.creatorPost.data.dto.comments.ProfilePostCommentsDto.Companion.toDomain
 import su.afk.kemonos.creatorPost.data.repository.helper.cacheFirstOrNetwork

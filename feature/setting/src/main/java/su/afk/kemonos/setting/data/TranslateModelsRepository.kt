@@ -2,18 +2,19 @@ package su.afk.kemonos.setting.data
 
 import android.content.Context
 import dagger.hilt.android.qualifiers.ApplicationContext
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import su.afk.kemonos.setting.domain.model.TranslateModelInfo
 import su.afk.kemonos.setting.domain.repository.ITranslateModelsRepository
+import su.afk.kemonos.utils.DispatcherProvider
 import java.io.File
 import javax.inject.Inject
 
 class TranslateModelsRepository @Inject constructor(
     @param:ApplicationContext private val context: Context,
+    private val dispatchers: DispatcherProvider,
 ) : ITranslateModelsRepository {
 
-    override suspend fun getDownloadedModels(): List<TranslateModelInfo> = withContext(Dispatchers.IO) {
+    override suspend fun getDownloadedModels(): List<TranslateModelInfo> = withContext(dispatchers.io) {
         val root = modelsRootDir()
         if (!root.exists() || !root.isDirectory) return@withContext emptyList()
 
@@ -35,7 +36,7 @@ class TranslateModelsRepository @Inject constructor(
             .toList()
     }
 
-    override suspend fun deleteDownloadedModel(modelId: String): Boolean = withContext(Dispatchers.IO) {
+    override suspend fun deleteDownloadedModel(modelId: String): Boolean = withContext(dispatchers.io) {
         if (!isModelDirectoryName(modelId)) return@withContext false
 
         val dir = File(modelsRootDir(), modelId)

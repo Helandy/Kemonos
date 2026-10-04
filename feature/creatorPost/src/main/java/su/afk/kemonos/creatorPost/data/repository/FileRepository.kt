@@ -1,6 +1,6 @@
 package su.afk.kemonos.creatorPost.data.repository
 
-import su.afk.kemonos.creatorPost.api.domain.model.media.MediaInfo
+import su.afk.kemonos.domain.models.media.MediaInfo
 import su.afk.kemonos.creatorPost.data.api.FileInfoApi
 import su.afk.kemonos.creatorPost.data.dto.file.FileInfoRequestDto
 import su.afk.kemonos.creatorPost.data.dto.file.FileInfoResponseDto.Companion.toMediaInfo

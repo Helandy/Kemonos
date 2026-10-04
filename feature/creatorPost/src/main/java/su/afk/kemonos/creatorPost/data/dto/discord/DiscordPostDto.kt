@@ -1,7 +1,7 @@
 package su.afk.kemonos.creatorPost.data.dto.discord
 
 import com.google.gson.annotations.SerializedName
-import su.afk.kemonos.creatorPost.api.domain.model.PostContentDomain
+import su.afk.kemonos.domain.models.post.PostContentDomain
 import su.afk.kemonos.domain.models.AttachmentDomain
 import su.afk.kemonos.domain.models.PostDomain
 

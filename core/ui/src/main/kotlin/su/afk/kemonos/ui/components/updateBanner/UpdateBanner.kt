@@ -15,12 +15,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.mikepenz.markdown.m3.Markdown
-import su.afk.kemonos.app.update.api.model.AppUpdateInfo
 import su.afk.kemonos.ui.R
 
 @Composable
 fun UpdateBanner(
-    info: AppUpdateInfo,
+    latestVersionName: String,
+    changelog: String,
     onUpdateClick: () -> Unit,
     onLaterClick: () -> Unit,
 ) {
@@ -48,7 +48,7 @@ fun UpdateBanner(
                     Text(
                         text = stringResource(
                             R.string.update_banner_title,
-                            info.latestVersionName
+                            latestVersionName
                         ),
                         style = MaterialTheme.typography.titleMedium,
                         color = MaterialTheme.colorScheme.onPrimaryContainer
@@ -89,7 +89,7 @@ fun UpdateBanner(
                             .padding(4.dp)
                     ) {
                         Markdown(
-                            content = info.changelog,
+                            content = changelog,
                             modifier = Modifier.fillMaxWidth()
                         )
                     }

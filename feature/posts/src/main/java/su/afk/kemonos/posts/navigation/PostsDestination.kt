@@ -8,5 +8,5 @@ object PostsDestination {
     data object PostsPager : NavKey
 
     @Serializable
-    data object TagsSelect : NavKey
+    data class TagsSelect(val tag: String) : NavKey
 }

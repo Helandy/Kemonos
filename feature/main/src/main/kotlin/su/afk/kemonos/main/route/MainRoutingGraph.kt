@@ -23,7 +23,7 @@ import su.afk.kemonos.navigation.NavigationManager
 import su.afk.kemonos.preferences.domainResolver.IDomainResolver
 import su.afk.kemonos.preferences.domainResolver.LocalDomainResolver
 import su.afk.kemonos.preferences.ui.AppThemeMode
-import su.afk.kemonos.preferences.ui.IUiSettingUseCase
+import su.afk.kemonos.preferences.ui.IUiSettingsReader
 import su.afk.kemonos.preferences.ui.UiSettingModel
 import su.afk.kemonos.ui.imageLoader.LocalAppImageLoader
 import su.afk.kemonos.ui.theme.KemonosTheme
@@ -36,7 +36,7 @@ class MainRoutingGraph @Inject constructor(
     private val imageLoader: ImageLoader,
     private val errorHandler: IErrorHandlerUseCase,
     private val navManager: NavigationManager,
-    private val uiSetting: IUiSettingUseCase,
+    private val uiSetting: IUiSettingsReader,
     private val registrars: Set<@JvmSuppressWildcards NavRegistrar>,
 ) : IMainRoutingGraph {
 

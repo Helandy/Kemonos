@@ -2,8 +2,8 @@ package su.afk.kemonos.posts.domain.repository
 
 import su.afk.kemonos.domain.SelectedSite
 import su.afk.kemonos.domain.models.PostDomain
-import su.afk.kemonos.posts.api.popular.PopularPosts
-import su.afk.kemonos.posts.api.tags.Tags
+import su.afk.kemonos.domain.models.popular.PopularPosts
+import su.afk.kemonos.domain.models.tags.Tags
 import su.afk.kemonos.posts.domain.model.dms.DmsPageDomain
 import su.afk.kemonos.posts.domain.model.hashLookup.HashLookupDomain
 import su.afk.kemonos.posts.domain.model.popular.Period

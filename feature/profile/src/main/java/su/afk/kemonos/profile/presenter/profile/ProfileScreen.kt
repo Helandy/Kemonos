@@ -101,15 +101,24 @@ internal fun ProfileScreen(
                         .padding(vertical = 8.dp),
                     verticalArrangement = Arrangement.spacedBy(8.dp),
                 ) {
-                    SecondaryTabRow(
+                    // Scrollable: вкладки подстраиваются под текст, длинные названия не переносятся на узких экранах.
+                    SecondaryScrollableTabRow(
                         selectedTabIndex = pagerState.currentPage.coerceIn(0, pageCount - 1),
                         containerColor = MaterialTheme.colorScheme.surfaceContainerLow,
+                        edgePadding = 0.dp,
                     ) {
                         visibleSites.forEachIndexed { index, site ->
                             Tab(
                                 selected = pagerState.currentPage == index,
                                 onClick = { scope.launch { pagerState.animateScrollToPage(index) } },
-                                text = { Text(text = site.tabTitle(), fontWeight = FontWeight.Medium) },
+                                text = {
+                                    Text(
+                                        text = site.tabTitle(),
+                                        fontWeight = FontWeight.Medium,
+                                        maxLines = 1,
+                                        softWrap = false,
+                                    )
+                                },
                             )
                         }
                     }

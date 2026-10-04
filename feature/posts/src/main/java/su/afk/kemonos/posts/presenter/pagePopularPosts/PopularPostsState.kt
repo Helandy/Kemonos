@@ -5,8 +5,8 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.serialization.Serializable
 import su.afk.kemonos.domain.models.PostDomain
-import su.afk.kemonos.posts.api.popular.PopularInfo
-import su.afk.kemonos.posts.api.popular.PopularProps
+import su.afk.kemonos.domain.models.popular.PopularInfo
+import su.afk.kemonos.domain.models.popular.PopularProps
 import su.afk.kemonos.posts.domain.model.popular.Period
 import su.afk.kemonos.posts.domain.model.popular.PopularNavSlot
 import su.afk.kemonos.preferences.ui.UiSettingModel

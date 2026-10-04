@@ -1,8 +1,5 @@
 package su.afk.kemonos.profile.domain.favorites
 
-import com.google.gson.JsonElement
-import com.google.gson.JsonObject
-import com.google.gson.JsonParser
 import su.afk.kemonos.domain.SelectedSite
 import su.afk.kemonos.preferences.site.ISelectedSiteUseCase
 import su.afk.kemonos.profile.domain.repository.IFavoritesRepository
@@ -47,6 +44,7 @@ internal class ImportFavoritesFromJsonUseCase @Inject constructor(
     private val selectedSiteUseCase: ISelectedSiteUseCase,
     private val favoritesRepository: IFavoritesRepository,
     private val importExportRepository: IImportExportRepository,
+    private val favoritesJsonParser: IFavoritesJsonParser,
 ) {
 
     suspend operator fun invoke(
@@ -64,14 +62,13 @@ internal class ImportFavoritesFromJsonUseCase @Inject constructor(
         site: SelectedSite,
         rawJson: String,
     ): FavoritesImportResult {
-        val root = parseArrayOrThrow(rawJson)
-        val seen = HashSet<String>(root.size())
-        val resultEntries = ArrayList<FavoritesImportEntry>(root.size())
+        val root = favoritesJsonParser.parseArtists(rawJson)
+        val seen = HashSet<String>(root.size)
+        val resultEntries = ArrayList<FavoritesImportEntry>(root.size)
 
         run {
-            root.forEachIndexed { index, element ->
+            root.forEachIndexed { index, parsed ->
                 val rowNumber = index + 1
-                val parsed = parseArtistItem(element)
                 if (parsed == null) {
                     resultEntries += FavoritesImportEntry(
                         rowNumber = rowNumber,
@@ -116,14 +113,13 @@ internal class ImportFavoritesFromJsonUseCase @Inject constructor(
         site: SelectedSite,
         rawJson: String,
     ): FavoritesImportResult {
-        val root = parseArrayOrThrow(rawJson)
-        val seen = HashSet<String>(root.size())
-        val resultEntries = ArrayList<FavoritesImportEntry>(root.size())
+        val root = favoritesJsonParser.parsePosts(rawJson)
+        val seen = HashSet<String>(root.size)
+        val resultEntries = ArrayList<FavoritesImportEntry>(root.size)
 
         run {
-            root.forEachIndexed { index, element ->
+            root.forEachIndexed { index, parsed ->
                 val rowNumber = index + 1
-                val parsed = parsePostItem(element)
                 if (parsed == null) {
                     resultEntries += FavoritesImportEntry(
                         rowNumber = rowNumber,
@@ -164,54 +160,4 @@ internal class ImportFavoritesFromJsonUseCase @Inject constructor(
 
         return FavoritesImportResult(entries = resultEntries)
     }
-
-    private fun parseArtistItem(element: JsonElement): ArtistImportItem? {
-        val obj = element.asObjectOrNull() ?: return null
-        val service = obj.stringField("service") ?: return null
-        val id = obj.stringField("id") ?: return null
-        return ArtistImportItem(
-            service = service,
-            id = id,
-        )
-    }
-
-    private fun parsePostItem(element: JsonElement): PostImportItem? {
-        val obj = element.asObjectOrNull() ?: return null
-        val service = obj.stringField("service") ?: return null
-        val creatorId = obj.stringField("user") ?: return null
-        val postId = obj.stringField("id") ?: return null
-        return PostImportItem(
-            service = service,
-            creatorId = creatorId,
-            postId = postId,
-        )
-    }
-
-    private fun parseArrayOrThrow(rawJson: String) = runCatching {
-        val parsed = JsonParser.parseString(rawJson)
-        if (!parsed.isJsonArray) error("Import file is not a JSON array")
-        parsed.asJsonArray
-    }.getOrElse { error("Invalid import file format") }
-
-    private fun JsonElement.asObjectOrNull(): JsonObject? =
-        if (isJsonObject) asJsonObject else null
-
-    private fun JsonObject.stringField(name: String): String? =
-        runCatching { get(name) }
-            .getOrNull()
-            ?.takeIf { !it.isJsonNull }
-            ?.let { runCatching { it.asString }.getOrNull() }
-            ?.trim()
-            ?.takeIf { it.isNotEmpty() }
-
-    private data class ArtistImportItem(
-        val service: String,
-        val id: String,
-    )
-
-    private data class PostImportItem(
-        val service: String,
-        val creatorId: String,
-        val postId: String,
-    )
 }

@@ -1,6 +1,6 @@
 package su.afk.kemonos.storage.repository.post
 
-import su.afk.kemonos.creatorPost.api.domain.model.PostContentDomain
+import su.afk.kemonos.domain.models.post.PostContentDomain
 import su.afk.kemonos.preferences.useCase.CacheTimes.TTL_7_DAYS
 import su.afk.kemonos.storage.api.repository.post.IStoragePostStorageRepository
 import su.afk.kemonos.storage.entity.post.dao.PostContentCacheDao

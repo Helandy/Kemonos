@@ -19,8 +19,8 @@ import su.afk.kemonos.creatorProfile.data.dto.profileSimilar.SimilarCreatorDto.C
 import su.afk.kemonos.creatorProfile.data.dto.profileTags.TagDto.Companion.toDomain
 import su.afk.kemonos.creatorProfile.domain.repository.ICreatorsRepository
 import su.afk.kemonos.creatorProfile.util.Utils.queryKey
-import su.afk.kemonos.data.dto.PostUnifiedDto.Companion.toDomain
-import su.afk.kemonos.data.dto.onlyhaven.OnlyHavenPostDto.Companion.toDomain as toOnlyHavenDomain
+import su.afk.kemonos.network.dto.PostUnifiedDto.Companion.toDomain
+import su.afk.kemonos.network.dto.onlyhaven.OnlyHavenPostDto.Companion.toDomain as toOnlyHavenDomain
 import su.afk.kemonos.preferences.domainResolver.IDomainResolver
 import su.afk.kemonos.domain.capabilities
 import su.afk.kemonos.creatorProfile.data.dto.onlyhaven.OnlyHavenSimilarCreatorDto.Companion.toDomain as toOnlyHavenSimilarDomain
