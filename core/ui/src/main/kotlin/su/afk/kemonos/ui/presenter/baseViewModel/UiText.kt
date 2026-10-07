@@ -17,11 +17,17 @@ sealed interface UiText {
 
 fun UiText.asString(context: Context): String = when (this) {
     is UiText.DynamicString -> value
-    is UiText.Resource -> context.getString(id, *args.toTypedArray())
+    is UiText.Resource -> context.getString(
+        id,
+        *args.map { arg -> if (arg is UiText) arg.asString(context) else arg }.toTypedArray(),
+    )
 }
 
 @Composable
 fun UiText.asString(): String = when (this) {
     is UiText.DynamicString -> value
-    is UiText.Resource -> stringResource(id, *args.toTypedArray())
+    is UiText.Resource -> {
+        val resolvedArgs = args.map { arg -> if (arg is UiText) arg.asString() else arg }
+        stringResource(id, *resolvedArgs.toTypedArray())
+    }
 }

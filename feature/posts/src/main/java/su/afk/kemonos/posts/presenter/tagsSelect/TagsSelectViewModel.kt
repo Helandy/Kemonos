@@ -24,7 +24,7 @@ import su.afk.kemonos.preferences.ui.IUiSettingsReader
 import su.afk.kemonos.storage.api.repository.blacklist.blacklistKey
 import su.afk.kemonos.ui.components.posts.filter.PostMediaFilter
 import su.afk.kemonos.ui.components.posts.filter.matchesMediaFilter
-import su.afk.kemonos.ui.presenter.baseViewModel.BaseViewModelNew
+import su.afk.kemonos.ui.presenter.baseViewModel.BaseViewModel
 import su.afk.kemonos.ui.presenter.baseViewModel.getSerializableState
 import su.afk.kemonos.ui.presenter.baseViewModel.setSerializableState
 
@@ -40,7 +40,7 @@ internal class TagsSelectViewModel @AssistedInject constructor(
     savedStateHandle: SavedStateHandle,
     override val errorHandler: IErrorHandlerUseCase,
     override val retryStorage: RetryStorage,
-) : BaseViewModelNew<State, Event, Effect>(savedStateHandle) {
+) : BaseViewModel<State, Event, Effect>(savedStateHandle) {
 
     @AssistedFactory
     interface Factory {

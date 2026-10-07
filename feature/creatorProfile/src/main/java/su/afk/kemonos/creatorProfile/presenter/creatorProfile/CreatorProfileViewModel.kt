@@ -36,7 +36,7 @@ import su.afk.kemonos.creatorProfile.domain.useCase.SetAuthorBlacklistedUseCase
 import su.afk.kemonos.preferences.ui.CreatorProfileTabKey
 import su.afk.kemonos.preferences.ui.IUiSettingsReader
 import su.afk.kemonos.ui.components.posts.filter.matchesMediaFilter
-import su.afk.kemonos.ui.presenter.baseViewModel.BaseViewModelNew
+import su.afk.kemonos.ui.presenter.baseViewModel.BaseViewModel
 import su.afk.kemonos.ui.presenter.baseViewModel.getSerializableState
 import su.afk.kemonos.ui.presenter.baseViewModel.setSerializableState
 import su.afk.kemonos.ui.shared.ShareLinkBuilder
@@ -59,7 +59,7 @@ internal class CreatorProfileViewModel @AssistedInject constructor(
     @Assisted savedStateHandle: SavedStateHandle,
     override val errorHandler: IErrorHandlerUseCase,
     override val retryStorage: RetryStorage,
-) : BaseViewModelNew<State, Event, Effect>(savedStateHandle) {
+) : BaseViewModel<State, Event, Effect>(savedStateHandle) {
 
     private var searchJob: Job? = null
     private var observeBlacklistJob: Job? = null

@@ -8,7 +8,7 @@ import su.afk.kemonos.navigation.NavigationManager
 import su.afk.kemonos.navigation.storage.NavigationStorage
 import su.afk.kemonos.profile.presenter.importResult.ImportResultState.*
 import su.afk.kemonos.profile.utils.Const.KEY_IMPORT_RESULT_PAYLOAD
-import su.afk.kemonos.ui.presenter.baseViewModel.BaseViewModelNew
+import su.afk.kemonos.ui.presenter.baseViewModel.BaseViewModel
 import javax.inject.Inject
 
 @HiltViewModel
@@ -18,7 +18,7 @@ internal class ImportResultViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     override val errorHandler: IErrorHandlerUseCase,
     override val retryStorage: RetryStorage,
-) : BaseViewModelNew<State, Event, Effect>(savedStateHandle) {
+) : BaseViewModel<State, Event, Effect>(savedStateHandle) {
 
     override fun createInitialState(): State = State()
 

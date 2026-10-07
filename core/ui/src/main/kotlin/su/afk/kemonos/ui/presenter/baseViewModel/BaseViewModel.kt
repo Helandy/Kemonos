@@ -11,9 +11,9 @@ interface UiState
 interface UiEvent
 interface UiEffect
 
-abstract class BaseViewModelNew<S : UiState, E : UiEvent, F : UiEffect>(
+abstract class BaseViewModel<S : UiState, E : UiEvent, F : UiEffect>(
     protected val savedStateHandle: SavedStateHandle
-) : CoroutineVieModel() {
+) : CoroutineViewModel() {
 
     protected abstract fun createInitialState(): S
 

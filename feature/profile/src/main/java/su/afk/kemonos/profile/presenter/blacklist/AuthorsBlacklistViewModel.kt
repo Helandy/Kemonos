@@ -1,10 +1,8 @@
 package su.afk.kemonos.profile.presenter.blacklist
 
-import android.content.Context
 import android.net.Uri
 import androidx.lifecycle.SavedStateHandle
 import dagger.hilt.android.lifecycle.HiltViewModel
-import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.launchIn
@@ -21,8 +19,6 @@ import su.afk.kemonos.preferences.site.ISelectedSiteUseCase
 import su.afk.kemonos.preferences.site.setSiteAndAwait
 import su.afk.kemonos.preferences.ui.IUiSettingsReader
 import su.afk.kemonos.profile.R
-import su.afk.kemonos.profile.domain.blacklist.BlacklistImportEntryReason
-import su.afk.kemonos.profile.domain.blacklist.BlacklistImportEntryStatus
 import su.afk.kemonos.profile.domain.blacklist.ImportBlacklistFromJsonUseCase
 import su.afk.kemonos.profile.domain.blacklist.PrepareBlacklistExportUseCase
 import su.afk.kemonos.profile.domain.blacklist.ObserveBlacklistedAuthorsUseCase
@@ -31,11 +27,12 @@ import su.afk.kemonos.profile.domain.file.ReadJsonFromUriUseCase
 import su.afk.kemonos.profile.domain.file.SaveJsonToFolderUseCase
 import su.afk.kemonos.profile.navigation.AuthDestination
 import su.afk.kemonos.profile.presenter.blacklist.AuthorsBlacklistState.*
-import su.afk.kemonos.profile.presenter.importResult.ImportResultItem
 import su.afk.kemonos.profile.presenter.importResult.ImportResultPayload
-import su.afk.kemonos.profile.presenter.importResult.ImportResultStatus
+import su.afk.kemonos.profile.presenter.importResult.importFailurePayload
+import su.afk.kemonos.profile.presenter.importResult.toImportResultItem
 import su.afk.kemonos.profile.utils.Const.KEY_IMPORT_RESULT_PAYLOAD
-import su.afk.kemonos.ui.presenter.baseViewModel.BaseViewModelNew
+import su.afk.kemonos.ui.presenter.baseViewModel.BaseViewModel
+import su.afk.kemonos.ui.presenter.baseViewModel.UiText
 import su.afk.kemonos.ui.presenter.baseViewModel.getSerializableState
 import su.afk.kemonos.ui.presenter.baseViewModel.setSerializableState
 import javax.inject.Inject
@@ -54,11 +51,10 @@ internal class AuthorsBlacklistViewModel @Inject constructor(
     private val readJsonFromUriUseCase: ReadJsonFromUriUseCase,
     private val saveJsonToFolderUseCase: SaveJsonToFolderUseCase,
     private val uiSetting: IUiSettingsReader,
-    @param:ApplicationContext private val appContext: Context,
     savedStateHandle: SavedStateHandle,
     override val errorHandler: IErrorHandlerUseCase,
     override val retryStorage: RetryStorage,
-) : BaseViewModelNew<State, Event, Effect>(savedStateHandle) {
+) : BaseViewModel<State, Event, Effect>(savedStateHandle) {
     override fun createInitialState(): State =
         savedStateHandle.getSerializableState<AuthorsBlacklistPersistedState>(KEY_STATE)?.toState()
             ?: State()
@@ -143,7 +139,7 @@ internal class AuthorsBlacklistViewModel @Inject constructor(
     /** Экспортирует текущий blacklist в JSON-файл в выбранную папку. */
     private fun onSaveExportToFolder(folderUri: Uri?) = viewModelScope.launch {
         if (folderUri == null) {
-            setEffect(Effect.ShowMessage(appContext.getString(R.string.profile_blacklist_export_cancelled)))
+            setEffect(Effect.ShowMessage(UiText.Resource(R.string.profile_blacklist_export_cancelled)))
             return@launch
         }
 
@@ -167,11 +163,11 @@ internal class AuthorsBlacklistViewModel @Inject constructor(
         exportResult.onSuccess { fileName ->
             setEffect(
                 Effect.ShowMessage(
-                    appContext.getString(R.string.profile_blacklist_export_saved, fileName)
+                    UiText.Resource(R.string.profile_blacklist_export_saved, listOf(fileName))
                 )
             )
         }.onFailure {
-            setEffect(Effect.ShowMessage(appContext.getString(R.string.profile_blacklist_export_failed)))
+            setEffect(Effect.ShowMessage(UiText.Resource(R.string.profile_blacklist_export_failed)))
         }
     }
 
@@ -184,7 +180,7 @@ internal class AuthorsBlacklistViewModel @Inject constructor(
     /** Импортирует blacklist из JSON и навигирует на экран детального результата. */
     private fun onImportBlacklistFromFile(fileUri: Uri?) = viewModelScope.launch {
         if (fileUri == null) {
-            setEffect(Effect.ShowMessage(appContext.getString(R.string.profile_blacklist_import_cancelled)))
+            setEffect(Effect.ShowMessage(UiText.Resource(R.string.profile_blacklist_import_cancelled)))
             return@launch
         }
 
@@ -195,62 +191,31 @@ internal class AuthorsBlacklistViewModel @Inject constructor(
         }
         setState { copy(isImportExportInProgress = false) }
 
-        importResult.onSuccess { result ->
-            navigateToImportResult(
+        val payload = importResult.fold(
+            onSuccess = { result ->
                 ImportResultPayload(
-                    title = appContext.getString(R.string.profile_blacklist_import_title),
-                    summary = appContext.getString(
+                    title = UiText.Resource(R.string.profile_blacklist_import_title),
+                    summary = UiText.Resource(
                         R.string.profile_blacklist_import_result_summary,
-                        result.importedCount,
-                        result.processedCount,
-                        result.failedCount,
-                        result.skippedCount,
+                        listOf(
+                            result.importedCount,
+                            result.processedCount,
+                            result.failedCount,
+                            result.skippedCount,
+                        ),
                     ),
-                    items = result.entries.map { entry ->
-                        ImportResultItem(
-                            rowNumber = entry.rowNumber,
-                            target = entry.target.ifBlank {
-                                appContext.getString(R.string.profile_import_result_unknown_target)
-                            },
-                            status = when (entry.status) {
-                                BlacklistImportEntryStatus.SUCCESS -> ImportResultStatus.SUCCESS
-                                BlacklistImportEntryStatus.FAILED -> ImportResultStatus.FAILED
-                                BlacklistImportEntryStatus.SKIPPED -> ImportResultStatus.SKIPPED
-                            },
-                            reason = when (entry.reason) {
-                                BlacklistImportEntryReason.NONE ->
-                                    appContext.getString(R.string.profile_import_reason_none)
-
-                                BlacklistImportEntryReason.INVALID_ITEM ->
-                                    appContext.getString(R.string.profile_import_reason_invalid_item)
-
-                                BlacklistImportEntryReason.DUPLICATE_IN_FILE ->
-                                    appContext.getString(R.string.profile_import_reason_duplicate)
-
-                                BlacklistImportEntryReason.REQUEST_FAILED ->
-                                    appContext.getString(R.string.profile_import_reason_request_failed)
-                            },
-                        )
-                    },
+                    items = result.entries.map { it.toImportResultItem() },
                 )
-            )
-        }.onFailure { throwable ->
-            navigateToImportResult(
-                ImportResultPayload(
-                    title = appContext.getString(R.string.profile_blacklist_import_title),
-                    summary = appContext.getString(R.string.profile_blacklist_import_failed),
-                    items = listOf(
-                        ImportResultItem(
-                            rowNumber = 1,
-                            target = appContext.getString(R.string.profile_import_result_unknown_target),
-                            status = ImportResultStatus.FAILED,
-                            reason = throwable.message
-                                ?: appContext.getString(R.string.profile_import_reason_request_failed),
-                        )
-                    ),
+            },
+            onFailure = { throwable ->
+                importFailurePayload(
+                    title = UiText.Resource(R.string.profile_blacklist_import_title),
+                    summary = UiText.Resource(R.string.profile_blacklist_import_failed),
+                    cause = throwable,
                 )
-            )
-        }
+            },
+        )
+        navigateToImportResult(payload)
     }
 
     /** Открывает экран результата импорта с сохраненным payload в navigation storage. */

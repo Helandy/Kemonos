@@ -1,8 +1,5 @@
 package su.afk.kemonos.creatorPost.presenter
 
-import su.afk.kemonos.ui.uiUtils.format.buildThumbnailUrl
-import su.afk.kemonos.ui.uiUtils.format.buildFileUrl
-import su.afk.kemonos.preferences.domainResolver.mediaUrlSchemeByService
 import androidx.lifecycle.SavedStateHandle
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
@@ -18,45 +15,39 @@ import su.afk.kemonos.creatorPost.navigation.CreatorPostDestination
 import su.afk.kemonos.creatorPost.presenter.CreatorPostState.*
 import su.afk.kemonos.creatorPost.presenter.CreatorPostState.Effect.OpenAudio
 import su.afk.kemonos.creatorPost.presenter.delegates.LikeDelegate
-import su.afk.kemonos.creatorPost.presenter.delegates.MediaMetaDelegateNew
+import su.afk.kemonos.creatorPost.presenter.delegates.MediaMetaDelegate
 import su.afk.kemonos.creatorPost.presenter.delegates.NavigateDelegates
+import su.afk.kemonos.creatorPost.presenter.delegates.PostDownloadDelegate
 import su.afk.kemonos.creatorPost.presenter.delegates.PostLoadDelegate
-import su.afk.kemonos.creatorPost.presenter.helper.collectDownloadAllItems
+import su.afk.kemonos.creatorPost.presenter.delegates.TranslateDelegate
+import su.afk.kemonos.creatorPost.presenter.helper.ImageGalleryUrlsBuilder
 import su.afk.kemonos.creatorPost.presenter.model.LoadRequest
-import su.afk.kemonos.domain.models.PreviewDomain
-import su.afk.kemonos.download.api.IDownloadUtil
 import su.afk.kemonos.error.error.IErrorHandlerUseCase
 import su.afk.kemonos.error.error.storage.RetryStorage
 import su.afk.kemonos.error.error.toFavoriteToastBar
 import su.afk.kemonos.preferences.IGetCurrentSiteRootUrlUseCase
-import su.afk.kemonos.preferences.domainResolver.IDomainResolver
 import su.afk.kemonos.preferences.ui.IUiSettingsReader
-import su.afk.kemonos.preferences.ui.TranslateTarget
-import su.afk.kemonos.ui.presenter.androidView.model.PostBlock
-import su.afk.kemonos.ui.presenter.baseViewModel.BaseViewModelNew
+import su.afk.kemonos.ui.presenter.baseViewModel.BaseViewModel
 import su.afk.kemonos.ui.presenter.baseViewModel.getSerializableState
 import su.afk.kemonos.ui.presenter.baseViewModel.setSerializableState
 import su.afk.kemonos.ui.shared.ShareLinkBuilder
 import su.afk.kemonos.ui.shared.model.ShareTarget
-import su.afk.kemonos.ui.translate.TextTranslator
-import su.afk.kemonos.ui.translate.preprocessForTranslation
-import java.net.URLEncoder
 
 internal class CreatorPostViewModel @AssistedInject constructor(
     @Assisted private val dest: CreatorPostDestination.CreatorPost,
     private val postLoadDelegate: PostLoadDelegate,
     private val getCurrentSiteRootUrlUseCase: IGetCurrentSiteRootUrlUseCase,
-    private val domainResolver: IDomainResolver,
-    private val mediaMetaDelegateNew: MediaMetaDelegateNew,
+    private val mediaMetaDelegate: MediaMetaDelegate,
+    private val postDownloadDelegate: PostDownloadDelegate,
+    private val translateDelegate: TranslateDelegate,
+    private val imageGalleryUrlsBuilder: ImageGalleryUrlsBuilder,
     private val likeDelegate: LikeDelegate,
     private val navigateDelegates: NavigateDelegates,
-    private val downloadUtil: IDownloadUtil,
-    private val translator: TextTranslator,
     private val uiSetting: IUiSettingsReader,
     @Assisted savedStateHandle: SavedStateHandle,
     override val errorHandler: IErrorHandlerUseCase,
     override val retryStorage: RetryStorage,
-) : BaseViewModelNew<State, Event, Effect>(savedStateHandle) {
+) : BaseViewModel<State, Event, Effect>(savedStateHandle) {
     private var loadingJob: Job? = null
     private var loadingRequestId: Long = 0L
 
@@ -254,123 +245,51 @@ internal class CreatorPostViewModel @AssistedInject constructor(
     }
 
     /** Запрашивает мета-информацию видео */
-    private fun requestVideoMeta(server: String, path: String) = viewModelScope.launch {
-        val currentInfoState = currentState.videoInfo[path]
-        if (currentInfoState is MediaInfoState.Success || currentInfoState is MediaInfoState.Loading) return@launch
-        val useExternalMetaData = currentState.uiSettingModel.videoPreviewServerUrl.isNotBlank() &&
-                currentState.uiSettingModel.useExternalMetaData
-        val service = currentState.service
-
-        setState {
-            copy(
-                videoInfo = videoInfo + (path to MediaInfoState.Loading),
-            )
-        }
-
-        runCatching {
-            getVideoMetaWithFallback(
+    private fun requestVideoMeta(server: String, path: String) = requestMediaMeta(
+        path = path,
+        infoState = { it.videoInfo[path] },
+        updateInfo = { info -> copy(videoInfo = videoInfo + (path to info)) },
+        load = { useExternalMetaData, service ->
+            mediaMetaDelegate.getVideoInfoWithFallback(
                 useExternalMetaData = useExternalMetaData,
                 service = service,
                 server = server,
                 path = path,
             )
-        }.onSuccess { result ->
-            setState {
-                copy(
-                    videoInfo = videoInfo + (path to MediaInfoState.Success(result)),
-                )
-            }
-        }.onFailure { error ->
-            setState {
-                copy(
-                    videoInfo = videoInfo + (path to MediaInfoState.Error(error)),
-                )
-            }
-        }
-    }
+        },
+    )
 
     /** Запрашивает мета-информацию аудио */
-    private fun requestAudioMeta(server: String?, path: String) = viewModelScope.launch {
-        val currentInfoState = currentState.audioInfo[path]
-        if (currentInfoState is MediaInfoState.Success || currentInfoState is MediaInfoState.Loading) return@launch
-        val useExternalMetaData = currentState.uiSettingModel.videoPreviewServerUrl.isNotBlank() &&
-                currentState.uiSettingModel.useExternalMetaData
-        val service = currentState.service
-
-        setState {
-            copy(
-                audioInfo = audioInfo + (path to MediaInfoState.Loading),
-            )
-        }
-
-        runCatching {
-            getAudioMetaWithFallback(
+    private fun requestAudioMeta(server: String?, path: String) = requestMediaMeta(
+        path = path,
+        infoState = { it.audioInfo[path] },
+        updateInfo = { info -> copy(audioInfo = audioInfo + (path to info)) },
+        load = { useExternalMetaData, service ->
+            mediaMetaDelegate.getAudioInfoWithFallback(
                 useExternalMetaData = useExternalMetaData,
                 service = service,
                 server = server,
                 path = path,
             )
-        }.onSuccess { result ->
-            setState {
-                copy(
-                    audioInfo = audioInfo + (path to MediaInfoState.Success(result)),
-                )
-            }
-        }.onFailure { error ->
-            setState {
-                copy(
-                    audioInfo = audioInfo + (path to MediaInfoState.Error(error)),
-                )
-            }
-        }
-    }
+        },
+    )
 
-    private suspend fun getVideoMetaWithFallback(
-        useExternalMetaData: Boolean,
-        service: String,
-        server: String?,
+    private fun requestMediaMeta(
         path: String,
-    ): CommonMediaInfo {
-        return runCatching {
-            mediaMetaDelegateNew.getVideoInfo(
-                isRemote = useExternalMetaData,
-                server = server,
-                service = service,
-                path = path,
-            )
-        }.recoverCatching { error ->
-            if (!useExternalMetaData) throw error
-            mediaMetaDelegateNew.getVideoInfo(
-                isRemote = false,
-                server = server,
-                service = service,
-                path = path,
-            )
-        }.getOrThrow()
-    }
+        infoState: (State) -> MediaInfoState?,
+        updateInfo: State.(MediaInfoState) -> State,
+        load: suspend (useExternalMetaData: Boolean, service: String) -> CommonMediaInfo,
+    ) = viewModelScope.launch {
+        val current = infoState(currentState)
+        if (current is MediaInfoState.Success || current is MediaInfoState.Loading) return@launch
+        val settings = currentState.uiSettingModel
+        val useExternalMetaData = settings.videoPreviewServerUrl.isNotBlank() && settings.useExternalMetaData
 
-    private suspend fun getAudioMetaWithFallback(
-        useExternalMetaData: Boolean,
-        service: String,
-        server: String?,
-        path: String,
-    ): CommonMediaInfo {
-        return runCatching {
-            mediaMetaDelegateNew.getAudioInfo(
-                isRemote = useExternalMetaData,
-                service = service,
-                server = server,
-                path = path,
-            )
-        }.recoverCatching { error ->
-            if (!useExternalMetaData) throw error
-            mediaMetaDelegateNew.getAudioInfo(
-                isRemote = false,
-                service = service,
-                server = server,
-                path = path,
-            )
-        }.getOrThrow()
+        setState { updateInfo(MediaInfoState.Loading) }
+
+        runCatching { load(useExternalMetaData, currentState.service) }
+            .onSuccess { result -> setState { updateInfo(MediaInfoState.Success(result)) } }
+            .onFailure { error -> setState { updateInfo(MediaInfoState.Error(error)) } }
     }
 
     /** Избранное */
@@ -421,7 +340,12 @@ internal class CreatorPostViewModel @AssistedInject constructor(
 
     /** Открывает экран изображения и собирает галерею для свайпа */
     fun navigateOpenImage(originalUrl: String) {
-        val imageUrlsWithThumbnails = collectImageGalleryUrlsWithThumbnails(selectedUrl = originalUrl)
+        val imageUrlsWithThumbnails = imageGalleryUrlsBuilder.build(
+            service = currentState.service,
+            contentBlocks = currentState.contentBlocks,
+            previews = currentState.post?.previews,
+            selectedUrl = originalUrl,
+        )
         val thumbnailUrlsMap = mutableMapOf<String, String>()
         val imageUrls = imageUrlsWithThumbnails.map { (fullUrl, thumbnailUrl) ->
             thumbnailUrl?.let { thumbnailUrlsMap[fullUrl] = it }
@@ -457,152 +381,24 @@ internal class CreatorPostViewModel @AssistedInject constructor(
     /** Постановка одной загрузки в системный DownloadManager */
     fun download(url: String, fileName: String?) {
         viewModelScope.launch {
-            enqueueDownload(url = url, fileName = fileName)
+            postDownloadDelegate.download(url, fileName, currentState, ::setEffect)
         }
     }
 
     /** Массовая загрузка всех доступных вложений/медиа поста */
     private fun downloadAll() {
-        val post = currentState.post ?: return
-        val fallbackBaseUrl = domainResolver.fileBaseUrlByService(currentState.service)
-        val allItems = post.collectDownloadAllItems(
-            fallbackBaseUrl = fallbackBaseUrl,
-            mediaUrlScheme = domainResolver.mediaUrlSchemeByService(currentState.service),
-        )
-        if (allItems.isEmpty()) return
-
         viewModelScope.launch {
-            allItems.forEach { item ->
-                enqueueDownload(url = item.url, fileName = item.fileName)
-            }
+            postDownloadDelegate.downloadAll(currentState, ::setEffect)
         }
-    }
-
-    /** Единая точка добавления файла в загрузку + тост-эффект */
-    private suspend fun enqueueDownload(url: String, fileName: String?) {
-        downloadUtil.enqueueSystemDownload(
-            url = url,
-            fileName = fileName,
-            service = currentState.service,
-            creatorName = currentState.profile?.name,
-            postId = currentState.postId,
-            postTitle = currentState.post?.post?.title
-        )
-        setEffect(Effect.DownloadToast(fileName.orEmpty()))
     }
 
     /** Переключение блока перевода и запуск перевода в выбранном режиме */
-    fun onToggleTranslate() {
-        val plainText = currentState.post?.post?.content?.preprocessForTranslation()
-        if (plainText.isNullOrEmpty()) return
-
-        val nextExpanded = !currentState.translateExpanded
-        setState { copy(translateExpanded = nextExpanded) }
-
-        if (!nextExpanded) return
-
-        when (currentState.uiSettingModel.translateTarget) {
-            TranslateTarget.GOOGLE -> {
-                setState { copy(translateExpanded = false) }
-
-                setEffect(
-                    Effect.OpenGoogleTranslate(
-                        text = plainText,
-                        targetLangTag = currentState.uiSettingModel.translateLanguageTag
-                    )
-                )
-                return
-            }
-
-            TranslateTarget.APP -> Unit
-        }
-
-        if (currentState.translateText != null && currentState.translateError == null) return
-        if (currentState.translateLoading) return
-
-        viewModelScope.launch {
-            setState { copy(translateLoading = true, translateError = null) }
-
-            runCatching {
-                translator.translateAuto(
-                    text = plainText,
-                    targetLangTag = currentState.uiSettingModel.translateLanguageTag
-                )
-            }.onSuccess { text ->
-                setState { copy(translateText = text, translateLoading = false) }
-            }.onFailure { e ->
-                setState {
-                    copy(
-                        translateLoading = false,
-                        translateError = e.message ?: "Translation error"
-                    )
-                }
-            }
-        }
-    }
-
-    /** Формирует список URL картинок с thumbnail для image-view галереи */
-    internal fun collectImageGalleryUrlsWithThumbnails(selectedUrl: String): List<Pair<String, String?>> {
-        val imgBaseUrl = domainResolver.imageBaseUrlByService(currentState.service)
-
-        val contentImages = currentState.contentBlocks
-            .orEmpty()
-            .mapNotNull { block -> (block as? PostBlock.Image)?.url }
-            .filter { it.isNotBlank() }
-            .map { it to null }
-
-        val previewImages = currentState.post
-            ?.previews
-            .orEmpty()
-            .asSequence()
-            .filter { it.type == "thumbnail" }
-            .mapNotNull { preview ->
-                val fullUrl = buildPreviewFullUrl(preview)
-                val thumbnailUrl = buildThumbnailUrl(imgBaseUrl, preview)
-                if (fullUrl != null) fullUrl to thumbnailUrl else null
-            }
-            .toList()
-
-        val mergedMap = linkedMapOf<String, String?>()
-        (contentImages + previewImages).forEach { (fullUrl, thumbnailUrl) ->
-            when {
-                !mergedMap.containsKey(fullUrl) -> mergedMap[fullUrl] = thumbnailUrl
-                mergedMap[fullUrl].isNullOrBlank() && !thumbnailUrl.isNullOrBlank() -> {
-                    mergedMap[fullUrl] = thumbnailUrl
-                }
-            }
-        }
-
-        val merged = mergedMap.entries.map { it.key to it.value }
-        return if (selectedUrl in merged.map { it.first }) {
-            merged
-        } else {
-            val selectedPair = listOf(selectedUrl to null)
-            (selectedPair + merged).distinctBy { it.first }
-        }
-    }
-
-    /** Строит полный URL для thumbnail-превью */
-    private fun buildPreviewFullUrl(preview: PreviewDomain): String? {
-        val server = preview.server ?: return null
-        val path = preview.path ?: return null
-        val name = preview.name ?: return null
-
-        val encodedName = URLEncoder.encode(name, "UTF-8")
-        val scheme = domainResolver.mediaUrlSchemeByService(currentState.service)
-        return buildFileUrl(server, path, scheme) + "?f=" + encodedName
-    }
-
-    /** Строит thumbnail URL из PreviewDomain */
-    private fun buildThumbnailUrl(imgBaseUrl: String, preview: PreviewDomain): String? {
-        val path = preview.path ?: return null
-        return buildThumbnailUrl(
-            imageBaseUrl = imgBaseUrl,
-            path = path,
-            scheme = domainResolver.mediaUrlSchemeByService(currentState.service),
-            thumbnailPath = preview.thumbnailPath,
-        )
-    }
+    fun onToggleTranslate() = translateDelegate.onToggleTranslate(
+        scope = viewModelScope,
+        getState = { currentState },
+        updateState = { reducer -> setState(reducer) },
+        sendEffect = ::setEffect,
+    )
 
     /** Сбрасывает state при переходе на соседний пост */
     private fun resetForNewPost(nextPostId: String) = setState {

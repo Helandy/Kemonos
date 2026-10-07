@@ -24,7 +24,7 @@ import su.afk.kemonos.setting.navigation.SettingDestination
 import su.afk.kemonos.setting.presenter.delegates.SettingApiDelegate
 import su.afk.kemonos.setting.presenter.delegates.SettingCacheDelegate
 import su.afk.kemonos.setting.presenter.delegates.SettingUiPreferencesDelegate
-import su.afk.kemonos.ui.presenter.baseViewModel.BaseViewModelNew
+import su.afk.kemonos.ui.presenter.baseViewModel.BaseViewModel
 import su.afk.kemonos.utils.url.normalizeDomain
 import javax.inject.Inject
 
@@ -44,7 +44,7 @@ class SettingViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     override val errorHandler: IErrorHandlerUseCase,
     override val retryStorage: RetryStorage
-) : BaseViewModelNew<SettingState.State, SettingState.Event, SettingState.Effect>(savedStateHandle) {
+) : BaseViewModel<SettingState.State, SettingState.Event, SettingState.Effect>(savedStateHandle) {
 
     override fun createInitialState(): SettingState.State = SettingState.State()
 

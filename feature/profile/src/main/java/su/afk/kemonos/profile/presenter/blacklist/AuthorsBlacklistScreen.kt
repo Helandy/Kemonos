@@ -38,6 +38,7 @@ import su.afk.kemonos.ui.presenter.baseScreen.EmptyContentCenter
 import su.afk.kemonos.ui.presenter.baseScreen.TopBarScroll
 import su.afk.kemonos.ui.preview.KemonosPreviewScreen
 import su.afk.kemonos.ui.R as UiR
+import su.afk.kemonos.ui.presenter.baseViewModel.asString
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -75,7 +76,7 @@ internal fun AuthorsBlacklistScreen(
                     importFilePickerLauncher.launch(arrayOf("application/json", "text/plain", "*/*"))
 
                 is Effect.ShowMessage ->
-                    Toast.makeText(context, incoming.message, Toast.LENGTH_SHORT).show()
+                    Toast.makeText(context, incoming.message.asString(context), Toast.LENGTH_SHORT).show()
             }
         }
     }

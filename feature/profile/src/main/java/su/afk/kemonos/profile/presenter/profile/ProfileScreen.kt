@@ -30,6 +30,7 @@ import su.afk.kemonos.profile.presenter.profile.views.*
 import su.afk.kemonos.ui.date.toUiDateTime
 import su.afk.kemonos.ui.presenter.baseScreen.BaseScreen
 import su.afk.kemonos.ui.preview.KemonosPreviewScreen
+import su.afk.kemonos.ui.presenter.baseViewModel.asString
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -78,7 +79,7 @@ internal fun ProfileScreen(
                 ProfileState.Effect.OpenImportFilePicker ->
                     importFilePickerLauncher.launch(arrayOf("application/json", "text/plain", "*/*"))
                 is ProfileState.Effect.ShowMessage ->
-                    Toast.makeText(context, incoming.message, Toast.LENGTH_SHORT).show()
+                    Toast.makeText(context, incoming.message.asString(context), Toast.LENGTH_SHORT).show()
             }
         }
     }

@@ -19,7 +19,7 @@ import su.afk.kemonos.posts.presenter.delegates.NavigateToPostDelegate
 import su.afk.kemonos.posts.presenter.pageHashLookup.HashLookupState.*
 import su.afk.kemonos.preferences.site.ISelectedSiteUseCase
 import su.afk.kemonos.preferences.ui.IUiSettingsReader
-import su.afk.kemonos.ui.presenter.changeSite.SiteAwareBaseViewModelNew
+import su.afk.kemonos.ui.presenter.changeSite.SiteAwareBaseViewModel
 import javax.inject.Inject
 
 @HiltViewModel
@@ -31,7 +31,7 @@ internal class HashLookupViewModel @Inject constructor(
     override val selectedSiteUseCase: ISelectedSiteUseCase,
     override val errorHandler: IErrorHandlerUseCase,
     override val retryStorage: RetryStorage,
-) : SiteAwareBaseViewModelNew<State, Event, Effect>(savedStateHandle) {
+) : SiteAwareBaseViewModel<State, Event, Effect>(savedStateHandle) {
 
     private val hashRegex = Regex("^[a-fA-F0-9]{64}$")
 

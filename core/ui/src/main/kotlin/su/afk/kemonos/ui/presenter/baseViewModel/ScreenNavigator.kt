@@ -7,7 +7,7 @@ import kotlinx.coroutines.flow.Flow
 
 @Composable
 fun <S : UiState, E : UiEvent, F : UiEffect> ScreenNavigator(
-    viewModel: BaseViewModelNew<S, E, F>,
+    viewModel: BaseViewModel<S, E, F>,
     content: @Composable (state: S, effect: Flow<F>, onEventSent: (E) -> Unit) -> Unit,
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()

@@ -27,7 +27,7 @@ import su.afk.kemonos.preferences.ui.IUiSettingsReader
 import su.afk.kemonos.storage.api.repository.blacklist.blacklistKey
 import su.afk.kemonos.ui.presenter.baseViewModel.getSerializableState
 import su.afk.kemonos.ui.presenter.baseViewModel.setSerializableState
-import su.afk.kemonos.ui.presenter.changeSite.SiteAwareBaseViewModelNew
+import su.afk.kemonos.ui.presenter.changeSite.SiteAwareBaseViewModel
 import javax.inject.Inject
 
 @HiltViewModel
@@ -40,7 +40,7 @@ internal class PopularPostsViewModel @Inject constructor(
     override val selectedSiteUseCase: ISelectedSiteUseCase,
     override val errorHandler: IErrorHandlerUseCase,
     override val retryStorage: RetryStorage,
-) : SiteAwareBaseViewModelNew<State, Event, Effect>(savedStateHandle) {
+) : SiteAwareBaseViewModel<State, Event, Effect>(savedStateHandle) {
     private val popularRequestFlow = MutableStateFlow<PopularRequest?>(null)
     private var manualRefreshCounter = 0L
 

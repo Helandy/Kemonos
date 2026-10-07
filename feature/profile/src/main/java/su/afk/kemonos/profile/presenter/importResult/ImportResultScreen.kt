@@ -15,6 +15,7 @@ import su.afk.kemonos.profile.presenter.importResult.ImportResultState.State
 import su.afk.kemonos.ui.presenter.baseScreen.BaseScreen
 import su.afk.kemonos.ui.presenter.baseScreen.CenterBackTopBar
 import su.afk.kemonos.ui.presenter.baseScreen.TopBarScroll
+import su.afk.kemonos.ui.presenter.baseViewModel.asString
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -23,7 +24,7 @@ internal fun ImportResultScreen(
     onEvent: (Event) -> Unit,
 ) {
     val payload = state.payload
-    val title = payload?.title ?: stringResource(R.string.profile_import_result_default_title)
+    val title = payload?.title?.asString() ?: stringResource(R.string.profile_import_result_default_title)
 
     BaseScreen(
         isScroll = false,
@@ -47,7 +48,7 @@ internal fun ImportResultScreen(
         }
 
         Text(
-            text = payload.summary,
+            text = payload.summary.asString(),
             style = MaterialTheme.typography.bodyLarge,
             modifier = Modifier.padding(top = 8.dp),
         )
@@ -65,7 +66,7 @@ internal fun ImportResultScreen(
         LazyColumn(verticalArrangement = Arrangement.spacedBy(8.dp)) {
             items(
                 items = payload.items,
-                key = { item -> "${item.rowNumber}:${item.target}:${item.status}" }
+                key = { item -> "${item.rowNumber}:${item.status}" }
             ) { item ->
                 ImportResultItemCard(item = item)
             }
@@ -99,12 +100,13 @@ private fun ImportResultItemCard(item: ImportResultItem) {
                 fontWeight = FontWeight.SemiBold,
             )
             Text(
-                text = item.target,
+                text = item.target.asString(),
                 style = MaterialTheme.typography.bodyMedium,
             )
-            if (item.reason.isNotBlank()) {
+            val reason = item.reason.asString()
+            if (reason.isNotBlank()) {
                 Text(
-                    text = item.reason,
+                    text = reason,
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )

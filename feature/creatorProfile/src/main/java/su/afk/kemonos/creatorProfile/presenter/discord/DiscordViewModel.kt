@@ -17,7 +17,7 @@ import su.afk.kemonos.error.error.storage.RetryStorage
 import su.afk.kemonos.navigation.NavigationManager
 import su.afk.kemonos.preferences.IGetCurrentSiteRootUrlUseCase
 import su.afk.kemonos.preferences.ui.IUiSettingsReader
-import su.afk.kemonos.ui.presenter.baseViewModel.BaseViewModelNew
+import su.afk.kemonos.ui.presenter.baseViewModel.BaseViewModel
 import su.afk.kemonos.ui.presenter.baseViewModel.getSerializableState
 import su.afk.kemonos.ui.presenter.baseViewModel.setSerializableState
 import su.afk.kemonos.ui.shared.ShareLinkBuilder
@@ -33,7 +33,7 @@ internal class DiscordViewModel @AssistedInject constructor(
     @Assisted savedStateHandle: SavedStateHandle,
     override val errorHandler: IErrorHandlerUseCase,
     override val retryStorage: RetryStorage,
-) : BaseViewModelNew<State, Event, Effect>(savedStateHandle) {
+) : BaseViewModel<State, Event, Effect>(savedStateHandle) {
 
     companion object {
         private const val DISCORD_SERVICE = "discord"
