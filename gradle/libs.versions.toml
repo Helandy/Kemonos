@@ -1,12 +1,12 @@
 [versions]
 # --- Android / Kotlin toolchain
 compileSdk = "37"
-minSdk = "29"
+minSdk = "27"
 jvmVersion = "21"
 
 # --- App versioning
-appVersionName = "1.18"
-appVersionCode = "98"
+appVersionName = "1.19"
+appVersionCode = "99"
 
 agp = "9.4.1"
 kotlin = "2.4.20"

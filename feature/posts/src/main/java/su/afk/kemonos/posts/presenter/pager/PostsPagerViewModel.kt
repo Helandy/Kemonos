@@ -5,7 +5,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import su.afk.kemonos.error.error.IErrorHandlerUseCase
 import su.afk.kemonos.error.error.storage.RetryStorage
 import su.afk.kemonos.posts.presenter.pager.model.PostsPage
-import su.afk.kemonos.ui.presenter.baseViewModel.BaseViewModelNew
+import su.afk.kemonos.ui.presenter.baseViewModel.BaseViewModel
 import su.afk.kemonos.ui.presenter.baseViewModel.getSerializableState
 import su.afk.kemonos.ui.presenter.baseViewModel.setSerializableState
 import javax.inject.Inject
@@ -15,7 +15,7 @@ internal class PostsPagerViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     override val errorHandler: IErrorHandlerUseCase,
     override val retryStorage: RetryStorage
-) : BaseViewModelNew<PostsPagerState.State, PostsPagerState.Event, PostsPagerState.Effect>(savedStateHandle) {
+) : BaseViewModel<PostsPagerState.State, PostsPagerState.Event, PostsPagerState.Effect>(savedStateHandle) {
 
     override fun createInitialState(): PostsPagerState.State =
         PostsPagerState.State(

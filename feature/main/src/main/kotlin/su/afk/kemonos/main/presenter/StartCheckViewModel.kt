@@ -21,7 +21,7 @@ import su.afk.kemonos.preferences.ui.IUiSettingsReader
 import su.afk.kemonos.preferences.ui.IUiSettingsWriter
 import su.afk.kemonos.storage.api.clear.IClearCacheStorageUseCase
 import su.afk.kemonos.ui.crash.ICrashReportManager
-import su.afk.kemonos.ui.presenter.baseViewModel.BaseViewModelNew
+import su.afk.kemonos.ui.presenter.baseViewModel.BaseViewModel
 import su.afk.kemonos.utils.url.buildBaseUrl
 import su.afk.kemonos.utils.url.normalizeDomain
 import javax.inject.Inject
@@ -41,7 +41,7 @@ internal class StartCheckViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     override val errorHandler: IErrorHandlerUseCase,
     override val retryStorage: RetryStorage,
-) : BaseViewModelNew<State, Event, Effect>(savedStateHandle) {
+) : BaseViewModel<State, Event, Effect>(savedStateHandle) {
 
     override fun createInitialState(): State = State()
 

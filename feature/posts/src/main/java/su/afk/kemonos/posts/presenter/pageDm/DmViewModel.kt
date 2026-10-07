@@ -24,7 +24,7 @@ import su.afk.kemonos.preferences.ui.IUiSettingsReader
 import su.afk.kemonos.storage.api.repository.blacklist.blacklistKey
 import su.afk.kemonos.ui.presenter.baseViewModel.getSerializableState
 import su.afk.kemonos.ui.presenter.baseViewModel.setSerializableState
-import su.afk.kemonos.ui.presenter.changeSite.SiteAwareBaseViewModelNew
+import su.afk.kemonos.ui.presenter.changeSite.SiteAwareBaseViewModel
 import javax.inject.Inject
 
 @HiltViewModel
@@ -38,7 +38,7 @@ internal class DmViewModel @Inject constructor(
     override val selectedSiteUseCase: ISelectedSiteUseCase,
     override val errorHandler: IErrorHandlerUseCase,
     override val retryStorage: RetryStorage,
-) : SiteAwareBaseViewModelNew<DmState.State, DmState.Event, DmState.Effect>(savedStateHandle) {
+) : SiteAwareBaseViewModel<DmState.State, DmState.Event, DmState.Effect>(savedStateHandle) {
 
     override fun createInitialState(): DmState.State =
         savedStateHandle.getSerializableState<DmPersistedState>(KEY_STATE)?.toState()

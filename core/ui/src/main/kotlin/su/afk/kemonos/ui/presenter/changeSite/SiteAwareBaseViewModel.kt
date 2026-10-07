@@ -10,14 +10,14 @@ import kotlinx.coroutines.launch
 import su.afk.kemonos.domain.SelectedSite
 import su.afk.kemonos.preferences.site.ISelectedSiteUseCase
 import su.afk.kemonos.preferences.ui.UiSettingModel
-import su.afk.kemonos.ui.presenter.baseViewModel.BaseViewModelNew
+import su.afk.kemonos.ui.presenter.baseViewModel.BaseViewModel
 import su.afk.kemonos.ui.presenter.baseViewModel.UiEffect
 import su.afk.kemonos.ui.presenter.baseViewModel.UiEvent
 import su.afk.kemonos.ui.presenter.baseViewModel.UiState
 
-abstract class SiteAwareBaseViewModelNew<S : UiState, E : UiEvent, F : UiEffect>(
+abstract class SiteAwareBaseViewModel<S : UiState, E : UiEvent, F : UiEffect>(
     savedStateHandle: SavedStateHandle
-) : BaseViewModelNew<S, E, F>(savedStateHandle) {
+) : BaseViewModel<S, E, F>(savedStateHandle) {
 
     protected abstract val selectedSiteUseCase: ISelectedSiteUseCase
 

@@ -29,7 +29,7 @@ import su.afk.kemonos.ui.components.posts.filter.PostMediaFilter
 import su.afk.kemonos.ui.components.posts.filter.matchesMediaFilter
 import su.afk.kemonos.ui.presenter.baseViewModel.getSerializableState
 import su.afk.kemonos.ui.presenter.baseViewModel.setSerializableState
-import su.afk.kemonos.ui.presenter.changeSite.SiteAwareBaseViewModelNew
+import su.afk.kemonos.ui.presenter.changeSite.SiteAwareBaseViewModel
 import javax.inject.Inject
 
 @HiltViewModel
@@ -45,7 +45,7 @@ internal class SearchPostsViewModel @Inject constructor(
     override val selectedSiteUseCase: ISelectedSiteUseCase,
     override val errorHandler: IErrorHandlerUseCase,
     override val retryStorage: RetryStorage,
-) : SiteAwareBaseViewModelNew<State, Event, Effect>(savedStateHandle) {
+) : SiteAwareBaseViewModel<State, Event, Effect>(savedStateHandle) {
 
     override fun createInitialState(): State =
         savedStateHandle.getSerializableState<SearchPostsPersistedState>(KEY_STATE)

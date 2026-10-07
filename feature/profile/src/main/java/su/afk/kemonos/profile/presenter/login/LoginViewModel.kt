@@ -20,7 +20,7 @@ import su.afk.kemonos.profile.domain.login.LoginUseCase
 import su.afk.kemonos.profile.navigation.AuthDestination
 import su.afk.kemonos.profile.R
 import su.afk.kemonos.profile.presenter.login.LoginState.*
-import su.afk.kemonos.ui.presenter.baseViewModel.BaseViewModelNew
+import su.afk.kemonos.ui.presenter.baseViewModel.BaseViewModel
 import su.afk.kemonos.ui.presenter.baseViewModel.UiText
 
 @HiltViewModel(assistedFactory = LoginViewModel.Factory::class)
@@ -33,7 +33,7 @@ internal class LoginViewModel @AssistedInject constructor(
     savedStateHandle: SavedStateHandle,
     override val errorHandler: IErrorHandlerUseCase,
     override val retryStorage: RetryStorage,
-) : BaseViewModelNew<State, Event, Effect>(savedStateHandle) {
+) : BaseViewModel<State, Event, Effect>(savedStateHandle) {
 
     @AssistedFactory
     interface Factory {

@@ -1,5 +1,7 @@
 package su.afk.kemonos.profile.presenter.importResult
 
+import su.afk.kemonos.ui.presenter.baseViewModel.UiText
+
 internal enum class ImportResultStatus {
     SUCCESS,
     FAILED,
@@ -8,13 +10,13 @@ internal enum class ImportResultStatus {
 
 internal data class ImportResultItem(
     val rowNumber: Int,
-    val target: String,
+    val target: UiText,
     val status: ImportResultStatus,
-    val reason: String,
+    val reason: UiText,
 )
 
 internal data class ImportResultPayload(
-    val title: String,
-    val summary: String,
+    val title: UiText,
+    val summary: UiText,
     val items: List<ImportResultItem>,
 )

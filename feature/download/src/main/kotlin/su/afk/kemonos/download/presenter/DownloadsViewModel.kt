@@ -27,7 +27,7 @@ import su.afk.kemonos.preferences.ui.IUiSettingsReader
 import su.afk.kemonos.download.domain.usecase.ObserveTrackedDownloadsUseCase
 import su.afk.kemonos.download.domain.usecase.UpdateDownloadRuntimeStateUseCase
 import su.afk.kemonos.storage.api.repository.download.TrackedDownload
-import su.afk.kemonos.ui.presenter.baseViewModel.BaseViewModelNew
+import su.afk.kemonos.ui.presenter.baseViewModel.BaseViewModel
 import su.afk.kemonos.ui.presenter.baseViewModel.UiEffect
 import su.afk.kemonos.ui.presenter.baseViewModel.getSerializableState
 import su.afk.kemonos.ui.presenter.baseViewModel.setSerializableState
@@ -50,7 +50,7 @@ internal class DownloadsViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     override val errorHandler: IErrorHandlerUseCase,
     override val retryStorage: RetryStorage,
-) : BaseViewModelNew<DownloadsState.State, DownloadsState.Event, UiEffect>(savedStateHandle) {
+) : BaseViewModel<DownloadsState.State, DownloadsState.Event, UiEffect>(savedStateHandle) {
     private val refreshMutex = Mutex()
     private val speedMap = mutableMapOf<Long, SpeedPoint>()
     private val lastSnapshots = mutableMapOf<Long, DownloadSnapshot>()

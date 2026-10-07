@@ -6,7 +6,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers.Main
 import kotlinx.coroutines.SupervisorJob
 
-abstract class CoroutineVieModel : ViewModel() {
+abstract class CoroutineViewModel : ViewModel() {
 
     private val handler = CoroutineExceptionHandler { _, exception ->
         onError(exception)

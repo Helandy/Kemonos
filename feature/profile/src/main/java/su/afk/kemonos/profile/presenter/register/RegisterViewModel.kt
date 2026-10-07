@@ -16,7 +16,7 @@ import su.afk.kemonos.profile.domain.register.RegisterResult
 import su.afk.kemonos.profile.domain.register.RegisterUseCase
 import su.afk.kemonos.profile.navigation.AuthDestination
 import su.afk.kemonos.profile.presenter.register.RegisterState.*
-import su.afk.kemonos.ui.presenter.baseViewModel.BaseViewModelNew
+import su.afk.kemonos.ui.presenter.baseViewModel.BaseViewModel
 
 @HiltViewModel(assistedFactory = RegisterViewModel.Factory::class)
 internal class RegisterViewModel @AssistedInject constructor(
@@ -27,7 +27,7 @@ internal class RegisterViewModel @AssistedInject constructor(
     savedStateHandle: SavedStateHandle,
     override val errorHandler: IErrorHandlerUseCase,
     override val retryStorage: RetryStorage,
-) : BaseViewModelNew<State, Event, Effect>(savedStateHandle) {
+) : BaseViewModel<State, Event, Effect>(savedStateHandle) {
 
     @AssistedFactory
     interface Factory {

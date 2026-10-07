@@ -12,13 +12,39 @@ import su.afk.kemonos.preferences.domainResolver.selectedSiteByService
 import su.afk.kemonos.storage.api.repository.media.IStorageMediaInfoRepository
 import javax.inject.Inject
 
-internal class MediaMetaDelegateNew @Inject constructor(
+internal class MediaMetaDelegate @Inject constructor(
     private val videoInfoUseCase: VideoInfoUseCase,
     private val fileInfoUseCase: FileInfoUseCase,
     private val getSelfMediaInfoUseCase: GetSelfMediaMetaUseCase,
     private val domainResolver: IDomainResolver,
     private val storageMediaInfo: IStorageMediaInfoRepository,
 ) {
+    /** Видео: при ошибке внешнего источника повторяет запрос локально */
+    suspend fun getVideoInfoWithFallback(
+        useExternalMetaData: Boolean,
+        service: String,
+        server: String?,
+        path: String,
+    ): CommonMediaInfo = runCatching {
+        getVideoInfo(isRemote = useExternalMetaData, service = service, server = server, path = path)
+    }.recoverCatching { error ->
+        if (!useExternalMetaData) throw error
+        getVideoInfo(isRemote = false, service = service, server = server, path = path)
+    }.getOrThrow()
+
+    /** Аудио: при ошибке внешнего источника повторяет запрос локально */
+    suspend fun getAudioInfoWithFallback(
+        useExternalMetaData: Boolean,
+        service: String,
+        server: String?,
+        path: String,
+    ): CommonMediaInfo = runCatching {
+        getAudioInfo(isRemote = useExternalMetaData, service = service, server = server, path = path)
+    }.recoverCatching { error ->
+        if (!useExternalMetaData) throw error
+        getAudioInfo(isRemote = false, service = service, server = server, path = path)
+    }.getOrThrow()
+
     /** Получение информации о видео включая превью */
     suspend fun getVideoInfo(isRemote: Boolean, service: String, server: String?, path: String): CommonMediaInfo {
         val site = domainResolver.selectedSiteByService(service)

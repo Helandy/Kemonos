@@ -8,7 +8,7 @@ import su.afk.kemonos.commonscreen.navigator.CommonScreenDestination
 import su.afk.kemonos.error.error.IErrorHandlerUseCase
 import su.afk.kemonos.error.error.storage.RetryStorage
 import su.afk.kemonos.navigation.NavigationManager
-import su.afk.kemonos.ui.presenter.baseViewModel.BaseViewModelNew
+import su.afk.kemonos.ui.presenter.baseViewModel.BaseViewModel
 
 internal class ErrorViewModel @AssistedInject constructor(
     @Assisted private val dest: CommonScreenDestination.ErrorNavigatorDest,
@@ -16,7 +16,7 @@ internal class ErrorViewModel @AssistedInject constructor(
     override val errorHandler: IErrorHandlerUseCase,
     override val retryStorage: RetryStorage,
     private val navManager: NavigationManager,
-) : BaseViewModelNew<ErrorScreenState.State, ErrorScreenState.Event, ErrorScreenState.Effect>(savedStateHandle) {
+) : BaseViewModel<ErrorScreenState.State, ErrorScreenState.Event, ErrorScreenState.Effect>(savedStateHandle) {
 
     override fun createInitialState(): ErrorScreenState.State = ErrorScreenState.State()
 

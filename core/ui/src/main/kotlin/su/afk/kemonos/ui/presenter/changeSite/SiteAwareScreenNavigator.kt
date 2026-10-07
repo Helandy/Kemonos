@@ -11,7 +11,7 @@ import su.afk.kemonos.ui.presenter.baseViewModel.UiState
 
 @Composable
 fun <S : UiState, E : UiEvent, F : UiEffect> SiteAwareScreenNavigator(
-    viewModel: SiteAwareBaseViewModelNew<S, E, F>,
+    viewModel: SiteAwareBaseViewModel<S, E, F>,
     content: @Composable (
         state: S,
         effect: Flow<F>,
